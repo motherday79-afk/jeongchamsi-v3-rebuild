@@ -41,7 +41,7 @@ async function render(){
   else if(['guide','privacy','policy'].includes(p[0])) body=views.renderLegal(p[0]);
   else if(p[0]==='column') body=p[1]==='write'?views.renderBoardWrite('columns'):p[1]?await views.renderBoardDetail('columns',p[1],content,session):await views.renderBoard('columns',content,session);
   else if(p[0]==='community') body=p[1]==='write'?views.renderBoardWrite('community'):p[1]?await views.renderBoardDetail('community',p[1],content,session):await views.renderBoard('community',content,session);
-  else if(p[0]==='itsme') body=p[1]==='write'?views.renderItsmeWrite():p[1]?await views.renderItsmeDetail(p[1],content,session):await views.renderItsme(content);
+  else if(p[0]==='itsme') body=p[1]==='write'?views.renderItsmeWrite():p[1]?await views.renderItsmeDetail(p[1],content,session):await views.renderItsme(content,r);
   else if(p[0]==='poll') body=await views.renderPoll(content,session);
   else if(p[0]==='generation-president') body=await views.renderGeneration(content,session);
   else if(p[0]==='national-evaluation') body=await views.renderNationalEvaluation(content,session);

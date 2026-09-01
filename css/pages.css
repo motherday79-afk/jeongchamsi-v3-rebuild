@@ -3112,3 +3112,75 @@ html.jcv3-touch-ui .jcv3-view-mode-switch{display:flex}
 .mobile-login-authenticated{border-color:#cfe5dd;background:#f8fcfa}
 .mobile-login-authenticated b{color:#087f74}
 .mobile-login-authenticated button{min-width:86px}
+
+/* JCS_0_0_6 exact legacy board geometry */
+.article-detail.legacy-board-detail{
+  overflow:visible;
+  padding:22px;
+  background:#fff;
+}
+.legacy-board-detail>.eyebrow{display:block;margin:0 0 5px}
+.legacy-board-detail>h1{
+  margin:0;
+  color:var(--text);
+  font-size:30px;
+  line-height:1.35;
+  letter-spacing:-.8px;
+  text-align:left;
+}
+.legacy-board-detail>.article-meta{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin:10px 0 0;
+  color:#73807b;
+  font-size:13px;
+  line-height:20.8px;
+}
+.legacy-board-detail>.article-cover{
+  width:min(58%,620px);
+  aspect-ratio:16/9;
+  margin:22px auto 0;
+  border-radius:14px;
+  background-color:#f4f7f6;
+  background-position:center;
+  background-repeat:no-repeat;
+  background-size:cover;
+}
+.legacy-board-detail>.article-lead{
+  margin:22px 0;
+  padding:16px;
+  border-radius:12px;
+  background:var(--surface-soft);
+  font-size:16px;
+  font-weight:650;
+  line-height:1.7;
+}
+.legacy-board-detail>.article-body{
+  min-height:260px;
+  max-width:none;
+  margin:0;
+  padding:0;
+  color:var(--text);
+  font-size:16px;
+  font-weight:400;
+  line-height:1.9;
+  letter-spacing:normal;
+  word-break:normal;
+  overflow-wrap:anywhere;
+}
+.legacy-board-detail>.article-body p{margin:0 0 1.15em}
+.legacy-board-detail>.article-actions{
+  max-width:none;
+  margin:24px 0 0;
+  padding:16px 0 0;
+}
+.comment-section .legacy-comment-list{margin-top:12px}
+
+@media(max-width:760px){
+  .article-detail.legacy-board-detail{padding:18px 16px}
+  .legacy-board-detail>h1{font-size:25px;line-height:1.4}
+  .legacy-board-detail>.article-cover{width:100%;margin-top:18px;border-radius:11px}
+  .legacy-board-detail>.article-body{font-size:16px;line-height:1.88}
+  .legacy-board-detail>.article-actions{padding-left:0;padding-right:0}
+}
