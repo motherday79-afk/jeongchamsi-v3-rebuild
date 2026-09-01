@@ -43,7 +43,7 @@ test('NOW category layout shows agreed pending state without imported rank value
   assert.doesNotMatch(html,/categoryRank|globalRank|score:/);
 });
 
-test('politician detail restores the complete public layout but connects only profile data',async()=>{
+test('Kim Min-seok pilot fills the complete public detail from approved source classes',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample})});
   const text=html.replaceAll('&amp;','&');
@@ -53,16 +53,31 @@ test('politician detail restores the complete public layout but connects only pr
   assert.match(html,/기본정보/);
   assert.match(html,/임기 · 선거정보/);
   assert.match(html,/김민석/);
-  assert.match(html,/데이터 준비 중/);
-  assert.doesNotMatch(html,/76\.9|99\/100|전면 급상승형|NOW 1위/);
+  assert.match(html,/당대표 전환·다채널 확산형/);
+  assert.match(html,/민생·실용·확장/);
+  assert.match(html,/49,651표/);
+  assert.match(html,/검색광고.*이번 산정에서 제외/);
+  assert.doesNotMatch(html,/데이터 준비 중|미연결|modeled.*fallback/i);
   assert.doesNotMatch(html,/JCS ADMIN PRIVATE POLITICAL INTELLIGENCE/);
 });
 
-test('admin politician detail restores private intelligence and history shells without values',async()=>{
+test('admin Kim Min-seok detail fills private intelligence while identifying evidence mode',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample})},{user:{role:'admin'}});
   const text=html.replaceAll('&amp;','&');
   for(const marker of ['JCS ADMIN PRIVATE POLITICAL INTELLIGENCE','EXECUTIVE INTELLIGENCE SUMMARY','AGE × GENDER MATRIX','CORE SUPPORT DYNAMICS','POLITICAL RESILIENCE','MEDIA PROPAGATION','ISSUE IMPACT MAP','RISK & OPPORTUNITY','ATTENTION → SUPPORT GAP','COMPETITOR FLOW','EVIDENCE BASE','JCS STRATEGIC SOLUTION','JCS STRATEGIC CONSULTING','HISTORY INTELLIGENCE'])assert.match(text,new RegExp(marker));
+  assert.match(html,/SINGLE-PERSON PILOT/);
+  assert.match(html,/DIRECT/);
+  assert.match(html,/CONTEXT/);
+  assert.match(html,/EXCLUDED/);
+  assert.match(html,/국민 여론조사 49\.30%/);
+  assert.doesNotMatch(html,/데이터 연결 전|데이터 준비 중|미연결|modeled.*fallback/i);
+});
+
+test('all non-pilot politicians keep the restored layout without invented analysis',async()=>{
+  const sample={...POLITICIAN_SEED.profiles.assembly[1],photo:POLITICIAN_SEED.photos['assembly-002']};
+  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample})},{user:{role:'admin'}});
+  assert.match(html,/데이터 준비 중/);
   assert.match(html,/데이터 연결 전/);
-  assert.doesNotMatch(html,/76\.9|99\/100|전면 급상승형|NOW 1위/);
+  assert.doesNotMatch(html,/당대표 전환·다채널 확산형|SINGLE-PERSON PILOT/);
 });

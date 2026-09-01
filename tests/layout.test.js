@@ -8,6 +8,7 @@ import { renderHomeLayout } from '../src/layout/home-layout.js';
 import { siteHeader, drawer } from '../src/layout/site-shell.js';
 import { SERVICE_CATALOG, launcherServices } from '../src/ui/service-icons.js';
 import { renderAcademy, renderBoard, renderBoardDetail, renderItsme } from '../src/views/stage1.js';
+import { POLITICIAN_SEED } from '../lib/politician-seed.generated.js';
 const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,'..');
 const read=p=>fs.readFileSync(path.join(root,p),'utf8');
@@ -74,7 +75,7 @@ test('authenticated session is reflected in header and home account panels',()=>
 test('app passes one resolved session through home, header and drawer',()=>{
   const app=read('src/app.js');
   assert.match(app,/siteHeader\(memberCount,session\)/);
-  assert.match(app,/academy,session/);
+  assert.match(app,/academy,[^}]*session/);
   assert.match(app,/shell\(body,session\)/);
 });
 
@@ -84,6 +85,19 @@ test('layout foundation has new UI behavior wiring rather than disabled controls
   assert.match(ui,/setupNowCarousel/);
   assert.match(ui,/setupLayoutNavigation/);
   assert.doesNotMatch(ui,/pointer-events\s*:\s*none|disabled\s*=\s*true/);
+  assert.doesNotMatch(ui,/setInterval|setTimeout|4000|auto(?:play|advance)/i);
+});
+
+test('home NOW rank renders 30 assembly members as three manual pages with photos',()=>{
+  const rank=POLITICIAN_SEED.profiles.assembly.slice(0,30).map((item,index)=>({...item,photo:POLITICIAN_SEED.photos[item.id],rank:index+1}));
+  const html=renderHomeLayout({...HOME_FIXTURE,itsmePosts:[],columns:[],community:[],polls:{items:[]},generation:{},nationalEvaluation:{},academy:{items:[]},rank,session:{authenticated:false}});
+  assert.equal((html.match(/data-now-rank-page=/g)||[]).length,3);
+  assert.equal((html.match(/class="rank-top-card/g)||[]).length,30);
+  assert.match(html,/aria-label="1위 김민석 상세"/);
+  assert.match(html,/data-now-rank-prev/);
+  assert.match(html,/data-now-rank-next/);
+  assert.match(html,/rank-top-avatar has-photo/);
+  assert.doesNotMatch(html,/자동|4초/);
 });
 
 test('home renders migrated Redis content instead of sample board rows',()=>{

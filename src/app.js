@@ -1,12 +1,12 @@
 import { HOME_FIXTURE } from './fixtures/home.js';
 import { siteHeader, drawer, footer } from './layout/site-shell.js';
-import { renderHomeLayout } from './layout/home-layout.js?v=0.0.9';
+import { renderHomeLayout } from './layout/home-layout.js?v=0.0.10';
 import { setupLayoutInteractions } from './ui/interactions.js';
 import { createAuthService } from './core/auth.js';
 import { createContentService } from './core/content.js';
 import { createPoliticianService } from './core/politicians.js';
 import * as views from './views/stage1.js';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.9';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.10';
 
 const app=document.getElementById('app');
 const auth=createAuthService();
@@ -27,7 +27,7 @@ async function render(){
   const r=route(),p=parts(r),session=await auth.session();
   let body='';
   if(!p.length){
-    const [memberCount,columns,community,itsmePosts,polls,generation,nationalEvaluation,academy]=await Promise.all([
+    const [memberCount,columns,community,itsmePosts,polls,generation,nationalEvaluation,academy,rankResult]=await Promise.all([
       auth.memberCount().catch(()=>0),
       content.list('columns').catch(()=>[]),
       content.list('community').catch(()=>[]),
@@ -35,9 +35,11 @@ async function render(){
       content.readDomain('polls').catch(()=>({items:[]})),
       content.readDomain('generation').catch(()=>({})),
       content.readDomain('nationalEvaluation').catch(()=>({})),
-      content.readDomain('academy').catch(()=>({items:[],slots:[]}))
+      content.readDomain('academy').catch(()=>({items:[],slots:[]})),
+      politicians.list('assembly',0,30).catch(()=>({ok:false,items:[]}))
     ]);
-    const home={...HOME_FIXTURE,memberCount,columns,community,itsmePosts,polls,generation,nationalEvaluation,academy,session};
+    const rank=rankResult?.ok?(Array.isArray(rankResult.items)?rankResult.items:[]).slice(0,30).map((item,index)=>({...item,rank:index+1,rankMode:'temporary-assembly-pilot'})):[];
+    const home={...HOME_FIXTURE,memberCount,columns,community,itsmePosts,polls,generation,nationalEvaluation,academy,rank,session};
     body=`<div class="product-home-wrap">${renderHomeLayout(home)}</div>`;
   } else if(p[0]==='about') body=views.renderAbout();
   else if(p[0]==='support') body=views.renderSupport();
