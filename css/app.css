@@ -136,6 +136,11 @@ img{display:block;max-width:100%}
 .column-card{border:1px solid #e6ece9;border-radius:12px;overflow:hidden}
 .column-thumb{aspect-ratio:16/9;background:#e0e9e6}
 .column-card-copy{padding:10px}
+.column-thumb{overflow:hidden}
+.column-thumb img{display:block;width:100%;height:100%;object-fit:cover}
+.column-card-copy{display:grid;gap:7px}
+.column-card-copy b{display:-webkit-box;overflow:hidden;font-size:14px;line-height:1.45;letter-spacing:-.35px;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+.column-card-copy small{color:#7b8782;font-size:11px;line-height:1.4}
 .skeleton.small-title{height:8px;width:83%;margin-bottom:7px}
 .skeleton.mini{height:7px;width:56%}
 
