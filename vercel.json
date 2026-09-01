@@ -1,4 +1,7 @@
 {
-  "rewrites":[{"source":"/(.*)","destination":"/index.html"}],
+  "rewrites":[
+    {"source":"/api/v3/:path*","destination":"/api/gateway?path=:path*"},
+    {"source":"/(.*)","destination":"/index.html"}
+  ],
   "headers":[{"source":"/(.*)","headers":[{"key":"Cache-Control","value":"no-store"}]}]
 }

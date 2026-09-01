@@ -1,11 +1,21 @@
-# 기존 회원 데이터 이식 규칙
+# MEMBER MIGRATION — JCS_0_0_2
 
-유지: 회원 ID, 닉네임, 이메일, 권한, 가입일, 프로필, 호환 가능한 passwordHash.
-제외: 세션 쿠키, 로그인 토큰, Redis 캐시, 임시 인증값.
+이식 대상:
+- id
+- name / nickname
+- email / phone
+- 지역 / 출생연도 / 선호정당
+- role (member / partner / admin)
+- status
+- createdAt / updatedAt
+- 기존 scrypt passwordHash
+- 회원별 활동 데이터
 
-입력 예시:
-[
-  {"userId":"legacy-user-1","displayName":"기존회원","email":"member@example.com","role":"member","createdAt":"2026-01-01T00:00:00.000Z","passwordHash":"..."}
-]
+제외:
+- 기존 로그인 쿠키
+- 기존 세션 토큰
+- NOW/분석 캐시
+- HISTORY
+- 기존 런타임 임시값
 
-실제 운영 회원 export를 확보한 뒤 `normalizeLegacyMembers()` -> `auth.importMembers()` 순서로 넣습니다.
+회원 ID를 변경하지 않으므로 게시물 ownerId, 댓글 ownerId, 투표/활동 연결이 유지됩니다.
