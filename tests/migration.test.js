@@ -9,7 +9,9 @@ import {
   legacyActivityKey,
   legacyContentKey,
 } from '../lib/migration-core.js';
-import { verifyPasswordHash } from '../lib/password.js';
+import { hashPassword, passwordHashKind, verifyPasswordHash } from '../lib/password.js';
+import { authenticateUser, readUsers } from '../lib/rebuild-store.js';
+import { TARGET_KEYS } from '../lib/migration-service.js';
 
 test('migration scope is limited to stable member/content domains',()=>{
   assert.deepEqual(LEGACY_DOMAINS,[
@@ -59,4 +61,33 @@ test('legacy scrypt password hashes remain login-compatible',()=>{
   const hash=crypto.scryptSync(password,salt,64).toString('hex');
   assert.equal(verifyPasswordHash(password,`scrypt$${salt}$${hash}`),true);
   assert.equal(verifyPasswordHash('wrong',`scrypt$${salt}$${hash}`),false);
+});
+
+test('legacy SHA-256 password hashes remain login-compatible',()=>{
+  const password='legacy-pass-9';
+  const hash=crypto.createHash('sha256').update(password,'utf8').digest('hex');
+  assert.equal(passwordHashKind(hash),'sha256');
+  assert.equal(verifyPasswordHash(password,hash),true);
+  assert.equal(verifyPasswordHash(password,`sha256$${hash}`),true);
+  assert.equal(verifyPasswordHash('wrong',hash),false);
+});
+
+test('legacy member aliases normalize and successful login upgrades only target hash',async()=>{
+  const password='legacy-pass-10';
+  const legacyHash=crypto.createHash('sha256').update(password,'utf8').digest('hex');
+  const map=new Map([[TARGET_KEYS.users,JSON.stringify([{userId:'legacy-admin',displayName:'관리자',email:'admin@example.com',role:'admin',passwordDigest:legacyHash}])]]);
+  const writes=[];
+  const command=async args=>{const op=String(args[0]).toUpperCase();if(op==='GET')return map.get(args[1])??null;if(op==='SET'){writes.push(args[1]);map.set(args[1],args[2]);return 'OK';}throw new Error('UNSUPPORTED');};
+  const users=await readUsers(command);
+  assert.equal(users['legacy-admin'].nickname,'관리자');
+  const user=await authenticateUser(command,'admin@example.com',password);
+  assert.equal(user.id,'legacy-admin');
+  assert.equal(user.role,'admin');
+  assert.equal('passwordHash' in user,false);
+  assert.deepEqual(writes,[TARGET_KEYS.users]);
+  const upgraded=JSON.parse(map.get(TARGET_KEYS.users));
+  assert.equal(passwordHashKind(upgraded['legacy-admin'].passwordHash),'scrypt');
+  assert.equal(verifyPasswordHash(password,upgraded['legacy-admin'].passwordHash),true);
+  assert.notEqual(upgraded['legacy-admin'].passwordHash,legacyHash);
+  assert.equal(hashPassword(password).startsWith('scrypt$'),true);
 });

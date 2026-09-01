@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { HOME_FIXTURE } from '../src/fixtures/home.js';
+import { renderHomeLayout } from '../src/layout/home-layout.js';
 const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,'..');
 const read=p=>fs.readFileSync(path.join(root,p),'utf8');
@@ -45,4 +47,24 @@ test('layout foundation has new UI behavior wiring rather than disabled controls
   assert.match(ui,/setupNowCarousel/);
   assert.match(ui,/setupLayoutNavigation/);
   assert.doesNotMatch(ui,/pointer-events\s*:\s*none|disabled\s*=\s*true/);
+});
+
+test('home renders migrated Redis content instead of sample board rows',()=>{
+  const html=renderHomeLayout({
+    ...HOME_FIXTURE,
+    itsmePosts:[{id:'its-7',title:'실제 정책 제안',published:true}],
+    columns:[{id:'col-4',title:'실제 칼럼 제목',author:'칼럼니스트',published:true}],
+    community:[{id:'com-11',title:'실제 정뮤니티 글',author:'회원',published:true,likes:3,views:9}],
+    polls:{items:[{id:'poll-1',question:'실제 설문 질문',published:true,options:[{id:'yes',label:'찬성',votes:2},{id:'no',label:'반대',votes:1}]}]},
+    generation:{candidates:['후보A'],results:{'20대':{'후보A':4}}},
+    nationalEvaluation:{},academy:{items:[]}
+  });
+  assert.match(html,/\/itsme\/its-7/);
+  assert.match(html,/실제 정책 제안/);
+  assert.match(html,/\/column\/col-4/);
+  assert.match(html,/실제 칼럼 제목/);
+  assert.match(html,/\/community\/com-11/);
+  assert.match(html,/실제 정뮤니티 글/);
+  assert.match(html,/실제 설문 질문/);
+  assert.doesNotMatch(html,/\/column\/sample-|\/community\/sample-|정뮤니티 게시물 제목 영역/);
 });

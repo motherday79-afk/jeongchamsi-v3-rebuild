@@ -25,7 +25,17 @@ async function render(){
   const r=route(),p=parts(r),session=await auth.session();
   let body='';
   if(!p.length){
-    const home={...HOME_FIXTURE,memberCount:await auth.memberCount().catch(()=>0)};
+    const [memberCount,columns,community,itsmePosts,polls,generation,nationalEvaluation,academy]=await Promise.all([
+      auth.memberCount().catch(()=>0),
+      content.list('columns').catch(()=>[]),
+      content.list('community').catch(()=>[]),
+      content.list('itsme').catch(()=>[]),
+      content.readDomain('polls').catch(()=>({items:[]})),
+      content.readDomain('generation').catch(()=>({})),
+      content.readDomain('nationalEvaluation').catch(()=>({})),
+      content.readDomain('academy').catch(()=>({items:[],slots:[]}))
+    ]);
+    const home={...HOME_FIXTURE,memberCount,columns,community,itsmePosts,polls,generation,nationalEvaluation,academy};
     body=`<div class="product-home-wrap">${renderHomeLayout(home)}</div>`;
   } else if(p[0]==='about') body=views.renderAbout();
   else if(p[0]==='support') body=views.renderSupport();

@@ -1,4 +1,4 @@
-# MEMBER MIGRATION — JCS_0_0_2
+# MEMBER MIGRATION — JCS_0_0_3
 
 이식 대상:
 - id
@@ -8,7 +8,7 @@
 - role (member / partner / admin)
 - status
 - createdAt / updatedAt
-- 기존 scrypt passwordHash
+- 기존 scrypt 또는 SHA-256 passwordHash (로그인 성공 시 새 DB에서 scrypt로 자동 승격)
 - 회원별 활동 데이터
 
 제외:
