@@ -1,41 +1,147 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#f7fbfa" />
-  <title>정참시 · Clean Foundation</title>
-  <link rel="stylesheet" href="./styles.css" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>정참시 — 정치에 참여할 시간</title>
+<style>
+:root{
+  --ink:#18242a;--muted:#6b7b82;--line:#dfe7e5;--mint:#73e6d3;--mint2:#eafbf7;
+  --navy:#18242a;--soft:#f5f8f7;--card:#fff;--yellow:#ffe96f;
+}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,"Noto Sans KR",sans-serif;background:#fff;color:var(--ink)}
+button{font:inherit}.wrap{width:min(1180px,calc(100% - 32px));margin:auto}
+.top{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+.topin{height:74px;display:flex;align-items:center;gap:28px}
+.brand{font-weight:900;letter-spacing:-.3px;font-size:20px;white-space:nowrap}.brand small{display:block;font-size:10px;color:#8a989d;font-weight:600;margin-top:3px}
+.nav{display:flex;gap:22px;align-items:center;font-size:14px;font-weight:800;flex:1;justify-content:center}
+.nav span{cursor:default}.auth{display:flex;gap:8px}.pill{border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 14px;font-weight:800}
+.hero{margin:22px auto 14px;background:var(--navy);color:#fff;border-radius:22px;overflow:hidden;display:grid;grid-template-columns:1.35fr .65fr;min-height:330px}
+.hero-copy{padding:40px 44px}.kicker{font-size:12px;letter-spacing:1.8px;color:var(--mint);font-weight:900}
+.hero h1{font-size:42px;line-height:1.12;letter-spacing:-2.2px;margin:14px 0 14px}.hero h1 strong{color:var(--yellow)}
+.hero p{color:#d3dedb;line-height:1.7;margin:0 0 22px}.hero-actions{display:flex;gap:10px}.hero .primary{background:var(--mint);border:0;border-radius:11px;padding:12px 16px;font-weight:900}.hero .secondary{background:transparent;color:#fff;border:1px solid #52636b;border-radius:11px;padding:12px 16px;font-weight:800}
+.hero-side{padding:22px;display:grid;gap:12px;background:linear-gradient(180deg,#203039,#16242a)}
+.hubcard{border:1px solid #40545a;border-radius:16px;padding:18px;background:#20343a}.hubcard small{color:var(--mint);font-weight:900;letter-spacing:.8px}.hubcard b{display:block;font-size:18px;margin:7px 0}.hubcard p{font-size:12px;color:#b9c7c3;margin:0}
+.launcher{margin:14px auto 22px}.launch-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:10px}.launch-head h2{font-size:19px;margin:4px 0}.launch-head small{color:#13a48b;font-weight:900;letter-spacing:1px}
+.launch-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}.launch{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 12px;text-align:left;font-weight:900;min-height:72px}.launch i{display:block;font-style:normal;font-size:18px;margin-bottom:8px;color:#17a78d}
+.section{margin:28px auto}.head{display:flex;justify-content:space-between;align-items:end;margin-bottom:12px}.head h2{margin:4px 0;font-size:24px;letter-spacing:-1px}.head small{color:#0d9a83;font-weight:900;letter-spacing:1px}.more{font-size:12px;color:#6f7f84;font-weight:800}
+.nowtop{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.pcard{border:1px solid var(--line);border-radius:16px;background:#fff;padding:10px;position:relative}.photo{height:145px;border-radius:12px;background:linear-gradient(135deg,#e7f3f0,#d6e6e2);display:grid;place-items:center;color:#7c918c;font-size:12px;font-weight:900}.rank{position:absolute;left:16px;top:16px;width:28px;height:28px;border-radius:9px;background:#173f3a;color:#fff;display:grid;place-items:center;font-weight:900}.pcard h3{margin:11px 2px 4px;font-size:17px}.meta{font-size:11px;color:#74858b}.score{display:flex;justify-content:space-between;align-items:end;margin-top:11px}.score b{font-size:24px}.up{font-size:11px;color:#0b9f82;font-weight:900}
+.nowlist{margin-top:10px;border:1px solid var(--line);border-radius:15px;overflow:hidden;background:#fff;display:grid;grid-template-columns:1fr 1fr}.nrow{padding:11px 14px;border-bottom:1px solid #edf1f0;display:grid;grid-template-columns:32px 1fr auto;gap:8px;align-items:center;font-size:13px}.nrow:nth-child(odd){border-right:1px solid #edf1f0}.nrow b{font-size:13px}.nrow em{font-style:normal;color:#0b9f82;font-size:11px;font-weight:900}
+.main2{display:grid;grid-template-columns:2fr .9fr;gap:14px}.box{border:1px solid var(--line);border-radius:17px;background:#fff;padding:18px}.itsgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.its{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fbfdfc}.its small{color:#0b9f82;font-weight:900}.its b{display:block;margin-top:7px;font-size:14px}.side-stack{display:grid;gap:10px}.mini{border-radius:14px;padding:16px;background:#18242a;color:#fff}.mini.light{background:#effaf7;color:#18242a;border:1px solid #d6ece6}.mini small{color:#70e1ce;font-weight:900}.mini.light small{color:#0b9f82}.mini b{display:block;font-size:17px;margin:6px 0}
+.community{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}.rows{padding:0}.crow{display:grid;grid-template-columns:35px 1fr auto;gap:8px;padding:13px 16px;border-bottom:1px solid #edf1f0;align-items:center}.crow:last-child{border-bottom:0}.crow span:first-child{font-weight:900;color:#109b84}.crow b{font-size:14px}.crow small{display:block;color:#849298;margin-top:3px}.crow em{font-style:normal;font-size:11px;color:#7c8b90}
+.poll{display:grid;grid-template-columns:1fr 1fr;gap:12px}.poll .box h3{margin-top:5px}.bar{height:10px;border-radius:99px;background:#edf2f1;overflow:hidden;margin-top:12px}.bar span{display:block;height:100%;background:#79dfcd}
+.footer{margin-top:36px;border-top:1px solid var(--line);padding:22px 0 38px;color:#75858a;font-size:12px}
+.note{background:#fff8d8;border:1px solid #f1dda0;padding:9px 12px;border-radius:10px;font-size:11px;margin:14px auto;color:#725d18}
+@media(max-width:900px){
+ .topin{height:auto;padding:12px 0;flex-wrap:wrap}.nav{order:3;width:100%;overflow:auto;justify-content:flex-start;padding-bottom:4px}.auth{margin-left:auto}
+ .hero{grid-template-columns:1fr}.hero-copy{padding:28px}.hero h1{font-size:34px}.launch-grid{grid-template-columns:repeat(3,1fr)}
+ .nowtop{grid-template-columns:repeat(2,1fr)}.nowtop .pcard:last-child{display:none}.nowlist{grid-template-columns:1fr}.nrow:nth-child(odd){border-right:0}
+ .main2,.community,.poll{grid-template-columns:1fr}.itsgrid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:560px){
+ .wrap{width:min(100% - 20px,1180px)}.brand{font-size:17px}.nav{gap:16px}.hero-copy{padding:22px}.hero h1{font-size:29px}
+ .launch-grid{grid-template-columns:repeat(2,1fr)}.nowtop{grid-template-columns:1fr 1fr;gap:8px}.photo{height:120px}.itsgrid{grid-template-columns:1fr}
+}
+</style>
 </head>
 <body>
-  <div class="app-shell">
-    <header class="site-header">
-      <div class="header-inner">
-        <a class="brand" href="#/home" aria-label="정참시 홈">
-          <span class="brand-mark">J</span>
-          <span class="brand-copy"><strong>JEONGCHAMSI</strong><small>정치에 참여할 시간</small></span>
-        </a>
-        <nav class="primary-nav" aria-label="주 메뉴">
-          <a href="#/home">NOW RANK</a>
-          <a href="#/politician">정치인</a>
-          <a href="#/compare">비교하기</a>
-          <a href="#/home">ITS ME</a>
-          <a href="#/home">시티즌초이스</a>
-          <a href="#/home">전국평가제</a>
-          <a href="#/admin">ADMIN</a>
-        </nav>
-        <div class="header-actions"><button class="icon-btn" aria-label="검색">⌕</button><button class="login-btn">로그인</button></div>
-      </div>
-      <div class="mobile-nav">
-        <a href="#/home">HOME</a><a href="#/politician">정치인</a><a href="#/compare">비교</a><a href="#/admin">ADMIN</a>
-      </div>
-    </header>
-    <main id="app" class="page-root"></main>
-    <footer class="site-footer">
-      <div><strong>JEONGCHAMSI</strong><span>JCS V3 CLEAN FOUNDATION · LAYOUT PHASE</span></div>
-      <small>이 화면의 수치는 레이아웃 검증용 샘플이며 실제 데이터가 아닙니다.</small>
-    </footer>
+<header class="top"><div class="wrap topin">
+  <div class="brand">JEONGCHAMSI<small>정치에 참여할 시간</small></div>
+  <nav class="nav"><span>NOW RANK</span><span>정치인</span><span>잇츠미</span><span>시티즌초이스</span><span>전국평가제</span><span>세대뽑</span><span>비교하기</span><span>커뮤니티</span></nav>
+  <div class="auth"><button class="pill">검색</button><button class="pill">로그인</button></div>
+</div></header>
+
+<div class="wrap note">LAYOUT FOUNDATION · 기존 정참시 레이아웃 구조 재현용 샘플 데이터</div>
+
+<main>
+<section class="wrap hero">
+ <div class="hero-copy">
+  <div class="kicker">JEONGCHAMSI · POLITICAL PARTICIPATION</div>
+  <h1>정치를 보는 것에서<br><strong>움직이는 것</strong>으로!</h1>
+  <p>인물·이슈·여론·제안을 한곳에서 보고, 비교하고, 직접 참여하세요.</p>
+  <div class="hero-actions"><button class="primary">정참시 응원하기 →</button><button class="secondary">정참시 후원하기 ♡</button></div>
+ </div>
+ <div class="hero-side">
+  <div class="hubcard"><small>POLITICIAN REQUEST</small><b>찾는 정치인이 없나요?</b><p>이름만 남겨주세요. 정보를 확인해 등록합니다.</p></div>
+  <div class="hubcard"><small>JEONGCHAMSI PARTNERS</small><b>정참시와 함께 콘텐츠를 만들어주세요</b><p>PARTNER는 COLUMN·NEWS를 직접 작성할 수 있습니다.</p></div>
+ </div>
+</section>
+
+<section class="wrap launcher">
+ <div class="launch-head"><div><small>EXPLORE JEONGCHAMSI</small><h2>정참시는 여러분의 참여로 만들어갑니다</h2></div><div class="more">전체 서비스 ＋</div></div>
+ <div class="launch-grid">
+  <div class="launch"><i>◎</i>NOW RANK</div><div class="launch"><i>◆</i>잇츠미</div><div class="launch"><i>▦</i>시티즌초이스</div>
+  <div class="launch"><i>★</i>전국평가제</div><div class="launch"><i>◫</i>세대뽑</div><div class="launch"><i>↔</i>비교하기</div>
+ </div>
+</section>
+
+<section class="wrap section">
+ <div class="head"><div><small>NOW RANK · LIVE PULSE</small><h2>지금 가장 주목받는 정치인</h2></div><div class="more">NOW RANK 전체보기 →</div></div>
+ <div class="nowtop">
+  <article class="pcard"><div class="rank">1</div><div class="photo">PHOTO</div><h3>김민석</h3><div class="meta">더불어민주당 · 서울</div><div class="score"><b>84</b><span class="up">▲ 4</span></div></article>
+  <article class="pcard"><div class="rank">2</div><div class="photo">PHOTO</div><h3>정청래</h3><div class="meta">더불어민주당 · 서울</div><div class="score"><b>81</b><span class="up">▲ 2</span></div></article>
+  <article class="pcard"><div class="rank">3</div><div class="photo">PHOTO</div><h3>오세훈</h3><div class="meta">서울특별시장</div><div class="score"><b>77</b><span class="up">▲ 5</span></div></article>
+  <article class="pcard"><div class="rank">4</div><div class="photo">PHOTO</div><h3>한동훈</h3><div class="meta">국민의힘</div><div class="score"><b>74</b><span class="up">▲ 1</span></div></article>
+  <article class="pcard"><div class="rank">5</div><div class="photo">PHOTO</div><h3>박주민</h3><div class="meta">더불어민주당 · 서울</div><div class="score"><b>71</b><span class="up">▲ 3</span></div></article>
+ </div>
+ <div class="nowlist">
+  <div class="nrow"><span>06</span><b>김동연 · 경기</b><em>▲ 5</em></div><div class="nrow"><span>07</span><b>나경원 · 서울</b><em>▲ 2</em></div>
+  <div class="nrow"><span>08</span><b>안철수 · 경기</b><em>▼ 2</em></div><div class="nrow"><span>09</span><b>조국</b><em>▲ 7</em></div>
+  <div class="nrow"><span>10</span><b>김문수</b><em>▲ 1</em></div><div class="nrow"><span>11</span><b>이준석 · 경기</b><em>▲ 4</em></div>
+  <div class="nrow"><span>12</span><b>우원식 · 서울</b><em>▲ 1</em></div><div class="nrow"><span>13</span><b>박찬대 · 인천</b><em>▲ 2</em></div>
+  <div class="nrow"><span>14</span><b>김두관</b><em>▲ 3</em></div><div class="nrow"><span>15</span><b>유승민</b><em>▲ 1</em></div>
+ </div>
+</section>
+
+<section class="wrap section main2">
+ <div>
+  <div class="head"><div><small>ITS ME</small><h2>정치인이 직접 말하는 정책과 이야기</h2></div><div class="more">잇츠미 전체보기 →</div></div>
+  <div class="itsgrid">
+   <div class="its"><small>01</small><b>청년 주거 정책에 대한 제안</b></div><div class="its"><small>02</small><b>지역 교통 개선 계획</b></div><div class="its"><small>03</small><b>소상공인 지원 정책</b></div>
+   <div class="its"><small>04</small><b>교육 격차 해소 방안</b></div><div class="its"><small>05</small><b>도시 재생과 생활 SOC</b></div><div class="its"><small>06</small><b>정치인이 답합니다</b></div>
   </div>
-  <script src="./app.js"></script>
+ </div>
+ <aside class="side-stack">
+  <div class="mini"><small>LIVE PULSE</small><b>실시간 키워드</b><div>민생 · 주거 · 전당대회 · 교통</div></div>
+  <div class="mini light"><small>MY PARTICIPATION</small><b>정참시에 참여하세요</b><div>투표 · 평가 · 비교 · 의견</div></div>
+  <div class="mini light"><small>BADGE</small><b>나의 참여 배지</b><div>로그인 후 확인할 수 있습니다</div></div>
+ </aside>
+</section>
+
+<section class="wrap section poll">
+ <div class="box">
+  <small class="kicker" style="color:#0b9f82">CITIZEN CHOICE</small><h3>이번 주, 가장 중요하다고 생각하는 정치 이슈는?</h3>
+  <div class="bar"><span style="width:68%"></span></div><p class="meta">참여형 설문 영역 · 실제 기능은 다음 단계에서 연결</p>
+ </div>
+ <div class="box">
+  <small class="kicker" style="color:#0b9f82">COMPARE</small><h3>정치인을 나란히 놓고 비교하세요</h3>
+  <p class="meta">NOW · 뉴스 · 검색 · 세대 · 성별 · 상세 인텔리전스 비교 영역</p><button class="pill">비교하기 →</button>
+ </div>
+</section>
+
+<section class="wrap section community">
+ <div>
+  <div class="head"><div><small>COMMUNITY</small><h2>정참시 커뮤니티</h2></div><div class="more">전체보기 →</div></div>
+  <div class="box rows">
+   <div class="crow"><span>01</span><div><b>오늘 가장 많이 이야기되는 정치 이슈</b><small>정치 · 12분 전</small></div><em>조회 420</em></div>
+   <div class="crow"><span>02</span><div><b>이번 주 정치인 관심 변화</b><small>NOW · 28분 전</small></div><em>조회 311</em></div>
+   <div class="crow"><span>03</span><div><b>지역에서 빠르게 확산되는 의제</b><small>지역 · 45분 전</small></div><em>조회 275</em></div>
+   <div class="crow"><span>04</span><div><b>세대별 선택이 갈린 질문</b><small>세대 · 1시간 전</small></div><em>조회 231</em></div>
+   <div class="crow"><span>05</span><div><b>정참시 칼럼 업데이트</b><small>칼럼 · 2시간 전</small></div><em>조회 190</em></div>
+  </div>
+ </div>
+ <div>
+  <div class="head"><div><small>COLUMN & NEWS</small><h2>주목할 콘텐츠</h2></div></div>
+  <div class="box"><div class="photo" style="height:150px">COLUMN IMAGE</div><h3>데이터 뒤의 이유를 읽는 정참시 칼럼</h3><p class="meta">칼럼 4개와 뉴스 흐름이 들어갈 자리입니다.</p></div>
+ </div>
+</section>
+
+<section class="wrap section poll">
+ <div class="box"><small class="kicker" style="color:#0b9f82">GENERATION PICK</small><h3>세대별 대통령</h3><p class="meta">연령대별 정치 선택 흐름을 보여주는 영역</p></div>
+ <div class="box"><small class="kicker" style="color:#0b9f82">NATIONAL EVALUATION</small><h3>전국평가제</h3><p class="meta">국회의원 / 광역·기초단체장 평가 영역</p></div>
+</section>
+</main>
+
+<footer class="footer"><div class="wrap"><b>JEONGCHAMSI</b> · JCS V3 CLEAN FOUNDATION · EXISTING LAYOUT BASE</div></footer>
 </body>
 </html>

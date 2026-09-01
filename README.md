@@ -1,11 +1,8 @@
-# JCS V3 Clean Layout Foundation
+# JCS V3 REBUILD — EXISTING LAYOUT BASE
 
-Phase 1 only: layout foundation. No production API, Redis, refresh engine or storage integration.
+목표: 기존 정참시의 메인 정보구조와 레이아웃을 새 프로젝트에서 그대로 유지하기 위한 1단계 정적 FOUNDATION.
 
-Open `index.html` or serve the directory with any static server. Routes use hashes:
-- `#/home`
-- `#/politician`
-- `#/compare`
-- `#/admin`
-
-All visible metrics are clearly marked sample data for UI validation.
+- 기존 정참시 흐름 유지
+- 기능/API/Redis 미연결
+- 표시 데이터는 레이아웃 검수용 샘플
+- Vercel: Framework Preset = Other, Build Command / Output Directory 비움
