@@ -14,10 +14,9 @@ const route=()=>decodeURIComponent((location.hash||'#/').replace(/^#/,'')||'/');
 const parts=r=>r.split('?')[0].split('/').filter(Boolean);
 const unstable=new Set(['now','compare','person','search','keywords','trending','president','news']);
 
-async function shell(body){
-  const session=await auth.session();
+async function shell(body,session){
   const memberCount=await auth.memberCount().catch(()=>0);
-  app.innerHTML=`<div class="site-shell">${siteHeader(memberCount)}<div class="page-wrap">${body}</div>${footer()}${drawer(session)}</div>`;
+  app.innerHTML=`<div class="site-shell">${siteHeader(memberCount,session)}<div class="page-wrap">${body}</div>${footer()}${drawer(session)}</div>`;
   setupLayoutInteractions(document);
 }
 
@@ -35,7 +34,7 @@ async function render(){
       content.readDomain('nationalEvaluation').catch(()=>({})),
       content.readDomain('academy').catch(()=>({items:[],slots:[]}))
     ]);
-    const home={...HOME_FIXTURE,memberCount,columns,community,itsmePosts,polls,generation,nationalEvaluation,academy};
+    const home={...HOME_FIXTURE,memberCount,columns,community,itsmePosts,polls,generation,nationalEvaluation,academy,session};
     body=`<div class="product-home-wrap">${renderHomeLayout(home)}</div>`;
   } else if(p[0]==='about') body=views.renderAbout();
   else if(p[0]==='support') body=views.renderSupport();
@@ -56,7 +55,7 @@ async function render(){
   else if(p[0]==='migration') body=views.renderMigration();
   else if(unstable.has(p[0])) body=`<section class="module"><span class="eyebrow">NEXT PHASE</span><h2>${p[0]}</h2><p class="module-desc">이 영역은 이번 버전에서 제외했습니다. NOW·정치인 데이터·분석 엔진은 연결하지 않습니다.</p></section>`;
   else body=`<section class="module"><h2>페이지를 찾을 수 없습니다</h2></section>`;
-  await shell(body);
+  await shell(body,session);
   window.scrollTo(0,0);
 }
 

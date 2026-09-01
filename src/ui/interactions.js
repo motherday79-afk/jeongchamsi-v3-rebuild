@@ -2,10 +2,12 @@ export function setupDrawer(root=document){
   const drawer=root.querySelector('[data-drawer]');
   const backdrop=root.querySelector('.drawer-backdrop');
   if(!drawer||!backdrop)return;
-  const open=()=>{drawer.hidden=false;backdrop.hidden=false;drawer.setAttribute('aria-hidden','false');};
-  const close=()=>{drawer.hidden=true;backdrop.hidden=true;drawer.setAttribute('aria-hidden','true');};
-  root.querySelectorAll('[data-drawer-open]').forEach(el=>el.addEventListener('click',open));
+  const openButtons=[...root.querySelectorAll('[data-drawer-open]')];
+  const open=()=>{drawer.hidden=false;backdrop.hidden=false;drawer.classList.add('is-open');backdrop.classList.add('is-open');drawer.setAttribute('aria-hidden','false');openButtons.forEach(el=>el.setAttribute('aria-expanded','true'));document.body.classList.add('drawer-open');};
+  const close=()=>{drawer.classList.remove('is-open');backdrop.classList.remove('is-open');drawer.hidden=true;backdrop.hidden=true;drawer.setAttribute('aria-hidden','true');openButtons.forEach(el=>el.setAttribute('aria-expanded','false'));document.body.classList.remove('drawer-open');};
+  openButtons.forEach(el=>el.addEventListener('click',open));
   root.querySelectorAll('[data-drawer-close]').forEach(el=>el.addEventListener('click',close));
+  root.addEventListener('keydown',event=>{if(event.key==='Escape'&&!drawer.hidden)close();});
 }
 export function setupNowCarousel(root=document){
   const box=root.querySelector('[data-now-rank-carousel]');if(!box)return;

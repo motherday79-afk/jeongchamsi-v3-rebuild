@@ -5,10 +5,13 @@ export const SERVICE_CATALOG = Object.freeze([
   { key:"compare", tone:"orange", label:"정치인 비교분석", shortLabel:"비교분석", description:"두 사람을 같은 기준으로 비교", href:"/compare", launcher:true },
   { key:"generation", tone:"navy", label:"세대의 선택, 대통령", shortLabel:"세대별 대통령", description:"세대별 모의투표 결과", href:"/generation-president", launcher:true },
   { key:"community", tone:"green", label:"정뮤니티", shortLabel:"정뮤니티", description:"지금 시민들이 하는 말", href:"/community", launcher:true },
+  { key:"president", tone:"gold", label:"대통령", shortLabel:"대통령", description:"대통령 정보와 기록", href:"/president", launcher:false },
   { key:"news", tone:"red", label:"정참시 NEWS", shortLabel:"NEWS", description:"정치 뉴스 모아보기", href:"/news", launcher:false },
   { key:"evaluation", tone:"teal", label:"정참시민 전국 평가제", shortLabel:"전국 평가제", description:"정참시민 정치인 평가", href:"/national-evaluation", launcher:false },
   { key:"academy", tone:"orange", label:"정참시 아카데미", shortLabel:"아카데미", description:"정치 교육 일정과 수강신청", href:"/academy", launcher:false },
-  { key:"column", tone:"navy", label:"COLUMN", shortLabel:"COLUMN", description:"오늘 정치에서 읽어야 할 것", href:"/column", launcher:false }
+  { key:"column", tone:"navy", label:"COLUMN", shortLabel:"COLUMN", description:"오늘 정치에서 읽어야 할 것", href:"/column", launcher:false },
+  { key:"keywords", tone:"green", label:"실시간 정치키워드", shortLabel:"정치키워드", description:"지금 많이 언급되는 정치어", href:"/keywords", launcher:false },
+  { key:"trending", tone:"blue", label:"실시간 급상승 정치인", shortLabel:"급상승 정치인", description:"주목도가 빠르게 오른 정치인", href:"/trending", launcher:false }
 ]);
 const ICON_PATHS=Object.freeze({
  now:`<path d="M4 17 9 12l3 3 8-9"/><path d="M15 6h5v5"/>`,
@@ -19,8 +22,11 @@ const ICON_PATHS=Object.freeze({
  community:`<path d="M4 6h11v8H8l-4 3V6Z"/><path d="M14 9h6v8h-3l-3 2v-10Z"/>`,
  compare:`<path d="M12 4v16"/><path d="M5 7h5M14 7h5"/><path d="m5 7-2 5h6L7 7"/><path d="m17 7-2 5h6l-2-5"/><path d="M7 17h10"/>`,
  generation:`<circle cx="8" cy="8" r="2.5"/><circle cx="16.5" cy="9" r="2"/><path d="M3.5 18c.6-3.3 2.1-5 4.5-5s3.9 1.7 4.5 5"/><path d="M13.5 18c.4-2.5 1.4-3.8 3-3.8 1.7 0 2.8 1.3 3.2 3.8"/>`,
+ president:`<path d="M4 10h16M6 10v8M10 10v8M14 10v8M18 10v8M4 19h16"/><path d="m12 4 7 4H5z"/>`,
  evaluation:`<path d="M5 4h14v16H5z"/><path d="m8 12 2.3 2.3L16 8"/><path d="M8 7h3"/>`,
  academy:`<path d="m3 8 9-4 9 4-9 4z"/><path d="M7 10v5c2.8 2 7.2 2 10 0v-5"/><path d="M21 8v6"/>`,
+ keywords:`<path d="M5 7h14M5 12h14M5 17h9"/><circle cx="18" cy="17" r="1.5"/>`,
+ trending:`<path d="m4 17 5-5 3 3 8-9"/><path d="M15 6h5v5"/>`,
  recent:`<path d="M12 8v5l3 2"/><circle cx="12" cy="12" r="9"/>`,
  badge:`<path d="M12 3 8 5v5c0 3 1.6 5.3 4 7 2.4-1.7 4-4 4-7V5z"/><path d="m9 18-1 3 4-2 4 2-1-3"/>`,
  guide:`<circle cx="12" cy="12" r="9"/><path d="M12 10v6M12 7h.01"/>`

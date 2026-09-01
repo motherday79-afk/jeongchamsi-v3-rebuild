@@ -5,6 +5,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { HOME_FIXTURE } from '../src/fixtures/home.js';
 import { renderHomeLayout } from '../src/layout/home-layout.js';
+import { siteHeader, drawer } from '../src/layout/site-shell.js';
+import { SERVICE_CATALOG, launcherServices } from '../src/ui/service-icons.js';
 import { renderBoard, renderBoardDetail } from '../src/views/stage1.js';
 const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,'..');
@@ -37,9 +39,43 @@ test('home preserves current production section order',()=>{
 
 test('existing vector icon path definitions are present locally',()=>{
   const icons=read('src/ui/service-icons.js');
-  for(const key of ['now','poll','itsme','compare','generation','community']) assert.match(icons,new RegExp(`${key}:`));
+  for(const key of ['now','poll','itsme','compare','generation','community','president','keywords','trending']) assert.match(icons,new RegExp(`${key}:`));
   assert.match(icons,/M4 17 9 12l3 3 8-9/);
   assert.match(icons,/viewBox="0 0 24 24"/);
+});
+
+test('home launcher keeps the legacy six services and full drawer restores all services',()=>{
+  assert.deepEqual(launcherServices().map(item=>item.href),[
+    '/now','/poll','/itsme','/compare','/generation-president','/community'
+  ]);
+  assert.equal(SERVICE_CATALOG.length,13);
+  assert.deepEqual(SERVICE_CATALOG.map(item=>item.href),[
+    '/now','/poll','/itsme','/compare','/generation-president','/community','/president',
+    '/news','/national-evaluation','/academy','/column','/keywords','/trending'
+  ]);
+  const html=drawer({authenticated:false,user:null});
+  assert.match(html,/data-layout-route="\/president"/);
+  assert.match(html,/>대통령<\/b><small>대통령 정보와 기록/);
+  assert.match(html,/data-layout-route="\/mypage\/activity"/);
+  assert.match(html,/data-layout-route="\/mypage\/recent"/);
+});
+
+test('authenticated session is reflected in header and home account panels',()=>{
+  const session={authenticated:true,user:{nickname:'정참시민',role:'member'}};
+  const header=siteHeader(27,session);
+  const home=renderHomeLayout({...HOME_FIXTURE,itsmePosts:[],columns:[],community:[],polls:{items:[]},generation:{},nationalEvaluation:{},academy:{items:[]},session});
+  assert.match(header,/정참시민님/);
+  assert.match(header,/data-layout-route="\/mypage\/activity"/);
+  assert.match(home,/정참시민님/);
+  assert.match(home,/로그인 상태 유지 중/);
+  assert.doesNotMatch(home,/정참시에 로그인하세요/);
+});
+
+test('app passes one resolved session through home, header and drawer',()=>{
+  const app=read('src/app.js');
+  assert.match(app,/siteHeader\(memberCount,session\)/);
+  assert.match(app,/academy,session/);
+  assert.match(app,/shell\(body,session\)/);
 });
 
 test('layout foundation has new UI behavior wiring rather than disabled controls',()=>{

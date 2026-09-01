@@ -3075,3 +3075,40 @@ html.jcv3-touch-ui .jcv3-view-mode-switch{display:flex}
   .article-actions{padding-left:19px;padding-right:19px}
   .article-comments{padding-left:19px;padding-right:19px}
 }
+
+/* JCS_0_0_5 session-aware navigation and restored legacy service drawer */
+.product-account-tools .product-user-chip,
+.product-account-tools .product-login-chip{
+  width:auto;
+  min-width:68px;
+  padding:0 13px;
+  border:1px solid #dce6e2;
+  background:#f5faf8;
+  color:#087f74;
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+}
+.product-account-tools .product-user-chip{max-width:132px}
+.product-account-tools .product-user-chip span{overflow:hidden;text-overflow:ellipsis}
+.product-account-tools .product-login-chip{background:#087f74;color:#fff;border-color:#087f74}
+.product-account-tools .product-login-chip:hover{background:#076f66;color:#fff}
+.drawer-personal{padding:10px}
+.drawer-personal .drawer-mini-links>a:hover{background:#edf6f2;color:#087f74}
+.side-login-status{
+  display:inline-flex;
+  width:max-content;
+  margin-bottom:8px;
+  padding:4px 7px;
+  border-radius:999px;
+  background:#e8f6f1;
+  color:#087f74;
+  font-size:8px;
+  font-weight:950;
+  letter-spacing:.12em;
+}
+.side-login-authenticated{background:#fff;border-color:#d6e9e2}
+.side-login-authenticated p{color:#64736e}
+.mobile-login-authenticated{border-color:#cfe5dd;background:#f8fcfa}
+.mobile-login-authenticated b{color:#087f74}
+.mobile-login-authenticated button{min-width:86px}
