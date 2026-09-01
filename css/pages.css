@@ -53,9 +53,12 @@
 .directory-jump{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
 .person-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:16px}
 .person-slot-card{position:relative;min-height:178px;padding:14px;border:1px solid #e4ebe8;border-radius:13px;background:#fff;content-visibility:auto;contain-intrinsic-size:178px;transition:border-color .15s ease,transform .15s ease}
+.person-slot-card[type="button"]{display:block;width:100%;color:inherit;font:inherit;text-align:left;cursor:pointer}
 .person-slot-card:hover{border-color:#bcd9d1;transform:translateY(-1px)}
 .slot-no{position:absolute;right:11px;top:10px;color:#8a9692;font-size:11px;font-weight:900}
 .person-photo-placeholder{width:72px;height:72px;border-radius:50%;background:linear-gradient(145deg,#e6eeeb,#dce8e4);margin-bottom:11px}
+.person-photo-placeholder.has-photo{overflow:hidden}
+.person-photo-placeholder.has-photo img,.person-detail-photo.has-photo img{display:block;width:100%;height:100%;object-fit:cover;object-position:var(--photo-position,50% 28%)}
 .slot-lines{display:grid;gap:7px}
 .slot-line{display:block;height:10px;border-radius:999px;background:#e8eeec}
 .slot-line.name{width:72%;height:13px}
@@ -97,6 +100,8 @@
 .related-grid b{display:block;font-size:14px}
 .related-grid span{display:block;margin-top:6px;color:var(--text-3);font-size:12px}
 .detail-action-bar{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.politician-directory-pager{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:24px;padding-top:18px;border-top:1px solid #edf1ef}.politician-directory-pager>span{min-width:110px;color:#66756f;font-size:12px;font-weight:850;text-align:center}.person-slot-card.is-vacant{border-style:dashed;background:#f8faf9}.person-slot-card.is-vacant .now-category-card-meta b{color:#7b8984}.politician-migration-form{margin-top:18px;padding-top:18px;border-top:1px solid #e3ebe8}
+.now-rank-pending{display:grid;min-height:150px;place-content:center;gap:7px;text-align:center}.now-rank-pending b{color:#243730;font-size:17px}.now-rank-pending span{color:#7a8983;font-size:12px}
 
 /* ---------- boards ---------- */
 .board-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}

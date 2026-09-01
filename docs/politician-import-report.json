@@ -1,0 +1,55 @@
+{
+  "version": "JCS_POLITICIANS_V1",
+  "generatedAt": "2026-09-01T16:43:45.727Z",
+  "sourceOrigin": "https://jeongchamsi-v3-preview-clean.vercel.app",
+  "readOnly": true,
+  "counts": {
+    "assembly": 300,
+    "assemblyPeople": 299,
+    "assemblyVacancies": 1,
+    "metropolitan": 16,
+    "basic": 227,
+    "total": 543,
+    "people": 542,
+    "registeredPhotoRecords": 516,
+    "downloadedPhotos": 515,
+    "missingPhotos": 27,
+    "failedDownloads": 1
+  },
+  "missingPhotoIds": [
+    "assembly-018",
+    "assembly-027",
+    "assembly-063",
+    "assembly-101",
+    "assembly-106",
+    "assembly-126",
+    "assembly-147",
+    "assembly-155",
+    "assembly-176",
+    "assembly-187",
+    "assembly-189",
+    "assembly-203",
+    "assembly-225",
+    "assembly-234",
+    "assembly-237",
+    "assembly-263",
+    "assembly-270",
+    "assembly-279",
+    "assembly-296",
+    "metropolitan-016",
+    "basic-038",
+    "basic-039",
+    "basic-058",
+    "basic-059",
+    "basic-102",
+    "basic-105",
+    "basic-107"
+  ],
+  "failedDownloads": [
+    {
+      "id": "metropolitan-016",
+      "error": "PHOTO_TOO_SMALL"
+    }
+  ],
+  "forbiddenFieldsStored": []
+}

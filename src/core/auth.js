@@ -13,6 +13,8 @@ function createRemoteAuthService(){
     async exportMembers(){const x=await request('admin/users');return x.ok?x.users:[];},
     async adminSummary(){return request('admin/summary');},
     async migrationRun(secret){return request('migration/run',{method:'POST',headers:{'x-jcs-migration-secret':secret},body:JSON.stringify({})});},
+    async politicianMigrationRun(secret){return request('migration/politicians/run',{method:'POST',headers:{'x-jcs-migration-secret':secret},body:JSON.stringify({})});},
+    async politicianMigrationPreview(secret){return request('migration/politicians/preview',{headers:{'x-jcs-migration-secret':secret}});},
     async migrationStatus(secret){return request('migration/status',{headers:{'x-jcs-migration-secret':secret}});},
     async memberCount(){const x=await request('stats');return x.ok?Number(x.members||0):0;}
   };
