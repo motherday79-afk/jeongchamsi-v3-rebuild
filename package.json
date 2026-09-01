@@ -1,0 +1,6 @@
+{
+  "name":"jcs-v3-clean-layout-foundation",
+  "version":"0.1.0",
+  "private":true,
+  "scripts":{"test":"node --test tests/layout.test.js","check":"node --check app.js"}
+}
