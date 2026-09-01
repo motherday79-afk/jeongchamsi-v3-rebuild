@@ -43,12 +43,26 @@ test('NOW category layout shows agreed pending state without imported rank value
   assert.doesNotMatch(html,/categoryRank|globalRank|score:/);
 });
 
-test('politician detail contains profile and record only',async()=>{
+test('politician detail restores the complete public layout but connects only profile data',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample})});
+  const text=html.replaceAll('&amp;','&');
+  for(const marker of ['정참시 SIGNAL','CORE INDICATORS','AUDIENCE LANDSCAPE','ACTIVITY & MEDIA','ATTENTION FLOW','DEEP ANALYSIS','ANALYSIS TREND','RECENT NEWS','PROFILE & RECORD','RELATED POLITICIANS'])assert.match(text,new RegExp(marker));
   assert.match(html,/PROFILE & RECORD/);
   assert.match(html,/공식 프로필과 정치 기록/);
   assert.match(html,/기본정보/);
-  assert.match(html,/선거·임기/);
-  assert.doesNotMatch(html,/전체 NOW|CORE INTELLIGENCE|분석지표|person-analysis/);
+  assert.match(html,/임기 · 선거정보/);
+  assert.match(html,/김민석/);
+  assert.match(html,/데이터 준비 중/);
+  assert.doesNotMatch(html,/76\.9|99\/100|전면 급상승형|NOW 1위/);
+  assert.doesNotMatch(html,/JCS ADMIN PRIVATE POLITICAL INTELLIGENCE/);
+});
+
+test('admin politician detail restores private intelligence and history shells without values',async()=>{
+  const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
+  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample})},{user:{role:'admin'}});
+  const text=html.replaceAll('&amp;','&');
+  for(const marker of ['JCS ADMIN PRIVATE POLITICAL INTELLIGENCE','EXECUTIVE INTELLIGENCE SUMMARY','AGE × GENDER MATRIX','CORE SUPPORT DYNAMICS','POLITICAL RESILIENCE','MEDIA PROPAGATION','ISSUE IMPACT MAP','RISK & OPPORTUNITY','ATTENTION → SUPPORT GAP','COMPETITOR FLOW','EVIDENCE BASE','JCS STRATEGIC SOLUTION','JCS STRATEGIC CONSULTING','HISTORY INTELLIGENCE'])assert.match(text,new RegExp(marker));
+  assert.match(html,/데이터 연결 전/);
+  assert.doesNotMatch(html,/76\.9|99\/100|전면 급상승형|NOW 1위/);
 });

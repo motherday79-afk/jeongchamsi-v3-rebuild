@@ -1,12 +1,12 @@
 import { HOME_FIXTURE } from './fixtures/home.js';
 import { siteHeader, drawer, footer } from './layout/site-shell.js';
-import { renderHomeLayout } from './layout/home-layout.js?v=0.0.8';
+import { renderHomeLayout } from './layout/home-layout.js?v=0.0.9';
 import { setupLayoutInteractions } from './ui/interactions.js';
 import { createAuthService } from './core/auth.js';
 import { createContentService } from './core/content.js';
 import { createPoliticianService } from './core/politicians.js';
 import * as views from './views/stage1.js';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.8';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.9';
 
 const app=document.getElementById('app');
 const auth=createAuthService();
@@ -50,7 +50,7 @@ async function render(){
   else if(p[0]==='national-evaluation') body=await views.renderNationalEvaluation(content,session);
   else if(p[0]==='academy') body=await views.renderAcademy(content,session);
   else if(p[0]==='now') body=await renderPoliticianDirectory(politicians,r);
-  else if(p[0]==='person') body=await renderPoliticianDetail(p[1]||'',politicians);
+  else if(p[0]==='person') body=await renderPoliticianDetail(p[1]||'',politicians,session);
   else if(p[0]==='request-politician') body=views.renderPoliticianRequest();
   else if(p[0]==='partners') body=views.renderPartners();
   else if(p[0]==='login') body=views.renderLogin();
