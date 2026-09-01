@@ -164,6 +164,18 @@ test('academy restores migrated slots, descriptions and chronological order',asy
   assert.ok(html.indexOf('2026-08-24')<html.indexOf('2026-08-31'));
 });
 
+test('home academy restores legacy schedule rows and application cue',()=>{
+  const html=renderHomeLayout({...HOME_FIXTURE,itsmePosts:[],columns:[],community:[],polls:{items:[]},generation:{},nationalEvaluation:{},academy:{slots:[
+    {id:'a-1',date:'2026-08-24',title:'정치 기본 교육',published:true}
+  ]},session:{}});
+  assert.match(html,/class="schedule-row"/);
+  assert.match(html,/08\.24/);
+  assert.match(html,/<small>월<\/small>/);
+  assert.match(html,/정치 기본 교육/);
+  assert.match(html,/>신청가능<\/button>/);
+  assert.doesNotMatch(html,/class="side-row"><span>2026-08-24/);
+});
+
 test('home poll and national evaluation match the legacy panel structures',()=>{
   const html=renderHomeLayout({...HOME_FIXTURE,itsmePosts:[],columns:[],community:[],generation:{},academy:{slots:[]},polls:{items:[{id:'p-1',question:'정부 평가',published:true,options:[{id:'a',label:'잘함',votes:1},{id:'b',label:'보통',votes:2},{id:'c',label:'못함',votes:1},{id:'d',label:'기타',votes:0}]}]},nationalEvaluation:{slots:{assembly:{slot:'assembly',evaluationId:'e-1',subjectId:'assembly-182',enabled:true,closedAt:''},local:{slot:'local',evaluationId:'e-2',subjectId:'basic-038',enabled:true,closedAt:''}},demoResults:{'e-1':{positive:4,neutral:1,negative:1},'e-2':{positive:5,neutral:1,negative:0}}}});
   assert.match(html,/poll-vote-panel/);

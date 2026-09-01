@@ -1,6 +1,6 @@
 import { HOME_FIXTURE } from './fixtures/home.js';
 import { siteHeader, drawer, footer } from './layout/site-shell.js';
-import { renderHomeLayout } from './layout/home-layout.js';
+import { renderHomeLayout } from './layout/home-layout.js?v=0.0.7';
 import { setupLayoutInteractions } from './ui/interactions.js';
 import { createAuthService } from './core/auth.js';
 import { createContentService } from './core/content.js';
