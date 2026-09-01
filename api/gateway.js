@@ -24,7 +24,7 @@ async function handleMigration(req,res,route){
   if(!migrationSecret()||supplied!==migrationSecret())return json(res,401,{ok:false,error:'MIGRATION_SECRET_REQUIRED'});
   if(route==='migration/status'){
     let report=null;try{const cmd=rebuildRedisCommand();const raw=await cmd(['GET',TARGET_KEYS.migration]);report=raw?JSON.parse(raw):null;}catch(error){return json(res,503,{ok:false,error:error.code||'TARGET_STORAGE_MISSING'});}
-    return json(res,200,{ok:true,legacyConfigured:!!(process.env.JCS_LEGACY_REDIS_REST_URL&&process.env.JCS_LEGACY_REDIS_REST_TOKEN),targetConfigured:!!(process.env.JCS_REBUILD_REDIS_REST_URL&&process.env.JCS_REBUILD_REDIS_REST_TOKEN),report});
+    return json(res,200,{ok:true,legacyConfigured:!!(process.env.JCS_LEGACY_REDIS_REST_URL&&process.env.JCS_LEGACY_REDIS_REST_TOKEN),targetConfigured:!!(process.env.JCS_REBUILD_REDIS_REDIS_URL||process.env.JCS_REBUILD_REDIS_URL||(process.env.JCS_REBUILD_REDIS_REST_URL&&process.env.JCS_REBUILD_REDIS_REST_TOKEN)),report});
   }
   if(route==='migration/run'&&req.method==='POST'){
     try{const snapshot=await collectLegacySnapshot(legacyRedisCommand());const report=await writeRebuildSnapshot(rebuildRedisCommand(),snapshot);return json(res,200,{ok:true,report});}

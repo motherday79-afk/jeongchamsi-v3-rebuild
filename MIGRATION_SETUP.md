@@ -7,6 +7,8 @@ Vercel 새 프로젝트에 아래 환경변수를 설정합니다.
 - `JCS_LEGACY_REDIS_REST_TOKEN`
 
 ## 새 정참시 저장소(쓰기 대상)
+- Vercel Redis: `JCS_REBUILD_REDIS_REDIS_URL`
+- 또는 Upstash REST:
 - `JCS_REBUILD_REDIS_REST_URL`
 - `JCS_REBUILD_REDIS_REST_TOKEN`
 
