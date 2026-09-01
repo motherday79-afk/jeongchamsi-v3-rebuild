@@ -3,54 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" id="jcv3-viewport">
-  <script>
-    try {
-      const mobileUA = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || "");
-      const touch = navigator.maxTouchPoints > 0 || matchMedia("(pointer: coarse)").matches;
-      const shortSide = Math.min(Number(screen.width || 9999), Number(screen.height || 9999));
-      const isTouchUi = mobileUA || (touch && shortSide <= 1024);
-      const savedMode = localStorage.getItem("jcv3:view-mode") || "mobile";
-      if (isTouchUi) document.documentElement.classList.add("jcv3-touch-ui");
-      if (isTouchUi && savedMode === "desktop") {
-        document.documentElement.classList.add("jcv3-force-desktop");
-        document.getElementById("jcv3-viewport")?.setAttribute("content","width=1280,initial-scale=1,viewport-fit=cover");
-      } else {
-        document.documentElement.classList.remove("jcv3-force-desktop");
-        document.getElementById("jcv3-viewport")?.setAttribute("content","width=device-width,initial-scale=1,viewport-fit=cover");
-      }
-    } catch {}
-  </script>
   <meta name="theme-color" content="#18242a">
   <title>정참시 — 정치에 참여할 시간</title>
-
-  <!-- 기존 정참시의 실제 CSS 그대로 -->
-  <link rel="stylesheet" href="https://jeongchamsi-v3-preview-clean.vercel.app/css/app.css?v=exact-visual-baseline">
-  <link rel="stylesheet" href="https://jeongchamsi-v3-preview-clean.vercel.app/css/pages.css?v=exact-visual-baseline">
-  <link rel="stylesheet" href="https://jeongchamsi-v3-preview-clean.vercel.app/css/product-system.css?v=exact-visual-baseline">
-  <link rel="stylesheet" href="https://jeongchamsi-v3-preview-clean.vercel.app/css/spectrum-palette.css?v=exact-visual-baseline">
-  <link rel="stylesheet" href="https://jeongchamsi-v3-preview-clean.vercel.app/css/mobile-foundation.css?v=exact-visual-baseline" media="(max-width: 1024px)">
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="stylesheet" href="/css/pages.css">
+  <link rel="stylesheet" href="/css/product-system.css">
+  <link rel="stylesheet" href="/css/spectrum-palette.css">
+  <link rel="stylesheet" href="/css/mobile-foundation.css" media="(max-width:1024px)">
 </head>
 <body>
   <div id="app"></div>
-  <div class="jcv3-view-mode-switch" aria-label="화면 버전 전환">
-    <button type="button" id="jcv3-view-mode-toggle">PC버전 보기</button>
-  </div>
-  <script>
-    (()=>{
-      const button=document.getElementById("jcv3-view-mode-toggle");
-      if(!button||!document.documentElement.classList.contains("jcv3-touch-ui"))return;
-      const desktop=localStorage.getItem("jcv3:view-mode")==="desktop";
-      button.textContent=desktop?"모바일버전 보기":"PC버전 보기";
-      button.addEventListener("click",()=>{
-        localStorage.setItem("jcv3:view-mode",desktop?"mobile":"desktop");
-        location.reload();
-      });
-    })();
-  </script>
-
-  <!-- 기존 정참시의 실제 app.js 그대로.
-       내부 import는 기존 정참시 origin에서 그대로 이어져
-       layout.js / home.js / service-catalog.js / SVG 아이콘까지 동일 코드가 실행됨. -->
-  <script type="module" src="https://jeongchamsi-v3-preview-clean.vercel.app/src/app.js?v=exact-visual-baseline"></script>
+  <script type="module" src="/src/app.js"></script>
 </body>
 </html>

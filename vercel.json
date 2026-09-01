@@ -1,15 +1,4 @@
 {
-  "rewrites": [
-    { "source": "/api/:path*", "destination": "https://jeongchamsi-v3-preview-clean.vercel.app/api/:path*" },
-    { "source": "/assets/:path*", "destination": "https://jeongchamsi-v3-preview-clean.vercel.app/assets/:path*" },
-    { "source": "/((?!api/|assets/).*)", "destination": "/index.html" }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "no-store" }
-      ]
-    }
-  ]
+  "rewrites":[{"source":"/(.*)","destination":"/index.html"}],
+  "headers":[{"source":"/(.*)","headers":[{"key":"Cache-Control","value":"no-store"}]}]
 }

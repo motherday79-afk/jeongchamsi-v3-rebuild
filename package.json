@@ -1,6 +1,6 @@
 {
-  "name":"jcs-v3-clean-layout-foundation",
-  "version":"0.1.0",
+  "name":"jcs-v3-rebuild-layout-only",
   "private":true,
-  "scripts":{"test":"node --test tests/layout.test.js","check":"node --check app.js"}
+  "type":"module",
+  "scripts":{"test":"node --test tests/*.test.js"}
 }

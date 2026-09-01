@@ -1,0 +1,945 @@
+/* JEONGCHAMSI alpha6.0.36 — POLITICAL SPECTRUM PALETTE
+   Color-only layer. Layout, spacing, typography and behavior intentionally untouched. */
+:root{
+  --ps-ink:#13171a;
+  --ps-muted:#70777a;
+  --ps-bg:#f5f6f7;
+  --ps-paper:#ffffff;
+  --ps-brand:#168b80;
+  --ps-brand2:#0f7169;
+  --ps-mint:#eaf7f4;
+  --ps-blue:#315fc4;
+  --ps-blue-soft:#eef3ff;
+  --ps-yellow:#f0b846;
+  --ps-warm:#fff4e7;
+  --ps-line:#e3e6e8;
+
+  --jc-red:#e44955;
+  --jc-red-soft:#fff0f2;
+  --jc-blue:#315fc4;
+  --jc-blue-soft:#eef3ff;
+  --jc-navy:#29459d;
+  --jc-navy-soft:#eff1fa;
+  --jc-orange:#ed963e;
+  --jc-orange-soft:#fff3e7;
+  --jc-teal:#16a99d;
+  --jc-teal-soft:#eaf8f6;
+  --jc-green:#5c954d;
+  --jc-green-soft:#eef6eb;
+  --jc-ink:#182126;
+}
+
+/* Neutral brand surfaces — no single political hue owns the page */
+body{background:#f4f6f7;color:var(--ps-ink)}
+.product-header,.product-service-bar{background:#fff}
+.product-wordmark b{color:#087f74}
+.product-primary-nav a:hover,.product-service-inner>span{color:#087f74}
+.product-search{background:#f6f7f7;border-color:#e0e3e5}
+.product-menu:hover,.product-account-tools button:hover{background:#f4f5f6}
+
+/* Hero: neutral authority with the spectrum appearing in controlled accents */
+.product-hero{background:#18242a}
+.product-hero:after{color:rgba(255,255,255,.028)}
+.product-hero h1 strong{color:#f2b447}
+.product-hero-copy>p{color:#dce3e6}
+.product-hero-kicker em,.product-hero-proof{color:#c9d5d9}
+.product-hero-live{box-shadow:0 24px 55px rgba(18,30,36,.20)}
+.live-dot{background:var(--jc-teal);box-shadow:0 0 0 5px rgba(22,169,157,.11)}
+.hero-live-head em{background:var(--jc-teal-soft);color:#087d73}
+.hero-rank-stack button:first-child .hero-rank-no{color:var(--jc-blue)}
+.hero-rank-stack button:nth-child(2) .hero-rank-no{color:var(--jc-red)}
+.hero-rank-stack button:nth-child(3) .hero-rank-no{color:var(--jc-orange)}
+.hero-poll-mini{background:var(--jc-red-soft)}
+.hero-poll-mini span,.hero-poll-mini i{color:#c83d49}
+.hero-poll-mini small{color:#7b6e70}
+
+/* Service launcher: six services, six restrained accents */
+.product-launcher{background:#fff}
+.launcher-card{background:#fafbfb;border-color:#e6e9ea}
+.launcher-now{background:var(--jc-blue-soft);border-color:#dce5fb}
+.launcher-now .launcher-no,.launcher-now .launcher-cue{color:var(--jc-blue)}
+.launcher-choice{background:var(--jc-red-soft);border-color:#f5dadd}
+.launcher-choice .launcher-no,.launcher-choice .launcher-cue{color:var(--jc-red)}
+.launcher-itsme{background:var(--jc-teal-soft);border-color:#d3eeea}
+.launcher-itsme .launcher-no,.launcher-itsme .launcher-cue{color:#0b8f84}
+.product-launcher-grid .launcher-card:nth-child(4){background:var(--jc-orange-soft);border-color:#f2e0ca}
+.product-launcher-grid .launcher-card:nth-child(4) .launcher-no,.product-launcher-grid .launcher-card:nth-child(4) .launcher-cue{color:#c87627}
+.product-launcher-grid .launcher-card:nth-child(5){background:var(--jc-navy-soft);border-color:#dfe3f3}
+.product-launcher-grid .launcher-card:nth-child(5) .launcher-no,.product-launcher-grid .launcher-card:nth-child(5) .launcher-cue{color:var(--jc-navy)}
+.product-launcher-grid .launcher-card:nth-child(6){background:var(--jc-green-soft);border-color:#dcebd7}
+.product-launcher-grid .launcher-card:nth-child(6) .launcher-no,.product-launcher-grid .launcher-card:nth-child(6) .launcher-cue{color:#4f833f}
+
+/* Main modules — color is a navigation aid, not decoration */
+.eyebrow{color:#087f74}
+#now .rank-top-card:first-child{background:var(--jc-blue);border-color:var(--jc-blue)}
+#now .rank-top-card:first-child .rank-top-no,#now .rank-top-card:first-child .rank-top-copy span{color:#dfe8ff}
+#now .rank-top-no{color:var(--jc-blue)}
+
+#poll{background:var(--jc-red-soft);border-color:#f1d7da}
+#poll .poll-status{color:#c63d49}
+#poll .poll-options em{background:var(--jc-red)}
+#poll .poll-options b{color:#c63d49}
+
+#itsme .itsme-card:nth-child(1){background:var(--jc-teal-soft);border-color:#d2ece8}
+#itsme .itsme-card:nth-child(2){background:#fff}
+#itsme .itsme-card:nth-child(3){background:var(--jc-orange-soft);border-color:#f1dfca}
+#itsme .itsme-card:nth-child(4){background:#fff}
+#itsme .itsme-card:nth-child(5){background:var(--jc-green-soft);border-color:#dcebd7}
+#itsme .itsme-card:nth-child(6){background:var(--jc-navy-soft);border-color:#dfe3f3}
+
+#column .column-lead{background:#f6f7f8}
+
+/* Data / participation tools */
+#generation-president{background:#fff3f4;border-color:#f1d8db;color:var(--ps-ink)}
+#generation-president .eyebrow{color:#c74450}
+#generation-president .module-desc{color:#7b6c6f}
+#generation-president .more-btn{color:#b83d48}
+#generation-president .generation-intro{background:#e96570;color:#fff}
+#generation-president .generation-intro button{background:#fff;color:#b83d48}
+#generation-president .generation-card{background:#fff;border-color:#efd9dc;color:var(--ps-ink)}
+#generation-president .generation-card.focus{background:#ffe7ea;border-color:#e9aeb5}
+#generation-president .generation-age{background:#fff0f2;color:#bd4650}
+#generation-president .generation-card small{color:#806d70}
+#generation-president .generation-bar{background:#f5e2e4}
+#generation-president .generation-bar i{background:#e25562}
+
+#national-eval .eyebrow{color:#4f833f}
+#national-eval .national-eval-layout{background:var(--jc-green-soft)}
+#compare .eyebrow{color:var(--jc-navy)}
+#compare .compare-layout{background:var(--jc-navy-soft)}
+#academy .academy-intro{background:var(--jc-orange)}
+#academy .academy-mark{color:#cb7628}
+
+/* Sidebar and small controls */
+.login-card{background:#fff;border-color:#e3e6e8;color:var(--ps-ink);box-shadow:0 10px 28px rgba(25,34,38,.04)}
+.login-card b{color:var(--ps-ink)}
+.login-card p{color:#747b7e}
+.login-card button{background:#087f74;color:#fff}
+.login-card button:hover{background:#076f66}
+.keyword-grid span:nth-child(6n+1){background:var(--jc-blue-soft);color:#365aa9}
+.keyword-grid span:nth-child(6n+2){background:var(--jc-red-soft);color:#b94750}
+.keyword-grid span:nth-child(6n+3){background:var(--jc-orange-soft);color:#ae6d2f}
+.keyword-grid span:nth-child(6n+4){background:var(--jc-teal-soft);color:#217d75}
+.keyword-grid span:nth-child(6n+5){background:var(--jc-navy-soft);color:#4a5c9d}
+.keyword-grid span:nth-child(6n){background:var(--jc-green-soft);color:#5c7d52}
+.footer{background:#20262b}
+
+/* keep interactive green as Jeongchamsi's own utility color, not a political signal */
+a,.more-btn{--jc-link:#087f74}
+
+/* JEONGCHAMSI alpha6.0.36.2 — COLOR CLEANUP HOTFIX
+   Layout/spacing/behavior untouched. Only color hierarchy is adjusted. */
+
+/* 1) Avoid black/dark base surfaces: hero and footer become light, neutral brand surfaces. */
+.product-hero{
+  background:#f2f5f8;
+  border:1px solid #e3e8ed;
+}
+.product-hero:after{color:rgba(49,95,196,.035)}
+.product-hero-copy{color:var(--ps-ink)}
+.product-hero-kicker span{color:#315fc4}
+.product-hero-kicker em{color:#6f7b83;border-left-color:#cfd6dc}
+.product-hero h1{color:#182126}
+.product-hero h1 strong{color:#e4872f}
+.product-hero-copy>p{color:#66737a}
+.product-hero-proof{color:#66737a}
+.product-hero-proof b{color:#182126}
+.hero-action-primary{background:#182126;color:#fff}
+.hero-action-secondary{background:#fff;color:#29353b;border-color:#d8dee3}
+.product-hero-live{box-shadow:0 18px 42px rgba(35,52,62,.10)}
+.footer{background:#f3f5f6;color:#778086;border-top:1px solid #e1e5e8}
+.footer b{color:#20282d}
+.footer-links a{color:#667178}
+
+/* 2) NOW TOP 1–5: background follows each politician's party family. */
+#now .rank-top-card{background:#fff;border-color:#e5e8eb}
+#now .rank-top-card.party-democratic{background:#edf4ff;border-color:#cfe0fb}
+#now .rank-top-card.party-democratic .rank-top-no{color:#1f64b8}
+#now .rank-top-card.party-peoplepower{background:#fff0f1;border-color:#f4cfd3}
+#now .rank-top-card.party-peoplepower .rank-top-no{color:#d9414a}
+#now .rank-top-card.party-reform{background:#fff3e7;border-color:#f2dcc4}
+#now .rank-top-card.party-reform .rank-top-no{color:#d97d24}
+#now .rank-top-card.party-innovation{background:#eef1fb;border-color:#d8def3}
+#now .rank-top-card.party-innovation .rank-top-no{color:#344fa5}
+#now .rank-top-card.party-progressive{background:#fff0f2;border-color:#f2d0d5}
+#now .rank-top-card.party-progressive .rank-top-no{color:#c93648}
+#now .rank-top-card.party-basicincome{background:#eaf8f6;border-color:#d1eeea}
+#now .rank-top-card.party-basicincome .rank-top-no{color:#138a80}
+#now .rank-top-card.party-socialdemocratic{background:#eef6eb;border-color:#dcebd7}
+#now .rank-top-card.party-socialdemocratic .rank-top-no{color:#568447}
+#now .rank-top-card.party-independent{background:#f3f4f5;border-color:#e0e3e5}
+#now .rank-top-card.party-independent .rank-top-no{color:#70787d}
+#now .rank-top-card .rank-top-copy span{color:#667178}
+
+/* 3) Explore cards: IT'S ME and Generation President return to clean white surfaces. */
+.product-launcher .launcher-itsme,
+.product-launcher .launcher-generation,
+.product-launcher-grid .launcher-card:nth-child(5){
+  background:#fff;
+  border-color:#e5e8ea;
+}
+.product-launcher .launcher-itsme .launcher-no,
+.product-launcher .launcher-itsme .launcher-cue{color:#0b8f84}
+.product-launcher .launcher-generation .launcher-no,
+.product-launcher .launcher-generation .launcher-cue,
+.product-launcher-grid .launcher-card:nth-child(5) .launcher-no,
+.product-launcher-grid .launcher-card:nth-child(5) .launcher-cue{color:#65727a}
+
+/* 4) Generation cards: no special background for the 20s/focus card. */
+#generation-president .generation-card.focus{
+  background:#fff;
+  border-color:#efd9dc;
+}
+
+/* JEONGCHAMSI alpha6.0.36.3 — HERO HUNMINJEONGEUM TEXTURE HOTFIX
+   Hero-only color/texture adjustment. Layout and behavior untouched. */
+.product-hero{
+  background:#e7edf3;
+  border-color:#d5dee7;
+  isolation:isolate;
+}
+.product-hero:before{
+  content:"ㄱ ㄴ ㄷ ㄹ ㅁ ㅂ ㅅ ㅇ ㅈ ㅊ ㅋ ㅌ ㅍ ㅎ   정참시   ㆍ ㅡ ㅣ   ㄱ ㄴ ㄷ ㄹ   ㅁ ㅂ ㅅ ㅇ   정참시   ㅈ ㅊ ㅋ ㅌ ㅍ ㅎ   ㆍ ㅡ ㅣ";
+  position:absolute;
+  inset:-8% -2% -12% 34%;
+  z-index:0;
+  overflow:hidden;
+  color:#31506b;
+  opacity:.055;
+  font-size:46px;
+  line-height:1.85;
+  font-weight:800;
+  letter-spacing:.28em;
+  word-spacing:.8em;
+  transform:rotate(-3deg);
+  white-space:normal;
+  pointer-events:none;
+}
+.product-hero:after{
+  content:"정참시  훈민정음  정참시";
+  left:auto;
+  right:5%;
+  bottom:-26px;
+  font-size:96px;
+  line-height:1;
+  color:#31506b;
+  opacity:.025;
+  letter-spacing:-.06em;
+  transform:none;
+}
+.product-hero-copy,
+.product-hero-live{position:relative;z-index:2}
+
+@media(max-width:820px){
+  .product-hero:before{
+    inset:8% -18% 10% 42%;
+    font-size:34px;
+    line-height:1.8;
+    opacity:.045;
+  }
+  .product-hero:after{
+    right:-4%;
+    bottom:-10px;
+    font-size:64px;
+  }
+}
+
+
+/* JEONGCHAMSI alpha6.0.36.4 — HOME DENSITY + COPY + READABILITY HOTFIX
+   Layout system stays intact; main NOW preview becomes 1–10 in two rows on desktop. */
+#now .rank-top-grid-10{grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+#now .rank-top-grid-10 .rank-top-card{
+  min-height:150px;
+  color:#172026;
+}
+#now .rank-top-grid-10 .rank-top-card .rank-top-no,
+#now .rank-top-grid-10 .rank-top-card .rank-top-copy b,
+#now .rank-top-grid-10 .rank-top-card .rank-top-copy span{
+  color:#172026;
+}
+#now .rank-top-grid-10 .rank-top-card .rank-top-copy span{font-size:12px;line-height:1.45}
+#now .rank-top-grid-10 .rank-top-card .rank-top-no{font-size:12px}
+#now .rank-top-grid-10 .rank-top-card .rank-top-copy b{font-size:16px}
+
+/* Remove the reintroduced tiny-text feel on the home surface. */
+.product-home-wrap .eyebrow{font-size:11px}
+.product-home-wrap .more-btn{font-size:13px;font-weight:800}
+.product-home-wrap .product-hero-kicker span,
+.product-home-wrap .product-hero-kicker em{font-size:12px}
+.product-home-wrap .product-hero-proof{font-size:11px}
+.product-home-wrap .product-hero-proof b{font-size:10px}
+.product-home-wrap .hero-live-head em{font-size:10px}
+.product-home-wrap .hero-rank-no{font-size:12px}
+.product-home-wrap .hero-rank-person small{font-size:12px}
+.product-home-wrap .hero-poll-mini span,
+.product-home-wrap .hero-poll-mini small,
+.product-home-wrap .hero-poll-mini i{font-size:11px}
+.product-home-wrap .product-launcher-head>div>span{font-size:10px}
+.product-home-wrap .launcher-no{font-size:11px}
+.product-home-wrap .launcher-copy small{font-size:12px}
+.product-home-wrap .keyword-grid span{font-size:11px}
+.product-home-wrap .side-news .side-row i,
+.product-home-wrap .side-rising .side-row i{font-size:12px}
+
+@media(max-width:820px){
+  #now .rank-top-grid-10{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:560px){
+  #now .rank-top-grid-10{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #now .rank-top-grid-10 .rank-top-card:first-child{
+    grid-column:auto;
+    display:block;
+    min-height:150px;
+    text-align:center;
+  }
+  #now .rank-top-grid-10 .rank-top-card:first-child .rank-top-avatar{margin:10px auto 9px}
+  .product-home-wrap .module-desc{font-size:13px}
+  .product-home-wrap .launcher-copy small{font-size:11px}
+  .product-home-wrap .hero-rank-person small{font-size:11px}
+}
+
+/* JEONGCHAMSI alpha6.0.36.7 — COLOR RHYTHM HOTFIX
+   Principle: minimum color area, maximum color recognition.
+   Layout / spacing / routing / DOM order are untouched. */
+
+/* Explore: keep the full political spectrum, remove the painted-card feeling. */
+.product-launcher .product-launcher-grid .launcher-card{
+  background:#fff;
+  border-color:#e5e9ec;
+}
+.product-launcher .launcher-now{box-shadow:inset 0 3px 0 var(--jc-blue)}
+.product-launcher .launcher-choice{box-shadow:inset 0 3px 0 var(--jc-red)}
+.product-launcher .launcher-itsme{box-shadow:inset 0 3px 0 var(--jc-teal)}
+.product-launcher-grid .launcher-card:nth-child(4){box-shadow:inset 0 3px 0 var(--jc-orange)}
+.product-launcher-grid .launcher-card:nth-child(5){box-shadow:inset 0 3px 0 var(--jc-navy)}
+.product-launcher-grid .launcher-card:nth-child(6){box-shadow:inset 0 3px 0 var(--jc-green)}
+
+/* IT'S ME: white cards, spectrum only as a slim signature line. */
+#itsme .itsme-card{
+  background:#fff;
+  border-color:#e5e9ec;
+}
+#itsme .itsme-card:nth-child(1){box-shadow:inset 0 3px 0 var(--jc-teal)}
+#itsme .itsme-card:nth-child(2){box-shadow:inset 0 3px 0 var(--jc-blue)}
+#itsme .itsme-card:nth-child(3){box-shadow:inset 0 3px 0 var(--jc-orange)}
+#itsme .itsme-card:nth-child(4){box-shadow:inset 0 3px 0 var(--jc-red)}
+#itsme .itsme-card:nth-child(5){box-shadow:inset 0 3px 0 var(--jc-green)}
+#itsme .itsme-card:nth-child(6){box-shadow:inset 0 3px 0 var(--jc-navy)}
+#itsme .itsme-card span{color:#68747a}
+
+/* Citizens' Choice is the single broad participation color scene. */
+#poll{
+  background:#fff5f6;
+  border-color:#f0dadd;
+}
+#poll .poll-vote-panel{background:#fff}
+#poll .poll-status{background:#fff;color:#c63d49}
+#poll .poll-options em{background:var(--jc-red)}
+#poll .poll-options b{color:#bd3c48}
+
+/* Generation President: remove the second red block; keep red in controls/data only. */
+#generation-president{
+  background:#fff;
+  border-color:#e5e9ec;
+  color:var(--ps-ink);
+}
+#generation-president .eyebrow{color:#c74450}
+#generation-president .module-desc{color:#6f787d}
+#generation-president .more-btn{color:#b83d48}
+#generation-president .generation-intro{
+  background:#fff;
+  color:#182126;
+  border:1px solid #eadfe1;
+  box-shadow:inset 4px 0 0 #e65a66;
+}
+#generation-president .generation-intro button{background:#e65a66;color:#fff}
+#generation-president .generation-card,
+#generation-president .generation-card.focus{
+  background:#fff;
+  border-color:#e6e9eb;
+  color:#182126;
+}
+#generation-president .generation-age{background:#fff0f2;color:#bd4650}
+#generation-president .generation-card small{color:#747d82}
+#generation-president .generation-bar{background:#f1e5e7}
+#generation-president .generation-bar i{background:#e25562}
+
+/* National evaluation: neutral surface, green reduced to one data signature. */
+#national-eval{background:#fff}
+#national-eval .national-eval-layout{
+  background:#fff;
+  border-color:#dfe8dd;
+  box-shadow:inset 0 3px 0 var(--jc-green);
+}
+#national-eval .eval-score strong{color:#568447}
+
+/* Compare: neutral body, navy only where comparison data speaks. */
+#compare{background:#fff}
+#compare .compare-layout{
+  background:#fff;
+  border-color:#e2e5ee;
+  box-shadow:inset 0 3px 0 var(--jc-navy);
+}
+#compare .compare-metrics em{background:var(--jc-navy)}
+#compare .compare-sample-badge{color:#5264a5}
+
+/* Academy: remove the large orange panel; orange remains the action color. */
+#academy{background:#fff}
+#academy .academy-intro{
+  background:#fff;
+  color:#182126;
+  border:1px solid #eee2d5;
+  box-shadow:inset 4px 0 0 var(--jc-orange);
+}
+#academy .academy-intro button{background:var(--jc-orange);color:#fff}
+#academy .academy-mark{color:#c87627}
+
+/* NOW is intentionally the multi-color peak: party-family backgrounds remain. */
+
+/* Reading / talking sections calm the page after NOW. */
+#column .column-lead{background:#f7f8f9}
+
+/* JEONGCHAMSI alpha6.0.36.8 — COMPACT NAVIGATOR + IT'S ME SIGNATURE
+   Fixed sections (Academy / Column / Community) are intentionally untouched. */
+
+/* 1) Explore becomes a low-height service navigator: icon first, text second. */
+.product-launcher.product-launcher-compact{
+  padding:18px 22px 20px;
+  border-radius:22px;
+}
+.product-launcher-compact .product-launcher-head{
+  align-items:center;
+  margin-bottom:12px;
+}
+.product-launcher-compact .product-launcher-head>div>span{
+  margin-bottom:3px;
+  font-size:9px;
+}
+.product-launcher-compact .product-launcher-head h2{
+  font-size:20px;
+  letter-spacing:-.75px;
+}
+.product-launcher-compact .product-launcher-grid{
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:8px;
+}
+.product-launcher-compact .product-launcher-grid .launcher-card{
+  min-height:70px;
+  display:grid;
+  grid-template-columns:34px minmax(0,1fr) 15px;
+  align-items:center;
+  gap:8px;
+  padding:10px 11px;
+  border:1px solid #e5e9ec;
+  border-radius:14px;
+  background:#fff;
+  box-shadow:none;
+}
+.product-launcher-compact .product-launcher-grid .launcher-card:hover{
+  transform:translateY(-1px);
+  border-color:#cfd7dc;
+  box-shadow:0 7px 16px rgba(23,38,47,.06);
+}
+.product-launcher-compact .launcher-icon{
+  width:32px;
+  height:32px;
+  display:grid;
+  place-items:center;
+  border-radius:10px;
+  background:#f5f7f8;
+  color:#5f6c73;
+}
+.product-launcher-compact .launcher-icon svg{
+  width:21px;
+  height:21px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.8;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.product-launcher-compact .launcher-copy b{
+  font-size:13px;
+  line-height:1.25;
+  letter-spacing:-.35px;
+  color:#172026;
+}
+.product-launcher-compact .launcher-cue{
+  color:#a1aab0;
+  font-size:13px;
+}
+.product-launcher-compact .launcher-now .launcher-icon{color:var(--jc-blue)}
+.product-launcher-compact .launcher-choice .launcher-icon{color:var(--jc-red)}
+.product-launcher-compact .launcher-itsme .launcher-icon{color:var(--jc-teal)}
+.product-launcher-compact .launcher-compare .launcher-icon{color:var(--jc-orange)}
+.product-launcher-compact .launcher-generation .launcher-icon{color:var(--jc-navy)}
+.product-launcher-compact .launcher-community .launcher-icon{color:var(--jc-green)}
+
+/* 2) IT'S ME owns one memorable color gesture in the heading, not six cards. */
+#itsme.itsme-home-module .itsme-signature-title{
+  position:relative;
+  display:inline-block;
+  padding-bottom:13px;
+}
+#itsme.itsme-home-module .itsme-signature-title::after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:2px;
+  width:min(220px,72%);
+  height:5px;
+  border-radius:999px;
+  background:var(--jc-teal);
+}
+#itsme.itsme-home-module .itsme-grid{gap:10px}
+#itsme.itsme-home-module .itsme-card,
+#itsme.itsme-home-module .itsme-card:nth-child(n){
+  min-height:104px;
+  padding:16px 17px;
+  background:#fff;
+  border-color:#e5e9ec;
+  box-shadow:none;
+}
+#itsme.itsme-home-module .itsme-card span{
+  display:block;
+  color:#8a9499;
+  font-size:11px;
+  font-weight:850;
+}
+#itsme.itsme-home-module .itsme-card b{
+  display:-webkit-box;
+  overflow:hidden;
+  margin-top:18px;
+  color:#172026;
+  font-size:15px;
+  line-height:1.45;
+  letter-spacing:-.35px;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  line-clamp:2;
+  text-overflow:ellipsis;
+}
+#itsme.itsme-home-module .itsme-card p{display:none}
+
+@media(max-width:1050px){
+  .product-launcher-compact .product-launcher-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:560px){
+  .product-launcher.product-launcher-compact{padding:15px 12px 13px}
+  .product-launcher-compact .product-launcher-head{margin:0 3px 10px}
+  .product-launcher-compact .product-launcher-head h2{font-size:18px}
+  .product-launcher-compact .product-launcher-head>button{font-size:11px}
+  .product-launcher-compact .product-launcher-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  .product-launcher-compact .product-launcher-grid .launcher-card{min-height:61px;padding:8px;grid-template-columns:30px minmax(0,1fr)}
+  .product-launcher-compact .launcher-icon{width:29px;height:29px;border-radius:9px}
+  .product-launcher-compact .launcher-icon svg{width:19px;height:19px}
+  .product-launcher-compact .launcher-copy b{font-size:12px}
+  .product-launcher-compact .launcher-cue{display:none}
+  #itsme.itsme-home-module .itsme-card{min-height:96px;padding:14px}
+  #itsme.itsme-home-module .itsme-card b{margin-top:14px;font-size:14px}
+  #itsme.itsme-home-module .itsme-signature-title::after{height:4px;width:min(190px,75%)}
+}
+
+/* alpha6.0.36.9 — choice + generation split hotfix */
+/* CITIZENS' CHOICE: white section, color moves into the choice options. */
+#poll{
+  background:#fff;
+  border-color:#e5e9ec;
+}
+#poll .poll-vote-panel{
+  background:transparent;
+  padding:0;
+}
+#poll .poll-status{
+  background:#fff;
+  color:#c63d49;
+}
+#poll .poll-options button{
+  background:#fff4f5;
+  border-color:#f0dadd;
+}
+#poll .poll-options button:hover{
+  background:#ffedef;
+  border-color:#ebc8ce;
+}
+#poll .poll-options i{background:#f5dde1}
+#poll .poll-options em{background:var(--jc-red)}
+#poll .poll-options b{color:#bd3c48}
+
+/* GENERATION PRESIDENT: mint label, neutral shell, blue as the data/state color. */
+#generation-president{
+  background:#fff;
+  border-color:#e5e9ec;
+  color:var(--ps-ink);
+}
+#generation-president .eyebrow{color:#087f74}
+#generation-president .module-desc{color:#6f787d}
+#generation-president .more-btn{color:#535f5b}
+#generation-president .generation-intro{
+  background:#fff;
+  color:#182126;
+  border:1px solid #e5e9ec;
+  box-shadow:none;
+}
+#generation-president .generation-mark{
+  background:#eef6f3;
+  color:#087f74;
+}
+#generation-president .generation-intro button{
+  background:var(--ps-blue);
+  color:#fff;
+}
+#generation-president .generation-card{
+  background:#fff;
+  border-color:#e6e9eb;
+  color:#182126;
+}
+#generation-president .generation-card.focus{
+  background:#f7faff;
+  border-color:#d6e1fb;
+  color:#182126;
+}
+#generation-president .generation-age{
+  background:#eef3ff;
+  color:var(--ps-blue);
+}
+#generation-president .generation-card small{color:#747d82}
+#generation-president .generation-bar{background:#e7edf8}
+#generation-president .generation-bar i{background:var(--ps-blue)}
+
+/* alpha6.0.36.10 — generation president refinement */
+/* Remove decorative badge; the intro starts cleanly with the message. */
+#generation-president .generation-intro h3{
+  margin-top:0;
+}
+
+/* Participation CTA: quiet blue choice-style control, not a solid color block. */
+#generation-president .generation-intro button{
+  background:#f3f7ff;
+  border:1px solid #cedafb;
+  color:#315fc4;
+  box-shadow:none;
+}
+#generation-president .generation-intro button:hover{
+  background:#eaf1ff;
+  border-color:#b9caf5;
+}
+
+/* Age labels are plain information, not colored badges. */
+#generation-president .generation-age{
+  display:block;
+  padding:0;
+  border-radius:0;
+  background:transparent;
+  color:#182126;
+  font-size:12px;
+  font-weight:850;
+}
+
+/* All generation cards share one neutral surface — no special 20s/focus tile. */
+#generation-president .generation-card,
+#generation-president .generation-card.focus{
+  background:#fff;
+  border-color:#e6e9eb;
+  color:#182126;
+}
+
+/* Blue remains only where it carries data meaning. */
+#generation-president .generation-bar{background:#e7edf8}
+#generation-president .generation-bar i{background:var(--ps-blue)}
+
+
+/* alpha6.0.36.11 — shared secondary CTA system
+   Same-role secondary actions use the same quiet ghost-button language. */
+#generation-president .generation-intro .ghost-btn{
+  background:#fff;
+  border:1px solid #dfe7e4;
+  color:var(--text);
+  box-shadow:none;
+}
+#generation-president .generation-intro .ghost-btn:hover:not(:disabled){
+  border-color:#b7d9d0;
+  background:#f5fbf9;
+  color:var(--green);
+}
+
+
+/* alpha6.0.36.13 — generation result PANEL (definitive override) */
+#generation-president .generation-result{
+  margin-top:10px;
+  padding:10px 11px 9px;
+  border:1px solid #d9e4f8;
+  border-radius:11px;
+  background:#f4f7fe;
+}
+#generation-president .generation-result b{
+  display:block;
+  margin:0;
+  color:#182126;
+  font-size:13px;
+  font-weight:850;
+  line-height:1.4;
+}
+#generation-president .generation-result .generation-bar{
+  height:7px;
+  margin:8px 0 0;
+  border-radius:999px;
+  background:#dfe7f6;
+}
+#generation-president .generation-result .generation-bar i{
+  background:var(--ps-blue);
+}
+#generation-president .generation-result small{
+  display:block;
+  margin-top:7px;
+  color:#66737a;
+  font-size:11px;
+  line-height:1.35;
+}
+#generation-president .generation-result-empty{
+  background:#f7f9fc;
+  border-color:#e3e8f0;
+}
+#generation-president .generation-result-empty .generation-bar{background:#e8edf4}
+
+
+/* JEONGCHAMSI alpha6.0.36.14 — DATA VISUAL RHYTHM REFINE
+   Scope lock: National Evaluation + Compare + NOW Rank only. */
+
+/* NATIONAL EVALUATION — brand mint in the label/title signature, color only on the score. */
+#national-eval .eyebrow{color:#087f74}
+#national-eval .module-header h2{
+  display:inline-block;
+  position:relative;
+  padding-bottom:10px;
+}
+#national-eval .module-header h2::after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:0;
+  width:62%;
+  height:4px;
+  border-radius:999px;
+  background:var(--jc-teal);
+}
+#national-eval .national-eval-layout{
+  background:#fff;
+  border-color:#e3e7e9;
+  box-shadow:none;
+}
+#national-eval .eval-score strong{color:#568447}
+
+/* COMPARE — neutral shell; spectrum belongs to the four data dimensions only. */
+#compare .eyebrow{color:#087f74}
+#compare .compare-layout{
+  background:#fff;
+  border-color:#e3e7e9;
+  box-shadow:none;
+}
+#compare .compare-sample-badge{
+  display:flex;
+  align-items:baseline;
+  gap:5px;
+  margin:-1px 0 13px;
+  padding:0;
+  border-radius:0;
+  background:transparent;
+  color:#182126;
+  font-size:12px;
+  font-weight:800;
+}
+#compare .compare-sample-badge::before{
+  content:"*";
+  color:var(--jc-red);
+  font-size:17px;
+  line-height:1;
+  font-weight:950;
+}
+#compare .compare-metrics b{color:#4f5a60}
+#compare .compare-metrics div:nth-child(1) em{background:var(--jc-blue)}
+#compare .compare-metrics div:nth-child(2) em{background:var(--jc-red)}
+#compare .compare-metrics div:nth-child(3) em{background:var(--jc-orange)}
+#compare .compare-metrics div:nth-child(4) em{background:var(--jc-green)}
+#compare .compare-summary b{color:#182126}
+
+/* NOW RANK — all cards neutral; party identity is one compact flag only.
+   The one-character mark distinguishes parties that share a similar hue. */
+#now .rank-top-grid-10 .rank-top-card,
+#now .rank-top-grid-10 .rank-top-card:first-child,
+#now .rank-top-grid-10 .rank-top-card.party-democratic,
+#now .rank-top-grid-10 .rank-top-card.party-peoplepower,
+#now .rank-top-grid-10 .rank-top-card.party-reform,
+#now .rank-top-grid-10 .rank-top-card.party-innovation,
+#now .rank-top-grid-10 .rank-top-card.party-progressive,
+#now .rank-top-grid-10 .rank-top-card.party-basicincome,
+#now .rank-top-grid-10 .rank-top-card.party-socialdemocratic,
+#now .rank-top-grid-10 .rank-top-card.party-independent{
+  background:#fff;
+  border-color:#e2e6e9;
+  color:#172026;
+}
+#now .rank-top-grid-10 .rank-top-card .rank-top-no,
+#now .rank-top-grid-10 .rank-top-card:first-child .rank-top-no,
+#now .rank-top-grid-10 .rank-top-card .rank-top-copy b,
+#now .rank-top-grid-10 .rank-top-card .rank-top-copy span,
+#now .rank-top-grid-10 .rank-top-card:first-child .rank-top-copy span{
+  color:#172026;
+}
+#now .rank-party-flag{
+  position:absolute;
+  top:-1px;
+  right:13px;
+  z-index:2;
+  width:22px;
+  height:28px;
+  display:grid;
+  place-items:center;
+  border-radius:0 0 7px 7px;
+  color:#fff;
+  font-size:10px;
+  line-height:1;
+  font-weight:950;
+  box-shadow:0 2px 6px rgba(24,33,38,.10);
+  pointer-events:none;
+}
+#now .party-democratic .rank-party-flag{background:#1f64b8}
+#now .party-peoplepower .rank-party-flag{background:#d9414a}
+#now .party-reform .rank-party-flag{background:#d97d24}
+#now .party-innovation .rank-party-flag{background:#344fa5}
+#now .party-progressive .rank-party-flag{background:#c93648}
+#now .party-basicincome .rank-party-flag{background:#138a80}
+#now .party-socialdemocratic .rank-party-flag{background:#568447}
+#now .party-independent .rank-party-flag{background:#747d82}
+#now .rank-top-card[role="button"]:hover{
+  background:#fbfcfd;
+  border-color:#d5dadd;
+}
+
+
+/* alpha6.0.36.16 — representative badge showcase */
+.participation-badge-main{display:grid;grid-template-columns:58px minmax(0,1fr);gap:12px;align-items:center;padding:11px 0}.side-representative-jewel{width:56px;height:56px;display:grid;place-items:center}.side-representative-jewel .badge-gem{width:54px;height:54px}.side-representative-jewel.badge-gem-empty{border:1px dashed #cfd8d4;border-radius:15px;background:#f7f9f8;color:#8b9893;font-size:25px}.participation-badge-main>div b{font-size:14px}.participation-badge-main>div p{margin-top:4px;color:#707c77;font-size:10px}.badge-home-jewels button{align-items:center}.badge-home-jewels button>.badge-gem{width:28px;height:28px;margin:0 auto 5px}.badge-home-jewels button>b{font-size:10px}.badge-home-jewels button>small{font-size:8px}
+
+/* hero size only: same visual language, roughly 17% less vertical mass */
+@media(min-width:821px){.product-home-wrap .product-hero{min-height:390px;padding:34px 40px;gap:28px}.product-home-wrap .product-hero-kicker{margin-bottom:16px}.product-home-wrap .product-hero-copy>p{margin-top:14px}.product-home-wrap .product-hero-actions{margin-top:20px}.product-home-wrap .product-hero-proof{margin-top:20px}.product-home-wrap .product-hero-live{padding:17px}.product-home-wrap .hero-rank-stack button{min-height:58px}.product-home-wrap .hero-poll-mini{margin-top:11px;padding:13px 15px}}
+@media(max-width:820px){.product-home-wrap .product-hero{padding:24px;gap:20px}.product-home-wrap .product-hero-kicker{margin-bottom:14px}.product-home-wrap .product-hero-actions{margin-top:17px}.product-home-wrap .product-hero-proof{margin-top:16px}}
+@media(max-width:560px){.product-home-wrap .product-hero{padding:20px 18px 17px;gap:17px}}
+
+
+/* =========================================================
+   JEONGCHAMSI alpha6.0.36.17 — UX + DENSITY HOTFIX
+   Direct compare picker / quiet header / readable sidebar /
+   academy accent cleanup / generation + column compression.
+   ========================================================= */
+
+/* Header: service discovery now belongs to navigator + full-service drawer. */
+.product-primary-nav{display:none}
+
+/* Compare: search result click immediately becomes the selected candidate. */
+.compare-picker-quick .compare-person-quick-picker{position:relative;min-width:0}
+.compare-picker-quick .compare-person-quick-picker>input[type="search"]{
+  width:100%;height:46px;border:1px solid #dfe7e4;border-radius:10px;
+  background:#fff;padding:0 12px;font:inherit;color:#182126;
+}
+.compare-picker-quick .compare-person-quick-picker>input[type="search"]:focus{
+  outline:0;border-color:#9ccdc0;box-shadow:0 0 0 3px rgba(11,139,115,.08)
+}
+.compare-picker-quick .compare-person-quick-picker>select{display:none}
+.compare-picker-quick .person-quick-results{top:70px}
+
+/* Sidebar NEWS: side content must be readable at a glance. */
+.product-home-wrap .side-news .side-head b{font-size:14px}
+.product-home-wrap .side-news .side-row{min-height:42px}
+.product-home-wrap .side-news .side-row i{
+  font-size:14px;line-height:1.42;color:#283238;font-weight:720;
+}
+
+/* Academy: remove the decorative orange vertical line only. CTA stays unchanged. */
+#academy .academy-intro{box-shadow:none}
+
+/* Generation: keep typography, reduce empty vertical volume by about 15–20%. */
+@media(min-width:821px){
+  #generation-president{padding-top:24px;padding-bottom:24px}
+  #generation-president .module-header{margin-bottom:16px}
+  #generation-president .generation-feature{gap:11px}
+  #generation-president .generation-intro{padding:18px}
+  #generation-president .generation-intro h3{margin-bottom:7px;line-height:1.38}
+  #generation-president .generation-intro button{margin-top:12px}
+  #generation-president .generation-grid{gap:7px}
+  #generation-president .generation-card,
+  #generation-president .generation-card.focus{min-height:128px;padding:10px}
+  #generation-president .generation-avatar{width:38px;height:38px;margin:7px 0 6px}
+  #generation-president .generation-result{margin-top:7px;padding:8px 9px 7px}
+  #generation-president .generation-result .generation-bar{margin-top:6px}
+  #generation-president .generation-result small{margin-top:5px}
+}
+
+/* Column: same design, denser vertical composition; font sizes are preserved. */
+@media(min-width:821px){
+  #column{padding-top:24px;padding-bottom:24px}
+  #column .module-header{margin-bottom:16px}
+  #column .column-lead{min-height:245px}
+  #column .column-lead-copy{padding:22px}
+  #column .column-lead-copy.live p{-webkit-line-clamp:2}
+  #column .column-grid{margin-top:8px;gap:9px}
+  #column .column-thumb{aspect-ratio:16/8.2}
+  #column .column-card-copy{padding:9px}
+}
+
+
+/* =========================================================
+   JEONGCHAMSI alpha6.0.36.18 — LIVE BAR / AUTH / GENERATION TOP15
+   ========================================================= */
+/* Header second row becomes a compact community/status bar. */
+.live-community-bar{height:36px;border-top:1px solid #f0f2f1;background:#fff;overflow:visible}
+.live-community-inner{position:relative;width:min(1180px,calc(100% - 32px));height:100%;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.live-community-count{display:flex;align-items:baseline;gap:3px;white-space:nowrap;color:#606b67;font-size:12px}
+.live-community-count b{color:#17211d;font-size:13px;font-weight:950;font-variant-numeric:tabular-nums}
+.live-community-actions{position:relative;width:190px;height:26px;margin-left:auto;overflow:hidden}
+.live-community-cta{position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-end;gap:6px;color:#46534e;font-size:12px;font-weight:850;opacity:0;transform:translateY(7px);pointer-events:none;transition:opacity .28s ease,transform .28s ease,color .16s ease}
+.live-community-cta.is-active{opacity:1;transform:translateY(0);pointer-events:auto}
+.live-community-cta:hover{color:var(--ps-brand)}
+.live-community-cta span{color:var(--ps-brand);font-weight:950}
+.livebar-admin{position:relative;z-index:55;flex:none}
+.livebar-admin>summary{list-style:none;cursor:pointer;color:#75807c;font-size:10px;font-weight:850}
+.livebar-admin>summary::-webkit-details-marker{display:none}
+.livebar-admin>form{position:absolute;right:0;top:26px;width:280px;display:grid;gap:9px;padding:14px;border:1px solid #dfe5e2;border-radius:14px;background:#fff;box-shadow:0 16px 36px rgba(23,36,31,.13)}
+.livebar-admin label{display:grid;gap:5px;color:#5f6b66;font-size:11px;font-weight:800}.livebar-admin label.check{display:flex;align-items:center;gap:7px}.livebar-admin input[type="number"]{height:36px;border:1px solid #dfe5e2;border-radius:9px;padding:0 9px}
+
+/* Generation home: result only; person imagery belongs to detail. */
+#generation-president .generation-card{cursor:pointer}
+#generation-president .generation-avatar{display:none}
+#generation-president .generation-card,#generation-president .generation-card.focus{min-height:100px;padding:10px}
+#generation-president .generation-result{margin-top:8px}
+#generation-president .generation-card:hover{border-color:#cfd9e8;background:#fbfcff}
+
+/* Generation detail: selected-age TOP 15. */
+.generation-ranking-card{overflow:visible}
+.generation-age-tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px;margin:0 0 16px}
+.generation-age-tab{min-height:54px;border:1px solid #e1e6e9;border-radius:11px;background:#fff;color:#263139;text-align:left;padding:9px 11px;cursor:pointer}
+.generation-age-tab b,.generation-age-tab span{display:block}.generation-age-tab b{font-size:13px}.generation-age-tab span{margin-top:3px;color:#7b858b;font-size:10px}.generation-age-tab.active{border-color:#b8caef;background:#f4f7ff}.generation-age-tab.active b{color:#2357bd}
+.generation-top15-list{display:grid;gap:7px}
+.generation-top15-row{display:grid;grid-template-columns:34px 52px minmax(0,1fr) minmax(180px,32%);align-items:center;gap:11px;min-height:68px;padding:7px 12px;border:1px solid #e5e9eb;border-radius:12px;background:#fff;cursor:pointer;transition:border-color .15s ease,transform .15s ease}
+.generation-top15-row:hover{border-color:#cbd7e8;transform:translateY(-1px)}
+.generation-top15-rank{color:#7b858b;font-size:12px;font-weight:950;text-align:center}
+.generation-top15-photo{width:48px;height:48px;border-radius:50%;background:linear-gradient(145deg,#e7efec,#dce9e5);border:1px solid #d9e4e0;background-position:center;background-size:cover}
+.generation-top15-person b{display:block;color:#172126;font-size:14px}.generation-top15-person small{display:block;margin-top:4px;color:#778188;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.generation-top15-result i{display:block;height:7px;overflow:hidden;border-radius:999px;background:#e6ebf5}.generation-top15-result i em{display:block;height:100%;border-radius:inherit;background:var(--ps-blue)}.generation-top15-result small{display:block;margin-top:6px;color:#5f6c74;font-size:11px;font-variant-numeric:tabular-nums}
+.generation-top15-empty{min-height:190px}
+@media(max-width:820px){.live-community-inner{width:calc(100% - 24px)}.live-community-actions{width:160px}.livebar-admin{display:none}.generation-age-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}.generation-top15-row{grid-template-columns:28px 46px minmax(0,1fr);min-height:64px}.generation-top15-photo{width:42px;height:42px}.generation-top15-result{grid-column:3;}.generation-top15-result small{margin-top:5px}}
+@media(max-width:560px){.live-community-bar{height:34px}.live-community-inner{width:calc(100% - 20px);gap:8px}.live-community-count{font-size:10px}.live-community-count b{font-size:11px}.live-community-actions{width:132px}.live-community-cta{font-size:10px}.generation-age-tabs{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.generation-top15-row{padding:7px 8px;gap:8px}.generation-top15-person b{font-size:13px}.generation-top15-person small{font-size:10px}}
+
+/* 0.36.22 · hero participation hub */
+.product-home-wrap .product-hero-participation .product-hero-actions a{height:48px;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;border-radius:13px;font-size:13px;font-weight:900;text-decoration:none}
+.product-home-wrap .product-hero-participation .hero-participation-hub{display:grid;grid-template-rows:1fr 1fr;gap:10px;align-self:stretch;min-height:0}
+.product-home-wrap .product-hero-participation .hero-hub-card{width:100%;min-height:0;padding:18px 19px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;border:1px solid #e7ecea;border-radius:16px;background:#fff;text-align:left;cursor:pointer;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+.product-home-wrap .product-hero-participation .hero-hub-card:hover{transform:translateY(-1px);border-color:#b9dcd2;box-shadow:0 8px 22px rgba(23,42,36,.08)}
+.product-home-wrap .product-hero-participation .hero-hub-label{font-size:9px;font-weight:950;letter-spacing:.09em;color:#0b8b73}
+.product-home-wrap .product-hero-participation .hero-hub-partners .hero-hub-label{color:#8a5d08}
+.product-home-wrap .product-hero-participation .hero-hub-card strong{display:block;margin-top:6px;color:#17231f;font-size:16px;line-height:1.35;letter-spacing:-.35px}
+.product-home-wrap .product-hero-participation .hero-hub-card p{margin:5px 0 0;color:#76827e;font-size:11px;line-height:1.5}
+.product-home-wrap .product-hero-participation .hero-hub-card em{margin-top:9px;color:#44524d;font-size:10px;font-style:normal;font-weight:900}
+.product-home-wrap .product-hero-participation .product-hero-actions{align-items:center}
+.product-home-wrap .product-hero-participation .product-hero-proof{display:none}
+@media(min-width:821px){.product-home-wrap .product-hero-participation .product-hero-live{padding:10px}.product-home-wrap .product-hero-participation .hero-hub-card{min-height:0}}
+@media(max-width:560px){.product-home-wrap .product-hero-participation .product-hero-actions a{height:44px;padding:0 13px;font-size:11px}.product-home-wrap .product-hero-participation .hero-hub-card{padding:16px}.product-home-wrap .product-hero-participation .hero-hub-card strong{font-size:14px}}

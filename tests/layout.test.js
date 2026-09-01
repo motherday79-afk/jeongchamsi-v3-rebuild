@@ -1,34 +1,48 @@
-const test = require('node:test');
-const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const path = require('node:path');
-const root = path.resolve(__dirname, '..');
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+const here=path.dirname(fileURLToPath(import.meta.url));
+const root=path.resolve(here,'..');
+const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 
-function read(name){ return fs.readFileSync(path.join(root,name),'utf8'); }
-
-test('global shell exposes four primary foundation routes', () => {
-  const html = read('index.html');
-  for (const route of ['#/home','#/politician','#/compare','#/admin']) assert.match(html, new RegExp(route.replace('/','\\/')));
+test('layout uses only local production assets and no legacy production origin',()=>{
+  const html=read('index.html');
+  assert.match(html,/\/css\/app\.css/);
+  assert.match(html,/\/src\/app\.js/);
+  assert.doesNotMatch(html,/jeongchamsi-v3-preview-clean|https:\/\/.*vercel\.app/);
 });
 
-test('app includes home intelligence modules', () => {
-  const js = read('app.js');
-  for (const marker of ['NOW RANK','LIVE PULSE','ITS ME','COMPARE INTELLIGENCE','COMMUNITY']) assert.ok(js.includes(marker), marker);
+test('new app contains no legacy API, Redis, repository or refresh engine imports',()=>{
+  const app=read('src/app.js');
+  const home=read('src/layout/home-layout.js');
+  const all=app+'\n'+home;
+  assert.doesNotMatch(all,/\/api\/|redis|repository\.js|refresh|history-repository|getHomeSnapshot|getNowPublic/i);
 });
 
-test('app includes politician detail analysis shells', () => {
-  const js = read('app.js');
-  for (const marker of ['POLITICIAN INTELLIGENCE','AGE · GENDER','ANALYSIS TREND','CATEGORY RANK']) assert.ok(js.includes(marker), marker);
+test('home preserves current production section order',()=>{
+  const home=read('src/layout/home-layout.js');
+  const markers=['product-hero','product-launcher','itsme-home-module','poll-module','national-eval','generation-president','id="compare"','now-module','id="column"','id="community"','academy-module'];
+  let pos=-1;
+  for(const marker of markers){
+    const next=home.indexOf(marker);
+    assert.ok(next>pos, `${marker} must appear in production order`);
+    pos=next;
+  }
 });
 
-test('app includes admin control center and refresh pipeline shell', () => {
-  const js = read('app.js');
-  for (const marker of ['JCS CONTROL CENTER','REFRESH PIPELINE','PUBLISHED DATASET','COHORT ANALYSIS']) assert.ok(js.includes(marker), marker);
+test('existing vector icon path definitions are present locally',()=>{
+  const icons=read('src/ui/service-icons.js');
+  for(const key of ['now','poll','itsme','compare','generation','community']) assert.match(icons,new RegExp(`${key}:`));
+  assert.match(icons,/M4 17 9 12l3 3 8-9/);
+  assert.match(icons,/viewBox="0 0 24 24"/);
 });
 
-test('responsive CSS contains desktop, tablet and mobile breakpoints', () => {
-  const css = read('styles.css');
-  assert.match(css, /@media\s*\(max-width:\s*1100px\)/);
-  assert.match(css, /@media\s*\(max-width:\s*720px\)/);
-  assert.ok(css.includes('--accent'));
+test('layout foundation has new UI behavior wiring rather than disabled controls',()=>{
+  const ui=read('src/ui/interactions.js');
+  assert.match(ui,/setupDrawer/);
+  assert.match(ui,/setupNowCarousel/);
+  assert.match(ui,/setupLayoutNavigation/);
+  assert.doesNotMatch(ui,/pointer-events\s*:\s*none|disabled\s*=\s*true/);
 });
