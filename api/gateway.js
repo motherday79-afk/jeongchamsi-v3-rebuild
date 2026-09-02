@@ -139,7 +139,12 @@ export async function dispatchAdminIntelligence(route,method,service){
   if(!action)return {status:404,body:{ok:false,error:'NOT_FOUND'}};
   if(method!==action.method)return {status:405,body:{ok:false,error:'METHOD_NOT_ALLOWED'}};
   try{return {status:200,body:{ok:true,...await action.run()}};}
-  catch(error){const code=String(error?.code||error?.message||'INTELLIGENCE_OPERATION_FAILED');return {status:['COLLECTION_NOT_READY','COLLECTION_VALIDATION_REQUIRED','NAVER_CREDENTIALS_MISSING'].includes(code)?409:500,body:{ok:false,error:code}};}
+  catch(error){
+    const code=String(error?.code||error?.message||'INTELLIGENCE_OPERATION_FAILED');
+    const status=['COLLECTION_NOT_READY','COLLECTION_VALIDATION_REQUIRED','NAVER_CREDENTIALS_MISSING'].includes(code)?409:500;
+    if(status===500)console.error('[admin-intelligence]',{route,code,message:String(error?.message||''),cause:String(error?.cause?.code||error?.cause?.message||'')});
+    return {status,body:{ok:false,error:code}};
+  }
 }
 
 async function handleAdmin(req,res,route,command){
@@ -163,7 +168,7 @@ export default async function handler(req,res){
     if(route==='action')return handleAction(req,res,command);
     if(route==='stats'){const users=await listUsers(command);return json(res,200,{ok:true,members:users.length});}
     if(route.startsWith('admin/')){const handled=await handleAdmin(req,res,route,command);if(handled!==false)return handled;}
-    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_15'});
+    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_16'});
     return json(res,404,{ok:false,error:'NOT_FOUND'});
   }catch(error){return json(res,error.code==='STORAGE_MISSING'?503:500,{ok:false,error:error.code||error.message||'SERVER_ERROR'});}
 }

@@ -1,20 +1,21 @@
 import { HOME_FIXTURE } from './fixtures/home.js';
 import { siteHeader, drawer, footer } from './layout/site-shell.js';
-import { renderHomeLayout } from './layout/home-layout.js?v=0.0.15';
+import { renderHomeLayout } from './layout/home-layout.js?v=0.0.16';
 import { setupLayoutInteractions } from './ui/interactions.js';
 import { createAuthService } from './core/auth.js';
 import { createContentService } from './core/content.js';
 import { createPoliticianService } from './core/politicians.js';
-import { runIntelligenceAction } from './core/intelligence-runner.js';
+import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js';
 import * as views from './views/stage1.js';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.15';
-import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.15';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.16';
+import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.16';
 
 const app=document.getElementById('app');
 const auth=createAuthService();
 const content=createContentService();
 const politicians=createPoliticianService();
 let intelligenceRunnerActive=false;
+const intelligenceAutoResumeGuard=createIntelligenceAutoResumeGuard();
 
 const route=()=>decodeURIComponent((location.hash||'#/').replace(/^#/,'')||'/');
 const parts=r=>r.split('?')[0].split('/').filter(Boolean);
@@ -35,7 +36,7 @@ function updateIntelligenceProgress(kind,job,message=''){
 }
 
 async function runAdminIntelligence(kind,resume=false){
-  if(intelligenceRunnerActive)return;intelligenceRunnerActive=true;
+  if(intelligenceRunnerActive)return;intelligenceRunnerActive=true;intelligenceAutoResumeGuard.mark(kind);
   const button=document.querySelector(`[data-intelligence-action="${kind}"]`);if(button)button.disabled=true;
   try{
     const job=await runIntelligenceAction(auth,kind,{resume,onProgress:value=>updateIntelligenceProgress(kind,value)});
@@ -46,7 +47,7 @@ async function runAdminIntelligence(kind,resume=false){
 
 function resumeAdminIntelligence(){
   const running=document.querySelector('[data-intelligence-job][data-job-status="RUNNING"]:not([data-job-blocked="true"])');
-  if(running)void runAdminIntelligence(running.dataset.intelligenceJob,true);
+  if(running&&intelligenceAutoResumeGuard.claim(running.dataset.intelligenceJob))void runAdminIntelligence(running.dataset.intelligenceJob,true);
 }
 
 async function render(){

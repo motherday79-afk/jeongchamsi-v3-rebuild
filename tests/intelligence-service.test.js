@@ -5,10 +5,15 @@ import { INTELLIGENCE_KEYS } from '../lib/intelligence-keys.js';
 
 function fakeRedis(options={}){
   const map=new Map(),calls=[];
+  let transientPublishedFailures=Number(options.transientPublishedFailures||0);
   return {
     map,calls,
     async command(args){
       const op=String(args[0]||'').toUpperCase(),key=String(args[1]||'');calls.push([...args]);
+      if(transientPublishedFailures>0&&op==='SET'&&key.includes(':published:')){
+        transientPublishedFailures-=1;
+        throw Object.assign(new Error('STORAGE_REQUEST'),{code:'STORAGE_REQUEST'});
+      }
       if(options.failPublishedId&&op==='SET'&&key.includes(`:published:`)&&key.endsWith(`:${options.failPublishedId}`))throw Object.assign(new Error('WRITE_FAILED'),{code:'WRITE_FAILED'});
       if(op==='GET')return map.get(key)??null;
       if(op==='SET'){map.set(key,args[2]);return 'OK';}
@@ -25,6 +30,7 @@ const profiles=count=>Array.from({length:count},(_,index)=>({
 function createService(redis,rows,options={}){
   return createIntelligenceService({
     command:redis.command,profiles:rows,env:{NAVER_AD_ACCESS_LICENSE:'a',NAVER_AD_SECRET_KEY:'b',NAVER_AD_CUSTOMER_ID:'c'},now:options.now||(()=>1_788_400_000_000),
+    storageRetryDelays:options.storageRetryDelays,
     collectRaw:options.collectRaw||((person,context)=>Promise.resolve({personId:person.id,snapshotId:context.snapshotId,officialProfile:person,sourceErrors:[]})),
     analyze:options.analyze||((person,raw)=>({id:person.id,snapshot:raw.snapshotId,signal:{index:Number(person.id.slice(-3))%100},raw:{officialProfile:person}})),
     validateDraft:()=>({ok:true,errors:[]}),
@@ -100,4 +106,16 @@ test('successful publication writes rankings before switching the public pointer
   const rankWrite=redis.calls.findIndex(args=>args[0]==='SET'&&args[1]===INTELLIGENCE_KEYS.rankings(collection.job.snapshotId));
   const pointerWrite=redis.calls.findIndex(args=>args[0]==='SET'&&args[1]===INTELLIGENCE_KEYS.publicPointer&&args[2]===collection.job.snapshotId);
   assert.ok(rankWrite>=0&&pointerWrite>rankWrite);
+});
+
+test('a transient storage failure is retried without advancing or losing the publication batch',async()=>{
+  const redis=fakeRedis({transientPublishedFailures:2}),rows=profiles(3),service=createService(redis,rows,{storageRetryDelays:[0,0,0]});
+  const collection=await service.startCollection();
+  await service.runCollectionStep();
+  await service.startPublish();
+  const published=await service.runPublishStep();
+  assert.equal(published.job.status,'COMPLETED');
+  assert.equal(published.job.completed,3);
+  assert.equal(published.job.failed,0);
+  assert.equal(redis.map.get(INTELLIGENCE_KEYS.publicPointer),collection.job.snapshotId);
 });

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { runIntelligenceAction } from '../src/core/intelligence-runner.js';
+import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from '../src/core/intelligence-runner.js';
 
 test('one collection click keeps requesting bounded steps until terminal',async()=>{
   let steps=0,starts=0;
@@ -30,4 +30,32 @@ test('a reload resumes a running publication without creating another job',async
 test('runner stops and reports a stable API error',async()=>{
   const auth={async intelligenceCollectStart(){return {ok:false,error:'STORAGE_MISSING'};}};
   await assert.rejects(()=>runIntelligenceAction(auth,'collect'),/STORAGE_MISSING/);
+});
+
+test('runner retries a transient storage step and then continues from the same job cursor',async()=>{
+  let attempts=0;
+  const auth={
+    async intelligencePublishStep(){
+      attempts+=1;
+      if(attempts<3)return {ok:false,error:'STORAGE_REQUEST'};
+      return {ok:true,job:{status:'COMPLETED',completed:542,total:542}};
+    },
+  };
+  const result=await runIntelligenceAction(auth,'publish',{resume:true,retryDelays:[0,0,0]});
+  assert.equal(result.status,'COMPLETED');
+  assert.equal(attempts,3);
+});
+
+test('runner bounds persistent storage retries instead of hammering the publish endpoint forever',async()=>{
+  let attempts=0;
+  const auth={async intelligencePublishStep(){attempts+=1;return {ok:false,error:'STORAGE_REQUEST'};}};
+  await assert.rejects(()=>runIntelligenceAction(auth,'publish',{resume:true,retryDelays:[0,0,0]}),/STORAGE_REQUEST/);
+  assert.equal(attempts,3);
+});
+
+test('automatic resume is attempted only once until the administrator clicks again',()=>{
+  const guard=createIntelligenceAutoResumeGuard();
+  assert.equal(guard.claim('publish'),true);
+  assert.equal(guard.claim('publish'),false);
+  assert.equal(guard.claim('collect'),true);
 });
