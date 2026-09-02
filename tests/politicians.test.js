@@ -62,15 +62,23 @@ test('Kim Min-seok pilot fills the complete public detail from approved source c
   assert.doesNotMatch(html,/JCS ADMIN PRIVATE POLITICAL INTELLIGENCE/);
 });
 
-test('public politician detail uses the premium intelligence visual system',async()=>{
+test('public politician detail uses the data-dense intelligence visual system',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample})});
-  assert.match(html,/data-design-system="jcs-public-intelligence-v2"/);
+  assert.match(html,/data-design-system="jcs-public-intelligence-v3"/);
   assert.match(html,/class="[^"]*person-intelligence-cover/);
-  assert.match(html,/class="[^"]*person-intelligence-gauge-grid/);
-  assert.match(html,/class="[^"]*person-intelligence-visual-dual/);
-  assert.match(html,/class="[^"]*person-intelligence-flow/);
-  assert.match(html,/aria-label="활동·미디어 지표 시각화"/);
+  assert.match(html,/class="[^"]*person-core-radar/);
+  assert.match(html,/class="[^"]*person-activity-bars/);
+  assert.match(html,/class="[^"]*person-attention-funnel/);
+});
+
+test('public politician intelligence v3 uses semantic visuals instead of repeated oversized score cards',async()=>{
+  const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
+  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample})});
+  assert.match(html,/data-design-system="jcs-public-intelligence-v3"/);
+  for(const visual of ['person-core-radar','person-core-bullet-ledger','person-audience-spectrum-v3','person-activity-bars','person-attention-funnel'])assert.match(html,new RegExp(visual));
+  assert.match(html,/role="img" aria-label="김민석 핵심 분석지표 레이더 차트"/);
+  assert.doesNotMatch(html,/person-intelligence-plot/);
 });
 
 test('admin Kim Min-seok detail fills private intelligence while identifying evidence mode',async()=>{
@@ -85,16 +93,45 @@ test('admin Kim Min-seok detail fills private intelligence while identifying evi
   assert.match(html,/국민 여론조사 49\.30%/);
   assert.doesNotMatch(text,/DEEP ANALYSIS|상세 분석 펼쳐보기|ANALYSIS TREND|관심 변화·NOW 이력/);
   assert.match(text,/HISTORY INTELLIGENCE/);
-  assert.doesNotMatch(html,/데이터 연결 전|데이터 준비 중|미연결|modeled.*fallback/i);
+  assert.doesNotMatch(html,/modeled.*fallback/i);
+  assert.match(html,/SEARCH DATA CONNECTION REQUIRED/);
 });
 
-test('administrator report merges identity and executive intelligence into one cover',async()=>{
+test('administrator report separates its compact identity gate from expanded executive intelligence',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample})},{user:{role:'admin'}});
-  assert.match(html,/data-design-system="jcs-private-intelligence-v2"/);
-  assert.match(html,/<summary class="admin-intelligence-unified-cover"[\s\S]*JCS ADMIN PRIVATE POLITICAL INTELLIGENCE[\s\S]*EXECUTIVE INTELLIGENCE SUMMARY[\s\S]*당대표 전환·다채널 확산형[\s\S]*<\/summary>/);
-  assert.doesNotMatch(html,/<section class="admin-pi-executive"/);
+  assert.match(html,/data-design-system="jcs-private-intelligence-v3"/);
+  assert.match(html,/<summary class="admin-intelligence-report-gate-v3"[\s\S]*JCS ADMIN PRIVATE POLITICAL INTELLIGENCE[\s\S]*<\/summary>/);
+  assert.match(html,/<section class="admin-intelligence-executive-v3"[\s\S]*EXECUTIVE INTELLIGENCE SUMMARY[\s\S]*당대표 전환·다채널 확산형/);
   for(const visual of ['admin-pi-heatmap-chapter','admin-pi-waterfall-chapter','admin-pi-resilience-chapter','admin-pi-propagation-chapter','admin-pi-impact-chapter','admin-pi-signal-board','admin-pi-evidence-ledger','admin-pi-strategy-roadmap'])assert.match(html,new RegExp(visual));
+});
+
+test('administrator report v3 keeps only report identity inside the collapsed summary',async()=>{
+  const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
+  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample})},{user:{role:'admin'}});
+  const summary=html.match(/<summary class="admin-intelligence-report-gate-v3"[\s\S]*?<\/summary>/)?.[0]||'';
+  assert.match(summary,/JCS ADMIN PRIVATE POLITICAL INTELLIGENCE/);
+  assert.match(summary,/허용 원자료와 JCS 해석을 분리한 단일 인물 파일럿 리포트 \(JCS 해석\)/);
+  assert.match(summary,/REPORT STATUS[\s\S]*LIVE[\s\S]*리포트 열기/);
+  assert.doesNotMatch(summary,/EXECUTIVE INTELLIGENCE SUMMARY|30D PULSE|EVIDENCE MODE/);
+  assert.match(html,/class="admin-intelligence-executive-v3"/);
+  assert.match(html,/EXECUTIVE INTELLIGENCE SUMMARY/);
+  assert.equal((html.match(/JCS 해석/g)||[]).length,2,'the approved subtitle contains the phrase twice and no section repeats it');
+});
+
+test('administrator intelligence v3 assigns a distinct semantic visual to every existing chapter',async()=>{
+  const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
+  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample})},{user:{role:'admin'}});
+  for(const visual of ['admin-cohort-heatmap-v3','admin-support-bars-v3','admin-support-waterfall-v3','admin-support-radar-v3','admin-resilience-area-v3','admin-propagation-flow-v3','admin-issue-quadrant-v3','admin-risk-matrix-v3','admin-gap-dumbbell-v3','admin-competitor-flow-v3','admin-evidence-ledger-v3','admin-strategy-roadmap-v3','admin-history-timeline-v3'])assert.match(html,new RegExp(visual));
+  assert.match(html,/--heat-opacity:0\.\d+/);
+});
+
+test('administrator intelligence v3 exposes data-ready derived chapters without inventing search volumes',async()=>{
+  const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
+  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample})},{user:{role:'admin'}});
+  for(const marker of ['DIGITAL DEMAND INTELLIGENCE','SEARCH INTENT MAP','NEWS NARRATIVE INTELLIGENCE','PUBLIC OPINION CONVERSION','CONSTITUENCY OPPORTUNITY','JCS CROSS INTELLIGENCE','30-DAY CONSULTING ACTION'])assert.match(html,new RegExp(marker));
+  assert.match(html,/SEARCH DATA CONNECTION REQUIRED/);
+  assert.doesNotMatch(html,/PC 검색량<\/[^>]+>\s*[0-9,]+|모바일 검색량<\/[^>]+>\s*[0-9,]+/);
 });
 
 test('member detail also omits duplicated public deep analysis and NOW trend',async()=>{
@@ -110,6 +147,8 @@ test('all non-pilot politicians keep the restored layout without invented analys
   assert.match(html,/데이터 연결 전/);
   assert.doesNotMatch(html.replaceAll('&amp;','&'),/DEEP ANALYSIS|상세 분석 펼쳐보기|ANALYSIS TREND|관심 변화·NOW 이력/);
   assert.doesNotMatch(html,/당대표 전환·다채널 확산형|SINGLE-PERSON PILOT/);
+  assert.match(html,/class="person-core-radar is-pending"/);
+  assert.match(html,/class="person-core-bullet-ledger"[\s\S]*?<strong>—<\/strong>/);
 });
 
 test('politician intelligence typography establishes readable size floors',()=>{
@@ -123,4 +162,38 @@ test('politician intelligence typography establishes readable size floors',()=>{
     assert.match(finalLayer,/\.admin-intelligence-report-shell\.jcs-private-intelligence-v2 :is\([^}]+\)\{[^}]*font-size:14px!important/);
     assert.match(finalLayer,/@media\(max-width:680px\)[\s\S]*font-size:14px!important/);
   });
+});
+
+test('politician intelligence v3 final layer fixes typography and approved high-contrast tokens',()=>{
+  const css=new URL('../css/pages.css',import.meta.url);
+  return import('node:fs/promises').then(({readFile})=>readFile(css,'utf8')).then(text=>{
+    const marker='JCS_0_0_13 · DATA-DENSE POLITICAL INTELLIGENCE FINAL LAYER';
+    const start=text.lastIndexOf(marker);
+    assert.ok(start>text.lastIndexOf('JCS_0_0_12 · LUXURY POLITICAL INTELLIGENCE FINAL LAYER'));
+    const layer=text.slice(start);
+    assert.match(layer,/--jcs-v3-text:#173133/);
+    assert.match(layer,/--jcs-v3-body:#30484a/i);
+    assert.match(layer,/--jcs-v3-support:#65777a/i);
+    assert.match(layer,/\.jcs-public-intelligence-v3 :is\([^}]+\)\{[^}]*font-size:14px!important/);
+    assert.match(layer,/\.jcs-private-intelligence-v3 :is\([^}]+\)\{[^}]*font-size:14px!important/);
+    const sub14=[...layer.matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/gi)].filter(match=>Number(match[1])<14);
+    assert.deepEqual(sub14.map(match=>match[0]),[]);
+  });
+});
+
+test('release metadata and browser cache keys identify JCS 0.0.13',async()=>{
+  const {readFile}=await import('node:fs/promises');
+  const root=new URL('../',import.meta.url);
+  const [pkg,index,app,gateway]=await Promise.all([
+    readFile(new URL('package.json',root),'utf8'),
+    readFile(new URL('index.html',root),'utf8'),
+    readFile(new URL('src/app.js',root),'utf8'),
+    readFile(new URL('api/gateway.js',root),'utf8')
+  ]);
+  assert.match(pkg,/"name": "jcs-0-0-13"/);
+  assert.match(pkg,/"version": "0\.0\.13"/);
+  assert.doesNotMatch(index+app,/v=0\.0\.12/);
+  assert.match(index,/pages\.css\?v=0\.0\.13/);
+  assert.match(app,/politicians\.js\?v=0\.0\.13/);
+  assert.match(gateway,/version:'JCS_0_0_13'/);
 });
