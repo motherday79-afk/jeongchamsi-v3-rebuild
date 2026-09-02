@@ -169,6 +169,8 @@ a,.more-btn{--jc-link:#087f74}
 #now .rank-top-card.party-basicincome .rank-top-no{color:#138a80}
 #now .rank-top-card.party-socialdemocratic{background:#eef6eb;border-color:#dcebd7}
 #now .rank-top-card.party-socialdemocratic .rank-top-no{color:#568447}
+#now .rank-top-card.party-vacant{background:#f7f7f7;border-color:#e4e4e4}
+#now .rank-top-card.party-vacant .rank-top-no{color:#8a8f93}
 #now .rank-top-card.party-independent{background:#f3f4f5;border-color:#e0e3e5}
 #now .rank-top-card.party-independent .rank-top-no{color:#70787d}
 #now .rank-top-card .rank-top-copy span{color:#667178}
@@ -776,6 +778,7 @@ a,.more-btn{--jc-link:#087f74}
 #now .rank-top-grid-10 .rank-top-card.party-progressive,
 #now .rank-top-grid-10 .rank-top-card.party-basicincome,
 #now .rank-top-grid-10 .rank-top-card.party-socialdemocratic,
+#now .rank-top-grid-10 .rank-top-card.party-vacant,
 #now .rank-top-grid-10 .rank-top-card.party-independent{
   background:#fff;
   border-color:#e2e6e9;
@@ -812,6 +815,7 @@ a,.more-btn{--jc-link:#087f74}
 #now .party-progressive .rank-party-flag{background:#c93648}
 #now .party-basicincome .rank-party-flag{background:#138a80}
 #now .party-socialdemocratic .rank-party-flag{background:#568447}
+#now .party-vacant .rank-party-flag{background:#8a8f93}
 #now .party-independent .rank-party-flag{background:#747d82}
 #now .rank-top-card[role="button"]:hover{
   background:#fbfcfd;

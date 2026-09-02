@@ -129,6 +129,24 @@ test('home NOW rank renders 30 assembly members as three manual pages with photo
   assert.doesNotMatch(html,/자동|4초/);
 });
 
+test('home NOW rank assigns a distinct party flag to every registered party and keeps only independents as 무',()=>{
+  const rank=[
+    {id:'party-jo',name:'조국',party:'조국혁신당',jurisdiction:'비례대표',rank:1,score:99.1},
+    {id:'party-jin',name:'윤종오',party:'진보당',jurisdiction:'울산 북구',rank:2,score:98.1},
+    {id:'party-gi',name:'용혜인',party:'기본소득당',jurisdiction:'비례대표',rank:3,score:97.1},
+    {id:'party-sa',name:'한창민',party:'사회민주당',jurisdiction:'비례대표',rank:4,score:96.1},
+    {id:'party-mu',name:'무소속 의원',party:'무소속',jurisdiction:'서울',rank:5,score:95.1},
+    {id:'party-vacant',name:'강릉시 국회의원 공석',party:'공석',jurisdiction:'강릉시',rank:6,score:94.1}
+  ];
+  const html=renderHomeLayout({...HOME_FIXTURE,itsmePosts:[],columns:[],community:[],polls:{items:[]},generation:{},nationalEvaluation:{},academy:{items:[]},rank,session:{authenticated:false}});
+  assert.match(html,/class="rank-top-card party-innovation"[^>]*aria-label="1위 조국 상세"[\s\S]*?<span class="rank-party-flag" title="조국혁신당">조<\/span>/);
+  assert.match(html,/class="rank-top-card party-progressive"[^>]*aria-label="2위 윤종오 상세"[\s\S]*?<span class="rank-party-flag" title="진보당">진<\/span>/);
+  assert.match(html,/class="rank-top-card party-basicincome"[^>]*aria-label="3위 용혜인 상세"[\s\S]*?<span class="rank-party-flag" title="기본소득당">기<\/span>/);
+  assert.match(html,/class="rank-top-card party-socialdemocratic"[^>]*aria-label="4위 한창민 상세"[\s\S]*?<span class="rank-party-flag" title="사회민주당">사<\/span>/);
+  assert.match(html,/class="rank-top-card party-independent"[^>]*aria-label="5위 무소속 의원 상세"[\s\S]*?<span class="rank-party-flag" title="무소속">무<\/span>/);
+  assert.match(html,/class="rank-top-card party-vacant"[^>]*aria-label="6위 강릉시 국회의원 공석 상세"[\s\S]*?<span class="rank-party-flag" title="공석">공<\/span>/);
+});
+
 test('home does not invent an assembly ranking when no operating rank is published',async()=>{
   const app=await import('node:fs/promises').then(({readFile})=>readFile(new URL('../src/app.js',import.meta.url),'utf8'));
   assert.doesNotMatch(app,/rankMode:'temporary-assembly-pilot'/);

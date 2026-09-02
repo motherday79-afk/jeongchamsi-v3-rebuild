@@ -1,7 +1,7 @@
 import { launcherServices, serviceIconSvg } from '../ui/service-icons.js';
 
-const partyClass=(party='')=>party.includes('더불어')?'party-democratic':party.includes('국민')?'party-peoplepower':party.includes('개혁신당')?'party-reform':'party-independent';
-const partyMark=(party='')=>party.includes('더불어')?'민':party.includes('국민')?'국':party.includes('개혁신당')?'개':'무';
+const partyClass=(party='')=>party.includes('더불어')?'party-democratic':party.includes('국민의힘')?'party-peoplepower':party.includes('개혁신당')?'party-reform':party.includes('조국혁신당')?'party-innovation':party.includes('진보당')?'party-progressive':party.includes('기본소득당')?'party-basicincome':party.includes('사회민주당')?'party-socialdemocratic':party.includes('공석')?'party-vacant':'party-independent';
+const partyMark=(party='')=>party.includes('더불어')?'민':party.includes('국민의힘')?'국':party.includes('개혁신당')?'개':party.includes('조국혁신당')?'조':party.includes('진보당')?'진':party.includes('기본소득당')?'기':party.includes('사회민주당')?'사':party.includes('공석')?'공':'무';
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const publishedItems=data=>(Array.isArray(data?.items)?data.items:[]).filter(item=>item?.published!==false);
 const dateLabel=value=>{if(!value)return '';const date=new Date(value);return Number.isNaN(date.getTime())?'':date.toLocaleDateString('ko-KR');};
