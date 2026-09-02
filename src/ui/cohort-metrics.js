@@ -9,8 +9,9 @@ export function gallupPartySupport(sources=[]){
 
 export function jcsSupportConversion(data,attention){
   if(!finite(attention))return null;
-  const partySupport=gallupPartySupport(data?.sources),transition=(data?.transition||[]).find(item=>/전환/.test(String(item?.label||'')))?.score;
+  const gallup=gallupPartySupport(data?.sources),internalBase=data?.support?.core??data?.audience?.position??data?.signal?.index,partySupport=finite(gallup)?gallup:internalBase,transition=(data?.transition||[]).find(item=>/전환/.test(String(item?.label||'')))?.score??data?.support?.action??data?.signal?.index;
   const risk=data?.support?.risk??(data?.core||[]).find(item=>/변동성|위험/.test(String(item?.label||'')))?.score;
-  if(!finite(partySupport)||!finite(transition)||!finite(risk))return null;
-  return clamp(Number(attention)*(partySupport/100)*(Number(transition)/100)*(1-Number(risk)/100));
+  const resolvedRisk=finite(risk)?Number(risk):Math.max(0,100-Number(data?.support?.stability??70));
+  if(!finite(partySupport)||!finite(transition))return clamp(Number(attention)*.5);
+  return clamp(Number(attention)*(Number(partySupport)/100)*(Number(transition)/100)*(1-resolvedRisk/100));
 }

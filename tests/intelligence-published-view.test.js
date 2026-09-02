@@ -21,7 +21,8 @@ test('a published politician uses live ranks and populated public/admin intellig
   assert.match(html,/class="radar-axis-label"[^>]*>확산력/);
   assert.match(html,/class="radar-axis-label"[^>]*>활동성/);
   assert.match(html,/연령·성별 관심·지지 전환 구조/);
-  assert.match(html,/JCS 지지전환 추정지수/);
+  assert.match(html,/JCS 지지전환지수/);
+  assert.doesNotMatch(html,/산정 불가|실제 지지율 아님|추정지수|추정치/);
   assert.match(html,/jcs-analysis-compact/);
   assert.doesNotMatch(html,/더불어민주당 대표 선출/);
 });

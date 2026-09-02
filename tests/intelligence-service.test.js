@@ -19,6 +19,10 @@ function fakeRedis(options={}){
       if(op==='SET'){map.set(key,args[2]);return 'OK';}
       if(op==='MGET')return args.slice(1).map(item=>map.get(item)??null);
       if(op==='DEL'){let removed=0;for(const item of args.slice(1)){if(map.delete(String(item)))removed+=1;}return removed;}
+      if(op==='SCAN'){
+        const pattern=String(args[3]||'*').replace(/[.+^${}()|[\]\\]/g,'\\$&').replaceAll('*','.*');
+        return ['0',[...map.keys()].filter(item=>new RegExp(`^${pattern}$`).test(item))];
+      }
       throw new Error(`UNSUPPORTED:${op}`);
     }
   };
@@ -172,4 +176,24 @@ test('published ranks use operating 40 search 60 news weights and synchronize de
   const detail=await service.getPublicIntelligence(rankings.overall[0].id);
   assert.equal(detail.signal.index,rankings.overall[0].score);
   assert.equal(detail.rank.overall,1);
+});
+
+test('repeated collection and publication keeps one full snapshot and compact history only',async()=>{
+  const redis=fakeRedis(),rows=profiles(30);let clock=1_788_400_000_000;
+  redis.map.set('jcs:rebuild:v2:users','preserve-users');
+  const service=createService(redis,rows,{now:()=>clock});
+  for(let cycle=0;cycle<3;cycle+=1){
+    await service.startCollection();
+    while((await service.status()).collection.status==='RUNNING')await service.runCollectionStep();
+    await service.startPublish();
+    while((await service.status()).publication.status==='RUNNING')await service.runPublishStep();
+    clock+=1_000;
+  }
+  const current=redis.map.get(INTELLIGENCE_KEYS.publicPointer);
+  const fullDraftKeys=[...redis.map.keys()].filter(key=>key.startsWith(`${INTELLIGENCE_KEYS.prefix}:draft:`)&&key!==INTELLIGENCE_KEYS.latestDraft);
+  const historyKeys=[...redis.map.keys()].filter(key=>key.startsWith(`${INTELLIGENCE_KEYS.prefix}:history:`)&&key!==INTELLIGENCE_KEYS.historyIndex);
+  assert.equal(fullDraftKeys.length,30);
+  assert.equal(fullDraftKeys.every(key=>key.includes(`:${current}:`)),true);
+  assert.equal(historyKeys.length,3);
+  assert.equal(redis.map.get('jcs:rebuild:v2:users'),'preserve-users');
 });

@@ -66,6 +66,19 @@ test('member comparison keeps the two-person limit and adds interpreted comparis
   assert.equal((html.match(/data-compare-slot/g)||[]).length,2);
   for(const marker of ['MEMBER INTERPRETED COMPARISON','AGE × GENDER ATTENTION &amp; SUPPORT','연령·성별 관심·지지 전환 구조','관심 68','지지전환 12','ATTENTION FLOW','STRENGTH &amp; WEAKNESS GAP','RISK &amp; OPPORTUNITY','JCS COMPARISON SYNTHESIS'])assert.match(html,new RegExp(marker));
   assert.doesNotMatch(html,/ADMIN MULTI INTELLIGENCE|EVIDENCE LEDGER/);
+  assert.doesNotMatch(html,/산정 불가|실제 지지율 아님|추정지수|추정치/);
+});
+
+test('JCS support conversion remains populated when Gallup context is unavailable',async()=>{
+  const noGallup={...service,getForCompare:async id=>{
+    const item=profiles.find(profile=>profile.id===id),intelligence=intelligenceFor(item);
+    intelligence.sources=intelligence.sources.filter(source=>!/한국갤럽/.test(source.type));
+    return {ok:true,item,intelligence};
+  }};
+  const html=await renderPoliticianCompare(noGallup,'/compare?ids=assembly-001,assembly-002',{authenticated:true,user:{role:'member'}});
+  assert.match(html,/JCS 지지전환지수/);
+  assert.match(html,/지지전환 \d+/);
+  assert.doesNotMatch(html,/산정 불가|실제 지지율 아님|추정/);
 });
 
 test('admin comparison accepts two to five and renders five simultaneous slots',async()=>{
@@ -78,7 +91,8 @@ test('admin comparison accepts two to five and renders five simultaneous slots',
   assert.doesNotMatch(html,/data-compare-selected="assembly-006"/);
   assert.match(html,/관리자 다중 비교/);
   assert.match(html,/최대 5명/);
-  for(const marker of ['ADMIN MULTI INTELLIGENCE','AGE × GENDER HEATMAP','SUPPORT QUALITY RADAR','POLITICAL RESILIENCE','MEDIA PROPAGATION','ISSUE QUADRANT','RISK &amp; OPPORTUNITY MATRIX','COMPETITIVENESS GAP','EVIDENCE LEDGER','STRATEGY PRIORITIES','MULTI-PERSON SYNTHESIS'])assert.match(html,new RegExp(marker));
+  for(const marker of ['ADMIN MULTI INTELLIGENCE','AGE × GENDER HEATMAP','SUPPORT QUALITY RADAR','POLITICAL RESILIENCE','MEDIA PROPAGATION','ISSUE QUADRANT','RISK &amp; OPPORTUNITY MATRIX','COMPETITIVENESS GAP','STRATEGY PRIORITIES','MULTI-PERSON SYNTHESIS'])assert.match(html,new RegExp(marker));
+  assert.doesNotMatch(html,/EVIDENCE LEDGER|근거 원장|원자료 범주/);
   assert.match(html,/admin-compare-heatmap" style="--compare-count:5"/);
   assert.match(html,/class="radar-axis-label"[^>]*>충성 72</);
   assert.match(html,/class="radar-axis-label"[^>]*>행동 69</);

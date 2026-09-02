@@ -6,6 +6,7 @@ import {
   batchedMget,
   createIntelligenceRepository,
 } from '../lib/intelligence-repository.js';
+import { INTELLIGENCE_KEYS } from '../lib/intelligence-keys.js';
 
 function fakeRedis(seed={}){
   const map=new Map(Object.entries(seed));
@@ -19,6 +20,11 @@ function fakeRedis(seed={}){
       if(op==='GET')return map.get(args[1])??null;
       if(op==='SET'){map.set(args[1],args[2]);return 'OK';}
       if(op==='MGET')return args.slice(1).map(key=>map.get(key)??null);
+      if(op==='DEL'){let removed=0;for(const key of args.slice(1))if(map.delete(String(key)))removed+=1;return removed;}
+      if(op==='SCAN'){
+        const pattern=String(args[3]||'*').replace(/[.+^${}()|[\]\\]/g,'\\$&').replaceAll('*','.*');
+        return ['0',[...map.keys()].filter(key=>new RegExp(`^${pattern}$`).test(key))];
+      }
       throw new Error(`UNSUPPORTED:${op}`);
     }
   };
@@ -27,6 +33,44 @@ function fakeRedis(seed={}){
 test('politician batches can never be configured above 25 records',()=>{
   assert.equal(MAX_POLITICIAN_BATCH,25);
   assert.throws(()=>chunkKeys(Array.from({length:26},(_,i)=>`p${i+1}`),26),/BATCH_SIZE_EXCEEDS_25/);
+});
+
+test('legacy unfinished collection is reset without touching the public snapshot or user data',async()=>{
+  const redis=fakeRedis(),repository=createIntelligenceRepository(redis.command,{now:()=>4_000});
+  await repository.createJob('collect','new-snapshot',['p1','p2']);
+  await repository.putDraft('new-snapshot','p1',{id:'p1'});
+  const job=JSON.parse(redis.map.get(INTELLIGENCE_KEYS.job('collect')));
+  job.cursor=1;job.completed=1;job.successIds=['p1'];job.activeBatch=null;delete job.storageMode;
+  redis.map.set(INTELLIGENCE_KEYS.job('collect'),JSON.stringify(job));
+  redis.map.set(INTELLIGENCE_KEYS.publicPointer,'public-snapshot');
+  redis.map.set(INTELLIGENCE_KEYS.draft('public-snapshot','p1'),JSON.stringify({id:'public-p1'}));
+  redis.map.set('jcs:rebuild:v2:users','preserve-users');
+
+  const recovered=await repository.prepareCompactCollection();
+
+  assert.equal(recovered.cursor,0);
+  assert.equal(recovered.storageMode,'COMPACT_V2');
+  assert.equal(redis.map.has(INTELLIGENCE_KEYS.draft('new-snapshot','p1')),false);
+  assert.equal(redis.map.has(INTELLIGENCE_KEYS.draft('public-snapshot','p1')),true);
+  assert.equal(redis.map.get('jcs:rebuild:v2:users'),'preserve-users');
+});
+
+test('snapshot cleanup removes only obsolete full intelligence keys',async()=>{
+  const redis=fakeRedis(),repository=createIntelligenceRepository(redis.command);
+  for(const key of [
+    INTELLIGENCE_KEYS.draft('old-snapshot','p1'),INTELLIGENCE_KEYS.published('old-snapshot','p1'),
+    INTELLIGENCE_KEYS.validation('old-snapshot'),INTELLIGENCE_KEYS.rankings('old-snapshot')
+  ])redis.map.set(key,'old');
+  redis.map.set(INTELLIGENCE_KEYS.draft('current-snapshot','p1'),'current');
+  redis.map.set(INTELLIGENCE_KEYS.history('old-snapshot'),'history');
+  redis.map.set('jcs:rebuild:v2:users','preserve-users');
+
+  const result=await repository.cleanupObsoleteSnapshots(['current-snapshot']);
+
+  assert.equal(result.removed,4);
+  assert.equal(redis.map.has(INTELLIGENCE_KEYS.draft('current-snapshot','p1')),true);
+  assert.equal(redis.map.has(INTELLIGENCE_KEYS.history('old-snapshot')),true);
+  assert.equal(redis.map.get('jcs:rebuild:v2:users'),'preserve-users');
 });
 
 test('a 543-record read becomes 22 MGET calls with at most 25 keys each',async()=>{
@@ -71,4 +115,3 @@ test('a failed politician is recorded while successful politicians remain comple
   assert.deepEqual(job.successIds,['p1','p3']);
   assert.equal(job.failures[0].personId,'p2');
 });
-

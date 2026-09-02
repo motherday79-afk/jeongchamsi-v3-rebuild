@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildIntelligenceDraft } from '../lib/intelligence-analysis.js';
+import { compactIntelligenceDraft } from '../lib/intelligence-storage.js';
 import { validateIntelligenceDraft, validateSnapshot } from '../lib/intelligence-validation.js';
 
 const person={id:'assembly-031',type:'assembly',roleLabel:'국회의원',name:'김테스트',party:'더불어민주당',region:'경기',jurisdiction:'경기 테스트구',terms:'3선',committee:'정무위원회',office:'국회의원',source:'국회 공개정보'};
@@ -74,4 +75,16 @@ test('snapshot validation requires every expected politician exactly once',()=>{
   const invalid=validateSnapshot([draft],[person.id,'assembly-999']);
   assert.equal(invalid.ok,false);
   assert.deepEqual(invalid.missingIds,['assembly-999']);
+});
+
+test('stored intelligence keeps evidence once and records compact ranking inputs',()=>{
+  const full=buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V1');
+  const stored=compactIntelligenceDraft(full);
+  assert.equal(stored.news.length,3);
+  assert.equal(stored.raw.news,undefined);
+  assert.equal(stored.raw.officialProfile,undefined);
+  assert.equal(stored.raw.officialContext,undefined);
+  assert.deepEqual(stored.raw.searchAds,{volume:{pc:1500,mobile:10000,total:11500}});
+  assert.deepEqual(stored.rankingInput,{searchTotal:11500,articleCount:3,sourceCount:3,latestPublishedAt:'2026-09-02T00:00:00.000Z',searchStatus:'DIRECT',newsStatus:'DIRECT'});
+  assert.ok(JSON.stringify(stored).length<JSON.stringify(full).length);
 });
