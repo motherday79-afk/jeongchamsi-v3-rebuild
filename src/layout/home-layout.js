@@ -1,7 +1,7 @@
 import { launcherServices, serviceIconSvg } from '../ui/service-icons.js';
 
-const partyClass=(party='')=>party.includes('더불어')?'party-democratic':party.includes('국민')?'party-peoplepower':'party-independent';
-const partyMark=(party='')=>party.includes('더불어')?'민':party.includes('국민')?'국':'무';
+const partyClass=(party='')=>party.includes('더불어')?'party-democratic':party.includes('국민')?'party-peoplepower':party.includes('개혁신당')?'party-reform':'party-independent';
+const partyMark=(party='')=>party.includes('더불어')?'민':party.includes('국민')?'국':party.includes('개혁신당')?'개':'무';
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const publishedItems=data=>(Array.isArray(data?.items)?data.items:[]).filter(item=>item?.published!==false);
 const dateLabel=value=>{if(!value)return '';const date=new Date(value);return Number.isNaN(date.getTime())?'':date.toLocaleDateString('ko-KR');};

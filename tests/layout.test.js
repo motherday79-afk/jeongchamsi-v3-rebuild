@@ -123,6 +123,8 @@ test('home NOW rank renders 30 assembly members as three manual pages with photo
   assert.match(html,/data-politician-avatar/);
   assert.match(html,/data-politician-photo/);
   assert.match(html,/politician-photo-initial/);
+  assert.match(html,/class="rank-top-card party-reform"[^>]*aria-label="23위 이준석 상세"/);
+  assert.match(html,/<span class="rank-party-flag" title="개혁신당">개<\/span>/);
   assert.doesNotMatch(html,/임시|파일럿/);
   assert.doesNotMatch(html,/자동|4초/);
 });

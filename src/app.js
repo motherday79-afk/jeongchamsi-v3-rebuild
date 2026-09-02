@@ -1,15 +1,15 @@
 import { HOME_FIXTURE } from './fixtures/home.js';
 import { siteHeader, drawer, footer } from './layout/site-shell.js';
-import { renderHomeLayout } from './layout/home-layout.js?v=0.0.21';
+import { renderHomeLayout } from './layout/home-layout.js?v=0.0.22';
 import { setupLayoutInteractions } from './ui/interactions.js';
 import { createAuthService } from './core/auth.js';
 import { createContentService } from './core/content.js';
 import { createPoliticianService } from './core/politicians.js';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js';
-import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.21';
+import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.22';
 import * as views from './views/stage1.js';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.21';
-import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.21';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.22';
+import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.22';
 
 const app=document.getElementById('app');
 const auth=createAuthService();
