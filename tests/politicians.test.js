@@ -194,7 +194,7 @@ test('politician intelligence v3 final layer fixes typography and approved high-
   });
 });
 
-test('release metadata and browser cache keys identify JCS 0.0.16',async()=>{
+test('release metadata and browser cache keys identify JCS 0.0.17',async()=>{
   const {readFile}=await import('node:fs/promises');
   const root=new URL('../',import.meta.url);
   const [pkg,index,app,gateway]=await Promise.all([
@@ -203,10 +203,10 @@ test('release metadata and browser cache keys identify JCS 0.0.16',async()=>{
     readFile(new URL('src/app.js',root),'utf8'),
     readFile(new URL('api/gateway.js',root),'utf8')
   ]);
-  assert.match(pkg,/"name": "jcs-0-0-16"/);
-  assert.match(pkg,/"version": "0\.0\.16"/);
-  assert.doesNotMatch(index+app,/v=0\.0\.(?:12|13|14|15)/);
-  assert.match(index,/pages\.css\?v=0\.0\.16/);
-  assert.match(app,/politicians\.js\?v=0\.0\.16/);
-  assert.match(gateway,/version:'JCS_0_0_16'/);
+  assert.match(pkg,/"name": "jcs-0-0-17"/);
+  assert.match(pkg,/"version": "0\.0\.17"/);
+  assert.doesNotMatch(index+app,/v=0\.0\.(?:12|13|14|15|16)/);
+  assert.match(index,/pages\.css\?v=0\.0\.17/);
+  assert.match(app,/politicians\.js\?v=0\.0\.17/);
+  assert.match(gateway,/version:'JCS_0_0_17'/);
 });

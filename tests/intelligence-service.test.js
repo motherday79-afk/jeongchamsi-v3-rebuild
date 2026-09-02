@@ -18,6 +18,7 @@ function fakeRedis(options={}){
       if(op==='GET')return map.get(key)??null;
       if(op==='SET'){map.set(key,args[2]);return 'OK';}
       if(op==='MGET')return args.slice(1).map(item=>map.get(item)??null);
+      if(op==='DEL'){let removed=0;for(const item of args.slice(1)){if(map.delete(String(item)))removed+=1;}return removed;}
       throw new Error(`UNSUPPORTED:${op}`);
     }
   };
@@ -85,12 +86,13 @@ test('collection cannot silently publish zero search demand when Naver credentia
   await assert.rejects(()=>service.startCollection(),/NAVER_CREDENTIALS_MISSING/);
 });
 
-test('a partial publication failure leaves the existing public pointer unchanged',async()=>{
-  const redis=fakeRedis({failPublishedId:'assembly-002'});redis.map.set(INTELLIGENCE_KEYS.publicPointer,'old-snapshot');
-  const service=createService(redis,profiles(3));
-  await service.startCollection();await service.runCollectionStep();await service.startPublish();
+test('a partial direct publication leaves the existing public pointer unchanged',async()=>{
+  const redis=fakeRedis();redis.map.set(INTELLIGENCE_KEYS.publicPointer,'old-snapshot');
+  const service=createService(redis,profiles(30));
+  await service.startCollection();await service.runCollectionStep();await service.runCollectionStep();await service.startPublish();
   const published=await service.runPublishStep();
-  assert.equal(published.job.status,'COMPLETED_WITH_ERRORS');
+  assert.equal(published.job.status,'RUNNING');
+  assert.equal(published.job.completed,25);
   assert.equal(redis.map.get(INTELLIGENCE_KEYS.publicPointer),'old-snapshot');
 });
 
@@ -109,7 +111,7 @@ test('successful publication writes rankings before switching the public pointer
 });
 
 test('a transient storage failure is retried without advancing or losing the publication batch',async()=>{
-  const redis=fakeRedis({transientPublishedFailures:2}),rows=profiles(3),service=createService(redis,rows,{storageRetryDelays:[0,0,0]});
+  const redis=fakeRedis(),rows=profiles(3),service=createService(redis,rows,{storageRetryDelays:[0,0,0]});
   const collection=await service.startCollection();
   await service.runCollectionStep();
   await service.startPublish();
@@ -118,4 +120,32 @@ test('a transient storage failure is retried without advancing or losing the pub
   assert.equal(published.job.completed,3);
   assert.equal(published.job.failed,0);
   assert.equal(redis.map.get(INTELLIGENCE_KEYS.publicPointer),collection.job.snapshotId);
+});
+
+test('an old partial copy publication is cleaned and resumes from its saved cursor using validated drafts',async()=>{
+  const redis=fakeRedis(),rows=profiles(30),oldService=createService(redis,rows);
+  const collection=await oldService.startCollection();
+  await oldService.runCollectionStep();await oldService.runCollectionStep();
+  await oldService.startPublish();
+  const snapshot=collection.job.snapshotId;
+  const job=JSON.parse(redis.map.get(INTELLIGENCE_KEYS.job('publish')));
+  job.cursor=25;job.completed=25;job.succeeded=20;job.failed=5;job.successIds=job.ids.slice(0,20);job.failures=job.ids.slice(20,25).map(personId=>({personId,stage:'publish',code:'STORAGE_REQUEST',attempts:1}));job.activeBatch={start:25,ids:job.ids.slice(25),claimedAt:1};
+  redis.map.set(INTELLIGENCE_KEYS.job('publish'),JSON.stringify(job));
+  for(const personId of job.ids.slice(0,20))redis.map.set(INTELLIGENCE_KEYS.published(snapshot,personId),redis.map.get(INTELLIGENCE_KEYS.draft(snapshot,personId)));
+  redis.map.set('jcs:rebuild:v2:users','preserve-users');
+
+  const recovered=createService(redis,rows);
+  const result=await recovered.runPublishStep();
+
+  assert.equal(result.batch.start,25);
+  assert.equal(result.job.status,'COMPLETED');
+  assert.equal(result.job.completed,30);
+  assert.equal(result.job.failed,0);
+  assert.equal(result.job.storageMode,'DRAFT_POINTER');
+  assert.equal(job.ids.filter(personId=>redis.map.has(INTELLIGENCE_KEYS.published(snapshot,personId))).length,0);
+  assert.equal(job.ids.filter(personId=>redis.map.has(INTELLIGENCE_KEYS.draft(snapshot,personId))).length,30);
+  assert.equal(redis.map.get('jcs:rebuild:v2:users'),'preserve-users');
+  assert.equal(redis.map.get(INTELLIGENCE_KEYS.publicPointer),snapshot);
+  assert.equal((await recovered.getPublicIntelligence('assembly-001')).id,'assembly-001');
+  assert.equal(redis.calls.some(args=>args[0]==='SET'&&job.ids.some(personId=>args[1]===INTELLIGENCE_KEYS.published(snapshot,personId))),false);
 });
