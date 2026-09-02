@@ -1,12 +1,13 @@
 import { HOME_FIXTURE } from './fixtures/home.js';
 import { siteHeader, drawer, footer } from './layout/site-shell.js';
-import { renderHomeLayout } from './layout/home-layout.js?v=0.0.10';
+import { renderHomeLayout } from './layout/home-layout.js?v=0.0.11';
 import { setupLayoutInteractions } from './ui/interactions.js';
 import { createAuthService } from './core/auth.js';
 import { createContentService } from './core/content.js';
 import { createPoliticianService } from './core/politicians.js';
 import * as views from './views/stage1.js';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.10';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.11';
+import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.11';
 
 const app=document.getElementById('app');
 const auth=createAuthService();
@@ -15,7 +16,7 @@ const politicians=createPoliticianService();
 
 const route=()=>decodeURIComponent((location.hash||'#/').replace(/^#/,'')||'/');
 const parts=r=>r.split('?')[0].split('/').filter(Boolean);
-const unstable=new Set(['compare','search','keywords','trending','president','news']);
+const unstable=new Set(['search','keywords','trending','president','news']);
 
 async function shell(body,session){
   const memberCount=await auth.memberCount().catch(()=>0);
@@ -53,6 +54,7 @@ async function render(){
   else if(p[0]==='academy') body=await views.renderAcademy(content,session);
   else if(p[0]==='now') body=await renderPoliticianDirectory(politicians,r);
   else if(p[0]==='person') body=await renderPoliticianDetail(p[1]||'',politicians,session);
+  else if(p[0]==='compare') body=await renderPoliticianCompare(politicians,r,session);
   else if(p[0]==='request-politician') body=views.renderPoliticianRequest();
   else if(p[0]==='partners') body=views.renderPartners();
   else if(p[0]==='login') body=views.renderLogin();

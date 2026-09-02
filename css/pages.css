@@ -363,6 +363,103 @@ html.jcv3-touch-ui .footer-view-switch.mobile-toggle{display:inline-flex;positio
   .evaluation-vote-form>.primary-btn,.evaluation-vote-form>.save-state{grid-column:1}
 }
 
+/* JCS_0_0_11 · POLITICIAN INTELLIGENCE READABILITY */
+.person-live-detail-page .person-analysis-title .eyebrow{font-size:12px;line-height:1.45;letter-spacing:.09em}
+.person-live-detail-page .person-analysis-title>span{font-size:13px;line-height:1.55}
+.person-live-detail-page .person-analysis-metric>div:last-child b{font-size:15px;line-height:1.4}
+.person-live-detail-page .person-analysis-metric>div:last-child small{font-size:13px;line-height:1.6}
+.person-live-detail-page .person-analysis-axis-head b{font-size:15px;line-height:1.4}
+.person-live-detail-page .person-analysis-axis-head strong{font-size:16px}
+.person-live-detail-page .person-analysis-axis-desc{font-size:13px;line-height:1.65}
+.person-live-detail-page .person-analysis-axis-labels{font-size:12px;line-height:1.4}
+.person-live-detail-page .person-analysis-axis-scale{font-size:11px;line-height:1.4}
+.person-live-detail-page .person-analysis-bar b{font-size:14px;line-height:1.45}
+.person-live-detail-page .person-analysis-bar small{font-size:12.5px;line-height:1.55}
+.person-live-detail-page .person-analysis-diagnosis span{font-size:12px;line-height:1.45}
+.person-live-detail-page .person-analysis-diagnosis strong{font-size:20px;line-height:1.35}
+.person-live-detail-page .person-analysis-diagnosis p{font-size:14px;line-height:1.7}
+.person-live-detail-page .person-live-news-list a span b{font-size:15px;line-height:1.5}
+.person-live-detail-page .person-live-news-list a span small{font-size:12px;line-height:1.5}
+.admin-intelligence-report-shell .admin-intelligence-report-title span{font-size:11px;line-height:1.5}
+.admin-intelligence-report-shell .admin-intelligence-report-title p{font-size:13px;line-height:1.65}
+.admin-intelligence-report-shell .admin-pi-classification span,
+.admin-intelligence-report-shell .admin-pi-classification em{font-size:11px;line-height:1.5}
+.admin-intelligence-report-shell .admin-pi-executive-ribbon p{font-size:14px;line-height:1.7}
+.admin-intelligence-report-shell .admin-pi-section-head span{font-size:11px;line-height:1.45}
+.admin-intelligence-report-shell .admin-pi-section-head small{font-size:12px;line-height:1.55}
+.admin-intelligence-report-shell .admin-pi-metric small{font-size:11px;line-height:1.45}
+.admin-intelligence-report-shell .admin-pi-metric b{font-size:13px;line-height:1.55}
+.admin-intelligence-report-shell .admin-pi-strategic-grid p{font-size:14px;line-height:1.65}
+.admin-intelligence-report-shell .admin-pi-evidence p{font-size:13px;line-height:1.65}
+.admin-intelligence-report-shell .admin-pi-signal-list p{font-size:13px;line-height:1.6}
+.admin-intelligence-report-shell .admin-pi-consulting-menu small{font-size:11px;line-height:1.45}
+.admin-intelligence-report-shell .admin-pi-consulting-menu b{font-size:14px;line-height:1.45}
+.admin-intelligence-report-shell .admin-pi-consulting-menu p{font-size:13px;line-height:1.65}
+.admin-intelligence-report-shell .admin-pi-method-note{font-size:12px;line-height:1.65}
+
+@media(max-width:640px){
+  .person-live-detail-page .person-analysis-title>span{font-size:12px}
+  .person-live-detail-page .person-analysis-metric>div:last-child small{font-size:13px}
+  .person-live-detail-page .person-analysis-axis-desc{font-size:13px}
+  .admin-intelligence-report-shell .admin-pi-section-head small{font-size:12px}
+  .admin-intelligence-report-shell .admin-pi-strategic-grid p,
+  .admin-intelligence-report-shell .admin-pi-consulting-menu p{font-size:14px}
+}
+
+/* JCS_0_0_11 · ROLE-AWARE POLITICIAN COMPARISON */
+.politician-compare-page{--compare-ink:#17362e;--compare-muted:#667a73;--compare-line:#d9e7e2;display:grid;gap:18px}
+.politician-compare-hero{position:relative;overflow:hidden;padding:30px;background:linear-gradient(135deg,#fff 0%,#f3faf7 60%,#e7f3ee 100%)}
+.politician-compare-hero:after{content:"COMPARE";position:absolute;right:18px;bottom:-22px;color:rgba(18,92,72,.045);font-size:92px;font-weight:950;letter-spacing:-.08em}
+.politician-compare-hero>p{max-width:760px;font-size:15px;line-height:1.7}
+.politician-compare-capacity{position:relative;z-index:1;display:flex;align-items:baseline;gap:6px;width:max-content;margin-top:18px;padding:11px 14px;border:1px solid #cfe4dc;border-radius:14px;background:rgba(255,255,255,.82)}
+.politician-compare-capacity strong{color:#116f58;font-size:28px;line-height:1}.politician-compare-capacity span{color:#71827c;font-size:13px}.politician-compare-capacity b{margin-left:8px;padding-left:12px;border-left:1px solid #d8e4e0;color:#244e42;font-size:13px}
+.politician-compare-selection>.section-title>div,.politician-compare-picker>.section-title>div,.politician-compare-matrix-shell>.section-title>div{display:grid;gap:4px}
+.politician-compare-page .section-title .eyebrow{font-size:12px;line-height:1.4;letter-spacing:.09em}
+.politician-compare-page .section-title>span{font-size:13px;line-height:1.5}
+.politician-compare-slots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.compare-capacity-5 .politician-compare-slots{grid-template-columns:repeat(5,minmax(0,1fr))}
+.politician-compare-slot{position:relative;min-width:0;padding:18px;border:1px solid var(--compare-line);border-radius:18px;background:linear-gradient(150deg,#fff,#f7fbf9);box-shadow:0 9px 24px rgba(25,70,58,.055)}
+.politician-compare-slot-index{position:absolute;right:14px;top:12px;color:#8da19a;font-size:12px;font-weight:900;letter-spacing:.08em}
+.politician-compare-avatar{display:grid;place-items:center;width:82px;height:82px;border-radius:22px;overflow:hidden;background:#e7f1ed;color:#32735f;font-size:26px;font-weight:950}
+.politician-compare-avatar img,.politician-compare-picker-avatar img{display:block;width:100%;height:100%;object-fit:cover;object-position:var(--photo-position,50% 28%)}
+.politician-compare-slot h2{margin:14px 0 4px;color:var(--compare-ink);font-size:21px;line-height:1.35}
+.politician-compare-slot>p{min-height:44px;margin:0;color:var(--compare-muted);font-size:13px;line-height:1.65}
+.politician-compare-slot dl{display:grid;margin:14px 0 0;border-top:1px solid #e8efed}
+.politician-compare-slot dl div{display:grid;grid-template-columns:52px minmax(0,1fr);gap:8px;padding:9px 0;border-bottom:1px solid #edf2f0}
+.politician-compare-slot dt{color:#7c8e88;font-size:12px}.politician-compare-slot dd{min-width:0;margin:0;color:#304d44;font-size:13px;font-weight:800;line-height:1.45;overflow-wrap:anywhere}
+.politician-compare-remove{width:100%;min-height:38px;margin-top:14px;border:1px solid #dce8e4;border-radius:10px;background:#fff;color:#567168;font-size:12px;font-weight:850;cursor:pointer}
+.politician-compare-slot.is-empty{display:grid;min-height:355px;place-content:center;justify-items:center;border-style:dashed;text-align:center;box-shadow:none}
+.politician-compare-empty-mark{display:grid;place-items:center;width:60px;height:60px;margin-bottom:13px;border-radius:18px;background:#edf5f2;color:#5b8275;font-size:26px}
+.politician-compare-slot.is-empty b{color:#415c53;font-size:15px}.politician-compare-slot.is-empty p{min-height:0;margin-top:5px;font-size:13px}
+.politician-compare-matrix-notice{margin:-2px 0 15px;padding:13px 15px;border-radius:12px;background:#f1f7f5;color:#526a62;font-size:13px;line-height:1.65}
+.politician-compare-table-scroll{overflow-x:auto;border:1px solid #dfe9e6;border-radius:14px}
+.politician-compare-table{width:100%;min-width:650px;border-collapse:collapse;table-layout:fixed;background:#fff}
+.politician-compare-table.capacity-5{min-width:980px}
+.politician-compare-table th,.politician-compare-table td{padding:13px 12px;border-right:1px solid #e7eeec;border-bottom:1px solid #e7eeec;text-align:center}
+.politician-compare-table th:last-child,.politician-compare-table td:last-child{border-right:0}.politician-compare-table tbody tr:last-child th,.politician-compare-table tbody tr:last-child td{border-bottom:0}
+.politician-compare-table thead th{background:#f3f8f6;color:#295649;font-size:13px}.politician-compare-table thead th:first-child{width:150px}
+.politician-compare-table tbody th{background:#fafcfb;color:#496159;font-size:13px;text-align:left}.politician-compare-table td b{display:block;color:#4b655d;font-size:16px}.politician-compare-table td small{display:block;margin-top:3px;color:#83928d;font-size:12px;line-height:1.45}
+.politician-compare-picker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:10px;max-height:620px;overflow:auto;padding:2px}
+.politician-compare-picker-card{display:grid;grid-template-columns:50px minmax(0,1fr) auto;align-items:center;gap:11px;padding:11px;border:1px solid #e1eae7;border-radius:14px;background:#fff}
+.politician-compare-picker-card.is-selected{border-color:#b9dccf;background:#f2faf7}
+.politician-compare-picker-avatar{display:grid;place-items:center;width:50px;height:50px;border-radius:14px;overflow:hidden;background:#eaf2ef;color:#477b6b;font-size:18px;font-weight:950}
+.politician-compare-picker-card>div{min-width:0}.politician-compare-picker-card b,.politician-compare-picker-card span{display:block}.politician-compare-picker-card b{color:#28463e;font-size:14px}.politician-compare-picker-card span{margin-top:3px;color:#7a8b85;font-size:12px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.politician-compare-picker-card button,.politician-compare-picker-card em{min-width:48px;padding:8px;border-radius:9px;text-align:center;font-size:12px;font-style:normal;font-weight:850}
+.politician-compare-picker-card button{border:0;background:#14755d;color:#fff;cursor:pointer}.politician-compare-picker-card em{color:#23705b;background:#e1f2ec}.politician-compare-picker-card em.is-disabled{color:#879690;background:#f0f3f2}
+
+@media(max-width:1080px){
+  .compare-capacity-5 .politician-compare-slots{grid-template-columns:repeat(5,minmax(180px,1fr));overflow-x:auto;padding-bottom:5px}
+}
+@media(max-width:680px){
+  .politician-compare-hero{padding:22px 18px}.politician-compare-hero:after{font-size:62px}
+  .politician-compare-selection,.politician-compare-picker,.politician-compare-matrix-shell{padding:18px 15px}
+  .politician-compare-page .section-title{align-items:flex-start}.politician-compare-page .section-title>span{font-size:12px;text-align:right}
+  .politician-compare-slots,.compare-capacity-5 .politician-compare-slots{grid-template-columns:repeat(var(--compare-mobile-slots,2),minmax(210px,1fr));overflow-x:auto;padding-bottom:5px}
+  .compare-capacity-5 .politician-compare-slots{--compare-mobile-slots:5}
+  .politician-compare-slot{padding:16px}.politician-compare-slot.is-empty{min-height:330px}
+  .politician-compare-picker-grid{grid-template-columns:1fr;max-height:560px}
+}
+
 @media(max-width:720px){
   .now-category-tabs{grid-template-columns:1fr}
   .now-category-tabs button{min-height:58px}

@@ -47,7 +47,8 @@ test('Kim Min-seok pilot fills the complete public detail from approved source c
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample})});
   const text=html.replaceAll('&amp;','&');
-  for(const marker of ['정참시 SIGNAL','CORE INDICATORS','AUDIENCE LANDSCAPE','ACTIVITY & MEDIA','ATTENTION FLOW','DEEP ANALYSIS','ANALYSIS TREND','RECENT NEWS','PROFILE & RECORD','RELATED POLITICIANS'])assert.match(text,new RegExp(marker));
+  for(const marker of ['정참시 SIGNAL','CORE INDICATORS','AUDIENCE LANDSCAPE','ACTIVITY & MEDIA','ATTENTION FLOW','RECENT NEWS','PROFILE & RECORD','RELATED POLITICIANS'])assert.match(text,new RegExp(marker));
+  assert.doesNotMatch(text,/DEEP ANALYSIS|상세 분석 펼쳐보기|ANALYSIS TREND|관심 변화·NOW 이력/);
   assert.match(html,/PROFILE & RECORD/);
   assert.match(html,/공식 프로필과 정치 기록/);
   assert.match(html,/기본정보/);
@@ -71,7 +72,15 @@ test('admin Kim Min-seok detail fills private intelligence while identifying evi
   assert.match(html,/CONTEXT/);
   assert.match(html,/EXCLUDED/);
   assert.match(html,/국민 여론조사 49\.30%/);
+  assert.doesNotMatch(text,/DEEP ANALYSIS|상세 분석 펼쳐보기|ANALYSIS TREND|관심 변화·NOW 이력/);
+  assert.match(text,/HISTORY INTELLIGENCE/);
   assert.doesNotMatch(html,/데이터 연결 전|데이터 준비 중|미연결|modeled.*fallback/i);
+});
+
+test('member detail also omits duplicated public deep analysis and NOW trend',async()=>{
+  const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
+  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample})},{authenticated:true,user:{role:'member'}});
+  assert.doesNotMatch(html.replaceAll('&amp;','&'),/DEEP ANALYSIS|상세 분석 펼쳐보기|ANALYSIS TREND|관심 변화·NOW 이력|HISTORY INTELLIGENCE/);
 });
 
 test('all non-pilot politicians keep the restored layout without invented analysis',async()=>{
@@ -79,5 +88,17 @@ test('all non-pilot politicians keep the restored layout without invented analys
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample})},{user:{role:'admin'}});
   assert.match(html,/데이터 준비 중/);
   assert.match(html,/데이터 연결 전/);
+  assert.doesNotMatch(html.replaceAll('&amp;','&'),/DEEP ANALYSIS|상세 분석 펼쳐보기|ANALYSIS TREND|관심 변화·NOW 이력/);
   assert.doesNotMatch(html,/당대표 전환·다채널 확산형|SINGLE-PERSON PILOT/);
+});
+
+test('politician intelligence typography establishes readable size floors',()=>{
+  const css=new URL('../css/pages.css',import.meta.url);
+  return import('node:fs/promises').then(({readFile})=>readFile(css,'utf8')).then(text=>{
+    assert.match(text,/JCS_0_0_11 · POLITICIAN INTELLIGENCE READABILITY/);
+    assert.match(text,/\.person-live-detail-page \.person-analysis-title \.eyebrow\{[^}]*font-size:12px/);
+    assert.match(text,/\.person-live-detail-page \.person-analysis-axis-desc\{[^}]*font-size:13px/);
+    assert.match(text,/\.admin-intelligence-report-shell \.admin-pi-strategic-grid p\{[^}]*font-size:14px/);
+    assert.match(text,/@media\(max-width:640px\)[\s\S]*\.admin-intelligence-report-shell \.admin-pi-section-head small\{[^}]*font-size:12px/);
+  });
 });
