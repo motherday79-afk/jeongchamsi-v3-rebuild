@@ -1,14 +1,15 @@
 import { HOME_FIXTURE } from './fixtures/home.js';
 import { siteHeader, drawer, footer } from './layout/site-shell.js';
-import { renderHomeLayout } from './layout/home-layout.js?v=0.0.20';
+import { renderHomeLayout } from './layout/home-layout.js?v=0.0.21';
 import { setupLayoutInteractions } from './ui/interactions.js';
 import { createAuthService } from './core/auth.js';
 import { createContentService } from './core/content.js';
 import { createPoliticianService } from './core/politicians.js';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js';
+import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.21';
 import * as views from './views/stage1.js';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.20';
-import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.20';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.21';
+import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.21';
 
 const app=document.getElementById('app');
 const auth=createAuthService();
@@ -20,6 +21,20 @@ const intelligenceAutoResumeGuard=createIntelligenceAutoResumeGuard();
 const route=()=>decodeURIComponent((location.hash||'#/').replace(/^#/,'')||'/');
 const parts=r=>r.split('?')[0].split('/').filter(Boolean);
 const unstable=new Set(['search','keywords','trending','president','news']);
+
+function tunePoliticianNarratives(){
+  const cover=document.querySelector('.person-intelligence-cover');if(!cover)return;
+  const signalLabel=cover.querySelector('.person-intelligence-cover-copy h2')?.textContent||'';
+  const audienceLabel=document.querySelector('.person-audience-spectrum-v3 strong')?.textContent||'';
+  const core=[...document.querySelectorAll('.person-core-bullet-ledger article')].map(row=>({label:row.querySelector('b')?.textContent||'',score:Number(row.querySelector('strong')?.textContent||0)})).filter(row=>row.label);
+  const ordered=[...core].sort((a,b)=>b.score-a.score),transitionLabel=document.querySelector('.person-attention-funnel article:nth-child(3) b')?.textContent||'전환력';
+  const rank=Number((cover.querySelector('.person-intelligence-cover-index span')?.textContent||'').match(/\d+/)?.[0]);
+  const copy=buildRoleNarratives({signalLabel,audienceLabel,strongestLabel:ordered[0]?.label,weakestLabel:ordered.at(-1)?.label,transitionLabel,rank});
+  const publicCopy=cover.querySelector('.person-intelligence-cover-copy p');if(publicCopy)publicCopy.textContent=copy.publicSignal;
+  const diagnosis=document.querySelector('.person-analysis-diagnosis:not(.is-pending) p');if(diagnosis)diagnosis.textContent=copy.memberDiagnosis;
+  const executive=document.querySelector('.admin-pi-executive-ribbon');
+  if(executive){const title=executive.querySelector('h2'),body=executive.querySelector('p');if(title)title.textContent='운영 구조 및 전환 과제';if(body)body.textContent=copy.adminDecision;}
+}
 
 async function shell(body,session){
   const memberCount=await auth.memberCount().catch(()=>0);
@@ -91,6 +106,7 @@ async function render(){
   else if(unstable.has(p[0])) body=`<section class="module"><span class="eyebrow">NEXT PHASE</span><h2>${p[0]}</h2><p class="module-desc">이 영역은 이번 버전에서 제외했습니다. NOW·정치인 데이터·분석 엔진은 연결하지 않습니다.</p></section>`;
   else body=`<section class="module"><h2>페이지를 찾을 수 없습니다</h2></section>`;
   await shell(body,session);
+  if(p[0]==='person')tunePoliticianNarratives();
   window.scrollTo(0,0);
   if(p[0]==='admin')queueMicrotask(resumeAdminIntelligence);
 }
