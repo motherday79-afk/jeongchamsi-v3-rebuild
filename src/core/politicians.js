@@ -10,6 +10,7 @@ export function createPoliticianService(){
     list(type='assembly',offset=0,limit=30){return request(`?type=${encodeURIComponent(type)}&offset=${Math.max(0,Number(offset)||0)}&limit=${Math.max(1,Number(limit)||30)}`);},
     rankings(){return request('?ranking=overall');},
     search(query='',limit=12){return request(`?q=${encodeURIComponent(String(query||'').trim())}&limit=${Math.min(50,Math.max(1,Number(limit)||12))}`);},
-    get(id=''){return request(`?id=${encodeURIComponent(id)}`);}
+    get(id=''){return request(`?id=${encodeURIComponent(id)}`);},
+    getForCompare(id=''){return request(`?id=${encodeURIComponent(id)}&view=compare`);}
   };
 }

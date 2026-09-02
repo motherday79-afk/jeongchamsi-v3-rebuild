@@ -104,7 +104,7 @@ test('successful publication writes rankings before switching the public pointer
   assert.equal(redis.map.get(INTELLIGENCE_KEYS.publicPointer),collection.job.snapshotId);
   const rankings=await service.getPublicRankings();
   assert.equal(rankings.overall.length,30);
-  assert.equal(rankings.overall[0].id,'assembly-030');
+  assert.equal(rankings.overall[0].id,'assembly-001');
   const rankWrite=redis.calls.findIndex(args=>args[0]==='SET'&&args[1]===INTELLIGENCE_KEYS.rankings(collection.job.snapshotId));
   const pointerWrite=redis.calls.findIndex(args=>args[0]==='SET'&&args[1]===INTELLIGENCE_KEYS.publicPointer&&args[2]===collection.job.snapshotId);
   assert.ok(rankWrite>=0&&pointerWrite>rankWrite);
@@ -148,4 +148,28 @@ test('an old partial copy publication is cleaned and resumes from its saved curs
   assert.equal(redis.map.get(INTELLIGENCE_KEYS.publicPointer),snapshot);
   assert.equal((await recovered.getPublicIntelligence('assembly-001')).id,'assembly-001');
   assert.equal(redis.calls.some(args=>args[0]==='SET'&&job.ids.some(personId=>args[1]===INTELLIGENCE_KEYS.published(snapshot,personId))),false);
+});
+
+test('published ranks use operating 40 search 60 news weights and synchronize detail NOW index',async()=>{
+  const redis=fakeRedis(),rows=profiles(4);
+  const service=createIntelligenceService({
+    command:redis.command,
+    profiles:rows,
+    env:{NAVER_AD_ACCESS_LICENSE:'a',NAVER_AD_SECRET_KEY:'b',NAVER_AD_CUSTOMER_ID:'c'},
+    now:()=>1_788_400_000_000,
+    collectRaw:async(person,context)=>{
+      const order=Number(person.id.slice(-3)),items=Array.from({length:order},(_,index)=>({title:`기사 ${index}`,source:`매체 ${index}`,publishedAt:`2026-09-0${order}T00:00:00.000Z`}));
+      return {personId:person.id,snapshotId:context.snapshotId,searchAds:{volume:{pc:order*100,mobile:order*900}},news:{items},officialProfile:person,sourceErrors:[]};
+    },
+    analyze:(person,raw)=>({id:person.id,snapshot:raw.snapshotId,signal:{index:100},rank:{overall:null,category:null,temporary:false},raw}),
+    validateDraft:()=>({ok:true,errors:[]}),
+    validateSnapshot:(drafts,expectedIds)=>({ok:drafts.length===expectedIds.length,total:drafts.length,expected:expectedIds.length,missingIds:[],duplicateIds:[],unexpectedIds:[],invalid:[]})
+  });
+  await service.startCollection();await service.runCollectionStep();await service.startPublish();await service.runPublishStep();
+  const rankings=await service.getPublicRankings();
+  assert.deepEqual(rankings.weights,{search:40,news:60,newsArticles:20,newsSources:20,newsRecency:20});
+  assert.ok(new Set(rankings.overall.map(row=>row.score)).size>1);
+  const detail=await service.getPublicIntelligence(rankings.overall[0].id);
+  assert.equal(detail.signal.index,rankings.overall[0].score);
+  assert.equal(detail.rank.overall,1);
 });

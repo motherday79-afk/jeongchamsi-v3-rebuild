@@ -15,13 +15,33 @@ const profiles=Array.from({length:6},(_,index)=>({
   photo:index<2?{localPath:`/assets/politicians/assembly-00${index+1}.jpg`,focus:'50% 28%'}:null
 }));
 
+const intelligenceFor=item=>{
+  const index=profiles.findIndex(row=>row.id===item.id),base=70+index;
+  return {
+    id:item.id,snapshot:'jcs-live',mode:'전체 정치인 운영 분석',rank:{overall:index+1,category:index+1},signal:{index:90-index,label:'운영 신호',summary:`${item.name} 운영 요약`},
+    core:[{label:'관심도',score:base},{label:'확산력',score:base-4},{label:'활동성',score:base+3}],
+    activity:[{label:'활동 강도',score:base+2},{label:'현장성',score:base-3}],media:[{label:'언론 노출',score:base+5},{label:'자발 확산',score:base-2}],
+    sources:[{type:'네이버 검색광고',grade:'DIRECT'},{type:'Google 뉴스',grade:'DIRECT'}],
+    audience:{position:base,label:'대중 확장 우세',summary:'관심층 구조'},cohorts:[{age:'20대',male:base-2,female:base+2},{age:'30대',male:base,female:base+1}],
+    transition:[{label:'유입력',score:base+3},{label:'전환력',score:base-5}],diagnosis:{title:'비교 진단',body:'실제 스냅샷 기반 진단'},
+    issues:[{title:'민생·경제',impact:base,persistence:base-2}],risks:[`${item.name} 위험 신호`],opportunities:[`${item.name} 기회 신호`],conclusion:`${item.name} JCS 종합`,
+    support:{core:base,expand:base-3,loyalty:base+2,action:base-1,stability:base-4,scalability:base-3},
+    resilience:{index:base-2,resistance:base-1,speed:base+1,stability:base-4},mediaScores:{reach:base+5,social:base,organic:base-2,persistence:base-3},
+    strategies:[{title:'우선 전략',body:`${item.name} 실행 전략`}],raw:{searchAds:{volume:{pc:1000+index,mobile:9000+index}},news:{items:[{source:'연합뉴스'}]}}
+  };
+};
+
 const service={
   list:async()=>({ok:true,items:profiles,total:profiles.length,hasMore:false}),
   search:async query=>({ok:true,items:profiles.filter(profile=>`${profile.name} ${profile.party} ${profile.jurisdiction}`.includes(query)),total:profiles.length}),
   get:async id=>{
     const item=profiles.find(profile=>profile.id===id);
     return item?{ok:true,item}:{ok:false,error:'NOT_FOUND'};
-  }
+  },
+  getForCompare:async id=>{
+    const item=profiles.find(profile=>profile.id===id);
+    return item?{ok:true,item,intelligence:intelligenceFor(item)}:{ok:false,error:'NOT_FOUND'};
+  },
 };
 
 test('anonymous comparison is strictly 1:1 and ignores a third selected id',async()=>{
@@ -33,12 +53,19 @@ test('anonymous comparison is strictly 1:1 and ignores a third selected id',asyn
   assert.match(html,/data-compare-selected="assembly-002"/);
   assert.doesNotMatch(html,/data-compare-selected="assembly-003"/);
   assert.match(html,/정치인 1:1 비교/);
+  assert.match(html,/NOW OPERATING INDEX/);
+  assert.match(html,/CORE INDICATORS/);
+  assert.match(html,/ACTIVITY &amp; MEDIA/);
+  assert.match(html,/SOURCE CLASSES/);
+  assert.doesNotMatch(html,/MEMBER INTERPRETED COMPARISON|ADMIN MULTI INTELLIGENCE/);
 });
 
-test('member comparison uses the same public two-person limit',async()=>{
+test('member comparison keeps the two-person limit and adds interpreted comparison',async()=>{
   const html=await renderPoliticianCompare(service,'/compare?ids=assembly-001,assembly-002,assembly-003',{authenticated:true,user:{role:'member'}});
-  assert.match(html,/data-compare-role="public"[^>]*data-compare-limit="2"/);
+  assert.match(html,/data-compare-role="member"[^>]*data-compare-limit="2"/);
   assert.equal((html.match(/data-compare-slot/g)||[]).length,2);
+  for(const marker of ['MEMBER INTERPRETED COMPARISON','AGE × GENDER','ATTENTION FLOW','STRENGTH &amp; WEAKNESS GAP','RISK &amp; OPPORTUNITY','JCS COMPARISON SYNTHESIS'])assert.match(html,new RegExp(marker));
+  assert.doesNotMatch(html,/ADMIN MULTI INTELLIGENCE|EVIDENCE LEDGER/);
 });
 
 test('admin comparison accepts two to five and renders five simultaneous slots',async()=>{
@@ -51,6 +78,18 @@ test('admin comparison accepts two to five and renders five simultaneous slots',
   assert.doesNotMatch(html,/data-compare-selected="assembly-006"/);
   assert.match(html,/관리자 다중 비교/);
   assert.match(html,/최대 5명/);
+  for(const marker of ['ADMIN MULTI INTELLIGENCE','AGE × GENDER HEATMAP','SUPPORT QUALITY RADAR','POLITICAL RESILIENCE','MEDIA PROPAGATION','ISSUE QUADRANT','RISK &amp; OPPORTUNITY MATRIX','COMPETITIVENESS GAP','EVIDENCE LEDGER','STRATEGY PRIORITIES','MULTI-PERSON SYNTHESIS'])assert.match(html,new RegExp(marker));
+  assert.match(html,/admin-compare-heatmap" style="--compare-count:5"/);
+});
+
+test('one failed comparison load preserves successful people and identifies the retry id',async()=>{
+  const partialService={...service,getForCompare:async id=>id==='assembly-002'?{ok:false,error:'STORAGE_REQUEST'}:service.getForCompare(id)};
+  const html=await renderPoliticianCompare(partialService,'/compare?ids=assembly-001,assembly-002',{user:{role:'admin'}});
+  assert.match(html,/data-compare-selected="assembly-001"/);
+  assert.match(html,/data-compare-failed="assembly-002"/);
+  assert.match(html,/assembly-002/);
+  assert.match(html,/다시 시도/);
+  assert.match(html,/data-layout-route="\/compare\?ids=assembly-001%2Cassembly-002"/);
 });
 
 test('empty comparison preserves role capacity layout without fake values',async()=>{
@@ -64,7 +103,8 @@ test('empty comparison preserves role capacity layout without fake values',async
   assert.match(publicHtml,/정치인 이름·정당·지역 검색/);
   assert.doesNotMatch(`${publicHtml}${adminHtml}`,/politician-compare-empty-mark|>＋<|아래 정치인 목록에서/);
   assert.doesNotMatch(`${publicHtml}${adminHtml}`,/politician-compare-picker|ASSEMBLY DIRECTORY|국회의원 선택/);
-  assert.match(adminHtml,/세부 데이터 연결 후 표시/);
+  assert.match(adminHtml,/비교할 정치인을 검색해 선택하세요/);
+  assert.doesNotMatch(`${publicHtml}${adminHtml}`,/세부 데이터 연결 후 표시/);
   assert.doesNotMatch(`${publicHtml}${adminHtml}`,/당대표 전환·다채널 확산형|NOW INDEX[^<]*84|JCS 지수[^<]*84/);
 });
 
@@ -75,7 +115,8 @@ test('comparison keeps the approved selected profile card and remove route',asyn
   assert.match(html,/선거구 1/);
   assert.match(html,/위원회 1/);
   assert.match(html,/data-compare-remove="assembly-001"/);
-  assert.match(html,/프로필·사진 데이터만 표시/);
+  assert.match(html,/NOW OPERATING INDEX/);
+  assert.match(html,/\/assets\/politicians\/assembly-001\.jpg/);
 });
 
 test('search results stay inside the active empty slot and add a politician to the existing route',async()=>{
@@ -111,6 +152,17 @@ test('politician client sends an encoded all-category search request',async()=>{
   }finally{globalThis.fetch=originalFetch;}
 });
 
+test('politician compare client requests the server-projected compare view',async()=>{
+  const originalFetch=globalThis.fetch;
+  let requested='';
+  globalThis.fetch=async url=>{requested=String(url);return {ok:true,json:async()=>({ok:true,item:profiles[0],intelligence:{}})};};
+  try{
+    const result=await createPoliticianService().getForCompare('assembly-001');
+    assert.equal(result.ok,true);
+    assert.equal(requested,'/api/v3/politicians?id=assembly-001&view=compare');
+  }finally{globalThis.fetch=originalFetch;}
+});
+
 test('embedded compare search has a readable slot-local result layer',async()=>{
   const {readFile}=await import('node:fs/promises');
   const css=await readFile(new URL('../css/pages.css',import.meta.url),'utf8');
@@ -120,6 +172,19 @@ test('embedded compare search has a readable slot-local result layer',async()=>{
   assert.match(layer,/\.politician-compare-slot-search/);
   assert.match(layer,/\.politician-compare-search-results/);
   assert.match(layer,/input\[type="search"\]/);
+  const sub14=[...layer.matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/gi)].filter(match=>Number(match[1])<14);
+  assert.deepEqual(sub14.map(match=>match[0]),[]);
+});
+
+test('operating comparison visual layer supports readable two-to-five person analysis',async()=>{
+  const {readFile}=await import('node:fs/promises');
+  const css=await readFile(new URL('../css/pages.css',import.meta.url),'utf8');
+  const start=css.lastIndexOf('JCS_0_0_18 · OPERATING ROLE COMPARISON');
+  assert.ok(start>=0);
+  const layer=css.slice(start);
+  for(const selector of ['.politician-compare-index-grid','.politician-compare-cohort-map','.admin-compare-radar-grid','.admin-compare-issue-quadrant','.admin-compare-evidence-grid'])assert.match(layer,new RegExp(selector.replaceAll('.','\\.')));
+  assert.match(layer,/--compare-count/);
+  assert.match(layer,/overflow-x:auto/);
   const sub14=[...layer.matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/gi)].filter(match=>Number(match[1])<14);
   assert.deepEqual(sub14.map(match=>match[0]),[]);
 });

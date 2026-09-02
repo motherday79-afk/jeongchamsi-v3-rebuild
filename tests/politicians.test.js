@@ -4,6 +4,7 @@ import { access, readdir } from 'node:fs/promises';
 import { POLITICIAN_SEED } from '../lib/politician-seed.generated.js';
 import { validatePoliticianSeed, writePoliticianSeed, TARGET_KEYS } from '../lib/migration-service.js';
 import { renderPoliticianDirectory, renderPoliticianDetail } from '../src/views/politicians.js';
+import { pilotForPolitician } from '../src/data/kim-minseok-pilot.js';
 
 test('approved politician seed keeps 300 slots, 16 metropolitan and 227 basic records',()=>{
   const report=validatePoliticianSeed();
@@ -33,14 +34,32 @@ test('politician migration writes only isolated rebuild keys',async()=>{
   assert.equal(writes.some(parts=>String(parts[1]).startsWith('jcv3:')),false);
 });
 
-test('NOW category layout shows agreed pending state without imported rank values',async()=>{
-  const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
+test('NOW category layout renders the published operating score and independent rank',async()=>{
+  const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001'],now:{rank:3,categoryRank:2,score:87.4}};
   const html=await renderPoliticianDirectory({list:async()=>({ok:true,total:300,items:[sample],hasMore:true})},'/now?type=assembly');
   assert.match(html,/NOW RANK · CATEGORY LEAGUE/);
   assert.match(html,/NOW Rank · 분야별 순위/);
-  assert.match(html,/집계 준비 중/);
+  assert.match(html,/NOW 87\.4/);
+  assert.match(html,/전체 3위 · 국회의원 2위/);
   assert.match(html,/김민석/);
-  assert.doesNotMatch(html,/categoryRank|globalRank|score:/);
+});
+
+test('published detail uses operating copy and registered related politician photos',async()=>{
+  const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
+  const intelligence=structuredClone(pilotForPolitician(sample.id));
+  intelligence.snapshot='jcs-operating';
+  intelligence.rank={overall:3,category:2,temporary:false};
+  intelligence.signal.index=87.4;
+  intelligence.related[0]={...intelligence.related[0],photo:POLITICIAN_SEED.photos['assembly-002']};
+  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})});
+  assert.match(html,/공개 스냅샷 운영 순위/);
+  assert.match(html,/국회의원 NOW 독립 순위/);
+  assert.match(html,/허용 원자료 기반 JCS 운영 지수/);
+  assert.match(html,/related-person-avatar has-photo/);
+  assert.match(html,/\/assets\/politicians\/assembly-002\./);
+  assert.match(html,/data-politician-avatar/);
+  assert.match(html,/data-politician-photo/);
+  assert.doesNotMatch(html,/임시 파일럿 순위|국회의원 임시 순위|파일럿 지수/);
 });
 
 test('Kim Min-seok pilot fills the complete public detail from approved source classes',async()=>{
@@ -194,7 +213,7 @@ test('politician intelligence v3 final layer fixes typography and approved high-
   });
 });
 
-test('release metadata and browser cache keys identify JCS 0.0.17',async()=>{
+test('release metadata and browser cache keys identify JCS 0.0.18',async()=>{
   const {readFile}=await import('node:fs/promises');
   const root=new URL('../',import.meta.url);
   const [pkg,index,app,gateway]=await Promise.all([
@@ -203,10 +222,10 @@ test('release metadata and browser cache keys identify JCS 0.0.17',async()=>{
     readFile(new URL('src/app.js',root),'utf8'),
     readFile(new URL('api/gateway.js',root),'utf8')
   ]);
-  assert.match(pkg,/"name": "jcs-0-0-17"/);
-  assert.match(pkg,/"version": "0\.0\.17"/);
-  assert.doesNotMatch(index+app,/v=0\.0\.(?:12|13|14|15|16)/);
-  assert.match(index,/pages\.css\?v=0\.0\.17/);
-  assert.match(app,/politicians\.js\?v=0\.0\.17/);
-  assert.match(gateway,/version:'JCS_0_0_17'/);
+  assert.match(pkg,/"name": "jcs-0-0-18"/);
+  assert.match(pkg,/"version": "0\.0\.18"/);
+  assert.doesNotMatch(index+app,/v=0\.0\.(?:12|13|14|15|16|17)/);
+  assert.match(index,/pages\.css\?v=0\.0\.18/);
+  assert.match(app,/politicians\.js\?v=0\.0\.18/);
+  assert.match(gateway,/version:'JCS_0_0_18'/);
 });

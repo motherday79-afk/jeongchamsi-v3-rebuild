@@ -11,7 +11,7 @@ test('a published politician uses live ranks and populated public/admin intellig
   const report=buildIntelligenceDraft(person,raw,context);report.rank={overall:12,category:9,temporary:false};
   const service={async get(){return {ok:true,item:person,intelligence:report};}};
   const html=await renderPoliticianDetail(person.id,service,{authenticated:true,user:{role:'admin'}});
-  assert.match(html,/공개 스냅샷 순위/);
+  assert.match(html,/공개 스냅샷 운영 순위/);
   assert.match(html,/전체 NOW<\/span><strong>12/);
   assert.match(html,/PUBLISHED INTELLIGENCE/);
   assert.match(html,/PC 검색량/);

@@ -1,14 +1,14 @@
 import { HOME_FIXTURE } from './fixtures/home.js';
 import { siteHeader, drawer, footer } from './layout/site-shell.js';
-import { renderHomeLayout } from './layout/home-layout.js?v=0.0.17';
+import { renderHomeLayout } from './layout/home-layout.js?v=0.0.18';
 import { setupLayoutInteractions } from './ui/interactions.js';
 import { createAuthService } from './core/auth.js';
 import { createContentService } from './core/content.js';
 import { createPoliticianService } from './core/politicians.js';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js';
 import * as views from './views/stage1.js';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.17';
-import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.17';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.18';
+import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.18';
 
 const app=document.getElementById('app');
 const auth=createAuthService();
@@ -65,8 +65,7 @@ async function render(){
       content.readDomain('academy').catch(()=>({items:[],slots:[]})),
       politicians.rankings().catch(()=>({ok:false,items:[]}))
     ]);
-    let rank=rankResult?.ok?(Array.isArray(rankResult.items)?rankResult.items:[]).slice(0,30):[];
-    if(!rank.length){const fallback=await politicians.list('assembly',0,30).catch(()=>({ok:false,items:[]}));rank=fallback?.ok?(fallback.items||[]).slice(0,30).map((item,index)=>({...item,rank:index+1,rankMode:'temporary-assembly-pilot'})):[];}
+    const rank=rankResult?.ok?(Array.isArray(rankResult.items)?rankResult.items:[]).slice(0,30):[];
     const home={...HOME_FIXTURE,memberCount,columns,community,itsmePosts,polls,generation,nationalEvaluation,academy,rank,session};
     body=`<div class="product-home-wrap">${renderHomeLayout(home)}</div>`;
   } else if(p[0]==='about') body=views.renderAbout();

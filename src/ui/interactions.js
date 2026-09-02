@@ -36,4 +36,11 @@ export function setupCompareSearch(root=document){
     window.dispatchEvent(new CustomEvent('jcs:layout-route',{detail:{route}}));
   }));
 }
-export function setupLayoutInteractions(root=document){setupDrawer(root);setupNowCarousel(root);setupLayoutNavigation(root);setupCompareSearch(root);}
+export function setupPoliticianPhotoFallback(root=document){
+  root.querySelectorAll('[data-politician-photo]').forEach(image=>image.addEventListener('error',()=>{
+    const frame=image.closest('[data-politician-avatar]');
+    if(frame){frame.classList.remove('has-photo');frame.classList.add('is-empty');}
+    image.remove();
+  },{once:true}));
+}
+export function setupLayoutInteractions(root=document){setupDrawer(root);setupNowCarousel(root);setupLayoutNavigation(root);setupCompareSearch(root);setupPoliticianPhotoFallback(root);}

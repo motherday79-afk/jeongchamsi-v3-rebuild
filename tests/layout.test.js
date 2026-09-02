@@ -95,8 +95,22 @@ test('compare search submit preserves selected ids and targets the active slot',
   assert.equal(interactions.compareSearchRoute('/compare',1,'   '),'/compare');
 });
 
+test('broken politician photos fall back to the fixed initial avatar',async()=>{
+  const interactions=await import('../src/ui/interactions.js');
+  assert.equal(typeof interactions.setupPoliticianPhotoFallback,'function');
+  const classes=new Set(['rank-top-avatar','has-photo']);
+  const listeners={};let removed=false;
+  const frame={classList:{add:value=>classes.add(value),remove:value=>classes.delete(value)}};
+  const image={closest:selector=>selector==='[data-politician-avatar]'?frame:null,addEventListener:(type,listener)=>{listeners[type]=listener;},remove:()=>{removed=true;}};
+  interactions.setupPoliticianPhotoFallback({querySelectorAll:selector=>selector==='[data-politician-photo]'?[image]:[]});
+  listeners.error();
+  assert.equal(removed,true);
+  assert.equal(classes.has('has-photo'),false);
+  assert.equal(classes.has('is-empty'),true);
+});
+
 test('home NOW rank renders 30 assembly members as three manual pages with photos',()=>{
-  const rank=POLITICIAN_SEED.profiles.assembly.slice(0,30).map((item,index)=>({...item,photo:POLITICIAN_SEED.photos[item.id],rank:index+1}));
+  const rank=POLITICIAN_SEED.profiles.assembly.slice(0,30).map((item,index)=>({...item,photo:POLITICIAN_SEED.photos[item.id],rank:index+1,score:Number((99.9-index*.7).toFixed(1))}));
   const html=renderHomeLayout({...HOME_FIXTURE,itsmePosts:[],columns:[],community:[],polls:{items:[]},generation:{},nationalEvaluation:{},academy:{items:[]},rank,session:{authenticated:false}});
   assert.equal((html.match(/data-now-rank-page=/g)||[]).length,3);
   assert.equal((html.match(/class="rank-top-card/g)||[]).length,30);
@@ -104,7 +118,26 @@ test('home NOW rank renders 30 assembly members as three manual pages with photo
   assert.match(html,/data-now-rank-prev/);
   assert.match(html,/data-now-rank-next/);
   assert.match(html,/rank-top-avatar has-photo/);
+  assert.match(html,/전체 정치인 NOW 운영 순위 · 좌우 버튼으로 10명씩 보기/);
+  assert.match(html,/NOW 99\.9/);
+  assert.match(html,/data-politician-avatar/);
+  assert.match(html,/data-politician-photo/);
+  assert.match(html,/politician-photo-initial/);
+  assert.doesNotMatch(html,/임시|파일럿/);
   assert.doesNotMatch(html,/자동|4초/);
+});
+
+test('home does not invent an assembly ranking when no operating rank is published',async()=>{
+  const app=await import('node:fs/promises').then(({readFile})=>readFile(new URL('../src/app.js',import.meta.url),'utf8'));
+  assert.doesNotMatch(app,/rankMode:'temporary-assembly-pilot'/);
+  assert.doesNotMatch(app,/fallback\.items[\s\S]*rank:index\+1/);
+});
+
+test('home comparison entry no longer presents invented sample politicians or scores',()=>{
+  const html=renderHomeLayout({...HOME_FIXTURE,itsmePosts:[],columns:[],community:[],polls:{items:[]},generation:{},nationalEvaluation:{},academy:{items:[]},rank:[],session:{authenticated:false}});
+  assert.match(html,/COMPARE · OPERATING/);
+  assert.match(html,/실제 공개 스냅샷으로 비교/);
+  assert.doesNotMatch(html,/COMPARE · SAMPLE|가상후보|예시 화면 · 실제 정치인 아님|style="width:(?:72|61|48|67)%"/);
 });
 
 test('home renders migrated Redis content instead of sample board rows',()=>{
