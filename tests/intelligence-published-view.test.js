@@ -17,5 +17,11 @@ test('a published politician uses live ranks and populated public/admin intellig
   assert.match(html,/PC 검색량/);
   assert.match(html,/1,500/);
   assert.match(html,/김테스트 정치 인텔리전스/);
+  assert.match(html,/class="radar-axis-label"[^>]*>관심도/);
+  assert.match(html,/class="radar-axis-label"[^>]*>확산력/);
+  assert.match(html,/class="radar-axis-label"[^>]*>활동성/);
+  assert.match(html,/연령·성별 관심·지지 전환 구조/);
+  assert.match(html,/JCS 지지전환 추정지수/);
+  assert.match(html,/jcs-analysis-compact/);
   assert.doesNotMatch(html,/더불어민주당 대표 선출/);
 });

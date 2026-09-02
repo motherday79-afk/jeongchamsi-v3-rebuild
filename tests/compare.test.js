@@ -21,11 +21,11 @@ const intelligenceFor=item=>{
     id:item.id,snapshot:'jcs-live',mode:'전체 정치인 운영 분석',rank:{overall:index+1,category:index+1},signal:{index:90-index,label:'운영 신호',summary:`${item.name} 운영 요약`},
     core:[{label:'관심도',score:base},{label:'확산력',score:base-4},{label:'활동성',score:base+3}],
     activity:[{label:'활동 강도',score:base+2},{label:'현장성',score:base-3}],media:[{label:'언론 노출',score:base+5},{label:'자발 확산',score:base-2}],
-    sources:[{type:'네이버 검색광고',grade:'DIRECT'},{type:'Google 뉴스',grade:'DIRECT'}],
+    sources:[{type:'네이버 검색광고',grade:'DIRECT'},{type:'Google 뉴스',grade:'DIRECT'},{type:'한국갤럽·중앙선거여론조사심의위원회',grade:'CONTEXT',detail:`${item.party} 지지도 41%`}],
     audience:{position:base,label:'대중 확장 우세',summary:'관심층 구조'},cohorts:[{age:'20대',male:base-2,female:base+2},{age:'30대',male:base,female:base+1}],
     transition:[{label:'유입력',score:base+3},{label:'전환력',score:base-5}],diagnosis:{title:'비교 진단',body:'실제 스냅샷 기반 진단'},
     issues:[{title:'민생·경제',impact:base,persistence:base-2}],risks:[`${item.name} 위험 신호`],opportunities:[`${item.name} 기회 신호`],conclusion:`${item.name} JCS 종합`,
-    support:{core:base,expand:base-3,loyalty:base+2,action:base-1,stability:base-4,scalability:base-3},
+    support:{core:base,expand:base-3,risk:35,loyalty:base+2,action:base-1,stability:base-4,scalability:base-3},
     resilience:{index:base-2,resistance:base-1,speed:base+1,stability:base-4},mediaScores:{reach:base+5,social:base,organic:base-2,persistence:base-3},
     strategies:[{title:'우선 전략',body:`${item.name} 실행 전략`}],raw:{searchAds:{volume:{pc:1000+index,mobile:9000+index}},news:{items:[{source:'연합뉴스'}]}}
   };
@@ -56,7 +56,7 @@ test('anonymous comparison is strictly 1:1 and ignores a third selected id',asyn
   assert.match(html,/NOW OPERATING INDEX/);
   assert.match(html,/CORE INDICATORS/);
   assert.match(html,/ACTIVITY &amp; MEDIA/);
-  assert.match(html,/SOURCE CLASSES/);
+  assert.doesNotMatch(html,/SOURCE CLASSES|원자료 범주/);
   assert.doesNotMatch(html,/MEMBER INTERPRETED COMPARISON|ADMIN MULTI INTELLIGENCE/);
 });
 
@@ -64,7 +64,7 @@ test('member comparison keeps the two-person limit and adds interpreted comparis
   const html=await renderPoliticianCompare(service,'/compare?ids=assembly-001,assembly-002,assembly-003',{authenticated:true,user:{role:'member'}});
   assert.match(html,/data-compare-role="member"[^>]*data-compare-limit="2"/);
   assert.equal((html.match(/data-compare-slot/g)||[]).length,2);
-  for(const marker of ['MEMBER INTERPRETED COMPARISON','AGE × GENDER','ATTENTION FLOW','STRENGTH &amp; WEAKNESS GAP','RISK &amp; OPPORTUNITY','JCS COMPARISON SYNTHESIS'])assert.match(html,new RegExp(marker));
+  for(const marker of ['MEMBER INTERPRETED COMPARISON','AGE × GENDER ATTENTION &amp; SUPPORT','연령·성별 관심·지지 전환 구조','관심 68','지지전환 12','ATTENTION FLOW','STRENGTH &amp; WEAKNESS GAP','RISK &amp; OPPORTUNITY','JCS COMPARISON SYNTHESIS'])assert.match(html,new RegExp(marker));
   assert.doesNotMatch(html,/ADMIN MULTI INTELLIGENCE|EVIDENCE LEDGER/);
 });
 
@@ -80,6 +80,9 @@ test('admin comparison accepts two to five and renders five simultaneous slots',
   assert.match(html,/최대 5명/);
   for(const marker of ['ADMIN MULTI INTELLIGENCE','AGE × GENDER HEATMAP','SUPPORT QUALITY RADAR','POLITICAL RESILIENCE','MEDIA PROPAGATION','ISSUE QUADRANT','RISK &amp; OPPORTUNITY MATRIX','COMPETITIVENESS GAP','EVIDENCE LEDGER','STRATEGY PRIORITIES','MULTI-PERSON SYNTHESIS'])assert.match(html,new RegExp(marker));
   assert.match(html,/admin-compare-heatmap" style="--compare-count:5"/);
+  assert.match(html,/class="radar-axis-label"[^>]*>충성 72</);
+  assert.match(html,/class="radar-axis-label"[^>]*>행동 69</);
+  assert.match(html,/jcs-analysis-compact/);
 });
 
 test('one failed comparison load preserves successful people and identifies the retry id',async()=>{
