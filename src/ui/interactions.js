@@ -20,4 +20,20 @@ export function setupLayoutNavigation(root=document){
   root.addEventListener('click',event=>{const target=event.target.closest('[data-layout-route]');if(!target)return;const route=target.dataset.layoutRoute;if(!route)return;event.preventDefault();window.dispatchEvent(new CustomEvent('jcs:layout-route',{detail:{route}}));});
   root.querySelector('[data-layout-search]')?.addEventListener('submit',event=>{event.preventDefault();const query=new FormData(event.currentTarget).get('q')||'';window.dispatchEvent(new CustomEvent('jcs:layout-search',{detail:{query:String(query)}}));});
 }
-export function setupLayoutInteractions(root=document){setupDrawer(root);setupNowCarousel(root);setupLayoutNavigation(root);}
+export function compareSearchRoute(baseRoute='/compare',slot=1,query=''){
+  const [pathname,raw='']=String(baseRoute||'/compare').split('?');
+  const params=new URLSearchParams(raw),term=String(query||'').trim();
+  params.delete('q');params.delete('slot');
+  if(term){params.set('q',term);params.set('slot',String(Math.max(1,Number(slot)||1)));}
+  const suffix=params.toString();
+  return `${pathname||'/compare'}${suffix?`?${suffix}`:''}`;
+}
+export function setupCompareSearch(root=document){
+  root.querySelectorAll('[data-compare-search-form]').forEach(form=>form.addEventListener('submit',event=>{
+    event.preventDefault();
+    const query=new FormData(form).get('q')||'';
+    const route=compareSearchRoute(form.dataset.compareSearchBase||'/compare',form.dataset.compareSearchSlot||1,query);
+    window.dispatchEvent(new CustomEvent('jcs:layout-route',{detail:{route}}));
+  }));
+}
+export function setupLayoutInteractions(root=document){setupDrawer(root);setupNowCarousel(root);setupLayoutNavigation(root);setupCompareSearch(root);}

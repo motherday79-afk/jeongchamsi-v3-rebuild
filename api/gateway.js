@@ -3,7 +3,7 @@ import { collectLegacySnapshot, writeRebuildSnapshot, writePoliticianSeed, valid
 import { LEGACY_DOMAINS } from '../lib/migration-core.js';
 import { issueSessionToken, readSessionToken } from '../lib/session.js';
 import { readUsers, listUsers, getUser, registerUser, authenticateUser, updateProfile, publicUser, readDomain, writeDomain, readActivity, writeActivity } from '../lib/rebuild-store.js';
-import { POLITICIAN_COUNTS, cleanPoliticianType, readPoliticianType, readPoliticianPhotos, getPolitician } from '../lib/politician-store.js';
+import { POLITICIAN_COUNTS, POLITICIAN_TYPES, cleanPoliticianType, readPoliticianType, readPoliticianPhotos, getPolitician, searchPoliticianProfiles } from '../lib/politician-store.js';
 
 const COOKIE='jcsr2_session';
 const MAX_AGE=60*60*24*30;
@@ -44,8 +44,14 @@ async function handleMigration(req,res,route){
 
 async function handlePoliticians(req,res,command,url){
   if(req.method!=='GET')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
-  const id=String(url.searchParams.get('id')||req.query?.id||'').trim(),photos=await readPoliticianPhotos(command);
+  const id=String(url.searchParams.get('id')||req.query?.id||'').trim(),query=String(url.searchParams.get('q')||req.query?.q||'').trim(),photos=await readPoliticianPhotos(command);
   if(id){const item=await getPolitician(command,id);if(!item)return json(res,404,{ok:false,error:'POLITICIAN_NOT_FOUND'});return json(res,200,{ok:true,item:{...item,photo:photos[id]||null}});}
+  if(query){
+    const limit=Math.min(50,Math.max(1,Number(url.searchParams.get('limit')||req.query?.limit||12)||12));
+    const entries=await Promise.all(POLITICIAN_TYPES.map(async type=>[type,await readPoliticianType(command,type)]));
+    const matches=searchPoliticianProfiles(Object.fromEntries(entries),query,limit).map(item=>({...item,photo:photos[item.id]||null}));
+    return json(res,200,{ok:true,query,limit,total:matches.length,items:matches});
+  }
   const type=cleanPoliticianType(url.searchParams.get('type')||req.query?.type)||'assembly';
   const offset=Math.max(0,Number(url.searchParams.get('offset')||req.query?.offset||0)||0),limit=Math.min(100,Math.max(1,Number(url.searchParams.get('limit')||req.query?.limit||30)||30));
   const all=await readPoliticianType(command,type),items=all.slice(offset,offset+limit).map(item=>({...item,photo:photos[item.id]||null}));
@@ -133,7 +139,7 @@ export default async function handler(req,res){
     if(route==='action')return handleAction(req,res,command);
     if(route==='stats'){const users=await listUsers(command);return json(res,200,{ok:true,members:users.length});}
     if(route.startsWith('admin/')){const handled=await handleAdmin(req,res,route,command);if(handled!==false)return handled;}
-    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_13'});
+    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_14'});
     return json(res,404,{ok:false,error:'NOT_FOUND'});
   }catch(error){return json(res,error.code==='STORAGE_MISSING'?503:500,{ok:false,error:error.code||error.message||'SERVER_ERROR'});}
 }

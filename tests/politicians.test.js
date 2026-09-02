@@ -151,6 +151,19 @@ test('all non-pilot politicians keep the restored layout without invented analys
   assert.match(html,/class="person-core-bullet-ledger"[\s\S]*?<strong>—<\/strong>/);
 });
 
+test('every non-pilot administrator detail uses the same semantic chapter layout as the Kim pilot',async()=>{
+  const sample={...POLITICIAN_SEED.profiles.assembly[1],photo:POLITICIAN_SEED.photos['assembly-002']};
+  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample})},{user:{role:'admin'}});
+  for(const visual of [
+    'admin-cohort-heatmap-v3','admin-support-bars-v3','admin-support-waterfall-v3','admin-support-radar-v3',
+    'admin-resilience-area-v3','admin-propagation-flow-v3','admin-issue-quadrant-v3','admin-risk-matrix-v3',
+    'admin-gap-dumbbell-v3','admin-competitor-flow-v3','admin-evidence-ledger-v3','admin-strategy-roadmap-v3',
+    'admin-news-narrative-v3','admin-opinion-conversion-v3','admin-constituency-opportunity-v3',
+    'admin-cross-intelligence-v3','admin-message-market-v3','admin-action-kpi-v3','admin-history-timeline-v3'
+  ])assert.match(html,new RegExp(visual));
+  for(const heading of ['DIGITAL DEMAND INTELLIGENCE','SEARCH INTENT MAP','NEWS NARRATIVE INTELLIGENCE','PUBLIC OPINION CONVERSION','CONSTITUENCY OPPORTUNITY','JCS CROSS INTELLIGENCE','30-DAY CONSULTING ACTION','JCS STRATEGIC CONSULTING','HISTORY INTELLIGENCE'])assert.match(html,new RegExp(heading));
+});
+
 test('politician intelligence typography establishes readable size floors',()=>{
   const css=new URL('../css/pages.css',import.meta.url);
   return import('node:fs/promises').then(({readFile})=>readFile(css,'utf8')).then(text=>{
@@ -181,7 +194,7 @@ test('politician intelligence v3 final layer fixes typography and approved high-
   });
 });
 
-test('release metadata and browser cache keys identify JCS 0.0.13',async()=>{
+test('release metadata and browser cache keys identify JCS 0.0.14',async()=>{
   const {readFile}=await import('node:fs/promises');
   const root=new URL('../',import.meta.url);
   const [pkg,index,app,gateway]=await Promise.all([
@@ -190,10 +203,10 @@ test('release metadata and browser cache keys identify JCS 0.0.13',async()=>{
     readFile(new URL('src/app.js',root),'utf8'),
     readFile(new URL('api/gateway.js',root),'utf8')
   ]);
-  assert.match(pkg,/"name": "jcs-0-0-13"/);
-  assert.match(pkg,/"version": "0\.0\.13"/);
-  assert.doesNotMatch(index+app,/v=0\.0\.12/);
-  assert.match(index,/pages\.css\?v=0\.0\.13/);
-  assert.match(app,/politicians\.js\?v=0\.0\.13/);
-  assert.match(gateway,/version:'JCS_0_0_13'/);
+  assert.match(pkg,/"name": "jcs-0-0-14"/);
+  assert.match(pkg,/"version": "0\.0\.14"/);
+  assert.doesNotMatch(index+app,/v=0\.0\.(?:12|13)/);
+  assert.match(index,/pages\.css\?v=0\.0\.14/);
+  assert.match(app,/politicians\.js\?v=0\.0\.14/);
+  assert.match(gateway,/version:'JCS_0_0_14'/);
 });

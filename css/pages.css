@@ -3414,3 +3414,21 @@ html.jcv3-touch-ui .jcv3-view-mode-switch{display:flex}
 :root{--jcs-v3-text:#173133;--jcs-v3-body:#30484a;--jcs-v3-support:#65777a}
 .jcs-public-intelligence-v3 :is(p,span,small,b,strong,em,dt,dd,a,button,label){font-size:14px!important}
 .jcs-private-intelligence-v3 :is(p,span,small,b,strong,em,dt,dd,a,button,label){font-size:14px!important}
+
+/* JCS_0_0_14 · EMBEDDED POLITICIAN COMPARE SEARCH */
+.politician-compare-slot.is-empty.has-search{display:flex;min-height:355px;align-items:stretch;justify-content:flex-start;flex-direction:column;padding:18px;text-align:left}
+.politician-compare-slot-search{display:grid;gap:10px;width:100%;margin:auto 0}
+.politician-compare-slot-search label{color:#294f44;font-size:16px;font-weight:900;line-height:1.4}
+.politician-compare-slot-search>div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px}
+.politician-compare-slot-search input[type="search"]{min-width:0;height:46px;padding:0 12px;border:1px solid #cdded8;border-radius:11px;background:#fff;color:#213f37;font-size:14px;outline:none}
+.politician-compare-slot-search input[type="search"]:focus{border-color:#168568;box-shadow:0 0 0 3px rgba(22,133,104,.12)}
+.politician-compare-slot-search button{min-width:58px;height:46px;border:0;border-radius:11px;background:#14755d;color:#fff;font-size:14px;font-weight:900;cursor:pointer}
+.politician-compare-slot-search>p{min-height:0!important;margin:0!important;color:#657a73!important;font-size:14px!important;line-height:1.5!important}
+.politician-compare-search-results{display:grid;gap:7px;width:100%;max-height:238px;margin-top:12px;overflow:auto;padding-top:12px;border-top:1px solid #e0e9e6}
+.politician-compare-search-results>p{margin:0;padding:16px 8px;color:#657a73;font-size:14px;text-align:center}
+.politician-compare-search-result{display:grid;grid-template-columns:42px minmax(0,1fr) auto;align-items:center;gap:9px;width:100%;padding:8px;border:1px solid #dfe9e6;border-radius:11px;background:#fff;text-align:left;cursor:pointer}
+.politician-compare-search-result:hover,.politician-compare-search-result:focus-visible{border-color:#9bcbbb;background:#f1faf7}
+.politician-compare-search-avatar{display:grid;place-items:center;width:42px;height:42px;overflow:hidden;border-radius:10px;background:#e8f2ef;color:#397361;font-size:16px;font-weight:900}
+.politician-compare-search-avatar img{width:100%;height:100%;object-fit:cover;object-position:var(--photo-position,50% 28%)}
+.politician-compare-search-result>span{min-width:0}.politician-compare-search-result b,.politician-compare-search-result small{display:block;font-size:14px}.politician-compare-search-result b{color:#26483e}.politician-compare-search-result small{margin-top:2px;color:#687c75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.politician-compare-search-result em{color:#14755d;font-size:14px;font-style:normal;font-weight:900}
+@media(max-width:680px){.politician-compare-slot.is-empty.has-search{min-height:330px}.politician-compare-slot-search>div{grid-template-columns:1fr}.politician-compare-slot-search button{width:100%}}

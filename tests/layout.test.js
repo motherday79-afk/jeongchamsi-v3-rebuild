@@ -88,6 +88,13 @@ test('layout foundation has new UI behavior wiring rather than disabled controls
   assert.doesNotMatch(ui,/setInterval|setTimeout|4000|auto(?:play|advance)/i);
 });
 
+test('compare search submit preserves selected ids and targets the active slot',async()=>{
+  const interactions=await import('../src/ui/interactions.js');
+  assert.equal(typeof interactions.compareSearchRoute,'function');
+  assert.equal(interactions.compareSearchRoute('/compare?ids=assembly-001',3,'서울 시장'),'/compare?ids=assembly-001&q=%EC%84%9C%EC%9A%B8+%EC%8B%9C%EC%9E%A5&slot=3');
+  assert.equal(interactions.compareSearchRoute('/compare',1,'   '),'/compare');
+});
+
 test('home NOW rank renders 30 assembly members as three manual pages with photos',()=>{
   const rank=POLITICIAN_SEED.profiles.assembly.slice(0,30).map((item,index)=>({...item,photo:POLITICIAN_SEED.photos[item.id],rank:index+1}));
   const html=renderHomeLayout({...HOME_FIXTURE,itsmePosts:[],columns:[],community:[],polls:{items:[]},generation:{},nationalEvaluation:{},academy:{items:[]},rank,session:{authenticated:false}});
