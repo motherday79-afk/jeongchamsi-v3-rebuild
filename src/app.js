@@ -1,18 +1,20 @@
 import { HOME_FIXTURE } from './fixtures/home.js';
 import { siteHeader, drawer, footer } from './layout/site-shell.js';
-import { renderHomeLayout } from './layout/home-layout.js?v=0.0.14';
+import { renderHomeLayout } from './layout/home-layout.js?v=0.0.15';
 import { setupLayoutInteractions } from './ui/interactions.js';
 import { createAuthService } from './core/auth.js';
 import { createContentService } from './core/content.js';
 import { createPoliticianService } from './core/politicians.js';
+import { runIntelligenceAction } from './core/intelligence-runner.js';
 import * as views from './views/stage1.js';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.14';
-import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.14';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.15';
+import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.15';
 
 const app=document.getElementById('app');
 const auth=createAuthService();
 const content=createContentService();
 const politicians=createPoliticianService();
+let intelligenceRunnerActive=false;
 
 const route=()=>decodeURIComponent((location.hash||'#/').replace(/^#/,'')||'/');
 const parts=r=>r.split('?')[0].split('/').filter(Boolean);
@@ -22,6 +24,29 @@ async function shell(body,session){
   const memberCount=await auth.memberCount().catch(()=>0);
   app.innerHTML=`<div class="site-shell">${siteHeader(memberCount,session)}<div class="page-wrap">${body}</div>${footer()}${drawer(session)}</div>`;
   setupLayoutInteractions(document);
+}
+
+function updateIntelligenceProgress(kind,job,message=''){
+  const card=document.querySelector(`[data-intelligence-job="${kind}"]`);if(!card||!job)return;
+  const completed=Number(job.completed||0),total=Number(job.total||542),percent=total?Math.min(100,Math.round(completed/total*100)):0;
+  card.dataset.jobStatus=job.status||'RUNNING';const bar=card.querySelector('.admin-job-progress i');if(bar)bar.style.width=`${percent}%`;
+  const progress=card.querySelector('[data-job-progress-text]');if(progress)progress.textContent=`${completed.toLocaleString('ko-KR')} / ${total.toLocaleString('ko-KR')}`;
+  const state=card.querySelector('[data-job-message]');if(state)state.textContent=message||`${percent}% 처리 · 성공 ${Number(job.succeeded||0).toLocaleString('ko-KR')} · 오류 ${Number(job.failed||0).toLocaleString('ko-KR')}`;
+}
+
+async function runAdminIntelligence(kind,resume=false){
+  if(intelligenceRunnerActive)return;intelligenceRunnerActive=true;
+  const button=document.querySelector(`[data-intelligence-action="${kind}"]`);if(button)button.disabled=true;
+  try{
+    const job=await runIntelligenceAction(auth,kind,{resume,onProgress:value=>updateIntelligenceProgress(kind,value)});
+    updateIntelligenceProgress(kind,job,job.status==='COMPLETED'?'모든 분할 작업이 완료되었습니다.':`완료 상태: ${job.status}`);
+  }catch(error){const card=document.querySelector(`[data-intelligence-job="${kind}"]`),state=card?.querySelector('[data-job-message]');if(state)state.textContent=`처리 중단 · ${error.message} · 다시 누르면 저장된 위치부터 재개됩니다.`;}
+  finally{intelligenceRunnerActive=false;await render();}
+}
+
+function resumeAdminIntelligence(){
+  const running=document.querySelector('[data-intelligence-job][data-job-status="RUNNING"]:not([data-job-blocked="true"])');
+  if(running)void runAdminIntelligence(running.dataset.intelligenceJob,true);
 }
 
 async function render(){
@@ -37,9 +62,10 @@ async function render(){
       content.readDomain('generation').catch(()=>({})),
       content.readDomain('nationalEvaluation').catch(()=>({})),
       content.readDomain('academy').catch(()=>({items:[],slots:[]})),
-      politicians.list('assembly',0,30).catch(()=>({ok:false,items:[]}))
+      politicians.rankings().catch(()=>({ok:false,items:[]}))
     ]);
-    const rank=rankResult?.ok?(Array.isArray(rankResult.items)?rankResult.items:[]).slice(0,30).map((item,index)=>({...item,rank:index+1,rankMode:'temporary-assembly-pilot'})):[];
+    let rank=rankResult?.ok?(Array.isArray(rankResult.items)?rankResult.items:[]).slice(0,30):[];
+    if(!rank.length){const fallback=await politicians.list('assembly',0,30).catch(()=>({ok:false,items:[]}));rank=fallback?.ok?(fallback.items||[]).slice(0,30).map((item,index)=>({...item,rank:index+1,rankMode:'temporary-assembly-pilot'})):[];}
     const home={...HOME_FIXTURE,memberCount,columns,community,itsmePosts,polls,generation,nationalEvaluation,academy,rank,session};
     body=`<div class="product-home-wrap">${renderHomeLayout(home)}</div>`;
   } else if(p[0]==='about') body=views.renderAbout();
@@ -66,6 +92,7 @@ async function render(){
   else body=`<section class="module"><h2>페이지를 찾을 수 없습니다</h2></section>`;
   await shell(body,session);
   window.scrollTo(0,0);
+  if(p[0]==='admin')queueMicrotask(resumeAdminIntelligence);
 }
 
 window.addEventListener('hashchange',render);
@@ -93,6 +120,8 @@ document.addEventListener('submit',async event=>{
 });
 
 document.addEventListener('click',async event=>{
+  const intelligence=event.target.closest('[data-intelligence-action]');
+  if(intelligence){event.preventDefault();void runAdminIntelligence(intelligence.dataset.intelligenceAction,false);return;}
   const vote=event.target.closest('[data-stage-vote]');
   if(vote){event.preventDefault();const result=await content.vote(vote.dataset.stageVote,vote.dataset.option);if(result?.status===401){location.hash='#/login';return;}if(!result?.ok){alert(result?.error||'투표하지 못했습니다.');return;}await render();return;}
   const like=event.target.closest('[data-post-like]');

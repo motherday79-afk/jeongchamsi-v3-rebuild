@@ -4,6 +4,7 @@ import { LEGACY_DOMAINS } from '../lib/migration-core.js';
 import { issueSessionToken, readSessionToken } from '../lib/session.js';
 import { readUsers, listUsers, getUser, registerUser, authenticateUser, updateProfile, publicUser, readDomain, writeDomain, readActivity, writeActivity } from '../lib/rebuild-store.js';
 import { POLITICIAN_COUNTS, POLITICIAN_TYPES, cleanPoliticianType, readPoliticianType, readPoliticianPhotos, getPolitician, searchPoliticianProfiles } from '../lib/politician-store.js';
+import { createIntelligenceService } from '../lib/intelligence-service.js';
 
 const COOKIE='jcsr2_session';
 const MAX_AGE=60*60*24*30;
@@ -42,10 +43,16 @@ async function handleMigration(req,res,route){
   return json(res,404,{ok:false,error:'NOT_FOUND'});
 }
 
-async function handlePoliticians(req,res,command,url){
+async function handlePoliticians(req,res,command,url,intelligence){
   if(req.method!=='GET')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
-  const id=String(url.searchParams.get('id')||req.query?.id||'').trim(),query=String(url.searchParams.get('q')||req.query?.q||'').trim(),photos=await readPoliticianPhotos(command);
-  if(id){const item=await getPolitician(command,id);if(!item)return json(res,404,{ok:false,error:'POLITICIAN_NOT_FOUND'});return json(res,200,{ok:true,item:{...item,photo:photos[id]||null}});}
+  const id=String(url.searchParams.get('id')||req.query?.id||'').trim(),query=String(url.searchParams.get('q')||req.query?.q||'').trim(),ranking=String(url.searchParams.get('ranking')||req.query?.ranking||'').trim(),photos=await readPoliticianPhotos(command);
+  if(id){const [item,report]=await Promise.all([getPolitician(command,id),intelligence.getPublicIntelligence(id)]);if(!item)return json(res,404,{ok:false,error:'POLITICIAN_NOT_FOUND'});return json(res,200,{ok:true,item:{...item,photo:photos[id]||null},intelligence:report});}
+  if(ranking==='overall'){
+    const published=await intelligence.getPublicRankings();if(!published)return json(res,200,{ok:true,published:false,items:[]});
+    const profiles=(await Promise.all(POLITICIAN_TYPES.map(type=>readPoliticianType(command,type)))).flat(),byId=new Map(profiles.map(person=>[person.id,person]));
+    const items=(published.overall||[]).slice(0,30).map(row=>({...byId.get(row.id),...row,photo:photos[row.id]||null,rankMode:'published'}));
+    return json(res,200,{ok:true,published:true,snapshot:published.snapshot,items});
+  }
   if(query){
     const limit=Math.min(50,Math.max(1,Number(url.searchParams.get('limit')||req.query?.limit||12)||12));
     const entries=await Promise.all(POLITICIAN_TYPES.map(async type=>[type,await readPoliticianType(command,type)]));
@@ -54,7 +61,7 @@ async function handlePoliticians(req,res,command,url){
   }
   const type=cleanPoliticianType(url.searchParams.get('type')||req.query?.type)||'assembly';
   const offset=Math.max(0,Number(url.searchParams.get('offset')||req.query?.offset||0)||0),limit=Math.min(100,Math.max(1,Number(url.searchParams.get('limit')||req.query?.limit||30)||30));
-  const all=await readPoliticianType(command,type),items=all.slice(offset,offset+limit).map(item=>({...item,photo:photos[item.id]||null}));
+  const [all,published]=await Promise.all([readPoliticianType(command,type),intelligence.getPublicRankings()]),rankById=published?.byId||{},items=all.slice(offset,offset+limit).map(item=>({...item,photo:photos[item.id]||null,now:rankById[item.id]||null}));
   return json(res,200,{ok:true,type,counts:POLITICIAN_COUNTS,total:all.length,offset,limit,hasMore:offset+items.length<all.length,items});
 }
 
@@ -119,8 +126,25 @@ async function handleAction(req,res,command){
   return json(res,400,{ok:false,error:'UNKNOWN_ACTION'});
 }
 
+export async function dispatchAdminIntelligence(route,method,service){
+  const actions={
+    'admin/intelligence/status':{method:'GET',run:()=>service.status()},
+    'admin/intelligence/collect/start':{method:'POST',run:()=>service.startCollection()},
+    'admin/intelligence/collect/step':{method:'POST',run:()=>service.runCollectionStep()},
+    'admin/intelligence/preview':{method:'GET',run:()=>service.preview()},
+    'admin/intelligence/publish/start':{method:'POST',run:()=>service.startPublish()},
+    'admin/intelligence/publish/step':{method:'POST',run:()=>service.runPublishStep()},
+  };
+  const action=actions[route];
+  if(!action)return {status:404,body:{ok:false,error:'NOT_FOUND'}};
+  if(method!==action.method)return {status:405,body:{ok:false,error:'METHOD_NOT_ALLOWED'}};
+  try{return {status:200,body:{ok:true,...await action.run()}};}
+  catch(error){const code=String(error?.code||error?.message||'INTELLIGENCE_OPERATION_FAILED');return {status:['COLLECTION_NOT_READY','COLLECTION_VALIDATION_REQUIRED','NAVER_CREDENTIALS_MISSING'].includes(code)?409:500,body:{ok:false,error:code}};}
+}
+
 async function handleAdmin(req,res,route,command){
   const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});if(user.role!=='admin')return json(res,403,{ok:false,error:'ADMIN_REQUIRED'});
+  if(route.startsWith('admin/intelligence/')){const result=await dispatchAdminIntelligence(route,req.method,createIntelligenceService({command}));return json(res,result.status,result.body);}
   if(route==='admin/users'&&req.method==='GET')return json(res,200,{ok:true,users:await listUsers(command)});
   if(route==='admin/summary'&&req.method==='GET'){
     const users=await listUsers(command),contents={};for(const domain of LEGACY_DOMAINS){const data=await readDomain(command,domain,null);contents[domain]=Array.isArray(data?.items)?data.items.length:Array.isArray(data?.slots)?data.slots.length:(data?1:0);}return json(res,200,{ok:true,users:{total:users.length,admins:users.filter(x=>x.role==='admin').length},contents});
@@ -135,11 +159,11 @@ export default async function handler(req,res){
     const command=rebuildRedisCommand();
     if(route.startsWith('user/')){const handled=await handleUser(req,res,route,command);if(handled!==false)return handled;}
     if(route==='content')return handleContent(req,res,command,url);
-    if(route==='politicians')return handlePoliticians(req,res,command,url);
+    if(route==='politicians')return handlePoliticians(req,res,command,url,createIntelligenceService({command}));
     if(route==='action')return handleAction(req,res,command);
     if(route==='stats'){const users=await listUsers(command);return json(res,200,{ok:true,members:users.length});}
     if(route.startsWith('admin/')){const handled=await handleAdmin(req,res,route,command);if(handled!==false)return handled;}
-    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_14'});
+    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_15'});
     return json(res,404,{ok:false,error:'NOT_FOUND'});
   }catch(error){return json(res,error.code==='STORAGE_MISSING'?503:500,{ok:false,error:error.code||error.message||'SERVER_ERROR'});}
 }
