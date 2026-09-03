@@ -31,7 +31,8 @@ test('guest detail renders one compact 01 07 09 snapshot and a login entry only'
   assert.deepEqual([...html.matchAll(/data-diagnostic-topic="(\d{2})"/g)].map(match=>match[1]),['01','07','09']);
   assert.equal((html.match(/class="jcs-diagnostic-topic/g)||[]).length,3);
   assert.match(html,/로그인하고 상세 분석 보기/);
-  assert.match(html,/핵심 사건/);
+  assert.equal((html.match(/>핵심 사건</g)||[]).length,1);
+  assert.equal((html.match(/jcs-diagnostic-spark/g)||[]).length,1);
   assert.match(html,/정치적 의미/);
   assert.doesNotMatch(html,/핵심 원인|실행 처방|실행 우선순위|예상 변화 및 추적 지표/);
 });
@@ -41,6 +42,8 @@ test('member detail renders the exact six analysis modules without administrator
   assert.match(html,/JCS MEMBER POLITICAL ANALYSIS/);
   assert.deepEqual([...html.matchAll(/data-diagnostic-topic="(\d{2})"/g)].map(match=>match[1]),['01','02','03','05','07','09']);
   for(const label of ['현재 평가','핵심 사건','변화 원인','과거와 현재','핵심 수치','최근 변화','비교 기준','정참시 해석','데이터 기준일 및 출처'])assert.match(html,new RegExp(label));
+  for(const label of ['핵심 사건','변화 원인','과거와 현재','최근 변화'])assert.equal((html.match(new RegExp(`>${label}<`,'g'))||[]).length,1);
+  assert.equal((html.match(/>서브데이터</g)||[]).length,0);
   assert.doesNotMatch(html,/핵심 원인|실행 처방|즉시 실행|90일 이내 실행/);
 });
 
@@ -50,6 +53,9 @@ test('administrator detail renders all ten compact intelligence report modules',
   assert.deepEqual([...html.matchAll(/data-diagnostic-topic="(\d{2})"/g)].map(match=>match[1]),['01','02','03','04','05','06','07','08','09','10']);
   for(const label of ['핵심 사건','정치적 의미','변화 원인','과거와 현재','서브데이터','현재 위치','변화 흐름','근거 데이터','기회 요인','위험 요인','진단 근거','정참시 전략 판단','실행 처방','실행 우선순위','예상 변화 및 추적 지표'])assert.match(html,new RegExp(label));
   assert.equal((html.match(/>과거와 현재</g)||[]).length,1);
+  assert.equal((html.match(/>핵심 사건</g)||[]).length,1);
+  assert.equal((html.match(/>변화 원인</g)||[]).length,1);
+  assert.equal((html.match(/>변화 흐름</g)||[]).length,1);
   assert.equal((html.match(/>근거 데이터</g)||[]).length,1);
   assert.equal((html.match(/>서브데이터</g)||[]).length,1);
   assert.equal((html.match(/>비교 기준</g)||[]).length,0);

@@ -31,6 +31,8 @@ test('guest comparison waits for the button then renders only 01 07 09 for two p
   assert.match(html,/data-compare-limit="2"/);
   assert.deepEqual([...html.matchAll(/data-comparison-topic="(\d{2})"/g)].map(match=>match[1]),['01','07','09']);
   assert.match(html,/로그인하고 상세 비교 보기/);
+  assert.equal((html.match(/>핵심 사건</g)||[]).length,2);
+  assert.equal((html.match(/>최근 흐름</g)||[]).length,2);
   assert.doesNotMatch(html,/핵심 원인|실행 처방|세대·성별 지지구조 분석/);
 });
 
@@ -39,6 +41,8 @@ test('member comparison renders six interpreted topics for exactly two people',a
   assert.deepEqual([...html.matchAll(/data-comparison-topic="(\d{2})"/g)].map(match=>match[1]),['01','02','03','05','07','09']);
   assert.equal((html.match(/data-compare-matrix-profile=/g)||[]).length,2);
   assert.match(html,/정참시 비교 해석/);
+  for(const label of ['핵심 사건','변화 원인','과거와 현재','최근 변화'])assert.equal((html.match(new RegExp(`>${label}<`,'g'))||[]).length,2);
+  assert.equal((html.match(/>서브데이터</g)||[]).length,0);
   assert.doesNotMatch(html,/실행 처방|관리해야 할 위험|경쟁 대응 우선순위/);
 });
 
@@ -57,6 +61,9 @@ test('administrator comparison caps selection at four and renders all ten topics
   assert.equal((html.match(/data-competitor-response=/g)||[]).length,3);
   for(const label of ['공세 영역','방어 영역','회피 영역','단기 역전 가능 영역'])assert.match(html,new RegExp(label));
   assert.equal((html.match(/대표 뉴스는 핵심 이슈 주제에서 벗어난 관련 기사 집계를 의미합니다\./g)||[]).length,1);
+  for(const label of ['핵심 사건','변화 원인','과거와 현재','최근 변화','근거 데이터'])assert.equal((html.match(new RegExp(`>${label}<`,'g'))||[]).length,4);
+  assert.equal((html.match(/>서브데이터</g)||[]).length,4);
+  assert.equal((html.match(/>비교 기준</g)||[]).length,0);
 });
 
 test('administrator target strategy produces one response card per selected rival for two three and four people',async()=>{

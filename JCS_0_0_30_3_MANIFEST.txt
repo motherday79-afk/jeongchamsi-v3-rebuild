@@ -1,0 +1,20 @@
+JCS 0.0.30.3 DETAIL COMPARE DEDUP HOTFIX
+BASE: JCS 0.0.30.2
+
+PRODUCTION
+api/gateway.js
+index.html
+package.json
+package-lock.json
+src/app.js
+src/views/politician-compare.js
+src/views/politicians.js
+
+TESTS
+tests/politician-diagnostics-compare.test.js
+tests/politician-diagnostics-view.test.js
+tests/politicians.test.js
+
+DOCUMENTS
+JCS_0_0_30_3_DETAIL_COMPARE_DEDUP_HOTFIX.md
+JCS_0_0_30_3_MANIFEST.txt
