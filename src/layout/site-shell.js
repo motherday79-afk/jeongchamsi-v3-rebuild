@@ -1,6 +1,12 @@
 import { SERVICE_CATALOG, serviceIconSvg } from '../ui/service-icons.js';
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 
+export function renderInitialLoading(target){
+  if(!target||Number(target.childElementCount||0)>0||String(target.innerHTML||'').trim())return false;
+  target.innerHTML='<main class="app-initial-loading" role="status" aria-live="polite"><div class="app-initial-loading-card"><span class="app-initial-loading-mark" aria-hidden="true"><i></i><i></i><i></i></span><b>정참시</b><p>정참시를 불러오고 있습니다</p></div></main>';
+  return true;
+}
+
 export function siteHeader(memberCount=0,session={authenticated:false,user:null}){
   const authenticated=session?.authenticated===true;
   const nickname=esc(session?.user?.nickname||'회원');

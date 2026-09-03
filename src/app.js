@@ -1,6 +1,6 @@
 import { HOME_FIXTURE } from './fixtures/home.js';
-import { siteHeader, drawer, footer } from './layout/site-shell.js';
-import { renderHomeLayout } from './layout/home-layout.js?v=0.0.26';
+import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js';
+import { renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.26.1';
 import { setupLayoutInteractions } from './ui/interactions.js';
 import { createAuthService } from './core/auth.js';
 import { createContentService } from './core/content.js';
@@ -13,10 +13,12 @@ import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.26'
 import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.26';
 
 const app=document.getElementById('app');
+renderInitialLoading(app);
 const auth=createAuthService();
 const content=createContentService();
 const politicians=createPoliticianService();
 let intelligenceRunnerActive=false;
+let renderSequence=0;
 const intelligenceAutoResumeGuard=createIntelligenceAutoResumeGuard();
 
 const route=()=>decodeURIComponent((location.hash||'#/').replace(/^#/,'')||'/');
@@ -71,9 +73,11 @@ function setupMemberBadgeManagers(){
 }
 
 async function render(){
-  const r=route(),p=parts(r),session=await auth.session();
-  const badgeVisit=session.authenticated?await auth.recordBadgeVisit().catch(()=>null):null;
-  const badgeStatus=session.authenticated?(badgeVisit?.status||await auth.badgeStatus().catch(()=>null)):null;
+  const renderId=++renderSequence,r=route(),p=parts(r),session=await auth.session();
+  const badgeStatusPromise=session.authenticated
+    ? auth.recordBadgeVisit().then(result=>result?.status||auth.badgeStatus()).catch(()=>null)
+    : Promise.resolve(null);
+  const badgeStatus=p[0]==='mypage'?await badgeStatusPromise:null;
   let body='';
   if(!p.length){
     const [memberCount,columns,community,itsmePosts,polls,generation,nationalEvaluation,academy,rankResult]=await Promise.all([
@@ -114,6 +118,10 @@ async function render(){
   else if(unstable.has(p[0])) body=`<section class="module"><span class="eyebrow">NEXT PHASE</span><h2>${p[0]}</h2><p class="module-desc">이 영역은 이번 버전에서 제외했습니다. NOW·정치인 데이터·분석 엔진은 연결하지 않습니다.</p></section>`;
   else body=`<section class="module"><h2>페이지를 찾을 수 없습니다</h2></section>`;
   await shell(body,session);
+  if(!p.length&&session.authenticated)void badgeStatusPromise.then(status=>{
+    if(renderId!==renderSequence||route()!==r||!status)return;
+    for(const mount of document.querySelectorAll('[data-badge-showcase-mount]'))mount.innerHTML=renderBadgeShowcase(status);
+  });
   setupMemberBadgeManagers();
   if(p[0]==='person'){recordRecentPolitician(document);tunePoliticianNarratives();}
   window.scrollTo(0,0);
