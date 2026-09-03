@@ -67,7 +67,7 @@ test('negative event attention is separated from political assets instead of bei
     assert.match(diagnosis.politicalMeaning,/부정 프레임|정치적 부담/);
   }
   assert.match(draft.diagnoses.find(item=>item.id==='01').headline,/논란·위기/);
-  assert.match(draft.diagnoses.find(item=>item.id==='04').interpretation.join(' '),/정치 경력|핵심층/);
+  assert.match(draft.diagnoses.find(item=>item.id==='04').interpretation.join(' '),/정치 경력|핵심 지지층|결집/);
 });
 
 test('generated Korean applies subject object and topic particles without broken consulting copy',()=>{
@@ -86,6 +86,37 @@ test('diagnosis shows the cleaned core event once and keeps it out of repeated a
     const repeated=JSON.stringify({...diagnosis,coreEvent:''});
     assert.doesNotMatch(repeated,/한강만평|한강타임즈|5\.18 도발|이진숙의 운명/);
   }
+});
+
+test('Lee Jin-sook receives ten distinct JCS judgments with direct topic-specific opportunities and risks',()=>{
+  const person={...basePerson,id:'assembly-027',name:'이진숙',party:'국민의힘',region:'대구',jurisdiction:'대구 달성군',terms:'초선',committee:'국회 공식자료 연동'};
+  const report=buildIntelligenceDraft(person,{...raw,personId:person.id,officialProfile:person,news:{items:[{title:'5·18 유공자들, 이진숙 상대 손배소 청구…1인당 3000만원',source:'대표 뉴스',publishedAt:'2026-09-03T09:00:00Z'}]}},{...context,peers:[person]},'JCS_INTELLIGENCE_V2');
+  const byId=new Map(report.diagnoses.map(item=>[item.id,item]));
+  assert.equal(report.news[0].frame,'부정·위기');
+  assert.equal(new Set(report.diagnoses.map(item=>item.interpretation.join(' '))).size,10);
+  assert.equal(new Set(report.diagnoses.map(item=>item.interpretation[0])).size,10);
+  assert.equal(new Set(report.diagnoses.map(item=>item.opportunity)).size,10);
+  assert.equal(new Set(report.diagnoses.map(item=>item.risk)).size,10);
+  assert.match(byId.get('01').interpretation.join(' '),/5·18 역사 인식.*정책|정책.*5·18 역사 인식/);
+  assert.match(byId.get('02').opportunity,/지역 갈라치기.*2030세대.*결속.*4050세대 이상.*위험 신호/);
+  assert.match(byId.get('03').interpretation.join(' '),/대구 달성군.*지역/);
+  assert.match(byId.get('04').interpretation.join(' '),/핵심 지지층.*결집|결집.*핵심 지지층/);
+  assert.match(byId.get('05').interpretation.join(' '),/경쟁 정치인|비교 우위/);
+  assert.match(byId.get('06').interpretation.join(' '),/역사 인식.*법적 분쟁|법적 분쟁.*역사 인식/);
+  assert.match(byId.get('07').interpretation.join(' '),/뉴스.*노출.*주도권|노출.*주도권/);
+  assert.match(byId.get('08').interpretation.join(' '),/선거 경쟁력|득표/);
+  assert.match(byId.get('09').interpretation.join(' '),/정책|공약/);
+  assert.match(byId.get('10').interpretation.join(' '),/초선.*성과|성과.*초선/);
+  assert.doesNotMatch(JSON.stringify(report.diagnoses),/역사 인식를|역사 인식가|1선 경력|정치 활동을 비용·기한·수혜대상/);
+  assert.doesNotMatch(JSON.stringify(report.diagnoses),/뉴스 노출 상승과 브랜드 자산 축적을 구분하고|정치 활동을 대구 달성군의 실행 성과와 결합하면 대표 의제로 축적|서로 다른 의제가 동시에 확대되면 이진숙의 대표 이미지가 분산/);
+});
+
+test('positive policy coverage receives direct growth judgments without copied crisis assumptions',()=>{
+  const report=buildIntelligenceDraft(basePerson,{...raw,news:{items:[{title:'김테스트 민생 경제 성과 발표',source:'정책뉴스',publishedAt:'2026-09-03T09:00:00Z'}]}},context,'JCS_INTELLIGENCE_V2');
+  const selected=report.diagnoses.filter(item=>['03','04','05','09'].includes(item.id));
+  assert.equal(report.news[0].frame,'긍정·성과');
+  assert.doesNotMatch(JSON.stringify(selected.map(item=>({interpretation:item.interpretation,opportunity:item.opportunity,risk:item.risk}))),/논란 이후|부정 여론|해명이나|논란이 만든 결과|논란을 밀어낼/);
+  assert.match(report.diagnoses.find(item=>item.id==='09').interpretation.join(' '),/민생·경제.*대표 정책|대표 정책.*민생·경제/);
 });
 
 test('identical political evidence produces identical scores regardless of politician id or name',()=>{
@@ -153,6 +184,9 @@ test('all 542 registered politicians receive a deterministic 10 diagnosis and 10
     assert.equal(report.prescriptions.length,10,person.id);
     assert.deepEqual(report.prescriptions.map(row=>row.id),report.diagnoses.map(row=>row.id),person.id);
     assert.doesNotMatch(JSON.stringify({diagnoses:report.diagnoses,prescriptions:report.prescriptions}),/데이터 부족|분석 준비 중|분석 불가|판단 불가|비교 불가|알 수 없음|추가 데이터 필요|N\/A|TODO|TBD|추후 제공/,person.id);
+    assert.equal(new Set(report.diagnoses.map(row=>row.interpretation.join(' '))).size,10,`${person.id} interpretations`);
+    assert.equal(new Set(report.diagnoses.map(row=>row.opportunity)).size,10,`${person.id} opportunities`);
+    assert.equal(new Set(report.diagnoses.map(row=>row.risk)).size,10,`${person.id} risks`);
     signatures.add(report.diagnoses.map(row=>row.score).join(','));
     narrativeSignatures.add(report.diagnoses.map(row=>row.headline).join('|'));
   }

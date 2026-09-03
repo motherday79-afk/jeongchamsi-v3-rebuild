@@ -1,0 +1,19 @@
+JCS 0.0.30.4 TOPIC SPECIFIC JUDGMENT HOTFIX
+BASE: JCS 0.0.30.3
+
+PRODUCTION
+api/gateway.js
+index.html
+lib/intelligence-diagnostics.js
+lib/intelligence-headlines.js
+package.json
+package-lock.json
+src/app.js
+
+TESTS
+tests/intelligence-v2.test.js
+tests/politicians.test.js
+
+DOCUMENTS
+JCS_0_0_30_4_TOPIC_SPECIFIC_JUDGMENT_HOTFIX.md
+JCS_0_0_30_4_MANIFEST.txt
