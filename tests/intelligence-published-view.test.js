@@ -20,6 +20,10 @@ test('a published politician uses live ranks and populated public/admin intellig
   assert.match(html,/class="radar-axis-label"[^>]*>관심도/);
   assert.match(html,/class="radar-axis-label"[^>]*>확산력/);
   assert.match(html,/class="radar-axis-label"[^>]*>활동성/);
+  assert.match(html,/class="person-core-radar"[^>]*data-radar-label-safe/);
+  assert.match(html,/class="admin-support-radar-v3"[^>]*data-radar-label-safe/);
+  assert.match(html,/class="admin-issue-quadrant-v3"[^>]*>[\s\S]*?class="issue-map-marker"/);
+  assert.match(html,/class="admin-issue-map-legend-v3"/);
   assert.match(html,/연령·성별 관심·지지 전환 구조/);
   assert.match(html,/JCS 지지전환지수/);
   assert.doesNotMatch(html,/산정 불가|실제 지지율 아님|추정지수|추정치/);
