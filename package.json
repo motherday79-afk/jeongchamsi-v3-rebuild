@@ -1,5 +1,5 @@
 {
-  "name": "jcs-0-0-28",
+  "name": "jcs-0-0-29",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,5 +8,5 @@
   "dependencies": {
     "redis": "^5.8.2"
   },
-  "version": "0.0.28"
+  "version": "0.0.29"
 }

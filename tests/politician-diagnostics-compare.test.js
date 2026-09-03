@@ -1,10 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { projectIntelligence } from '../lib/intelligence-access.js';
+import { buildIntelligenceDraft } from '../lib/intelligence-analysis.js';
 import { renderPoliticianCompare } from '../src/views/politician-compare.js';
 
 const people=Array.from({length:5},(_,index)=>({id:`assembly-${index+101}`,type:'assembly',roleLabel:'국회의원',name:`비교정치인${index+1}`,party:index%2?'국민의힘':'더불어민주당',jurisdiction:`서울 비교구${index+1}`,office:'국회의원',photo:{localPath:`/assets/politicians/assembly-${index+101}.jpg`,focus:'50% 28%'}}));
-const reportFor=(person,index)=>({
+const legacyReportFor=(person,index)=>({
   id:person.id,snapshot:'2026-09-03',rank:{overall:index+3,category:index+2},currentRole:'국회의원',
   signal:{label:`${person.name} 브랜드`,summary:`${person.name} 현재 브랜드 진단`},core:[{label:'관심도',score:80-index}],
   audience:{position:60-index,label:'관심 구조',summary:'세대 반응 관측'},cohorts:[{age:'40대',male:70-index,female:68-index}],
@@ -15,6 +16,7 @@ const reportFor=(person,index)=>({
   conclusion:'근거 기반 전략 판단',policies:['민생 정책'],activities:['공식 활동'],achievements:['공식 기록'],news:[],related:[],trend:[60-index,70-index,80-index],
   sources:[{type:'Google 뉴스',title:'최근 보도',detail:'공개 보도',grade:'DIRECT',url:'https://news.google.com/'}]
 });
+const reportFor=(person,index)=>{const legacy=legacyReportFor(person,index);return {...buildIntelligenceDraft(person,{snapshotId:'2026-09-03',collectedAt:'2026-09-03T00:00:00.000Z',searchAds:{volume:{pc:200+index*20,mobile:500-index*15}},news:{items:[{title:`${person.name} 민생 정책 지역 현장 발표`,source:`뉴스${index+1}`,publishedAt:'2026-09-02'}]},sourceErrors:[]},{peers:people},'JCS_INTELLIGENCE_V2'),rank:legacy.rank};};
 
 const serviceFor=tier=>({
   async search(query){return {ok:true,items:people.filter(person=>person.name.includes(query)||person.party.includes(query))};},
@@ -49,14 +51,21 @@ test('administrator comparison caps selection at four and renders all ten topics
   assert.doesNotMatch(html,/data-compare-selected="assembly-105"/);
   assert.deepEqual([...html.matchAll(/data-comparison-topic="(\d{2})"/g)].map(match=>match[1]),['01','02','03','04','05','06','07','08','09','10']);
   for(let index=101;index<=104;index++)assert.match(html,new RegExp(`/assets/politicians/assembly-${index}\\.jpg`));
-  for(const label of ['핵심 원인','활용 가능한 기회','관리해야 할 위험','정참시 전략 판단','실행 처방','경쟁 대응 우선순위'])assert.match(html,new RegExp(label));
+  for(const label of ['활용 가능한 기회','관리해야 할 위험','정참시 전략 판단','실행 처방','실행 우선순위'])assert.match(html,new RegExp(label));
+  assert.equal((html.match(/data-prescription-topic=/g)||[]).length,10);
 });
 
 test('comparison cells use the same projected topic values as detail data',async()=>{
   const projected=projectIntelligence(reportFor(people[0],0),'member','detail');
   const html=await renderPoliticianCompare(serviceFor('member'),'/compare?ids=assembly-101,assembly-102&run=1',{user:{role:'member'}});
-  assert.match(html,new RegExp(projected.diagnostics.topics[0].summary));
-  assert.match(html,/최근 뉴스 흐름/);
+  assert.match(html,new RegExp(projected.diagnoses[0].currentPosition));
+  assert.match(html,/정참시 비교 해석/);
+});
+
+test('administrator can change the strategy baseline politician',async()=>{
+  const html=await renderPoliticianCompare(serviceFor('admin'),'/compare?ids=assembly-101,assembly-102&run=1&strategy=assembly-102',{user:{role:'admin'}});
+  assert.match(html,/비교정치인2 기준 전략 처방/);
+  assert.match(html,/class="active" data-layout-route="[^"]*strategy=assembly-102"/);
 });
 
 test('comparison search and removal routes remain usable after the matrix change',async()=>{

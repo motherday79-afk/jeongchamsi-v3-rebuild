@@ -30,12 +30,13 @@ async function requestFor(role){
 test('direct politician API calls enforce public member and administrator projections',async()=>{
   const guest=await requestFor(null),member=await requestFor('member'),admin=await requestFor('admin');
   assert.equal(guest.status,200);assert.equal(member.status,200);assert.equal(admin.status,200);
-  assert.deepEqual(guest.json.intelligence.diagnostics.topics.map(topic=>topic.id),['01','07','09']);
-  assert.deepEqual(member.json.intelligence.diagnostics.topics.map(topic=>topic.id),['01','02','03','05','07','09']);
-  assert.equal(admin.json.intelligence.diagnostics.topics.length,10);
-  for(const forbidden of ['rootCause','strategicJudgment','actionPlan','관리자 처방','관리자 위험'])assert.doesNotMatch(guest.serialized,new RegExp(forbidden));
-  for(const forbidden of ['rootCause','strategicJudgment','actionPlan','관리자 처방','관리자 위험'])assert.doesNotMatch(member.serialized,new RegExp(forbidden));
-  assert.match(admin.serialized,/관리자 처방/);
+  assert.deepEqual(guest.json.intelligence.diagnoses.map(topic=>topic.id),['01','07','09']);
+  assert.deepEqual(member.json.intelligence.diagnoses.map(topic=>topic.id),['01','02','03','05','07','09']);
+  assert.equal(admin.json.intelligence.diagnoses.length,10);
+  assert.equal(admin.json.intelligence.prescriptions.length,10);
+  for(const forbidden of ['strategicJudgment','prescriptions','관리자 처방','관리자 위험'])assert.doesNotMatch(guest.serialized,new RegExp(forbidden));
+  for(const forbidden of ['strategicJudgment','prescriptions','관리자 처방','관리자 위험'])assert.doesNotMatch(member.serialized,new RegExp(forbidden));
+  assert.match(admin.serialized,/전략 처방/);
   assert.equal(guest.headers['Cache-Control'],'no-store');
   assert.equal(guest.json.item.photo.localPath,'/assets/politicians/assembly-221.jpg');
 });

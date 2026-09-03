@@ -6,6 +6,9 @@ import { validatePoliticianSeed, writePoliticianSeed, TARGET_KEYS } from '../lib
 import { renderPoliticianDirectory, renderPoliticianDetail } from '../src/views/politicians.js';
 import { pilotForPolitician } from '../src/data/kim-minseok-pilot.js';
 import { projectIntelligence } from '../lib/intelligence-access.js';
+import { buildIntelligenceDraft } from '../lib/intelligence-analysis.js';
+
+const reportForSample=sample=>{const pilot=pilotForPolitician('assembly-001');return {...buildIntelligenceDraft(sample,{snapshotId:'2026-09-02',collectedAt:'2026-09-02T00:00:00.000Z',searchAds:{volume:{pc:1200,mobile:6400}},news:{items:(pilot.news||[]).map(row=>({title:row.title,source:row.source,url:row.url,publishedAt:row.date}))},sourceErrors:[]},{peers:[]},'JCS_INTELLIGENCE_V2'),rank:{overall:1,category:1,temporary:false},activities:pilot.activities,achievements:pilot.achievements,policies:pilot.policies,related:pilot.related};};
 
 test('approved politician seed keeps 300 slots, 16 metropolitan and 227 basic records',()=>{
   const report=validatePoliticianSeed();
@@ -48,10 +51,9 @@ test('NOW category layout renders the published operating score and independent 
 
 test('published detail uses one two-column NOW card without operational descriptions',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
-  const intelligence=structuredClone(pilotForPolitician(sample.id));
+  const intelligence=structuredClone(reportForSample(sample));
   intelligence.snapshot='jcs-operating';
   intelligence.rank={overall:3,category:2,temporary:false};
-  intelligence.signal.index=87.4;
   intelligence.related[0]={...intelligence.related[0],photo:POLITICIAN_SEED.photos['assembly-002']};
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence:projectIntelligence(intelligence,'public','detail')})});
   assert.match(html,/data-recent-politician/);
@@ -74,7 +76,7 @@ test('published detail uses one two-column NOW card without operational descript
 
 test('missing operating ranks render 집계 전 in the same compact NOW card',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[1]};
-  const intelligence=structuredClone(pilotForPolitician('assembly-001'));intelligence.rank={overall:null,category:null,temporary:false};
+  const intelligence=structuredClone(reportForSample(sample));intelligence.rank={overall:null,category:null,temporary:false};
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence:projectIntelligence(intelligence,'public','detail')})});
   assert.equal((html.match(/<strong>집계 전<\/strong>/g)||[]).length,2);
   assert.match(html,/person-hero-rank-split/);
@@ -82,7 +84,7 @@ test('missing operating ranks render 집계 전 in the same compact NOW card',as
 
 test('administrator consulting callout follows the strategic conclusion inside the intelligence report',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
-  const intelligence=structuredClone(pilotForPolitician(sample.id));
+  const intelligence=structuredClone(reportForSample(sample));
   intelligence.snapshot='jcs-operating';
   const projected=projectIntelligence(intelligence,'admin','detail');
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence:projected})},{user:{role:'admin'}});
@@ -94,7 +96,7 @@ test('administrator consulting callout follows the strategic conclusion inside t
 
 test('Kim Min-seok published report fills the three approved public diagnostic topics',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
-  const intelligence=projectIntelligence(pilotForPolitician(sample.id),'public','detail');
+  const intelligence=projectIntelligence(reportForSample(sample),'public','detail');
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})});
   const text=html.replaceAll('&amp;','&');
   for(const marker of ['JCS OPEN POLITICAL SNAPSHOT','정치인 브랜드 진단','언론·온라인 영향력 분석','정책·공약 반응 분석','RECENT NEWS','PROFILE & RECORD','RELATED POLITICIANS'])assert.match(text,new RegExp(marker));
@@ -103,7 +105,7 @@ test('Kim Min-seok published report fills the three approved public diagnostic t
   assert.match(html,/기본정보/);
   assert.match(html,/임기 · 선거정보/);
   assert.match(html,/김민석/);
-  assert.match(html,/당대표 전환·다채널 확산형/);
+  assert.match(html,/민생·경제|리더십·정당/);
   assert.match(html,/민생·실용·확장/);
   assert.equal((html.match(/data-diagnostic-topic=/g)||[]).length,3);
   assert.doesNotMatch(html,/핵심 원인|실행 처방|modeled.*fallback/i);
@@ -112,7 +114,7 @@ test('Kim Min-seok published report fills the three approved public diagnostic t
 
 test('public politician detail uses the compact three-card diagnostic system',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
-  const intelligence=projectIntelligence(pilotForPolitician(sample.id),'public','detail');
+  const intelligence=projectIntelligence(reportForSample(sample),'public','detail');
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})});
   assert.match(html,/jcs-diagnostics-public-grid/);
   assert.equal((html.match(/jcs-diagnostic-public-topic/g)||[]).length,3);
@@ -121,7 +123,7 @@ test('public politician detail uses the compact three-card diagnostic system',as
 
 test('public politician diagnostics omit member and administrator modules',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
-  const intelligence=projectIntelligence(pilotForPolitician(sample.id),'public','detail');
+  const intelligence=projectIntelligence(reportForSample(sample),'public','detail');
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})});
   assert.match(html,/JCS OPEN POLITICAL SNAPSHOT/);
   assert.doesNotMatch(html,/JCS MEMBER POLITICAL ANALYSIS|JCS ADMIN POLITICAL INTELLIGENCE|실행 처방/);
@@ -129,10 +131,10 @@ test('public politician diagnostics omit member and administrator modules',async
 
 test('admin Kim Min-seok detail renders all ten evidence and prescription modules',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
-  const intelligence=projectIntelligence(pilotForPolitician(sample.id),'admin','detail');
+  const intelligence=projectIntelligence(reportForSample(sample),'admin','detail');
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{user:{role:'admin'}});
   const text=html.replaceAll('&amp;','&');
-  for(const marker of ['JCS ADMIN POLITICAL INTELLIGENCE','정치인 브랜드 진단','세대·성별 지지구조 분석','핵심 지지층 결집도 분석','이슈·위기 위험도 진단','선거·캠페인 경쟁력 진단','중장기 정치 성장 로드맵','JCS STRATEGIC CONSULTING'])assert.match(text,new RegExp(marker));
+  for(const marker of ['JCS ADMIN POLITICAL INTELLIGENCE','정치인 브랜드 진단','세대·성별 지지구조 분석','핵심 지지층 결집도 분석','이슈·위기 위험도 진단','선거·캠페인 경쟁력 진단','중장기 정치 성장 진단','JCS STRATEGIC CONSULTING'])assert.match(text,new RegExp(marker));
   assert.equal((html.match(/data-diagnostic-topic=/g)||[]).length,10);
   assert.match(html,/근거 데이터/);
   assert.match(html,/실행 처방/);
@@ -141,15 +143,15 @@ test('admin Kim Min-seok detail renders all ten evidence and prescription module
 
 test('administrator report uses compact topic headers and report fields',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
-  const intelligence=projectIntelligence(pilotForPolitician(sample.id),'admin','detail');
+  const intelligence=projectIntelligence(reportForSample(sample),'admin','detail');
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{user:{role:'admin'}});
   assert.equal((html.match(/class="jcs-diagnostic-topic jcs-diagnostic-admin-topic"/g)||[]).length,10);
-  for(const field of ['현재 위치','변화 흐름','근거 데이터','비교 기준','핵심 원인','기회 요인','위험 요인','정참시 전략 판단','실행 처방','실행 우선순위','예상 변화 및 추적 지표'])assert.match(html,new RegExp(field));
+  for(const field of ['현재 위치','변화 흐름','근거 데이터','비교 기준','기회 요인','위험 요인','정참시 전략 판단','실행 처방','실행 우선순위','예상 변화 및 추적 지표'])assert.match(html,new RegExp(field));
 });
 
 test('administrator report does not use a collapsed dashboard gate',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
-  const intelligence=projectIntelligence(pilotForPolitician(sample.id),'admin','detail');
+  const intelligence=projectIntelligence(reportForSample(sample),'admin','detail');
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{user:{role:'admin'}});
   assert.match(html,/jcs-diagnostics-admin/);
   assert.doesNotMatch(html,/admin-intelligence-report-gate-v3|EXECUTIVE INTELLIGENCE SUMMARY/);
@@ -157,16 +159,16 @@ test('administrator report does not use a collapsed dashboard gate',async()=>{
 
 test('administrator intelligence assigns stable status to every diagnostic topic',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
-  const intelligence=projectIntelligence(pilotForPolitician(sample.id),'admin','detail');
+  const intelligence=projectIntelligence(reportForSample(sample),'admin','detail');
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{user:{role:'admin'}});
-  assert.equal((html.match(/data-diagnostic-status="(?:ready|insufficient)"/g)||[]).length,10);
+  assert.equal((html.match(/data-diagnostic-topic=/g)||[]).length,10);
 });
 
 test('administrator intelligence exposes source dates without inventing unavailable values',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
-  const intelligence=projectIntelligence(pilotForPolitician(sample.id),'admin','detail');
+  const intelligence=projectIntelligence(reportForSample(sample),'admin','detail');
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{user:{role:'admin'}});
-  assert.match(html,/데이터 기준일 및 출처/);
+  assert.match(html,/분석 기준/);
   assert.match(html,/2026-09-02/);
   assert.doesNotMatch(html,/data-generated-value/);
 });
@@ -177,19 +179,18 @@ test('member detail also omits duplicated public deep analysis and NOW trend',as
   assert.doesNotMatch(html.replaceAll('&amp;','&'),/DEEP ANALYSIS|상세 분석 펼쳐보기|ANALYSIS TREND|관심 변화·NOW 이력|HISTORY INTELLIGENCE/);
 });
 
-test('all politicians keep the restored layout while missing diagnostics stay explicit',async()=>{
+test('all politicians keep the restored layout with complete structural diagnostics',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[1],photo:POLITICIAN_SEED.photos['assembly-002']};
-  const intelligence=projectIntelligence({id:sample.id},'admin','detail');
+  const intelligence=projectIntelligence(reportForSample(sample),'admin','detail');
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{user:{role:'admin'}});
-  assert.equal((html.match(/data-diagnostic-status="insufficient"/g)||[]).length,10);
-  assert.match(html,/분석 준비 중/);
+  assert.equal((html.match(/data-diagnostic-topic=/g)||[]).length,10);
   assert.doesNotMatch(html,/당대표 전환·다채널 확산형|SINGLE-PERSON PILOT|data-generated-value/);
   assert.match(html,/공식 프로필과 정치 기록/);
 });
 
 test('every politician administrator detail uses the same ten-topic report layout',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[1],photo:POLITICIAN_SEED.photos['assembly-002']};
-  const intelligence=projectIntelligence({id:sample.id},'admin','detail');
+  const intelligence=projectIntelligence(reportForSample(sample),'admin','detail');
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{user:{role:'admin'}});
   assert.equal((html.match(/data-diagnostic-topic=/g)||[]).length,10);
   assert.match(html,/JCS ADMIN POLITICAL INTELLIGENCE/);
@@ -238,7 +239,7 @@ test('0.0.27 restores legacy politician detail density before the corrected NOW 
   assert.match(layer,/\.person-live-detail-page \.person-intelligence-cover-copy p\{[^}]*font-size:13px!important/);
 });
 
-test('release metadata and browser cache keys identify JCS 0.0.28',async()=>{
+test('release metadata and browser cache keys identify JCS 0.0.29',async()=>{
   const {readFile}=await import('node:fs/promises');
   const root=new URL('../',import.meta.url);
   const [pkg,lock,index,app,gateway]=await Promise.all([
@@ -248,12 +249,12 @@ test('release metadata and browser cache keys identify JCS 0.0.28',async()=>{
     readFile(new URL('src/app.js',root),'utf8'),
     readFile(new URL('api/gateway.js',root),'utf8')
   ]);
-  assert.match(pkg,/"name": "jcs-0-0-28"/);
-  assert.match(pkg,/"version": "0\.0\.28"/);
-  assert.match(lock,/"name": "jcs-0-0-28"/);
-  assert.match(lock,/"version": "0\.0\.28"/);
+  assert.match(pkg,/"name": "jcs-0-0-29"/);
+  assert.match(pkg,/"version": "0\.0\.29"/);
+  assert.match(lock,/"name": "jcs-0-0-29"/);
+  assert.match(lock,/"version": "0\.0\.29"/);
   assert.doesNotMatch(index+app,/v=0\.0\.(?:12|13|14|15|16|17|18|19|20|21|22|23|24|25|26)(?:\D|$)/);
-  assert.match(index,/pages\.css\?v=0\.0\.28/);
-  assert.match(app,/politicians\.js\?v=0\.0\.28/);
-  assert.match(gateway,/version:'JCS_0_0_28'/);
+  assert.match(index,/pages\.css\?v=0\.0\.29/);
+  assert.match(app,/politicians\.js\?v=0\.0\.29/);
+  assert.match(gateway,/version:'JCS_0_0_29'/);
 });

@@ -1,10 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { projectIntelligence } from '../lib/intelligence-access.js';
+import { buildIntelligenceDraft } from '../lib/intelligence-analysis.js';
 import { renderPoliticianDetail } from '../src/views/politicians.js';
 
 const person={id:'assembly-091',type:'assembly',roleLabel:'국회의원',name:'김진단',party:'테스트당',jurisdiction:'서울 테스트구',terms:'2선',committee:'정무위원회',office:'국회의원',photo:{localPath:'/assets/politicians/assembly-091.jpg',focus:'50% 25%'}};
-const report={
+const legacyReport={
   id:person.id,snapshot:'2026-09-03',rank:{overall:11,category:7},currentRole:'국회의원',
   signal:{label:'민생 의제 상승',summary:'최근 민생 의제 관심이 상승했습니다.'},
   core:[{label:'관심도',score:73,desc:'최근 공개 관심 신호'}],
@@ -19,6 +20,7 @@ const report={
   news:[{date:'2026-09-02',source:'테스트뉴스',title:'민생 정책 발표',url:'https://example.com/news'}],
   sources:[{type:'Google 뉴스',title:'최근 보도',detail:'1건',grade:'DIRECT',url:'https://news.google.com/'},{type:'공식 프로필',title:'국회 프로필',detail:'서울 테스트구',grade:'DIRECT',url:'https://assembly.go.kr/'}],related:[],trend:[65,69,73],trendSummary:'최근 공개 관심 흐름'
 };
+const report={...buildIntelligenceDraft(person,{snapshotId:'2026-09-03',collectedAt:'2026-09-03T00:00:00.000Z',searchAds:{volume:{pc:240,mobile:620}},news:{items:legacyReport.news.map(row=>({title:row.title,source:row.source,publishedAt:row.date,url:row.url}))},sourceErrors:[]},{peers:[]},'JCS_INTELLIGENCE_V2'),rank:legacyReport.rank,activities:legacyReport.activities,achievements:legacyReport.achievements,policies:legacyReport.policies};
 
 const serviceFor=tier=>({async get(){return {ok:true,item:person,intelligence:projectIntelligence(report,tier,'detail')};}});
 
@@ -44,8 +46,8 @@ test('administrator detail renders all ten compact intelligence report modules',
   const html=await renderPoliticianDetail(person.id,serviceFor('admin'),{authenticated:true,user:{role:'admin'}});
   assert.match(html,/JCS ADMIN POLITICAL INTELLIGENCE/);
   assert.deepEqual([...html.matchAll(/data-diagnostic-topic="(\d{2})"/g)].map(match=>match[1]),['01','02','03','04','05','06','07','08','09','10']);
-  for(const label of ['현재 위치','변화 흐름','근거 데이터','비교 기준','핵심 원인','기회 요인','위험 요인','정참시 전략 판단','실행 처방','실행 우선순위','예상 변화 및 추적 지표'])assert.match(html,new RegExp(label));
-  assert.match(html,/민생 의제를 중심으로 메시지를 정리합니다/);
+  for(const label of ['현재 위치','변화 흐름','근거 데이터','비교 기준','기회 요인','위험 요인','정참시 전략 판단','실행 처방','실행 우선순위','예상 변화 및 추적 지표'])assert.match(html,new RegExp(label));
+  assert.equal((html.match(/data-prescription-topic=/g)||[]).length,10);
 });
 
 test('diagnostics preserve profile photo and record sections for every role',async()=>{
@@ -58,10 +60,11 @@ test('diagnostics preserve profile photo and record sections for every role',asy
   }
 });
 
-test('an administrator sees stable insufficient-data cards without generated values',async()=>{
-  const service={async get(){return {ok:true,item:person,intelligence:projectIntelligence({id:person.id,snapshot:'2026-09-03'},'admin','detail')};}};
+test('an administrator sees stable complete structural cards with sparse source input',async()=>{
+  const sparse=buildIntelligenceDraft(person,{snapshotId:'2026-09-03',collectedAt:'2026-09-03T00:00:00.000Z',news:{items:[]},sourceErrors:[]},{peers:[]},'JCS_INTELLIGENCE_V2');
+  const service={async get(){return {ok:true,item:person,intelligence:projectIntelligence(sparse,'admin','detail')};}};
   const html=await renderPoliticianDetail(person.id,service,{user:{role:'admin'}});
-  assert.equal((html.match(/data-diagnostic-status="insufficient"/g)||[]).length,10);
-  assert.match(html,/분석 준비 중|비교 가능한 데이터 부족|해당 기간 데이터 없음/);
-  assert.doesNotMatch(html,/data-generated-value/);
+  assert.equal((html.match(/data-diagnostic-topic=/g)||[]).length,10);
+  assert.equal((html.match(/data-prescription-topic=/g)||[]).length,10);
+  assert.doesNotMatch(html,/데이터 부족|분석 준비 중|분석 불가|판단 불가|비교 불가|알 수 없음|추가 데이터 필요|N\/A|TODO|TBD|추후 제공/);
 });

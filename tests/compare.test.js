@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { renderPoliticianCompare } from '../src/views/politician-compare.js';
 import { createPoliticianService } from '../src/core/politicians.js';
 import { projectIntelligence } from '../lib/intelligence-access.js';
+import { buildIntelligenceDraft } from '../lib/intelligence-analysis.js';
 
 const profiles=Array.from({length:6},(_,index)=>({
   id:`assembly-${String(index+1).padStart(3,'0')}`,
@@ -16,7 +17,7 @@ const profiles=Array.from({length:6},(_,index)=>({
   photo:index<2?{localPath:`/assets/politicians/assembly-00${index+1}.jpg`,focus:'50% 28%'}:null
 }));
 
-const intelligenceFor=item=>{
+const legacyIntelligenceFor=item=>{
   const index=profiles.findIndex(row=>row.id===item.id),base=70+index;
   return {
     id:item.id,snapshot:'jcs-live',mode:'전체 정치인 운영 분석',rank:{overall:index+1,category:index+1},signal:{index:90-index,label:'운영 신호',summary:`${item.name} 운영 요약`},
@@ -31,6 +32,7 @@ const intelligenceFor=item=>{
     strategies:[{title:'우선 전략',body:`${item.name} 실행 전략`}],raw:{searchAds:{volume:{pc:1000+index,mobile:9000+index}},news:{items:[{source:'연합뉴스'}]}}
   };
 };
+const intelligenceFor=item=>{const legacy=legacyIntelligenceFor(item),index=profiles.findIndex(row=>row.id===item.id);return {...buildIntelligenceDraft(item,{snapshotId:'jcs-live',collectedAt:'2026-09-03T00:00:00.000Z',searchAds:legacy.raw.searchAds,news:{items:[{title:`${item.name} 민생 경제 정책 현장 발표`,source:'연합뉴스',publishedAt:'2026-09-02'}]},sourceErrors:[]},{peers:profiles},'JCS_INTELLIGENCE_V2'),rank:legacy.rank};};
 
 const service={
   list:async()=>({ok:true,items:profiles,total:profiles.length,hasMore:false}),
@@ -82,7 +84,7 @@ test('JCS support conversion remains populated when Gallup context is unavailabl
   }};
   const html=await renderPoliticianCompare({...serviceFor('member'),getForCompare:noGallup.getForCompare},'/compare?ids=assembly-001,assembly-002&run=1',{authenticated:true,user:{role:'member'}});
   assert.match(html,/세대·성별 지지구조 분석/);
-  assert.match(html,/관심층 구조/);
+  assert.match(html,/JCS 상대지수|정참시 비교 해석/);
   assert.doesNotMatch(html,/실행 처방/);
 });
 
@@ -99,7 +101,7 @@ test('admin comparison accepts four people and renders ten-topic matrix only aft
   assert.match(html,/관리자 다중 비교/);
   assert.match(html,/최대 4명/);
   assert.equal((html.match(/data-comparison-topic=/g)||[]).length,10);
-  for(const marker of ['관리자 경쟁 분석 요약','가장 격차가 큰 영역','핵심 원인','실행 처방'])assert.match(html,new RegExp(marker));
+  for(const marker of ['관리자 경쟁 분석 요약','가장 격차가 큰 영역','정참시 해석','실행 처방'])assert.match(html,new RegExp(marker));
 });
 
 test('one failed comparison load preserves successful people and identifies the retry id',async()=>{
