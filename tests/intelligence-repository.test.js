@@ -45,13 +45,31 @@ test('legacy unfinished collection is reset without touching the public snapshot
   redis.map.set(INTELLIGENCE_KEYS.publicPointer,'public-snapshot');
   redis.map.set(INTELLIGENCE_KEYS.draft('public-snapshot','p1'),JSON.stringify({id:'public-p1'}));
   redis.map.set('jcs:rebuild:v2:users','preserve-users');
+  redis.map.set(`${INTELLIGENCE_KEYS.prefix}:history:old-snapshot`,'obsolete-intelligence-history');
 
   const recovered=await repository.prepareCompactCollection();
 
   assert.equal(recovered.cursor,0);
-  assert.equal(recovered.storageMode,'COMPACT_V2');
+  assert.equal(recovered.storageMode,'LATEST_ONLY_V3');
   assert.equal(redis.map.has(INTELLIGENCE_KEYS.draft('new-snapshot','p1')),false);
   assert.equal(redis.map.has(INTELLIGENCE_KEYS.draft('public-snapshot','p1')),true);
+  assert.equal(redis.map.get('jcs:rebuild:v2:users'),'preserve-users');
+  assert.equal(redis.map.has(`${INTELLIGENCE_KEYS.prefix}:history:old-snapshot`),false);
+});
+
+test('latest-only storage clears intelligence history without touching users or the public snapshot',async()=>{
+  const redis=fakeRedis(),repository=createIntelligenceRepository(redis.command);
+  redis.map.set(INTELLIGENCE_KEYS.publicPointer,'current-snapshot');
+  redis.map.set(INTELLIGENCE_KEYS.draft('current-snapshot','p1'),'current');
+  redis.map.set(INTELLIGENCE_KEYS.history('old-1'),'history-1');
+  redis.map.set(INTELLIGENCE_KEYS.history('old-2'),'history-2');
+  redis.map.set(INTELLIGENCE_KEYS.historyIndex,'history-index');
+  redis.map.set('jcs:rebuild:v2:users','preserve-users');
+
+  const result=await repository.clearHistory();
+
+  assert.equal(result.removed,3);
+  assert.equal(redis.map.has(INTELLIGENCE_KEYS.draft('current-snapshot','p1')),true);
   assert.equal(redis.map.get('jcs:rebuild:v2:users'),'preserve-users');
 });
 

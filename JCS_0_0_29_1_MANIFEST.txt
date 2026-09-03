@@ -1,0 +1,17 @@
+JCS 0.0.29.1 REDIS LATEST-ONLY HOTFIX
+BASE: JCS 0.0.29
+
+api/gateway.js
+index.html
+lib/intelligence-repository.js
+lib/intelligence-service.js
+lib/intelligence-storage.js
+package-lock.json
+package.json
+src/app.js
+tests/intelligence-analysis.test.js
+tests/intelligence-repository.test.js
+tests/intelligence-service.test.js
+tests/politicians.test.js
+JCS_0_0_29_1_REDIS_LATEST_ONLY_HOTFIX.md
+JCS_0_0_29_1_MANIFEST.txt

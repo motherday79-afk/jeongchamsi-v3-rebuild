@@ -80,6 +80,24 @@ test('one politician failure is recorded and later politicians still complete',a
   assert.ok(redis.map.has([...redis.map.keys()].find(key=>key.endsWith(':assembly-003'))));
 });
 
+test('collection validates the full analysis before storing only its compact rendering inputs',async()=>{
+  const redis=fakeRedis(),rows=profiles(1);let validatedFull=false;
+  const service=createIntelligenceService({
+    command:redis.command,profiles:rows,env:{NAVER_AD_ACCESS_LICENSE:'a',NAVER_AD_SECRET_KEY:'b',NAVER_AD_CUSTOMER_ID:'c'},now:()=>1_788_400_000_000,
+    collectRaw:async(person,context)=>({personId:person.id,snapshotId:context.snapshotId,officialProfile:person,searchAds:{volume:{pc:10,mobile:20}},news:{items:[]},sourceErrors:[]}),
+    analyze:(person,raw)=>({id:person.id,snapshot:raw.snapshotId,diagnoses:[{id:'01'}],prescriptions:[{id:'01'}],raw}),
+    validateDraft:draft=>{validatedFull=Array.isArray(draft.diagnoses)&&Array.isArray(draft.prescriptions);return {ok:validatedFull,errors:[]};}
+  });
+  const started=await service.startCollection();
+  const result=await service.runCollectionStep();
+  const stored=JSON.parse(redis.map.get(INTELLIGENCE_KEYS.draft(started.job.snapshotId,rows[0].id)));
+  assert.equal(result.job.status,'COMPLETED');
+  assert.equal(validatedFull,true);
+  assert.equal(stored.diagnoses,undefined);
+  assert.equal(stored.prescriptions,undefined);
+  assert.equal(stored.rankingInput.searchTotal,30);
+});
+
 test('publishing is rejected until a complete validated collection exists',async()=>{
   const service=createService(fakeRedis(),profiles(2));
   await assert.rejects(()=>service.startPublish(),/COLLECTION_NOT_READY/);
@@ -178,7 +196,7 @@ test('published ranks use operating 40 search 60 news weights and synchronize de
   assert.equal(detail.rank.overall,1);
 });
 
-test('repeated collection and publication keeps one full snapshot and compact history only',async()=>{
+test('repeated collection and publication keeps only the latest snapshot and no intelligence history',async()=>{
   const redis=fakeRedis(),rows=profiles(30);let clock=1_788_400_000_000;
   redis.map.set('jcs:rebuild:v2:users','preserve-users');
   const service=createService(redis,rows,{now:()=>clock});
@@ -194,6 +212,6 @@ test('repeated collection and publication keeps one full snapshot and compact hi
   const historyKeys=[...redis.map.keys()].filter(key=>key.startsWith(`${INTELLIGENCE_KEYS.prefix}:history:`)&&key!==INTELLIGENCE_KEYS.historyIndex);
   assert.equal(fullDraftKeys.length,30);
   assert.equal(fullDraftKeys.every(key=>key.includes(`:${current}:`)),true);
-  assert.equal(historyKeys.length,3);
+  assert.equal(historyKeys.length,0);
   assert.equal(redis.map.get('jcs:rebuild:v2:users'),'preserve-users');
 });
