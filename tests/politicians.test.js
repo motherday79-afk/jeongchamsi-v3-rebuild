@@ -52,6 +52,10 @@ test('published detail uses operating copy and registered related politician pho
   intelligence.signal.index=87.4;
   intelligence.related[0]={...intelligence.related[0],photo:POLITICIAN_SEED.photos['assembly-002']};
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})});
+  assert.match(html,/data-recent-politician/);
+  assert.match(html,/data-recent-id="assembly-001"/);
+  assert.match(html,/data-recent-name="김민석"/);
+  assert.match(html,/data-recent-photo="\/assets\/politicians\/assembly-001\.jpg"/);
   assert.match(html,/공개 스냅샷 운영 순위/);
   assert.match(html,/국회의원 NOW 독립 순위/);
   assert.match(html,/허용 원자료 기반 JCS 운영 지수/);
@@ -60,6 +64,17 @@ test('published detail uses operating copy and registered related politician pho
   assert.match(html,/data-politician-avatar/);
   assert.match(html,/data-politician-photo/);
   assert.doesNotMatch(html,/임시 파일럿 순위|국회의원 임시 순위|파일럿 지수/);
+});
+
+test('administrator consulting callout follows the strategic conclusion inside the intelligence report',async()=>{
+  const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
+  const intelligence=structuredClone(pilotForPolitician(sample.id));
+  intelligence.snapshot='jcs-operating';
+  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{user:{role:'admin'}});
+  const conclusion=html.indexOf('STRATEGIC CONCLUSION'),consulting=html.indexOf('JCS STRATEGIC CONSULTING'),reportEnd=html.indexOf('</details>');
+  assert.ok(conclusion>=0&&consulting>conclusion&&reportEnd>consulting);
+  assert.match(html,/분석 다음은 실행입니다/);
+  assert.match(html,/data-layout-route="\/partners">정참시와 함께하기/);
 });
 
 test('Kim Min-seok pilot fills the complete public detail from approved source classes',async()=>{
@@ -213,7 +228,7 @@ test('politician intelligence v3 final layer fixes typography and approved high-
   });
 });
 
-test('release metadata and browser cache keys identify JCS 0.0.24',async()=>{
+test('release metadata and browser cache keys identify JCS 0.0.25',async()=>{
   const {readFile}=await import('node:fs/promises');
   const root=new URL('../',import.meta.url);
   const [pkg,index,app,gateway]=await Promise.all([
@@ -222,10 +237,10 @@ test('release metadata and browser cache keys identify JCS 0.0.24',async()=>{
     readFile(new URL('src/app.js',root),'utf8'),
     readFile(new URL('api/gateway.js',root),'utf8')
   ]);
-  assert.match(pkg,/"name": "jcs-0-0-24"/);
-  assert.match(pkg,/"version": "0\.0\.24"/);
+  assert.match(pkg,/"name": "jcs-0-0-25"/);
+  assert.match(pkg,/"version": "0\.0\.25"/);
   assert.doesNotMatch(index+app,/v=0\.0\.(?:12|13|14|15|16|17|18|19)/);
-  assert.match(index,/pages\.css\?v=0\.0\.24/);
-  assert.match(app,/politicians\.js\?v=0\.0\.24/);
-  assert.match(gateway,/version:'JCS_0_0_24'/);
+  assert.match(index,/pages\.css\?v=0\.0\.25/);
+  assert.match(app,/politicians\.js\?v=0\.0\.25/);
+  assert.match(gateway,/version:'JCS_0_0_25'/);
 });

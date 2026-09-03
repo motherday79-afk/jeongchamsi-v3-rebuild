@@ -72,6 +72,21 @@ test('authenticated session is reflected in header and home account panels',()=>
   assert.doesNotMatch(home,/정참시에 로그인하세요/);
 });
 
+test('home sidebar shows the four most recently viewed politicians as detail links',()=>{
+  const recentPoliticians=[
+    {id:'assembly-001',name:'김민석',party:'더불어민주당',office:'국회의원',photo:{localPath:'/assets/politicians/assembly-001.jpg',focus:'50% 20%'}},
+    {id:'assembly-002',name:'한동훈',party:'국민의힘',office:'당대표'},
+    {id:'assembly-003',name:'이준석',party:'개혁신당',office:'국회의원'},
+    {id:'assembly-004',name:'조국',party:'조국혁신당',office:'국회의원'}
+  ];
+  const html=renderHomeLayout({...HOME_FIXTURE,itsmePosts:[],columns:[],community:[],polls:{items:[]},generation:{},nationalEvaluation:{},academy:{items:[]},rank:[],recentPoliticians,session:{authenticated:false}});
+  assert.equal((html.match(/class="recent-visual-card/g)||[]).length,4);
+  assert.match(html,/data-layout-route="\/person\/assembly-001"/);
+  assert.match(html,/김민석/);
+  assert.match(html,/더불어민주당 · 국회의원/);
+  assert.match(html,/data-politician-photo src="\/assets\/politicians\/assembly-001\.jpg"/);
+});
+
 test('app passes one resolved session through home, header and drawer',()=>{
   const app=read('src/app.js');
   assert.match(app,/siteHeader\(memberCount,session\)/);

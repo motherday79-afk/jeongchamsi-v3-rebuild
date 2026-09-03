@@ -1,15 +1,16 @@
 import { HOME_FIXTURE } from './fixtures/home.js';
 import { siteHeader, drawer, footer } from './layout/site-shell.js';
-import { renderHomeLayout } from './layout/home-layout.js?v=0.0.24';
+import { renderHomeLayout } from './layout/home-layout.js?v=0.0.25';
 import { setupLayoutInteractions } from './ui/interactions.js';
 import { createAuthService } from './core/auth.js';
 import { createContentService } from './core/content.js';
 import { createPoliticianService } from './core/politicians.js';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js';
-import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.24';
+import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.25';
 import * as views from './views/stage1.js';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.24';
-import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.24';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.25';
+import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.25';
+import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.25';
 
 const app=document.getElementById('app');
 const auth=createAuthService();
@@ -81,7 +82,7 @@ async function render(){
       politicians.rankings().catch(()=>({ok:false,items:[]}))
     ]);
     const rank=rankResult?.ok?(Array.isArray(rankResult.items)?rankResult.items:[]).slice(0,30):[];
-    const home={...HOME_FIXTURE,memberCount,columns,community,itsmePosts,polls,generation,nationalEvaluation,academy,rank,session};
+    const home={...HOME_FIXTURE,memberCount,columns,community,itsmePosts,polls,generation,nationalEvaluation,academy,rank,recentPoliticians:loadRecentPoliticians(),session};
     body=`<div class="product-home-wrap">${renderHomeLayout(home)}</div>`;
   } else if(p[0]==='about') body=views.renderAbout();
   else if(p[0]==='support') body=views.renderSupport();
@@ -106,7 +107,7 @@ async function render(){
   else if(unstable.has(p[0])) body=`<section class="module"><span class="eyebrow">NEXT PHASE</span><h2>${p[0]}</h2><p class="module-desc">이 영역은 이번 버전에서 제외했습니다. NOW·정치인 데이터·분석 엔진은 연결하지 않습니다.</p></section>`;
   else body=`<section class="module"><h2>페이지를 찾을 수 없습니다</h2></section>`;
   await shell(body,session);
-  if(p[0]==='person')tunePoliticianNarratives();
+  if(p[0]==='person'){recordRecentPolitician(document);tunePoliticianNarratives();}
   window.scrollTo(0,0);
   if(p[0]==='admin')queueMicrotask(resumeAdminIntelligence);
 }
