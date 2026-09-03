@@ -61,6 +61,18 @@ test('home launcher keeps the legacy six services and full drawer restores all s
   assert.match(html,/data-layout-route="\/mypage\/recent"/);
 });
 
+test('home 전체 서비스 expands the current navigation instead of opening the drawer',()=>{
+  const html=renderHomeLayout({...HOME_FIXTURE,itsmePosts:[],columns:[],community:[],polls:{items:[]},generation:{},nationalEvaluation:{},academy:{items:[]},rank:[],session:{authenticated:false}});
+  const launcher=html.slice(html.indexOf('<section class="product-launcher'),html.indexOf('</section>',html.indexOf('<section class="product-launcher'))+10);
+  assert.match(launcher,/data-launcher-toggle/);
+  assert.match(launcher,/aria-expanded="false"/);
+  assert.match(launcher,/data-launcher-panel hidden/);
+  assert.doesNotMatch(launcher,/data-drawer-open/);
+  assert.equal((launcher.match(/class="launcher-card/g)||[]).length,SERVICE_CATALOG.length+launcherServices().length);
+  assert.match(launcher,/data-layout-route="\/president"/);
+  assert.match(launcher,/data-layout-route="\/national-evaluation"/);
+});
+
 test('authenticated session is reflected in header and home account panels',()=>{
   const session={authenticated:true,user:{nickname:'정참시민',role:'member'}};
   const header=siteHeader(27,session);
@@ -91,7 +103,7 @@ test('app passes one resolved session through home, header and drawer',()=>{
   const app=read('src/app.js');
   assert.match(app,/siteHeader\(memberCount,session\)/);
   assert.match(app,/academy,[^}]*session/);
-  assert.match(app,/shell\(body,session\)/);
+  assert.match(app,/shell\(body,session,renderId\)/);
 });
 
 test('layout foundation has new UI behavior wiring rather than disabled controls',()=>{
@@ -277,4 +289,10 @@ test('home poll and national evaluation match the legacy panel structures',()=>{
   assert.match(html,/신상진/);
   assert.match(html,/67%/);
   assert.match(html,/83%/);
+});
+
+test('home generation summary resolves stored politician ids to names',()=>{
+  const html=renderHomeLayout({...HOME_FIXTURE,itsmePosts:[],columns:[],community:[],polls:{items:[]},academy:{slots:[]},nationalEvaluation:{},rank:[],session:{},generation:{candidates:['assembly-001'],candidateLabels:{'assembly-001':'김민석'},results:{'20대':{'assembly-001':7}}}});
+  assert.match(html,/김민석/);
+  assert.doesNotMatch(html,/>assembly-001<\/b>/);
 });

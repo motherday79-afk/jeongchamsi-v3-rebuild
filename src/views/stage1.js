@@ -12,7 +12,7 @@ const authorIdentity=item=>{const name=esc(item?.author||'정참시'),admin=['ad
 const summaryOf=item=>String(item?.summary||'').trim();
 const listSummary=item=>summaryOf(item)||String(item?.body||'').replace(/\s+/g,' ').trim().slice(0,160);
 
-export function renderAbout(){return page('ABOUT JEONGCHAMSI','왜 정참시인가',`<div class="legal-copy"><p>정참시는 시민이 정치 정보를 더 쉽게 이해하고, 비교하고, 선택하고, 평가할 수 있는 공간을 만듭니다.</p><p>정치를 보는 것에서 움직이는 것으로. 정참시는 데이터와 참여를 연결합니다.</p></div>`);}
+export function renderAbout(){return page('ABOUT JEONGCHAMSI','왜 정참시인가',`<article class="brand-support-story"><h2>세계적으로 유명한 배우들도 끊임없이 훈련합니다.</h2><p>작품을 쉬는 기간에도 호흡과 발성, 효율적인 감정 전달 기법등을 트레이닝 합니다.</p><p>물론 작품 중에도 필요한 순간마다 조언을 구하며 자신을 정비하죠.</p><p>정치도 다르지 않다고 생각합니다.</p><p>정참시는 정치를 하려는 곳도, 정치인이 되려는 곳도 아닙니다.</p><p>다만 현장에서 더 나은 방법이 필요할 때, 현장의 시각과는 다른 방향에서 해답을 찾고자 할 때, <br>의도와는 다르게 난처한 상황을 겪게 될 때, 정참시는 분명한 데이터를 기반으로 더 선명한 방법을 제공합니다.</p><p>정참시는 정참시가 가장 잘하는 일을 하겠습니다.</p><p>막대한 양의 데이터를 빠짐없이 수집하고, JCS만의 독자적인 시스템을 통해 분석하고, <br>시장이 요구하는 신호를 읽어 가장 필요한 순간에 전달하겠습니다.</p><strong>대한민국 No.1 정치 네비게이션 정.참.시</strong></article>`);}
 export function renderSupport(){return page('SUPPORT','정참시 후원하기',`<div class="legal-copy"><p>정치에 참여할 수 있는 더 나은 공간을 함께 만들어 주세요.</p><p>후원은 서비스 운영, 데이터 정비, 콘텐츠 제작, 시민 참여 기능 개선에 사용됩니다.</p></div>`);}
 export function renderLegal(type){const map={guide:['이용안내','정참시의 메뉴와 참여 기능을 이용하는 방법을 안내합니다.'],privacy:['개인정보처리방침','회원 정보는 서비스 제공과 계정 관리 목적에 필요한 범위에서 처리합니다.'],policy:['운영정책','정참시는 건전한 참여와 정보 공유를 위한 운영 원칙을 적용합니다.']};const [t,b]=map[type]||map.guide;return page('JEONGCHAMSI',t,`<div class="legal-copy"><p>${esc(b)}</p></div>`);}
 

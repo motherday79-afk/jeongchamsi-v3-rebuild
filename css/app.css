@@ -874,3 +874,12 @@ img{display:block;max-width:100%}
 .now-rank-arrow.is-prev{left:-8px}.now-rank-arrow.is-next{right:-8px}
 #now .now-rank-carousel .rank-top-grid-10 .rank-top-card{min-height:142px;padding:13px 9px}
 #now .now-rank-carousel .rank-top-avatar{width:61px;height:61px;margin:9px auto 8px}
+/* JCS 0.0.27 · in-flow service launcher */
+.product-launcher-expanded{margin-top:18px;padding-top:18px;border-top:1px solid rgba(255,255,255,.18)}
+.product-launcher-expanded[hidden]{display:none}
+.product-launcher-expanded-head{display:flex;align-items:baseline;gap:14px;margin:0 0 14px;color:#fff}
+.product-launcher-expanded-head b{font-size:13px;letter-spacing:.14em}
+.product-launcher-expanded-head span{font-size:13px;opacity:.72}
+.product-launcher-grid-all{grid-template-columns:repeat(4,minmax(0,1fr))}
+.product-launcher-grid-all .launcher-copy small{display:block;margin-top:4px;font-size:11px;line-height:1.35;opacity:.72}
+@media(max-width:820px){.product-launcher-grid-all{grid-template-columns:repeat(2,minmax(0,1fr))}.product-launcher-expanded-head{align-items:flex-start;flex-direction:column;gap:4px}.product-launcher-grid-all .launcher-copy small{display:none}}

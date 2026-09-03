@@ -44,7 +44,7 @@ const service={
   },
 };
 
-test('anonymous comparison is strictly 1:1 and ignores a third selected id',async()=>{
+test('anonymous comparison is strictly 1:1 and waits for the explicit compare action',async()=>{
   const html=await renderPoliticianCompare(service,'/compare?ids=assembly-001,assembly-002,assembly-003',null);
   assert.match(html,/data-compare-role="public"/);
   assert.match(html,/data-compare-limit="2"/);
@@ -53,15 +53,15 @@ test('anonymous comparison is strictly 1:1 and ignores a third selected id',asyn
   assert.match(html,/data-compare-selected="assembly-002"/);
   assert.doesNotMatch(html,/data-compare-selected="assembly-003"/);
   assert.match(html,/정치인 1:1 비교/);
-  assert.match(html,/NOW OPERATING INDEX/);
-  assert.match(html,/CORE INDICATORS/);
-  assert.match(html,/ACTIVITY &amp; MEDIA/);
+  assert.match(html,/data-compare-run/);
+  assert.match(html,/>비교하기</);
+  assert.doesNotMatch(html,/NOW OPERATING INDEX|CORE INDICATORS|ACTIVITY &amp; MEDIA/);
   assert.doesNotMatch(html,/SOURCE CLASSES|원자료 범주/);
   assert.doesNotMatch(html,/MEMBER INTERPRETED COMPARISON|ADMIN MULTI INTELLIGENCE/);
 });
 
-test('member comparison keeps the two-person limit and adds interpreted comparison',async()=>{
-  const html=await renderPoliticianCompare(service,'/compare?ids=assembly-001,assembly-002,assembly-003',{authenticated:true,user:{role:'member'}});
+test('member comparison reveals interpreted comparison only after compare is pressed',async()=>{
+  const html=await renderPoliticianCompare(service,'/compare?ids=assembly-001,assembly-002,assembly-003&run=1',{authenticated:true,user:{role:'member'}});
   assert.match(html,/data-compare-role="member"[^>]*data-compare-limit="2"/);
   assert.equal((html.match(/data-compare-slot/g)||[]).length,2);
   for(const marker of ['MEMBER INTERPRETED COMPARISON','AGE × GENDER ATTENTION &amp; SUPPORT','연령·성별 관심·지지 전환 구조','관심 68','지지전환 12','ATTENTION FLOW','STRENGTH &amp; WEAKNESS GAP','RISK &amp; OPPORTUNITY','JCS COMPARISON SYNTHESIS'])assert.match(html,new RegExp(marker));
@@ -75,15 +75,17 @@ test('JCS support conversion remains populated when Gallup context is unavailabl
     intelligence.sources=intelligence.sources.filter(source=>!/한국갤럽/.test(source.type));
     return {ok:true,item,intelligence};
   }};
-  const html=await renderPoliticianCompare(noGallup,'/compare?ids=assembly-001,assembly-002',{authenticated:true,user:{role:'member'}});
+  const html=await renderPoliticianCompare(noGallup,'/compare?ids=assembly-001,assembly-002&run=1',{authenticated:true,user:{role:'member'}});
   assert.match(html,/JCS 지지전환지수/);
   assert.match(html,/지지전환 \d+/);
   assert.doesNotMatch(html,/산정 불가|실제 지지율 아님|추정/);
 });
 
-test('admin comparison accepts two to five and renders five simultaneous slots',async()=>{
+test('admin comparison accepts five people and renders a compact summary only after execution',async()=>{
   const ids=profiles.map(profile=>profile.id).join(',');
-  const html=await renderPoliticianCompare(service,`/compare?ids=${ids}`,{authenticated:true,user:{role:'admin'}});
+  const waiting=await renderPoliticianCompare(service,`/compare?ids=${ids}`,{authenticated:true,user:{role:'admin'}});
+  assert.doesNotMatch(waiting,/ADMIN CONSULTING SUMMARY|NOW OPERATING INDEX|SUPPORT QUALITY RADAR/);
+  const html=await renderPoliticianCompare(service,`/compare?ids=${ids}&run=1`,{authenticated:true,user:{role:'admin'}});
   assert.match(html,/data-compare-role="admin"/);
   assert.match(html,/data-compare-limit="5"/);
   assert.equal((html.match(/data-compare-slot/g)||[]).length,5);
@@ -91,22 +93,22 @@ test('admin comparison accepts two to five and renders five simultaneous slots',
   assert.doesNotMatch(html,/data-compare-selected="assembly-006"/);
   assert.match(html,/관리자 다중 비교/);
   assert.match(html,/최대 5명/);
-  for(const marker of ['ADMIN MULTI INTELLIGENCE','AGE × GENDER HEATMAP','SUPPORT QUALITY RADAR','POLITICAL RESILIENCE','MEDIA PROPAGATION','ISSUE QUADRANT','RISK &amp; OPPORTUNITY MATRIX','COMPETITIVENESS GAP','STRATEGY PRIORITIES','MULTI-PERSON SYNTHESIS'])assert.match(html,new RegExp(marker));
+  for(const marker of ['ADMIN CONSULTING SUMMARY','핵심 비교표','인물별 컨설팅 진단','상세 지표 펼쳐보기'])assert.match(html,new RegExp(marker));
+  assert.doesNotMatch(html,/SUPPORT QUALITY RADAR|POLITICAL RESILIENCE|MEDIA PROPAGATION|ISSUE QUADRANT/);
   assert.doesNotMatch(html,/EVIDENCE LEDGER|근거 원장|원자료 범주/);
-  assert.match(html,/admin-compare-heatmap" style="--compare-count:5"/);
-  assert.match(html,/class="radar-axis-label"[^>]*>충성 72</);
-  assert.match(html,/class="radar-axis-label"[^>]*>행동 69</);
-  assert.match(html,/jcs-analysis-compact/);
+  assert.match(html,/admin-compare-summary-table/);
+  assert.match(html,/<details class="[^"]*admin-compare-deep/);
+  assert.match(html,/admin-comparison-compact/);
 });
 
 test('one failed comparison load preserves successful people and identifies the retry id',async()=>{
   const partialService={...service,getForCompare:async id=>id==='assembly-002'?{ok:false,error:'STORAGE_REQUEST'}:service.getForCompare(id)};
-  const html=await renderPoliticianCompare(partialService,'/compare?ids=assembly-001,assembly-002',{user:{role:'admin'}});
+  const html=await renderPoliticianCompare(partialService,'/compare?ids=assembly-001,assembly-002&run=1',{user:{role:'admin'}});
   assert.match(html,/data-compare-selected="assembly-001"/);
   assert.match(html,/data-compare-failed="assembly-002"/);
   assert.match(html,/assembly-002/);
   assert.match(html,/다시 시도/);
-  assert.match(html,/data-layout-route="\/compare\?ids=assembly-001%2Cassembly-002"/);
+  assert.match(html,/data-layout-route="\/compare\?ids=assembly-001%2Cassembly-002&amp;run=1"/);
 });
 
 test('empty comparison preserves role capacity layout without fake values',async()=>{
@@ -132,7 +134,8 @@ test('comparison keeps the approved selected profile card and remove route',asyn
   assert.match(html,/선거구 1/);
   assert.match(html,/위원회 1/);
   assert.match(html,/data-compare-remove="assembly-001"/);
-  assert.match(html,/NOW OPERATING INDEX/);
+  assert.match(html,/비교 대상/);
+  assert.doesNotMatch(html,/NOW OPERATING INDEX/);
   assert.match(html,/\/assets\/politicians\/assembly-001\.jpg/);
 });
 
@@ -143,6 +146,13 @@ test('search results stay inside the active empty slot and add a politician to t
   assert.match(html,/data-compare-add="assembly-002"/);
   assert.match(html,/data-layout-route="\/compare\?ids=assembly-001%2Cassembly-002"/);
   assert.doesNotMatch(html,/politician-compare-picker/);
+});
+
+test('adding or removing a politician clears run state and compare button adds run=1',async()=>{
+  const html=await renderPoliticianCompare(service,'/compare?ids=assembly-001,assembly-002&run=1&q=강&slot=3',{user:{role:'admin'}});
+  assert.match(html,/data-compare-run[^>]*data-layout-route="\/compare\?ids=assembly-001%2Cassembly-002&amp;run=1"/);
+  assert.match(html,/data-compare-remove="assembly-001"[^>]*data-layout-route="\/compare\?ids=assembly-002"/);
+  assert.match(html,/data-compare-add="assembly-003"[^>]*data-layout-route="\/compare\?ids=assembly-001%2Cassembly-002%2Cassembly-003"/);
 });
 
 test('politician search covers every category and matches name, party, region or office',async()=>{
@@ -185,7 +195,7 @@ test('embedded compare search has a readable slot-local result layer',async()=>{
   const css=await readFile(new URL('../css/pages.css',import.meta.url),'utf8');
   const start=css.lastIndexOf('JCS_0_0_14 · EMBEDDED POLITICIAN COMPARE SEARCH');
   assert.ok(start>=0);
-  const layer=css.slice(start);
+  const end=css.indexOf('JCS_0_0_27 · LEGACY DETAIL DENSITY',start),layer=css.slice(start,end<0?undefined:end);
   assert.match(layer,/\.politician-compare-slot-search/);
   assert.match(layer,/\.politician-compare-search-results/);
   assert.match(layer,/input\[type="search"\]/);
@@ -198,7 +208,7 @@ test('operating comparison visual layer supports readable two-to-five person ana
   const css=await readFile(new URL('../css/pages.css',import.meta.url),'utf8');
   const start=css.lastIndexOf('JCS_0_0_18 · OPERATING ROLE COMPARISON');
   assert.ok(start>=0);
-  const layer=css.slice(start);
+  const end=css.indexOf('JCS_0_0_27 · LEGACY DETAIL DENSITY',start),layer=css.slice(start,end<0?undefined:end);
   for(const selector of ['.politician-compare-index-grid','.politician-compare-cohort-map','.admin-compare-radar-grid','.admin-compare-issue-quadrant','.admin-compare-evidence-grid'])assert.match(layer,new RegExp(selector.replaceAll('.','\\.')));
   assert.match(layer,/--compare-count/);
   assert.match(layer,/overflow-x:auto/);

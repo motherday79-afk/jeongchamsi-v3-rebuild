@@ -44,7 +44,7 @@ test('NOW category layout renders the published operating score and independent 
   assert.match(html,/김민석/);
 });
 
-test('published detail uses operating copy and registered related politician photos',async()=>{
+test('published detail uses one two-column NOW card without operational descriptions',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
   const intelligence=structuredClone(pilotForPolitician(sample.id));
   intelligence.snapshot='jcs-operating';
@@ -56,14 +56,25 @@ test('published detail uses operating copy and registered related politician pho
   assert.match(html,/data-recent-id="assembly-001"/);
   assert.match(html,/data-recent-name="김민석"/);
   assert.match(html,/data-recent-photo="\/assets\/politicians\/assembly-001\.jpg"/);
-  assert.match(html,/공개 스냅샷 운영 순위/);
-  assert.match(html,/국회의원 NOW 독립 순위/);
+  assert.equal((html.match(/<span>전체 NOW<\/span>/g)||[]).length,1);
+  assert.equal((html.match(/<span>분야별 NOW<\/span>/g)||[]).length,1);
+  assert.match(html,/<strong>3위<\/strong>/);
+  assert.match(html,/<strong>2위<\/strong>/);
+  assert.doesNotMatch(html,/공개 스냅샷 운영 순위|국회의원 NOW 독립 순위/);
   assert.match(html,/허용 원자료 기반 JCS 운영 지수/);
   assert.match(html,/related-person-avatar has-photo/);
   assert.match(html,/\/assets\/politicians\/assembly-002\./);
   assert.match(html,/data-politician-avatar/);
   assert.match(html,/data-politician-photo/);
   assert.doesNotMatch(html,/임시 파일럿 순위|국회의원 임시 순위|파일럿 지수/);
+});
+
+test('missing operating ranks render 집계 전 in the same square NOW card',async()=>{
+  const sample={...POLITICIAN_SEED.profiles.assembly[1]};
+  const intelligence=structuredClone(pilotForPolitician('assembly-001'));intelligence.rank={overall:null,category:null,temporary:false};
+  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})});
+  assert.equal((html.match(/<strong>집계 전<\/strong>/g)||[]).length,2);
+  assert.match(html,/person-hero-rank-split/);
 });
 
 test('administrator consulting callout follows the strategic conclusion inside the intelligence report',async()=>{
@@ -217,7 +228,8 @@ test('politician intelligence v3 final layer fixes typography and approved high-
     const marker='JCS_0_0_13 · DATA-DENSE POLITICAL INTELLIGENCE FINAL LAYER';
     const start=text.lastIndexOf(marker);
     assert.ok(start>text.lastIndexOf('JCS_0_0_12 · LUXURY POLITICAL INTELLIGENCE FINAL LAYER'));
-    const layer=text.slice(start);
+    const end=text.indexOf('JCS_0_0_27 · LEGACY DETAIL DENSITY',start);
+    const layer=text.slice(start,end<0?undefined:end);
     assert.match(layer,/--jcs-v3-text:#173133/);
     assert.match(layer,/--jcs-v3-body:#30484a/i);
     assert.match(layer,/--jcs-v3-support:#65777a/i);
@@ -228,19 +240,33 @@ test('politician intelligence v3 final layer fixes typography and approved high-
   });
 });
 
-test('release metadata and browser cache keys identify JCS 0.0.26',async()=>{
+test('0.0.27 restores legacy politician detail density and square NOW geometry',async()=>{
+  const {readFile}=await import('node:fs/promises');
+  const css=await readFile(new URL('../css/pages.css',import.meta.url),'utf8');
+  const start=css.lastIndexOf('JCS_0_0_27 · LEGACY DETAIL DENSITY');
+  assert.ok(start>0);
+  const layer=css.slice(start);
+  assert.match(layer,/\.person-live-detail-page \.person-hero-rank-split\{[^}]*aspect-ratio:1\s*\/\s*1/);
+  assert.match(layer,/\.person-live-detail-page \.radar-axis-label\{[^}]*font-size:10px!important/);
+  assert.match(layer,/\.person-live-detail-page \.person-intelligence-cover-copy p\{[^}]*font-size:13px!important/);
+});
+
+test('release metadata and browser cache keys identify JCS 0.0.27',async()=>{
   const {readFile}=await import('node:fs/promises');
   const root=new URL('../',import.meta.url);
-  const [pkg,index,app,gateway]=await Promise.all([
+  const [pkg,lock,index,app,gateway]=await Promise.all([
     readFile(new URL('package.json',root),'utf8'),
+    readFile(new URL('package-lock.json',root),'utf8'),
     readFile(new URL('index.html',root),'utf8'),
     readFile(new URL('src/app.js',root),'utf8'),
     readFile(new URL('api/gateway.js',root),'utf8')
   ]);
-  assert.match(pkg,/"name": "jcs-0-0-26"/);
-  assert.match(pkg,/"version": "0\.0\.26"/);
-  assert.doesNotMatch(index+app,/v=0\.0\.(?:12|13|14|15|16|17|18|19)/);
-  assert.match(index,/pages\.css\?v=0\.0\.26/);
-  assert.match(app,/politicians\.js\?v=0\.0\.26/);
-  assert.match(gateway,/version:'JCS_0_0_26'/);
+  assert.match(pkg,/"name": "jcs-0-0-27"/);
+  assert.match(pkg,/"version": "0\.0\.27"/);
+  assert.match(lock,/"name": "jcs-0-0-27"/);
+  assert.match(lock,/"version": "0\.0\.27"/);
+  assert.doesNotMatch(index+app,/v=0\.0\.(?:12|13|14|15|16|17|18|19|20|21|22|23|24|25|26)(?:\D|$)/);
+  assert.match(index,/pages\.css\?v=0\.0\.27/);
+  assert.match(app,/politicians\.js\?v=0\.0\.27/);
+  assert.match(gateway,/version:'JCS_0_0_27'/);
 });

@@ -16,6 +16,12 @@ export function setupNowCarousel(root=document){
   box.querySelector('[data-now-rank-prev]')?.addEventListener('click',()=>show(page-1));
   box.querySelector('[data-now-rank-next]')?.addEventListener('click',()=>show(page+1));
 }
+export function setupLauncherExpansion(root=document){
+  const toggle=root.querySelector('[data-launcher-toggle]'),panel=root.querySelector('[data-launcher-panel]');if(!toggle||!panel)return;
+  const setOpen=open=>{panel.hidden=!open;toggle.setAttribute('aria-expanded',String(open));const cue=toggle.querySelector('span');if(cue)cue.textContent=open?'−':'＋';};
+  toggle.addEventListener('click',()=>setOpen(toggle.getAttribute('aria-expanded')!=='true'));
+  root.addEventListener('keydown',event=>{if(event.key==='Escape'&&!panel.hidden){setOpen(false);toggle.focus();}});
+}
 export function setupLayoutNavigation(root=document){
   root.addEventListener('click',event=>{const target=event.target.closest('[data-layout-route]');if(!target)return;const route=target.dataset.layoutRoute;if(!route)return;event.preventDefault();window.dispatchEvent(new CustomEvent('jcs:layout-route',{detail:{route}}));});
   root.querySelector('[data-layout-search]')?.addEventListener('submit',event=>{event.preventDefault();const query=new FormData(event.currentTarget).get('q')||'';window.dispatchEvent(new CustomEvent('jcs:layout-search',{detail:{query:String(query)}}));});
@@ -43,4 +49,4 @@ export function setupPoliticianPhotoFallback(root=document){
     image.remove();
   },{once:true}));
 }
-export function setupLayoutInteractions(root=document){setupDrawer(root);setupNowCarousel(root);setupLayoutNavigation(root);setupCompareSearch(root);setupPoliticianPhotoFallback(root);}
+export function setupLayoutInteractions(root=document){setupDrawer(root);setupLauncherExpansion(root);setupNowCarousel(root);setupLayoutNavigation(root);setupCompareSearch(root);setupPoliticianPhotoFallback(root);}
