@@ -7,6 +7,7 @@ import { POLITICIAN_COUNTS, POLITICIAN_TYPES, cleanPoliticianType, readPoliticia
 import { createIntelligenceService } from '../lib/intelligence-service.js';
 import { accessTierForUser, projectIntelligence } from '../lib/intelligence-access.js';
 import { createBadgeService } from '../lib/badge-service.js';
+import { createParticipationPost, featureParticipationPost } from '../lib/participation-admin.js';
 
 const COOKIE='jcsr2_session';
 const MAX_AGE=60*60*24*30;
@@ -204,6 +205,14 @@ export async function dispatchAdminIntelligence(route,method,service){
 
 async function handleAdmin(req,res,route,command){
   const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});if(user.role!=='admin')return json(res,403,{ok:false,error:'ADMIN_REQUIRED'});
+  if(route==='admin/participation'&&req.method==='POST'){
+    const body=bodyOf(req),domain=String(body.domain||'');if(!['polls','nationalEvaluation'].includes(domain))return json(res,400,{ok:false,error:'INVALID_PARTICIPATION_DOMAIN'});
+    const current=(await readDomain(command,domain,domain==='polls'?{items:[]}:{slots:{},results:{},history:[],items:[]}))||{};
+    try{
+      const result=body.operation==='feature'?featureParticipationPost(domain,current,body.itemId):createParticipationPost(domain,current,body.input||{},user);
+      await writeDomain(command,domain,result.data);return json(res,200,{ok:true,item:result.item,data:result.data});
+    }catch(error){return json(res,400,{ok:false,error:error.message||'PARTICIPATION_SAVE_FAILED'});}
+  }
   if(route.startsWith('admin/intelligence/')){const result=await dispatchAdminIntelligence(route,req.method,createIntelligenceService({command}));return json(res,result.status,result.body);}
   if(route==='admin/users'&&req.method==='GET'){
     const users=await listUsers(command),service=createBadgeService(command);
@@ -235,7 +244,7 @@ export default async function handler(req,res){
     if(route==='action')return handleAction(req,res,command);
     if(route==='stats'){const users=await listUsers(command);return json(res,200,{ok:true,members:users.length});}
     if(route.startsWith('admin/')){const handled=await handleAdmin(req,res,route,command);if(handled!==false)return handled;}
-    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_27'});
+    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_27_1'});
     return json(res,404,{ok:false,error:'NOT_FOUND'});
   }catch(error){return json(res,error.code==='STORAGE_MISSING'?503:500,{ok:false,error:error.code||error.message||'SERVER_ERROR'});}
 }

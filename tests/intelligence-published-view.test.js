@@ -13,7 +13,7 @@ test('a published politician uses live ranks and populated public/admin intellig
   const html=await renderPoliticianDetail(person.id,service,{authenticated:true,user:{role:'admin'}});
   assert.doesNotMatch(html,/공개 스냅샷 운영 순위|국회의원 NOW 독립 순위/);
   assert.match(html,/전체 NOW<\/span><strong>12위/);
-  assert.match(html,/분야별 NOW<\/span><strong>9위/);
+  assert.match(html,/국회의원<\/span><strong>9위/);
   assert.match(html,/PUBLISHED INTELLIGENCE/);
   assert.match(html,/PC 검색량/);
   assert.match(html,/1,500/);

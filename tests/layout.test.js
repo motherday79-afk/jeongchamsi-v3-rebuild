@@ -68,7 +68,8 @@ test('home 전체 서비스 expands the current navigation instead of opening th
   assert.match(launcher,/aria-expanded="false"/);
   assert.match(launcher,/data-launcher-panel hidden/);
   assert.doesNotMatch(launcher,/data-drawer-open/);
-  assert.equal((launcher.match(/class="launcher-card/g)||[]).length,SERVICE_CATALOG.length+launcherServices().length);
+  assert.equal((launcher.match(/class="launcher-card/g)||[]).length,SERVICE_CATALOG.length);
+  assert.equal((launcher.match(/data-layout-route="\/now"/g)||[]).length,1);
   assert.match(launcher,/data-layout-route="\/president"/);
   assert.match(launcher,/data-layout-route="\/national-evaluation"/);
 });
