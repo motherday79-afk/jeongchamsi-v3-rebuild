@@ -146,7 +146,8 @@ test('administrator report uses compact topic headers and report fields',async()
   const intelligence=projectIntelligence(reportForSample(sample),'admin','detail');
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{user:{role:'admin'}});
   assert.equal((html.match(/class="jcs-diagnostic-topic jcs-diagnostic-admin-topic"/g)||[]).length,10);
-  for(const field of ['현재 위치','변화 흐름','근거 데이터','비교 기준','기회 요인','위험 요인','정참시 전략 판단','실행 처방','실행 우선순위','예상 변화 및 추적 지표'])assert.match(html,new RegExp(field));
+  for(const field of ['현재 위치','변화 흐름','근거 데이터','기회 요인','위험 요인','정참시 전략 판단','실행 처방','실행 우선순위','예상 변화 및 추적 지표'])assert.match(html,new RegExp(field));
+  assert.doesNotMatch(html,/>비교 기준<|>분석 기준</);
 });
 
 test('administrator report does not use a collapsed dashboard gate',async()=>{
@@ -168,7 +169,7 @@ test('administrator intelligence exposes source dates without inventing unavaila
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
   const intelligence=projectIntelligence(reportForSample(sample),'admin','detail');
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{user:{role:'admin'}});
-  assert.match(html,/분석 기준/);
+  assert.doesNotMatch(html,/>분석 기준</);
   assert.match(html,/2026-09-02/);
   assert.doesNotMatch(html,/data-generated-value/);
 });
@@ -239,7 +240,7 @@ test('0.0.27 restores legacy politician detail density before the corrected NOW 
   assert.match(layer,/\.person-live-detail-page \.person-intelligence-cover-copy p\{[^}]*font-size:13px!important/);
 });
 
-test('release metadata and browser cache keys identify JCS 0.0.30.1',async()=>{
+test('release metadata and browser cache keys identify JCS 0.0.30.2',async()=>{
   const {readFile}=await import('node:fs/promises');
   const root=new URL('../',import.meta.url);
   const [pkg,lock,index,app,gateway]=await Promise.all([
@@ -249,12 +250,12 @@ test('release metadata and browser cache keys identify JCS 0.0.30.1',async()=>{
     readFile(new URL('src/app.js',root),'utf8'),
     readFile(new URL('api/gateway.js',root),'utf8')
   ]);
-  assert.match(pkg,/"name": "jcs-0-0-30-1"/);
-  assert.match(pkg,/"version": "0\.0\.30-1"/);
-  assert.match(lock,/"name": "jcs-0-0-30-1"/);
-  assert.match(lock,/"version": "0\.0\.30-1"/);
+  assert.match(pkg,/"name": "jcs-0-0-30-2"/);
+  assert.match(pkg,/"version": "0\.0\.30-2"/);
+  assert.match(lock,/"name": "jcs-0-0-30-2"/);
+  assert.match(lock,/"version": "0\.0\.30-2"/);
   assert.doesNotMatch(index+app,/v=0\.0\.(?:12|13|14|15|16|17|18|19|20|21|22|23|24|25|26)(?:\D|$)/);
-  assert.match(index,/pages\.css\?v=0\.0\.30\.1/);
-  assert.match(app,/politicians\.js\?v=0\.0\.30\.1/);
-  assert.match(gateway,/version:'JCS_0_0_30_1'/);
+  assert.match(index,/pages\.css\?v=0\.0\.30\.2/);
+  assert.match(app,/politicians\.js\?v=0\.0\.30\.2/);
+  assert.match(gateway,/version:'JCS_0_0_30_2'/);
 });

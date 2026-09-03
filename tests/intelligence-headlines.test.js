@@ -82,3 +82,15 @@ test('dominant event strips media wrappers while preserving the original news-li
   assert.doesNotMatch(result.politicalMeaning,/한강만평|한강타임즈|5\.18 도발/);
   assert.deepEqual(result.contextTemporalSummary,{days30:0,days90:0,year:0,recentDirection:'유지',basis:'핵심 이슈 외 대표 뉴스 게시일'});
 });
+
+test('historical controversy words drive the risk frame without treating 5.18 itself as negative',()=>{
+  const result=analyzeNewsHeadlines({...person,name:'이진숙'},[
+    {title:'이진숙 5.18 정신 계승 입장 발표',source:'A뉴스',publishedAt:'2026-09-03T09:00:00Z'},
+    {title:"'5.18 도발' 이진숙의 운명은?",source:'B뉴스',publishedAt:'2026-09-02T09:00:00Z'}
+  ]);
+  const neutral=result.items.find(item=>/정신 계승/.test(item.title));
+  const crisis=result.items.find(item=>/도발/.test(item.title));
+  assert.equal(neutral.frame,'중립·정보');
+  assert.equal(crisis.frame,'부정·위기');
+  assert.equal(crisis.agendaTag,'논란·위기');
+});

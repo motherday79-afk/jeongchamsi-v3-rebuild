@@ -48,7 +48,17 @@ test('administrator detail renders all ten compact intelligence report modules',
   const html=await renderPoliticianDetail(person.id,serviceFor('admin'),{authenticated:true,user:{role:'admin'}});
   assert.match(html,/JCS ADMIN POLITICAL INTELLIGENCE/);
   assert.deepEqual([...html.matchAll(/data-diagnostic-topic="(\d{2})"/g)].map(match=>match[1]),['01','02','03','04','05','06','07','08','09','10']);
-  for(const label of ['핵심 사건','정치적 의미','변화 원인','과거와 현재','서브데이터','현재 위치','변화 흐름','근거 데이터','비교 기준','기회 요인','위험 요인','진단 근거','정참시 전략 판단','실행 처방','실행 우선순위','예상 변화 및 추적 지표'])assert.match(html,new RegExp(label));
+  for(const label of ['핵심 사건','정치적 의미','변화 원인','과거와 현재','서브데이터','현재 위치','변화 흐름','근거 데이터','기회 요인','위험 요인','진단 근거','정참시 전략 판단','실행 처방','실행 우선순위','예상 변화 및 추적 지표'])assert.match(html,new RegExp(label));
+  assert.equal((html.match(/>과거와 현재</g)||[]).length,1);
+  assert.equal((html.match(/>근거 데이터</g)||[]).length,1);
+  assert.equal((html.match(/>서브데이터</g)||[]).length,1);
+  assert.equal((html.match(/>비교 기준</g)||[]).length,0);
+  assert.equal((html.match(/>분석 기준</g)||[]).length,0);
+  const topic01=html.slice(html.indexOf('data-diagnostic-topic="01"'),html.indexOf('data-diagnostic-topic="02"'));
+  const topic06=html.slice(html.indexOf('data-diagnostic-topic="06"'),html.indexOf('data-diagnostic-topic="07"'));
+  assert.match(topic01,/>과거와 현재</);
+  assert.match(topic01,/>근거 데이터</);
+  assert.match(topic06,/>서브데이터</);
   assert.equal((html.match(/data-prescription-topic=/g)||[]).length,10);
   assert.equal((html.match(/JCS ST 해석 · 뉴스 헤드라인, 공식 이력, 선거·지역·정당 구조와 검색 반응을 종합한 정참시 자체 분석입니다\./g)||[]).length,1);
   assert.ok(html.indexOf('PART 01')<html.indexOf('PART 02'));
