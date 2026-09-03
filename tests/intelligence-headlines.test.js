@@ -73,3 +73,12 @@ test('headline time windows use observed article dates rather than fabricated hi
   assert.deepEqual(result.temporalSummary,{days30:2,days90:3,year:4,recentDirection:'상승',basis:'대표 뉴스 게시일'});
   assert.deepEqual(result.agencySummary,{led:3,external:1,dominant:'정치인 주도'});
 });
+
+test('dominant event strips media wrappers while preserving the original news-list title',()=>{
+  const original="[한강만평] '5.18 도발' 이진숙 운명은? - 한강타임즈";
+  const result=analyzeNewsHeadlines({...person,name:'이진숙'},[{title:original,source:'한강타임즈',publishedAt:'2026-09-03T09:00:00Z'}]);
+  assert.equal(result.items[0].title,original);
+  assert.equal(result.dominantEvent.title,"'5.18 도발' 이진숙의 운명은?");
+  assert.doesNotMatch(result.politicalMeaning,/한강만평|한강타임즈|5\.18 도발/);
+  assert.deepEqual(result.contextTemporalSummary,{days30:0,days90:0,year:0,recentDirection:'유지',basis:'핵심 이슈 외 대표 뉴스 게시일'});
+});

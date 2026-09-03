@@ -1,0 +1,21 @@
+JCS 0.0.30.1 CORE EVENT COPY HOTFIX
+BASE: JCS 0.0.30
+
+api/gateway.js
+css/pages.css
+index.html
+lib/intelligence-diagnostics.js
+lib/intelligence-headlines.js
+package-lock.json
+package.json
+src/app.js
+src/views/politician-compare.js
+src/views/politicians.js
+tests/intelligence-headlines.test.js
+tests/intelligence-v2.test.js
+tests/politician-diagnostics-compare.test.js
+tests/politician-diagnostics-css.test.js
+tests/politician-diagnostics-view.test.js
+tests/politicians.test.js
+JCS_0_0_30_1_CORE_EVENT_COPY_HOTFIX.md
+JCS_0_0_30_1_MANIFEST.txt

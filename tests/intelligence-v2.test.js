@@ -76,6 +76,18 @@ test('generated Korean applies subject object and topic particles without broken
   assert.doesNotMatch(draft.diagnoses.find(item=>item.id==='06').headline,/현재 위기 핵심/);
 });
 
+test('diagnosis shows the cleaned core event once and keeps it out of repeated analysis copy',()=>{
+  const original="[한강만평] '5.18 도발' 이진숙 운명은? - 한강타임즈";
+  const person={...basePerson,id:'assembly-888',name:'이진숙'};
+  const draft=buildIntelligenceDraft(person,{...raw,personId:person.id,officialProfile:person,news:{items:[{title:original,source:'한강타임즈',publishedAt:'2026-09-03T09:00:00Z'}]}},{...context,peers:[person]},'JCS_INTELLIGENCE_V2');
+  for(const diagnosis of draft.diagnoses){
+    assert.equal(diagnosis.coreEvent,"'5.18 도발' 이진숙의 운명은?");
+    assert.equal(diagnosis.changeReason,'대표 뉴스는 최근 30일 0건, 90일 0건으로 집계되며 유지 흐름을 보입니다.');
+    const repeated=JSON.stringify({...diagnosis,coreEvent:''});
+    assert.doesNotMatch(repeated,/한강만평|한강타임즈|5\.18 도발|이진숙의 운명/);
+  }
+});
+
 test('identical political evidence produces identical scores regardless of politician id or name',()=>{
   const first=buildIntelligenceDraft(basePerson,raw,context,'JCS_INTELLIGENCE_V2');
   const renamed={...basePerson,id:'assembly-777',name:'이동일'};

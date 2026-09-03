@@ -52,6 +52,7 @@ test('administrator detail renders all ten compact intelligence report modules',
   assert.equal((html.match(/data-prescription-topic=/g)||[]).length,10);
   assert.equal((html.match(/JCS ST 해석 · 뉴스 헤드라인, 공식 이력, 선거·지역·정당 구조와 검색 반응을 종합한 정참시 자체 분석입니다\./g)||[]).length,1);
   assert.ok(html.indexOf('PART 01')<html.indexOf('PART 02'));
+  assert.equal((html.match(/대표 뉴스는 핵심 이슈 주제에서 벗어난 관련 기사 집계를 의미합니다\./g)||[]).length,1);
 });
 
 test('diagnostics preserve profile photo and record sections for every role',async()=>{

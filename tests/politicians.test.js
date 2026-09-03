@@ -239,7 +239,7 @@ test('0.0.27 restores legacy politician detail density before the corrected NOW 
   assert.match(layer,/\.person-live-detail-page \.person-intelligence-cover-copy p\{[^}]*font-size:13px!important/);
 });
 
-test('release metadata and browser cache keys identify JCS 0.0.30',async()=>{
+test('release metadata and browser cache keys identify JCS 0.0.30.1',async()=>{
   const {readFile}=await import('node:fs/promises');
   const root=new URL('../',import.meta.url);
   const [pkg,lock,index,app,gateway]=await Promise.all([
@@ -249,12 +249,12 @@ test('release metadata and browser cache keys identify JCS 0.0.30',async()=>{
     readFile(new URL('src/app.js',root),'utf8'),
     readFile(new URL('api/gateway.js',root),'utf8')
   ]);
-  assert.match(pkg,/"name": "jcs-0-0-30"/);
-  assert.match(pkg,/"version": "0\.0\.30"/);
-  assert.match(lock,/"name": "jcs-0-0-30"/);
-  assert.match(lock,/"version": "0\.0\.30"/);
+  assert.match(pkg,/"name": "jcs-0-0-30-1"/);
+  assert.match(pkg,/"version": "0\.0\.30-1"/);
+  assert.match(lock,/"name": "jcs-0-0-30-1"/);
+  assert.match(lock,/"version": "0\.0\.30-1"/);
   assert.doesNotMatch(index+app,/v=0\.0\.(?:12|13|14|15|16|17|18|19|20|21|22|23|24|25|26)(?:\D|$)/);
-  assert.match(index,/pages\.css\?v=0\.0\.30/);
-  assert.match(app,/politicians\.js\?v=0\.0\.30/);
-  assert.match(gateway,/version:'JCS_0_0_30'/);
+  assert.match(index,/pages\.css\?v=0\.0\.30\.1/);
+  assert.match(app,/politicians\.js\?v=0\.0\.30\.1/);
+  assert.match(gateway,/version:'JCS_0_0_30_1'/);
 });

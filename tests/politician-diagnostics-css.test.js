@@ -16,4 +16,6 @@ test('role diagnostics use a compact report layer with four-person responsive ma
   const adminHeadingSizes=[...layer.matchAll(/\.jcs-diagnostic-admin-topic[^{}]*h3[^{}]*\{[^}]*font-size:\s*(\d+(?:\.\d+)?)px/gs)].map(match=>Number(match[1]));
   assert.ok(adminHeadingSizes.length>0);
   assert.ok(adminHeadingSizes.every(size=>size<=20));
+  assert.match(layer,/\.jcs-representative-news-guide\{[^}]*display:block[^}]*font-size:12px/);
+  assert.match(layer,/\.jcs-compare-report-heading \.jcs-representative-news-guide\{[^}]*color:#b9cbc5/);
 });

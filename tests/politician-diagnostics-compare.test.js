@@ -56,6 +56,7 @@ test('administrator comparison caps selection at four and renders all ten topics
   assert.match(html,/진단 근거/);
   assert.equal((html.match(/data-competitor-response=/g)||[]).length,3);
   for(const label of ['공세 영역','방어 영역','회피 영역','단기 역전 가능 영역'])assert.match(html,new RegExp(label));
+  assert.equal((html.match(/대표 뉴스는 핵심 이슈 주제에서 벗어난 관련 기사 집계를 의미합니다\./g)||[]).length,1);
 });
 
 test('administrator target strategy produces one response card per selected rival for two three and four people',async()=>{
