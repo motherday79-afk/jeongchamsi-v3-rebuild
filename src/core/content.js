@@ -10,7 +10,7 @@ function createRemoteContentService(){
   return {
     async readDomain(domain){return (await readDomain(domain))||{items:[]};},
     async list(domain){const data=await readDomain(domain);return itemsFrom(domain,data).slice().sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));},
-    async get(domain,itemId){const data=await readDomain(domain);return itemsFrom(domain,data).find(x=>String(x.id)===String(itemId))||null;},
+    async get(domain,itemId){await request('action',{method:'POST',body:JSON.stringify({action:'post-view',payload:{domain,postId:itemId}})});const data=await readDomain(domain);return itemsFrom(domain,data).find(x=>String(x.id)===String(itemId))||null;},
     async create(domain,input={}){const x=await request(`content?domain=${encodeURIComponent(domain)}`,{method:'POST',body:JSON.stringify({input})});return x.ok?x.item:{error:x.error,status:x.status};},
     async vote(scope,option){return request('action',{method:'POST',body:JSON.stringify({action:'vote',payload:{scope,option}})});},
     async voteResult(scope){if(scope.startsWith('poll:')){const id=scope.slice(5),data=await readDomain('polls'),poll=itemsFrom('polls',data).find(x=>String(x.id)===id);return Object.fromEntries((poll?.options||[]).map(o=>[String(o.id),Number(o.votes||0)]));}return {};},

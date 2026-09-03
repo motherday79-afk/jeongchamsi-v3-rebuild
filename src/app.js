@@ -1,16 +1,16 @@
 import { HOME_FIXTURE } from './fixtures/home.js';
 import { siteHeader, drawer, footer } from './layout/site-shell.js';
-import { renderHomeLayout } from './layout/home-layout.js?v=0.0.25';
+import { renderHomeLayout } from './layout/home-layout.js?v=0.0.26';
 import { setupLayoutInteractions } from './ui/interactions.js';
 import { createAuthService } from './core/auth.js';
 import { createContentService } from './core/content.js';
 import { createPoliticianService } from './core/politicians.js';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js';
-import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.25';
+import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.26';
 import * as views from './views/stage1.js';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.25';
-import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.25';
-import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.25';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.26';
+import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.26';
+import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.26';
 
 const app=document.getElementById('app');
 const auth=createAuthService();
@@ -66,8 +66,14 @@ function resumeAdminIntelligence(){
   if(running&&intelligenceAutoResumeGuard.claim(running.dataset.intelligenceJob))void runAdminIntelligence(running.dataset.intelligenceJob,true);
 }
 
+function setupMemberBadgeManagers(){
+  for(const row of document.querySelectorAll('[data-member-badge-row]'))row.addEventListener('toggle',()=>{if(!row.open)return;const mount=row.querySelector('[data-member-badge-mount]');if(!mount||mount.dataset.loaded)return;try{mount.innerHTML=views.renderMemberBadgeManager(JSON.parse(row.dataset.memberBadgePayload||'{}'));mount.dataset.loaded='true';}catch{mount.innerHTML='<p class="module-desc">배지 목록을 불러오지 못했습니다.</p>';}});
+}
+
 async function render(){
   const r=route(),p=parts(r),session=await auth.session();
+  const badgeVisit=session.authenticated?await auth.recordBadgeVisit().catch(()=>null):null;
+  const badgeStatus=session.authenticated?(badgeVisit?.status||await auth.badgeStatus().catch(()=>null)):null;
   let body='';
   if(!p.length){
     const [memberCount,columns,community,itsmePosts,polls,generation,nationalEvaluation,academy,rankResult]=await Promise.all([
@@ -82,7 +88,7 @@ async function render(){
       politicians.rankings().catch(()=>({ok:false,items:[]}))
     ]);
     const rank=rankResult?.ok?(Array.isArray(rankResult.items)?rankResult.items:[]).slice(0,30):[];
-    const home={...HOME_FIXTURE,memberCount,columns,community,itsmePosts,polls,generation,nationalEvaluation,academy,rank,recentPoliticians:loadRecentPoliticians(),session};
+    const home={...HOME_FIXTURE,memberCount,columns,community,itsmePosts,polls,generation,nationalEvaluation,academy,rank,recentPoliticians:loadRecentPoliticians(),session,badgeStatus};
     body=`<div class="product-home-wrap">${renderHomeLayout(home)}</div>`;
   } else if(p[0]==='about') body=views.renderAbout();
   else if(p[0]==='support') body=views.renderSupport();
@@ -101,12 +107,14 @@ async function render(){
   else if(p[0]==='partners') body=views.renderPartners();
   else if(p[0]==='login') body=views.renderLogin();
   else if(p[0]==='join') body=views.renderJoin();
-  else if(p[0]==='mypage') body=views.renderMyPage(session);
+  else if(p[0]==='mypage'&&p[1]==='activity') body=views.renderMyActivity(session,badgeStatus||{},r.includes('?')?`?${r.split('?')[1]}`:'');
+  else if(p[0]==='mypage') body=views.renderMyPage(session,badgeStatus||{});
   else if(p[0]==='admin') body=await views.renderAdminStable(session,auth);
   else if(p[0]==='migration') body=views.renderMigration();
   else if(unstable.has(p[0])) body=`<section class="module"><span class="eyebrow">NEXT PHASE</span><h2>${p[0]}</h2><p class="module-desc">이 영역은 이번 버전에서 제외했습니다. NOW·정치인 데이터·분석 엔진은 연결하지 않습니다.</p></section>`;
   else body=`<section class="module"><h2>페이지를 찾을 수 없습니다</h2></section>`;
   await shell(body,session);
+  setupMemberBadgeManagers();
   if(p[0]==='person'){recordRecentPolitician(document);tunePoliticianNarratives();}
   window.scrollTo(0,0);
   if(p[0]==='admin')queueMicrotask(resumeAdminIntelligence);
@@ -137,6 +145,12 @@ document.addEventListener('submit',async event=>{
 });
 
 document.addEventListener('click',async event=>{
+  const representative=event.target.closest('[data-badge-representative]');
+  if(representative){event.preventDefault();const result=await auth.setRepresentativeBadge(representative.dataset.badgeRepresentative);if(!result?.ok)alert(result?.error||'대표 배지를 설정하지 못했습니다.');await render();return;}
+  const showcase=event.target.closest('[data-badge-showcase]');
+  if(showcase){event.preventDefault();const result=await auth.toggleShowcaseBadge(showcase.dataset.badgeShowcase);if(!result?.ok)alert(result?.error==='BADGE_SHOWCASE_FULL'?'전시 배지는 최대 3개까지 선택할 수 있습니다.':(result?.error||'전시 배지를 설정하지 못했습니다.'));await render();return;}
+  const memberBadgeSave=event.target.closest('[data-member-badge-save]');
+  if(memberBadgeSave){event.preventDefault();const id=memberBadgeSave.dataset.memberBadgeSave,manager=document.querySelector(`[data-member-badge-manager="${CSS.escape(id)}"]`),grantedBadges=[...(manager?.querySelectorAll('[data-member-badge]:checked')||[])].map(input=>input.value),state=manager?.querySelector('[data-member-badge-state]');memberBadgeSave.disabled=true;const result=await auth.updateMemberBadges(id,grantedBadges);if(state)state.textContent=result?.ok?'배지 해금 내역을 저장했습니다.':(result?.error||'저장하지 못했습니다.');memberBadgeSave.disabled=false;if(result?.ok)await render();return;}
   const intelligence=event.target.closest('[data-intelligence-action]');
   if(intelligence){event.preventDefault();void runAdminIntelligence(intelligence.dataset.intelligenceAction,false);return;}
   const vote=event.target.closest('[data-stage-vote]');

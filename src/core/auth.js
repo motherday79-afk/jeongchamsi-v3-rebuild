@@ -10,6 +10,11 @@ function createRemoteAuthService(){
     async logout(){return request('user/logout',{method:'POST',body:'{}'});},
     async session(){const x=await request('user/session');return x.status===200?{authenticated:!!x.authenticated,user:x.user||null}:{authenticated:false,user:null,error:x.error};},
     async updateProfile(patch={}){return request('user/profile',{method:'POST',body:JSON.stringify(patch)});},
+    async badgeStatus(){const x=await request('user/badges');return x.ok?x.status:null;},
+    async setRepresentativeBadge(badgeKey){return request('action',{method:'POST',body:JSON.stringify({action:'badge-representative-set',payload:{badgeKey}})});},
+    async toggleShowcaseBadge(badgeKey){return request('action',{method:'POST',body:JSON.stringify({action:'badge-showcase-toggle',payload:{badgeKey}})});},
+    async recordBadgeVisit(){return request('action',{method:'POST',body:JSON.stringify({action:'badge-visit',payload:{}})});},
+    async updateMemberBadges(id,grantedBadges){return request('admin/users',{method:'PATCH',body:JSON.stringify({id,grantedBadges})});},
     async exportMembers(){const x=await request('admin/users');return x.ok?x.users:[];},
     async adminSummary(){return request('admin/summary');},
     async intelligenceStatus(){return request('admin/intelligence/status');},
@@ -35,6 +40,11 @@ function createLocalAuthService(store){
     async session(){const s=await store.get(sessionKey,null);if(!s?.userId)return {authenticated:false,user:null};const u=await this.getMember(s.userId);return {authenticated:!!u,user:u};},
     async getMember(id){const members=await store.get(membersKey,{});return publicUser(members[clean(id)]||null);},
     async updateProfile(patch={}){const s=await store.get(sessionKey,null);if(!s?.userId)return {ok:false,error:'LOGIN_REQUIRED'};const members=await store.get(membersKey,{});const u=members[s.userId];if(!u)return {ok:false,error:'USER_NOT_FOUND'};u.nickname=clean(patch.nickname)||u.nickname;u.email=clean(patch.email)||u.email;u.profile={...(u.profile||{}),...(patch.profile||{})};await store.set(membersKey,members);return {ok:true,user:publicUser(u)};},
+    async badgeStatus(){return {earnedBadges:[],eligibleBadges:[],grantedBadges:[],representativeBadge:'',showcaseBadges:[],progress:{}};},
+    async setRepresentativeBadge(){return {ok:false,error:'REMOTE_ONLY'};},
+    async toggleShowcaseBadge(){return {ok:false,error:'REMOTE_ONLY'};},
+    async recordBadgeVisit(){return {ok:true};},
+    async updateMemberBadges(){return {ok:false,error:'REMOTE_ONLY'};},
     async importMembers(rows=[]){const members=await store.get(membersKey,{});let imported=0,skipped=0;for(const row of Array.isArray(rows)?rows:[]){const id=clean(row?.id);if(!id||members[id]){skipped++;continue;}members[id]={id,nickname:clean(row.nickname)||id,email:clean(row.email),role:row.role==='admin'?'admin':'member',createdAt:row.createdAt||new Date().toISOString(),profile:row.profile||{},passwordHash:row.passwordHash||''};imported++;}await store.set(membersKey,members);return {ok:true,imported,skipped};},
     async exportMembers(){const members=await store.get(membersKey,{});return Object.values(members).map(publicUser);}
   };
