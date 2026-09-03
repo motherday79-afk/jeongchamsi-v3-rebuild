@@ -39,6 +39,10 @@ test('direct politician API calls enforce public member and administrator projec
   assert.match(admin.serialized,/전략 처방/);
   assert.equal(guest.headers['Cache-Control'],'no-store');
   assert.equal(guest.json.item.photo.localPath,'/assets/politicians/assembly-221.jpg');
+  assert.ok(guest.json.intelligence.diagnoses.every(topic=>topic.coreEvent&&topic.politicalMeaning&&topic.attentionQuality));
+  assert.equal(guest.json.intelligence.diagnoses.some(topic=>topic.supportingData),false);
+  assert.ok(member.json.intelligence.diagnoses.every(topic=>topic.changeReason&&topic.pastPresentConnection&&topic.supportingData.length));
+  assert.ok(admin.json.intelligence.prescriptions.every(item=>item.diagnosisBasis.length===item.linkedDiagnosisIds.length));
 });
 
 test('the browser source tree does not ship the former administrator pilot payload',async()=>{

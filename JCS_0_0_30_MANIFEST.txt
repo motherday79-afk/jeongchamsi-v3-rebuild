@@ -1,0 +1,24 @@
+JCS 0.0.30 POLITICAL INTELLIGENCE CONTENT PATCH
+BASE: JCS 0.0.29.1 Redis latest-only hotfix
+
+api/gateway.js
+css/pages.css
+index.html
+lib/intelligence-access.js
+lib/intelligence-analysis.js
+lib/intelligence-diagnostics.js
+lib/intelligence-headlines.js
+lib/intelligence-validation.js
+package-lock.json
+package.json
+src/app.js
+src/views/politician-compare.js
+src/views/politicians.js
+tests/intelligence-headlines.test.js
+tests/intelligence-v2.test.js
+tests/politician-diagnostics-api.test.js
+tests/politician-diagnostics-compare.test.js
+tests/politician-diagnostics-view.test.js
+tests/politicians.test.js
+JCS_0_0_30_HANDOFF.md
+JCS_0_0_30_MANIFEST.txt

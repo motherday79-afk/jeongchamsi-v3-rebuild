@@ -47,3 +47,29 @@ test('headline analysis is deterministic and uses structural context when news i
   assert.ok(first.topics.length>=1);
   assert.doesNotMatch(JSON.stringify(first),/데이터 부족|분석 준비 중|N\/A|TODO|TBD/);
 });
+
+test('headline intelligence identifies the dominant event before judging whether attention is an asset or burden',()=>{
+  const crisisRows=[
+    {title:'김민석 발언 논란 확산',source:'A뉴스',url:'https://news/a',publishedAt:'2026-09-03T09:00:00Z'},
+    {title:'김민석 의혹 수사 착수',source:'B뉴스',url:'https://news/b',publishedAt:'2026-09-02T09:00:00Z'},
+    {title:'김민석 비판과 반발 이어져',source:'C뉴스',url:'https://news/c',publishedAt:'2026-08-30T09:00:00Z'},
+    {title:'김민석 민생 정책 발표',source:'D뉴스',url:'https://news/d',publishedAt:'2026-07-01T09:00:00Z'}
+  ];
+  const result=analyzeNewsHeadlines(person,crisisRows);
+  assert.deepEqual(result.dominantEvent,{title:'김민석 발언 논란 확산',date:'2026-09-03',source:'A뉴스',agendaTag:'논란·위기',frame:'부정·위기',agency:'외부 서사'});
+  assert.deepEqual(result.frameSummary,{positive:0,neutral:1,negative:3,dominant:'부정·위기'});
+  assert.equal(result.attentionQuality,'정치적 부담');
+  assert.match(result.politicalMeaning,/부정 프레임|정치적 부담/);
+  assert.match(result.effectSeparation,/뉴스 노출 상승.*브랜드 부담/);
+});
+
+test('headline time windows use observed article dates rather than fabricated historical scores',()=>{
+  const result=analyzeNewsHeadlines(person,[
+    {title:'김민석 민생 정책 발표',source:'A뉴스',publishedAt:'2026-09-03T09:00:00Z'},
+    {title:'김민석 지역 예산 확보',source:'B뉴스',publishedAt:'2026-08-20T09:00:00Z'},
+    {title:'김민석 당내 통합 강조',source:'C뉴스',publishedAt:'2026-06-20T09:00:00Z'},
+    {title:'김민석 외교 행보',source:'D뉴스',publishedAt:'2025-10-01T09:00:00Z'}
+  ]);
+  assert.deepEqual(result.temporalSummary,{days30:2,days90:3,year:4,recentDirection:'상승',basis:'대표 뉴스 게시일'});
+  assert.deepEqual(result.agencySummary,{led:3,external:1,dominant:'정치인 주도'});
+});

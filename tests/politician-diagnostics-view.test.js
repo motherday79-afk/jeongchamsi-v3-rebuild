@@ -31,6 +31,8 @@ test('guest detail renders one compact 01 07 09 snapshot and a login entry only'
   assert.deepEqual([...html.matchAll(/data-diagnostic-topic="(\d{2})"/g)].map(match=>match[1]),['01','07','09']);
   assert.equal((html.match(/class="jcs-diagnostic-topic/g)||[]).length,3);
   assert.match(html,/로그인하고 상세 분석 보기/);
+  assert.match(html,/핵심 사건/);
+  assert.match(html,/정치적 의미/);
   assert.doesNotMatch(html,/핵심 원인|실행 처방|실행 우선순위|예상 변화 및 추적 지표/);
 });
 
@@ -38,7 +40,7 @@ test('member detail renders the exact six analysis modules without administrator
   const html=await renderPoliticianDetail(person.id,serviceFor('member'),{authenticated:true,user:{role:'member'}});
   assert.match(html,/JCS MEMBER POLITICAL ANALYSIS/);
   assert.deepEqual([...html.matchAll(/data-diagnostic-topic="(\d{2})"/g)].map(match=>match[1]),['01','02','03','05','07','09']);
-  for(const label of ['현재 평가','핵심 수치','최근 변화','비교 기준','정참시 해석','데이터 기준일 및 출처'])assert.match(html,new RegExp(label));
+  for(const label of ['현재 평가','핵심 사건','변화 원인','과거와 현재','핵심 수치','최근 변화','비교 기준','정참시 해석','데이터 기준일 및 출처'])assert.match(html,new RegExp(label));
   assert.doesNotMatch(html,/핵심 원인|실행 처방|즉시 실행|90일 이내 실행/);
 });
 
@@ -46,8 +48,10 @@ test('administrator detail renders all ten compact intelligence report modules',
   const html=await renderPoliticianDetail(person.id,serviceFor('admin'),{authenticated:true,user:{role:'admin'}});
   assert.match(html,/JCS ADMIN POLITICAL INTELLIGENCE/);
   assert.deepEqual([...html.matchAll(/data-diagnostic-topic="(\d{2})"/g)].map(match=>match[1]),['01','02','03','04','05','06','07','08','09','10']);
-  for(const label of ['현재 위치','변화 흐름','근거 데이터','비교 기준','기회 요인','위험 요인','정참시 전략 판단','실행 처방','실행 우선순위','예상 변화 및 추적 지표'])assert.match(html,new RegExp(label));
+  for(const label of ['핵심 사건','정치적 의미','변화 원인','과거와 현재','서브데이터','현재 위치','변화 흐름','근거 데이터','비교 기준','기회 요인','위험 요인','진단 근거','정참시 전략 판단','실행 처방','실행 우선순위','예상 변화 및 추적 지표'])assert.match(html,new RegExp(label));
   assert.equal((html.match(/data-prescription-topic=/g)||[]).length,10);
+  assert.equal((html.match(/JCS ST 해석 · 뉴스 헤드라인, 공식 이력, 선거·지역·정당 구조와 검색 반응을 종합한 정참시 자체 분석입니다\./g)||[]).length,1);
+  assert.ok(html.indexOf('PART 01')<html.indexOf('PART 02'));
 });
 
 test('diagnostics preserve profile photo and record sections for every role',async()=>{

@@ -53,6 +53,18 @@ test('administrator comparison caps selection at four and renders all ten topics
   for(let index=101;index<=104;index++)assert.match(html,new RegExp(`/assets/politicians/assembly-${index}\\.jpg`));
   for(const label of ['활용 가능한 기회','관리해야 할 위험','정참시 전략 판단','실행 처방','실행 우선순위'])assert.match(html,new RegExp(label));
   assert.equal((html.match(/data-prescription-topic=/g)||[]).length,10);
+  assert.match(html,/진단 근거/);
+  assert.equal((html.match(/data-competitor-response=/g)||[]).length,3);
+  for(const label of ['공세 영역','방어 영역','회피 영역','단기 역전 가능 영역'])assert.match(html,new RegExp(label));
+});
+
+test('administrator target strategy produces one response card per selected rival for two three and four people',async()=>{
+  for(const count of [2,3,4]){
+    const ids=people.slice(0,count).map(person=>person.id).join(',');
+    const html=await renderPoliticianCompare(serviceFor('admin'),`/compare?ids=${ids}&run=1&strategy=assembly-101`,{user:{role:'admin'}});
+    assert.equal((html.match(/data-competitor-response=/g)||[]).length,count-1);
+    for(let index=2;index<=count;index++)assert.match(html,new RegExp(`비교정치인${index}`));
+  }
 });
 
 test('comparison cells use the same projected topic values as detail data',async()=>{

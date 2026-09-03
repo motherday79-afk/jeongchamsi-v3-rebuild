@@ -16,8 +16,8 @@ const news=[
 const raw={personId:basePerson.id,snapshotId:'snapshot-v2',collectedAt:'2026-09-03T00:00:00Z',officialProfile:basePerson,searchAds:{volume:{pc:1500,mobile:10000}},news:{items:news},sourceErrors:[]};
 const context={peers:[basePerson,{...basePerson,id:'assembly-032',name:'이경쟁',terms:'초선',region:'서울'},{...basePerson,id:'assembly-033',name:'박경쟁',party:'국민의힘',terms:'5선'}],ageSex:[{age:'20대',maleShare:49.1,femaleShare:50.9},{age:'30대',maleShare:50.3,femaleShare:49.7},{age:'40대',maleShare:50.7,femaleShare:49.3},{age:'50대',maleShare:50.1,femaleShare:49.9},{age:'60대 이상',maleShare:46.5,femaleShare:53.5}],source:{title:'공식 연령×성별 인구표',url:'https://jumin.mois.go.kr/ageStatMonth.do'}};
 
-const diagnosisFields=['id','title','headline','currentPosition','score','percentile','trend','benchmark','visualization','interpretation','evidence','opportunity','risk','sourceTypes','updatedAt','algorithmVersion','basis'];
-const prescriptionFields=['id','linkedDiagnosisIds','title','objective','strategicJudgment','actions','target','messageDirection','channels','timing','priority','expectedImpact','monitoringIndicators','visualization','updatedAt','algorithmVersion'];
+const diagnosisFields=['id','title','headline','currentPosition','coreEvent','politicalMeaning','changeReason','pastPresentConnection','supportingData','attentionQuality','score','percentile','trend','benchmark','visualization','interpretation','evidence','opportunity','risk','sourceTypes','updatedAt','algorithmVersion','basis'];
+const prescriptionFields=['id','linkedDiagnosisIds','diagnosisBasis','title','objective','strategicJudgment','actions','target','messageDirection','channels','timing','priority','expectedImpact','monitoringIndicators','visualization','updatedAt','algorithmVersion'];
 const diagnosisVisuals=['positioning-matrix','cohort-diverging','issue-fit-bars','support-stack','competitor-heatmap','risk-matrix','narrative-timeline','campaign-matrix','policy-heatmap','growth-gap'];
 const prescriptionVisuals=['message-pyramid','target-matrix','local-playbook','support-flow','response-matrix','crisis-timeline','propagation-flow','resource-allocation','policy-quadrant','growth-timeline'];
 const forbidden=/데이터 부족|분석 준비 중|분석 불가|판단 불가|비교 불가|알 수 없음|추가 데이터 필요|N\/A|TODO|TBD|추후 제공/;
@@ -48,6 +48,42 @@ test('diagnosis narrative is news and structure led while search remains a suppo
   assert.doesNotMatch(narrative,/모바일 검색|PC 검색|모바일 이용자|모바일 우위/);
   assert.equal(draft.news.length<=10,true);
   assert.equal(draft.news.every(item=>item.agendaTag&&item.diagnosisRefs.length),true);
+  assert.equal(draft.diagnoses.every(item=>item.coreEvent==='김테스트 민생경제 법안 추진'),true);
+  assert.equal(draft.diagnoses.every(item=>item.supportingData.at(-1).label==='검색 반응'),true);
+  assert.equal(draft.diagnoses.every(item=>/PC 1,500 · 모바일 10,000/.test(item.supportingData.at(-1).value)),true);
+  assert.equal(draft.prescriptions.every(item=>item.diagnosisBasis.length===item.linkedDiagnosisIds.length),true);
+  assert.match(draft.prescriptions[0].diagnosisBasis[0],/^01 · /);
+});
+
+test('negative event attention is separated from political assets instead of being rewarded as popularity',()=>{
+  const crisisRaw={...raw,news:{items:[
+    {title:'김테스트 의혹 수사 착수',source:'A뉴스',publishedAt:'2026-09-03T00:00:00Z'},
+    {title:'김테스트 논란과 비판 확산',source:'B뉴스',publishedAt:'2026-09-02T00:00:00Z'},
+    {title:'김테스트 반발 이어져',source:'C뉴스',publishedAt:'2026-09-01T00:00:00Z'}
+  ]}};
+  const draft=buildIntelligenceDraft(basePerson,crisisRaw,context,'JCS_INTELLIGENCE_V2');
+  for(const diagnosis of draft.diagnoses){
+    assert.equal(diagnosis.attentionQuality,'정치적 부담');
+    assert.match(diagnosis.politicalMeaning,/부정 프레임|정치적 부담/);
+  }
+  assert.match(draft.diagnoses.find(item=>item.id==='01').headline,/논란·위기/);
+  assert.match(draft.diagnoses.find(item=>item.id==='04').interpretation.join(' '),/정치 경력|핵심층/);
+});
+
+test('generated Korean applies subject object and topic particles without broken consulting copy',()=>{
+  const draft=buildIntelligenceDraft(basePerson,{...raw,news:{items:[{title:'김테스트 민생 경제 법안 발표',source:'정책뉴스',publishedAt:'2026-09-03T00:00:00Z'}]}},context,'JCS_INTELLIGENCE_V2');
+  assert.doesNotMatch(JSON.stringify({diagnoses:draft.diagnoses,prescriptions:draft.prescriptions}),/민생·경제을|20대 남성가|정무위원회은/);
+  assert.doesNotMatch(draft.diagnoses.find(item=>item.id==='06').headline,/현재 위기 핵심/);
+});
+
+test('identical political evidence produces identical scores regardless of politician id or name',()=>{
+  const first=buildIntelligenceDraft(basePerson,raw,context,'JCS_INTELLIGENCE_V2');
+  const renamed={...basePerson,id:'assembly-777',name:'이동일'};
+  const renamedRaw={...raw,personId:renamed.id,officialProfile:renamed,news:{items:news.map(item=>({...item,title:item.title.replaceAll('김테스트','이동일')}))}};
+  const second=buildIntelligenceDraft(renamed,renamedRaw,{...context,peers:context.peers.map(item=>item.id===basePerson.id?renamed:item)},'JCS_INTELLIGENCE_V2');
+  const numericValues=value=>{const out=[];const visit=item=>{if(typeof item==='number')out.push(item);else if(Array.isArray(item))item.forEach(visit);else if(item&&typeof item==='object')Object.values(item).forEach(visit);};visit(value);return out;};
+  assert.deepEqual(first.diagnoses.map(item=>item.score),second.diagnoses.map(item=>item.score));
+  assert.deepEqual(numericValues(first.diagnoses.map(item=>item.visualization)),numericValues(second.diagnoses.map(item=>item.visualization)));
 });
 
 test('sparse-news politicians still receive complete non-cloned structural intelligence',()=>{
@@ -77,7 +113,11 @@ test('server projection sends only role-authorized diagnoses and never leaks pre
   assert.equal(admin.diagnoses.length,10);
   assert.equal(admin.prescriptions.length,10);
   assert.equal(admin.news.length<=10,true);
-  assert.equal(admin.stInterpretation,'JCS ST 해석 · 공개 데이터, 뉴스 헤드라인, 정치 이력, 지역·정당 구조와 정참시 누적 신호를 종합한 자체 분석입니다.');
+  assert.equal(admin.newsNarrative.attentionQuality,draft.newsNarrative.attentionQuality);
+  assert.equal(admin.newsNarrative.dominantEvent.title,draft.newsNarrative.dominantEvent.title);
+  assert.equal(guest.newsNarrative,undefined);
+  assert.equal(member.newsNarrative,undefined);
+  assert.equal(admin.stInterpretation,'JCS ST 해석 · 뉴스 헤드라인, 공식 이력, 선거·지역·정당 구조와 검색 반응을 종합한 정참시 자체 분석입니다.');
   assert.equal(admin.diagnostics,undefined);
 });
 
@@ -94,7 +134,7 @@ test('nested diagnosis and prescription secrets are pruned by the server contrac
 test('all 542 registered politicians receive a deterministic 10 diagnosis and 10 prescription report',()=>{
   const people=Object.values(POLITICIAN_SEED.profiles).flat().filter(person=>!person.isVacant);
   assert.equal(people.length,542);
-  const signatures=new Set();
+  const signatures=new Set(),narrativeSignatures=new Set();
   for(const person of people){
     const report=buildIntelligenceDraft(person,{snapshotId:'2026-09-03',collectedAt:'2026-09-03T00:00:00.000Z',news:{items:[]},sourceErrors:[]},{peers:[]},'JCS_INTELLIGENCE_V2');
     assert.equal(report.diagnoses.length,10,person.id);
@@ -102,6 +142,8 @@ test('all 542 registered politicians receive a deterministic 10 diagnosis and 10
     assert.deepEqual(report.prescriptions.map(row=>row.id),report.diagnoses.map(row=>row.id),person.id);
     assert.doesNotMatch(JSON.stringify({diagnoses:report.diagnoses,prescriptions:report.prescriptions}),/데이터 부족|분석 준비 중|분석 불가|판단 불가|비교 불가|알 수 없음|추가 데이터 필요|N\/A|TODO|TBD|추후 제공/,person.id);
     signatures.add(report.diagnoses.map(row=>row.score).join(','));
+    narrativeSignatures.add(report.diagnoses.map(row=>row.headline).join('|'));
   }
-  assert.ok(signatures.size>100,'reports must not clone one score vector across profiles');
+  assert.ok(signatures.size>=10,'scores must preserve evidence-derived structural differences');
+  assert.ok(narrativeSignatures.size>400,'reports must express each profile through its own role and regional context');
 });
