@@ -116,8 +116,10 @@ test('empty comparison preserves role capacity layout without fake values',async
   const adminHtml=await renderPoliticianCompare(service,'/compare',{user:{role:'admin'}});
   assert.equal((publicHtml.match(/data-compare-slot/g)||[]).length,2);
   assert.equal((adminHtml.match(/data-compare-slot/g)||[]).length,5);
-  assert.equal((publicHtml.match(/data-compare-search-form/g)||[]).length,2);
-  assert.equal((adminHtml.match(/data-compare-search-form/g)||[]).length,5);
+  assert.equal((publicHtml.match(/data-compare-search-form/g)||[]).length,1);
+  assert.equal((adminHtml.match(/data-compare-search-form/g)||[]).length,1);
+  assert.match(publicHtml,/politician-compare-global-search/);
+  assert.match(adminHtml,/politician-compare-global-search/);
   assert.match(publicHtml,/type="search"/);
   assert.match(publicHtml,/정치인 이름·정당·지역 검색/);
   assert.doesNotMatch(`${publicHtml}${adminHtml}`,/politician-compare-empty-mark|>＋<|아래 정치인 목록에서/);
@@ -139,7 +141,7 @@ test('comparison keeps the approved selected profile card and remove route',asyn
   assert.match(html,/\/assets\/politicians\/assembly-001\.jpg/);
 });
 
-test('search results stay inside the active empty slot and add a politician to the existing route',async()=>{
+test('search results stay inside the full-width picker and add a politician to the existing route',async()=>{
   const html=await renderPoliticianCompare(service,'/compare?ids=assembly-001&q=강&slot=2',{user:{role:'admin'}});
   assert.equal((html.match(/data-compare-search-results/g)||[]).length,1);
   assert.match(html,/강민국/);

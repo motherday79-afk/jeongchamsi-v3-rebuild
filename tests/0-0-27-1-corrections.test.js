@@ -4,6 +4,8 @@ import { readFile } from 'node:fs/promises';
 import { HOME_FIXTURE } from '../src/fixtures/home.js';
 import { renderHomeLayout } from '../src/layout/home-layout.js';
 import { renderPollBoard, renderNationalEvaluationPage } from '../src/views/participation-pages.js';
+import { siteHeader } from '../src/layout/site-shell.js';
+import { renderPoliticianCompare } from '../src/views/politician-compare.js';
 
 const people={
   'assembly-001':{id:'assembly-001',type:'assembly',name:'김민석',party:'더불어민주당',jurisdiction:'서울 영등포구을',photo:{localPath:'/assets/politicians/assembly-001.jpg',focus:'50% 20%'}},
@@ -24,6 +26,33 @@ test('전체 서비스는 상위 6개를 유지하고 중복 없이 추가 7개�
   assert.equal((expanded.match(/class="launcher-card/g)||[]).length,7);
   assert.equal((launcher.match(/data-layout-route="\/now"/g)||[]).length,1);
   assert.doesNotMatch(expanded,/정참시의 모든 서비스를 한곳에서 선택하세요|ALL SERVICES/);
+  assert.doesNotMatch(launcher,/<small>[^<]+<\/small>/);
+});
+
+test('메인 검색 자동완성은 헤더 밖으로 잘리지 않고 한 글자부터 표시된다',async()=>{
+  const header=siteHeader(0,{authenticated:false});
+  assert.match(header,/data-politician-autocomplete/);
+  const css=await readFile(new URL('../css/pages.css',import.meta.url),'utf8');
+  const start=css.lastIndexOf('JCS_0_0_27_2 · SEARCH UI CORRECTION');
+  assert.ok(start>0);
+  const layer=css.slice(start);
+  assert.match(layer,/\.product-search\{[^}]*overflow:visible/);
+  assert.match(layer,/\.product-search>\.politician-autocomplete-results\{[^}]*top:calc\(100% \+ 7px\)/);
+  const productCss=await readFile(new URL('../css/product-system.css',import.meta.url),'utf8');
+  assert.doesNotMatch(productCss,/\.product-search\{[^}]*overflow:hidden/);
+});
+
+test('비교하기는 슬롯마다 깨지는 검색창 대신 전체 폭 자동완성 하나를 사용한다',async()=>{
+  const service={
+    async get(){return {ok:false};},
+    async search(){return {ok:true,items:[]};}
+  };
+  const html=await renderPoliticianCompare(service,'/compare',{user:{role:'admin'}});
+  assert.equal((html.match(/data-compare-search-form/g)||[]).length,1);
+  assert.equal((html.match(/data-politician-autocomplete/g)||[]).length,1);
+  assert.match(html,/politician-compare-global-search/);
+  assert.doesNotMatch(html,/한 글자만 입력해도 사진과 함께 바로 선택할 수 있습니다/);
+  assert.equal((html.match(/politician-compare-slot is-empty/g)||[]).length,5);
 });
 
 test('전국 평가제 사진은 메인·전체보기·지난 게시물에 같은 정치인 자산으로 노출된다',async()=>{
