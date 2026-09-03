@@ -54,14 +54,14 @@ async function handleMigration(req,res,route){
   return json(res,404,{ok:false,error:'NOT_FOUND'});
 }
 
-async function handlePoliticians(req,res,command,url,intelligence){
+export async function handlePoliticians(req,res,command,url,intelligence){
   if(req.method!=='GET')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
   const id=String(url.searchParams.get('id')||req.query?.id||'').trim(),query=String(url.searchParams.get('q')||req.query?.q||'').trim(),ranking=String(url.searchParams.get('ranking')||req.query?.ranking||'').trim(),photos=await readPoliticianPhotos(command);
   if(id){
     const [item,report,user]=await Promise.all([getPolitician(command,id),intelligence.getPublicIntelligence(id),currentUser(req,command)]);
     if(!item)return json(res,404,{ok:false,error:'POLITICIAN_NOT_FOUND'});
     const tier=accessTierForUser(user),scope=String(url.searchParams.get('view')||req.query?.view||'')==='compare'?'compare':'detail';
-    let projected=projectIntelligence(report,tier,scope);
+    let projected=projectIntelligence(report||{id,currentRole:item.office||item.roleLabel||''},tier,scope);
     if(Array.isArray(projected?.related)&&projected.related.length){
       const profiles=(await Promise.all(POLITICIAN_TYPES.map(type=>readPoliticianType(command,type)))).flat(),byId=new Map(profiles.map(person=>[person.id,person]));
       projected={...projected,related:projected.related.map(row=>{const related=byId.get(row.id)||{};return {...row,party:related.party||'',jurisdiction:related.jurisdiction||'',office:related.office||related.roleLabel||'',photo:photos[row.id]||null};})};
@@ -244,7 +244,7 @@ export default async function handler(req,res){
     if(route==='action')return handleAction(req,res,command);
     if(route==='stats'){const users=await listUsers(command);return json(res,200,{ok:true,members:users.length});}
     if(route.startsWith('admin/')){const handled=await handleAdmin(req,res,route,command);if(handled!==false)return handled;}
-    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_27_2'});
+    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_28'});
     return json(res,404,{ok:false,error:'NOT_FOUND'});
   }catch(error){return json(res,error.code==='STORAGE_MISSING'?503:500,{ok:false,error:error.code||error.message||'SERVER_ERROR'});}
 }

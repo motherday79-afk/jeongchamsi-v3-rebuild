@@ -17,27 +17,93 @@ test('session users map to public member and admin access tiers',()=>{
   assert.equal(accessTierForUser({role:'admin'}),'admin');
 });
 
-test('public compare projection contains only public comparison groups',()=>{
+test('public compare projection contains only preserved records and role-safe diagnostics',()=>{
   const result=projectIntelligence(report,'public','compare');
-  assert.deepEqual(Object.keys(result).sort(),['activity','core','id','media','mode','rank','signal','snapshot','sources'].sort());
-  assert.equal(result.audience,undefined);
+  assert.deepEqual(Object.keys(result).sort(),['accessTier','achievements','activities','algorithmVersion','currentRole','diagnostics','id','interpretationLabel','mode','news','policies','rank','related','snapshot','sources'].sort());
+  assert.equal(result.diagnostics.role,'public');
   assert.equal(result.support,undefined);
   assert.equal(result.raw,undefined);
 });
 
-test('member compare adds interpreted one-to-one groups but excludes private intelligence',()=>{
+test('member compare adds six interpreted topics but excludes private intelligence',()=>{
   const result=projectIntelligence(report,'member','compare');
-  for(const key of ['audience','cohorts','transition','diagnosis','issues','risks','opportunities','conclusion'])assert.ok(key in result,key);
+  assert.deepEqual(result.diagnostics.topics.map(topic=>topic.id),['01','02','03','05','07','09']);
   for(const key of ['support','resilience','mediaScores','competitors','strategies','raw'])assert.equal(result[key],undefined,key);
 });
 
-test('admin compare receives the complete validated report',()=>{
-  assert.deepEqual(projectIntelligence(report,'admin','compare'),report);
+test('admin compare receives all diagnostic topics without an unprojected raw payload',()=>{
+  const result=projectIntelligence(report,'admin','compare');
+  assert.deepEqual(result.diagnostics.topics.map(topic=>topic.id),['01','02','03','04','05','06','07','08','09','10']);
+  assert.equal(result.raw,undefined);
+  assert.equal(result.strategies,undefined);
 });
 
-test('public detail retains approved public chapters but removes admin and deleted chapters',()=>{
+test('public detail retains public records but removes legacy analysis and private chapters',()=>{
   const result=projectIntelligence(report,'public','detail');
-  for(const key of ['signal','core','audience','activity','media','transition','diagnosis','activities','achievements','policies','news','sources','related'])assert.ok(key in result,key);
-  for(const key of ['support','resilience','mediaScores','competitors','strategies','raw','deep','trend'])assert.equal(result[key],undefined,key);
+  for(const key of ['activities','achievements','policies','news','sources','related','diagnostics'])assert.ok(key in result,key);
+  for(const key of ['signal','core','audience','activity','media','transition','diagnosis','support','resilience','mediaScores','competitors','strategies','raw','deep','trend'])assert.equal(result[key],undefined,key);
 });
 
+const TOPIC_META=['id','number','title','status'];
+const PUBLIC_FIELDS=['headline','summary','trend','keywords','miniChart'];
+const MEMBER_FIELDS=['summary','metrics','trend','benchmark','comparison','interpretation','source','updatedAt'];
+const ADMIN_FIELDS=['currentPosition','metrics','trend','benchmark','evidence','rootCause','opportunity','risk','strategicJudgment','actionPlan','priority','expectedImpact','monitoringIndicators','source','updatedAt'];
+
+function assertTopicContract(result,ids,fields){
+  assert.equal(result.diagnostics.role,result.accessTier);
+  assert.deepEqual(result.diagnostics.topics.map(topic=>topic.id),ids);
+  for(const topic of result.diagnostics.topics){
+    assert.deepEqual(Object.keys(topic).sort(),[...TOPIC_META,...fields].sort());
+  }
+}
+
+test('server projection returns only three public diagnostic topics and public fields',()=>{
+  const result=projectIntelligence(report,'public','detail');
+  assertTopicContract(result,['01','07','09'],PUBLIC_FIELDS);
+  const serialized=JSON.stringify(result);
+  for(const forbidden of ['rootCause','strategicJudgment','actionPlan','monitoringIndicators','cohorts','strategies','raw'])assert.doesNotMatch(serialized,new RegExp(`"${forbidden}"`));
+});
+
+test('server projection returns six member topics without administrator strategy fields',()=>{
+  const result=projectIntelligence(report,'member','detail');
+  assertTopicContract(result,['01','02','03','05','07','09'],MEMBER_FIELDS);
+  const serialized=JSON.stringify(result);
+  for(const forbidden of ['rootCause','opportunity','risk','strategicJudgment','actionPlan','priority','expectedImpact','monitoringIndicators','strategies','raw'])assert.doesNotMatch(serialized,new RegExp(`"${forbidden}"`));
+});
+
+test('server projection returns all ten administrator topics with the full report field contract',()=>{
+  const result=projectIntelligence(report,'admin','compare');
+  assertTopicContract(result,['01','02','03','04','05','06','07','08','09','10'],ADMIN_FIELDS);
+  assert.equal(result.diagnostics.topics[0].currentPosition,'진단');
+  assert.equal(result.diagnostics.topics[6].metrics.some(metric=>metric.label==='언론'),true);
+});
+
+test('detail and compare use the same projected diagnostic values for one role',()=>{
+  const detail=projectIntelligence(report,'member','detail');
+  const compare=projectIntelligence(report,'member','compare');
+  assert.deepEqual(compare.diagnostics,detail.diagnostics);
+});
+
+test('missing source data produces stable insufficient-data states without fabricated numbers',()=>{
+  const result=projectIntelligence({id:'assembly-999',snapshot:'2026-09-03',core:[{label:'빈 점수',score:''}]},'admin','detail');
+  assert.equal(result.diagnostics.topics.length,10);
+  assert.ok(result.diagnostics.topics.every(topic=>topic.status!=='ready'));
+  assert.doesNotMatch(JSON.stringify(result),/"score":(?:1|9|10)(?:,|})/);
+  assert.doesNotMatch(JSON.stringify(result),/"value":0/);
+  assert.match(JSON.stringify(result),/분석 준비 중|비교 가능한 데이터 부족|해당 기간 데이터 없음/);
+});
+
+test('public fallback text never borrows member interpretation or administrator diagnosis',()=>{
+  const result=projectIntelligence({...report,signal:{},diagnosis:{title:'ADMIN_DIAGNOSIS_TITLE',body:'ADMIN_DIAGNOSIS_BODY'}},'public','detail');
+  assert.doesNotMatch(JSON.stringify(result),/ADMIN_DIAGNOSIS_TITLE|ADMIN_DIAGNOSIS_BODY/);
+});
+
+test('member metric rows prune unknown nested strategy properties',()=>{
+  const result=projectIntelligence({...report,core:[{label:'관심도',score:88,privateStrategy:'SECRET_CORE'}],competitors:[{name:'경쟁자',score:77,attackPlan:'SECRET_ATTACK'}]},'member','compare');
+  assert.doesNotMatch(JSON.stringify(result),/privateStrategy|attackPlan|SECRET_CORE|SECRET_ATTACK/);
+});
+
+test('published record arrays also prune unknown nested private properties',()=>{
+  const result=projectIntelligence({...report,rank:{overall:1,privateMemo:'SECRET_RANK'},news:[{title:'기사',privateMemo:'SECRET_NEWS'}],related:[{id:'assembly-002',attackPlan:'SECRET_RELATED'}]},'public','detail');
+  assert.doesNotMatch(JSON.stringify(result),/privateMemo|attackPlan|SECRET_RANK|SECRET_NEWS|SECRET_RELATED/);
+});

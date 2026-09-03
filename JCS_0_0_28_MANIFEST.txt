@@ -1,0 +1,25 @@
+JCS_0_0_28_ROLE_TIERED_INTELLIGENCE_PATCH.zip
+Base: JCS 0.0.27.2
+Target: JCS 0.0.28
+
+JCS_0_0_28_HANDOFF.md
+JCS_0_0_28_MANIFEST.txt
+api/gateway.js
+css/pages.css
+index.html
+lib/intelligence-access.js
+package.json
+package-lock.json
+src/app.js
+src/data/kim-minseok-pilot.js
+src/views/politician-compare.js
+src/views/politicians.js
+tests/0-0-27-1-corrections.test.js
+tests/compare.test.js
+tests/intelligence-access.test.js
+tests/intelligence-published-view.test.js
+tests/politicians.test.js
+tests/politician-diagnostics-api.test.js
+tests/politician-diagnostics-compare.test.js
+tests/politician-diagnostics-css.test.js
+tests/politician-diagnostics-view.test.js

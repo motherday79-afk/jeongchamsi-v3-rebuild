@@ -52,7 +52,7 @@ test('비교하기는 슬롯마다 깨지는 검색창 대신 전체 폭 자동�
   assert.equal((html.match(/data-politician-autocomplete/g)||[]).length,1);
   assert.match(html,/politician-compare-global-search/);
   assert.doesNotMatch(html,/한 글자만 입력해도 사진과 함께 바로 선택할 수 있습니다/);
-  assert.equal((html.match(/politician-compare-slot is-empty/g)||[]).length,5);
+  assert.equal((html.match(/politician-compare-slot is-empty/g)||[]).length,4);
 });
 
 test('전국 평가제 사진은 메인·전체보기·지난 게시물에 같은 정치인 자산으로 노출된다',async()=>{

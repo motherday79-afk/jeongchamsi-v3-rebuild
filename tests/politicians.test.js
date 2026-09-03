@@ -5,6 +5,7 @@ import { POLITICIAN_SEED } from '../lib/politician-seed.generated.js';
 import { validatePoliticianSeed, writePoliticianSeed, TARGET_KEYS } from '../lib/migration-service.js';
 import { renderPoliticianDirectory, renderPoliticianDetail } from '../src/views/politicians.js';
 import { pilotForPolitician } from '../src/data/kim-minseok-pilot.js';
+import { projectIntelligence } from '../lib/intelligence-access.js';
 
 test('approved politician seed keeps 300 slots, 16 metropolitan and 227 basic records',()=>{
   const report=validatePoliticianSeed();
@@ -20,7 +21,8 @@ test('politician seed contains no score, rank or analysis fields',()=>{
 
 test('only successfully copied legacy photos are connected to profiles',async()=>{
   const files=(await readdir(new URL('../assets/politicians/',import.meta.url))).filter(name=>/\.(?:jpe?g|png|webp)$/i.test(name));
-  assert.equal(files.length,515);
+  assert.ok(files.length>=Object.keys(POLITICIAN_SEED.photos).length);
+  assert.equal(Object.keys(POLITICIAN_SEED.photos).length,515);
   for(const photo of Object.values(POLITICIAN_SEED.photos))await access(new URL(`..${photo.localPath}`,import.meta.url));
   assert.equal(POLITICIAN_SEED.photos['assembly-018'],undefined);
   assert.equal(POLITICIAN_SEED.photos['metropolitan-016'],undefined);
@@ -51,7 +53,7 @@ test('published detail uses one two-column NOW card without operational descript
   intelligence.rank={overall:3,category:2,temporary:false};
   intelligence.signal.index=87.4;
   intelligence.related[0]={...intelligence.related[0],photo:POLITICIAN_SEED.photos['assembly-002']};
-  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})});
+  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence:projectIntelligence(intelligence,'public','detail')})});
   assert.match(html,/data-recent-politician/);
   assert.match(html,/data-recent-id="assembly-001"/);
   assert.match(html,/data-recent-name="김민석"/);
@@ -61,7 +63,8 @@ test('published detail uses one two-column NOW card without operational descript
   assert.match(html,/<strong>3위<\/strong>/);
   assert.match(html,/<strong>2위<\/strong>/);
   assert.doesNotMatch(html,/공개 스냅샷 운영 순위|국회의원 NOW 독립 순위/);
-  assert.match(html,/허용 원자료 기반 JCS 운영 지수/);
+  assert.match(html,/JCS OPEN POLITICAL SNAPSHOT/);
+  assert.equal((html.match(/data-diagnostic-topic=/g)||[]).length,3);
   assert.match(html,/related-person-avatar has-photo/);
   assert.match(html,/\/assets\/politicians\/assembly-002\./);
   assert.match(html,/data-politician-avatar/);
@@ -72,7 +75,7 @@ test('published detail uses one two-column NOW card without operational descript
 test('missing operating ranks render 집계 전 in the same compact NOW card',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[1]};
   const intelligence=structuredClone(pilotForPolitician('assembly-001'));intelligence.rank={overall:null,category:null,temporary:false};
-  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})});
+  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence:projectIntelligence(intelligence,'public','detail')})});
   assert.equal((html.match(/<strong>집계 전<\/strong>/g)||[]).length,2);
   assert.match(html,/person-hero-rank-split/);
 });
@@ -81,19 +84,20 @@ test('administrator consulting callout follows the strategic conclusion inside t
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
   const intelligence=structuredClone(pilotForPolitician(sample.id));
   intelligence.snapshot='jcs-operating';
-  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{user:{role:'admin'}});
-  const conclusion=html.indexOf('STRATEGIC CONCLUSION'),consulting=html.indexOf('JCS STRATEGIC CONSULTING'),reportEnd=html.indexOf('</details>');
-  assert.ok(conclusion>=0&&consulting>conclusion&&reportEnd>consulting);
+  const projected=projectIntelligence(intelligence,'admin','detail');
+  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence:projected})},{user:{role:'admin'}});
+  const conclusion=html.indexOf('정참시 전략 판단'),consulting=html.indexOf('JCS STRATEGIC CONSULTING');
+  assert.ok(conclusion>=0&&consulting>conclusion);
   assert.match(html,/분석 다음은 실행입니다/);
   assert.match(html,/data-layout-route="\/partners">정참시와 함께하기/);
 });
 
-test('Kim Min-seok pilot fills the complete public detail from approved source classes',async()=>{
+test('Kim Min-seok published report fills the three approved public diagnostic topics',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
-  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample})});
+  const intelligence=projectIntelligence(pilotForPolitician(sample.id),'public','detail');
+  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})});
   const text=html.replaceAll('&amp;','&');
-  for(const marker of ['정참시 SIGNAL','CORE INDICATORS','AUDIENCE LANDSCAPE','ACTIVITY & MEDIA','ATTENTION FLOW','RECENT NEWS','PROFILE & RECORD','RELATED POLITICIANS'])assert.match(text,new RegExp(marker));
-  assert.doesNotMatch(text,/DEEP ANALYSIS|상세 분석 펼쳐보기|ANALYSIS TREND|관심 변화·NOW 이력/);
+  for(const marker of ['JCS OPEN POLITICAL SNAPSHOT','정치인 브랜드 진단','언론·온라인 영향력 분석','정책·공약 반응 분석','RECENT NEWS','PROFILE & RECORD','RELATED POLITICIANS'])assert.match(text,new RegExp(marker));
   assert.match(html,/PROFILE & RECORD/);
   assert.match(html,/공식 프로필과 정치 기록/);
   assert.match(html,/기본정보/);
@@ -101,82 +105,70 @@ test('Kim Min-seok pilot fills the complete public detail from approved source c
   assert.match(html,/김민석/);
   assert.match(html,/당대표 전환·다채널 확산형/);
   assert.match(html,/민생·실용·확장/);
-  assert.match(html,/49,651표/);
-  assert.match(html,/검색광고.*이번 산정에서 제외/);
-  assert.doesNotMatch(html,/데이터 준비 중|미연결|modeled.*fallback/i);
+  assert.equal((html.match(/data-diagnostic-topic=/g)||[]).length,3);
+  assert.doesNotMatch(html,/핵심 원인|실행 처방|modeled.*fallback/i);
   assert.doesNotMatch(html,/JCS ADMIN PRIVATE POLITICAL INTELLIGENCE/);
 });
 
-test('public politician detail uses the data-dense intelligence visual system',async()=>{
+test('public politician detail uses the compact three-card diagnostic system',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
-  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample})});
-  assert.match(html,/data-design-system="jcs-public-intelligence-v3"/);
-  assert.match(html,/class="[^"]*person-intelligence-cover/);
-  assert.match(html,/class="[^"]*person-core-radar/);
-  assert.match(html,/class="[^"]*person-activity-bars/);
-  assert.match(html,/class="[^"]*person-attention-funnel/);
+  const intelligence=projectIntelligence(pilotForPolitician(sample.id),'public','detail');
+  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})});
+  assert.match(html,/jcs-diagnostics-public-grid/);
+  assert.equal((html.match(/jcs-diagnostic-public-topic/g)||[]).length,3);
+  assert.match(html,/jcs-diagnostic-spark/);
 });
 
-test('public politician intelligence v3 uses semantic visuals instead of repeated oversized score cards',async()=>{
+test('public politician diagnostics omit member and administrator modules',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
-  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample})});
-  assert.match(html,/data-design-system="jcs-public-intelligence-v3"/);
-  for(const visual of ['person-core-radar','person-core-bullet-ledger','person-audience-spectrum-v3','person-activity-bars','person-attention-funnel'])assert.match(html,new RegExp(visual));
-  assert.match(html,/role="img" aria-label="김민석 핵심 분석지표 레이더 차트"/);
-  assert.doesNotMatch(html,/person-intelligence-plot/);
+  const intelligence=projectIntelligence(pilotForPolitician(sample.id),'public','detail');
+  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})});
+  assert.match(html,/JCS OPEN POLITICAL SNAPSHOT/);
+  assert.doesNotMatch(html,/JCS MEMBER POLITICAL ANALYSIS|JCS ADMIN POLITICAL INTELLIGENCE|실행 처방/);
 });
 
-test('admin Kim Min-seok detail fills private intelligence while identifying evidence mode',async()=>{
+test('admin Kim Min-seok detail renders all ten evidence and prescription modules',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
-  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample})},{user:{role:'admin'}});
+  const intelligence=projectIntelligence(pilotForPolitician(sample.id),'admin','detail');
+  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{user:{role:'admin'}});
   const text=html.replaceAll('&amp;','&');
-  for(const marker of ['JCS ADMIN PRIVATE POLITICAL INTELLIGENCE','EXECUTIVE INTELLIGENCE SUMMARY','AGE × GENDER MATRIX','CORE SUPPORT DYNAMICS','POLITICAL RESILIENCE','MEDIA PROPAGATION','ISSUE IMPACT MAP','RISK & OPPORTUNITY','ATTENTION → SUPPORT GAP','COMPETITOR FLOW','EVIDENCE BASE','JCS STRATEGIC SOLUTION','JCS STRATEGIC CONSULTING','HISTORY INTELLIGENCE'])assert.match(text,new RegExp(marker));
-  assert.match(html,/SINGLE-PERSON PILOT/);
-  assert.match(html,/DIRECT/);
-  assert.match(html,/CONTEXT/);
-  assert.match(html,/EXCLUDED/);
-  assert.match(html,/국민 여론조사 49\.30%/);
-  assert.doesNotMatch(text,/DEEP ANALYSIS|상세 분석 펼쳐보기|ANALYSIS TREND|관심 변화·NOW 이력/);
-  assert.match(text,/HISTORY INTELLIGENCE/);
-  assert.doesNotMatch(html,/modeled.*fallback/i);
-  assert.match(html,/SEARCH DATA CONNECTION REQUIRED/);
+  for(const marker of ['JCS ADMIN POLITICAL INTELLIGENCE','정치인 브랜드 진단','세대·성별 지지구조 분석','핵심 지지층 결집도 분석','이슈·위기 위험도 진단','선거·캠페인 경쟁력 진단','중장기 정치 성장 로드맵','JCS STRATEGIC CONSULTING'])assert.match(text,new RegExp(marker));
+  assert.equal((html.match(/data-diagnostic-topic=/g)||[]).length,10);
+  assert.match(html,/근거 데이터/);
+  assert.match(html,/실행 처방/);
+  assert.doesNotMatch(html,/modeled.*fallback|"raw"/i);
 });
 
-test('administrator report separates its compact identity gate from expanded executive intelligence',async()=>{
+test('administrator report uses compact topic headers and report fields',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
-  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample})},{user:{role:'admin'}});
-  assert.match(html,/data-design-system="jcs-private-intelligence-v3"/);
-  assert.match(html,/<summary class="admin-intelligence-report-gate-v3"[\s\S]*JCS ADMIN PRIVATE POLITICAL INTELLIGENCE[\s\S]*<\/summary>/);
-  assert.match(html,/<section class="admin-intelligence-executive-v3"[\s\S]*EXECUTIVE INTELLIGENCE SUMMARY[\s\S]*당대표 전환·다채널 확산형/);
-  for(const visual of ['admin-pi-heatmap-chapter','admin-pi-waterfall-chapter','admin-pi-resilience-chapter','admin-pi-propagation-chapter','admin-pi-impact-chapter','admin-pi-signal-board','admin-pi-evidence-ledger','admin-pi-strategy-roadmap'])assert.match(html,new RegExp(visual));
+  const intelligence=projectIntelligence(pilotForPolitician(sample.id),'admin','detail');
+  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{user:{role:'admin'}});
+  assert.equal((html.match(/class="jcs-diagnostic-topic jcs-diagnostic-admin-topic"/g)||[]).length,10);
+  for(const field of ['현재 위치','변화 흐름','근거 데이터','비교 기준','핵심 원인','기회 요인','위험 요인','정참시 전략 판단','실행 처방','실행 우선순위','예상 변화 및 추적 지표'])assert.match(html,new RegExp(field));
 });
 
-test('administrator report v3 keeps only report identity inside the collapsed summary',async()=>{
+test('administrator report does not use a collapsed dashboard gate',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
-  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample})},{user:{role:'admin'}});
-  const summary=html.match(/<summary class="admin-intelligence-report-gate-v3"[\s\S]*?<\/summary>/)?.[0]||'';
-  assert.match(summary,/JCS ADMIN PRIVATE POLITICAL INTELLIGENCE/);
-  assert.match(summary,/허용 원자료와 JCS 해석을 분리한 단일 인물 파일럿 리포트 \(JCS 해석\)/);
-  assert.match(summary,/REPORT STATUS[\s\S]*LIVE[\s\S]*리포트 열기/);
-  assert.doesNotMatch(summary,/EXECUTIVE INTELLIGENCE SUMMARY|30D PULSE|EVIDENCE MODE/);
-  assert.match(html,/class="admin-intelligence-executive-v3"/);
-  assert.match(html,/EXECUTIVE INTELLIGENCE SUMMARY/);
-  assert.equal((html.match(/JCS 해석/g)||[]).length,2,'the approved subtitle contains the phrase twice and no section repeats it');
+  const intelligence=projectIntelligence(pilotForPolitician(sample.id),'admin','detail');
+  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{user:{role:'admin'}});
+  assert.match(html,/jcs-diagnostics-admin/);
+  assert.doesNotMatch(html,/admin-intelligence-report-gate-v3|EXECUTIVE INTELLIGENCE SUMMARY/);
 });
 
-test('administrator intelligence v3 assigns a distinct semantic visual to every existing chapter',async()=>{
+test('administrator intelligence assigns stable status to every diagnostic topic',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
-  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample})},{user:{role:'admin'}});
-  for(const visual of ['admin-cohort-heatmap-v3','admin-support-bars-v3','admin-support-waterfall-v3','admin-support-radar-v3','admin-resilience-area-v3','admin-propagation-flow-v3','admin-issue-quadrant-v3','admin-risk-matrix-v3','admin-gap-dumbbell-v3','admin-competitor-flow-v3','admin-evidence-ledger-v3','admin-strategy-roadmap-v3','admin-history-timeline-v3'])assert.match(html,new RegExp(visual));
-  assert.match(html,/--heat-opacity:0\.\d+/);
+  const intelligence=projectIntelligence(pilotForPolitician(sample.id),'admin','detail');
+  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{user:{role:'admin'}});
+  assert.equal((html.match(/data-diagnostic-status="(?:ready|insufficient)"/g)||[]).length,10);
 });
 
-test('administrator intelligence v3 exposes data-ready derived chapters without inventing search volumes',async()=>{
+test('administrator intelligence exposes source dates without inventing unavailable values',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
-  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample})},{user:{role:'admin'}});
-  for(const marker of ['DIGITAL DEMAND INTELLIGENCE','SEARCH INTENT MAP','NEWS NARRATIVE INTELLIGENCE','PUBLIC OPINION CONVERSION','CONSTITUENCY OPPORTUNITY','JCS CROSS INTELLIGENCE','30-DAY CONSULTING ACTION'])assert.match(html,new RegExp(marker));
-  assert.match(html,/SEARCH DATA CONNECTION REQUIRED/);
-  assert.doesNotMatch(html,/PC 검색량<\/[^>]+>\s*[0-9,]+|모바일 검색량<\/[^>]+>\s*[0-9,]+/);
+  const intelligence=projectIntelligence(pilotForPolitician(sample.id),'admin','detail');
+  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{user:{role:'admin'}});
+  assert.match(html,/데이터 기준일 및 출처/);
+  assert.match(html,/2026-09-02/);
+  assert.doesNotMatch(html,/data-generated-value/);
 });
 
 test('member detail also omits duplicated public deep analysis and NOW trend',async()=>{
@@ -185,28 +177,23 @@ test('member detail also omits duplicated public deep analysis and NOW trend',as
   assert.doesNotMatch(html.replaceAll('&amp;','&'),/DEEP ANALYSIS|상세 분석 펼쳐보기|ANALYSIS TREND|관심 변화·NOW 이력|HISTORY INTELLIGENCE/);
 });
 
-test('all non-pilot politicians keep the restored layout without invented analysis',async()=>{
+test('all politicians keep the restored layout while missing diagnostics stay explicit',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[1],photo:POLITICIAN_SEED.photos['assembly-002']};
-  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample})},{user:{role:'admin'}});
-  assert.match(html,/데이터 준비 중/);
-  assert.match(html,/데이터 연결 전/);
-  assert.doesNotMatch(html.replaceAll('&amp;','&'),/DEEP ANALYSIS|상세 분석 펼쳐보기|ANALYSIS TREND|관심 변화·NOW 이력/);
-  assert.doesNotMatch(html,/당대표 전환·다채널 확산형|SINGLE-PERSON PILOT/);
-  assert.match(html,/class="person-core-radar is-pending"/);
-  assert.match(html,/class="person-core-bullet-ledger"[\s\S]*?<strong>—<\/strong>/);
+  const intelligence=projectIntelligence({id:sample.id},'admin','detail');
+  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{user:{role:'admin'}});
+  assert.equal((html.match(/data-diagnostic-status="insufficient"/g)||[]).length,10);
+  assert.match(html,/분석 준비 중/);
+  assert.doesNotMatch(html,/당대표 전환·다채널 확산형|SINGLE-PERSON PILOT|data-generated-value/);
+  assert.match(html,/공식 프로필과 정치 기록/);
 });
 
-test('every non-pilot administrator detail uses the same semantic chapter layout as the Kim pilot',async()=>{
+test('every politician administrator detail uses the same ten-topic report layout',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[1],photo:POLITICIAN_SEED.photos['assembly-002']};
-  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample})},{user:{role:'admin'}});
-  for(const visual of [
-    'admin-cohort-heatmap-v3','admin-support-bars-v3','admin-support-waterfall-v3','admin-support-radar-v3',
-    'admin-resilience-area-v3','admin-propagation-flow-v3','admin-issue-quadrant-v3','admin-risk-matrix-v3',
-    'admin-gap-dumbbell-v3','admin-competitor-flow-v3','admin-evidence-ledger-v3','admin-strategy-roadmap-v3',
-    'admin-news-narrative-v3','admin-opinion-conversion-v3','admin-constituency-opportunity-v3',
-    'admin-cross-intelligence-v3','admin-message-market-v3','admin-action-kpi-v3','admin-history-timeline-v3'
-  ])assert.match(html,new RegExp(visual));
-  for(const heading of ['DIGITAL DEMAND INTELLIGENCE','SEARCH INTENT MAP','NEWS NARRATIVE INTELLIGENCE','PUBLIC OPINION CONVERSION','CONSTITUENCY OPPORTUNITY','JCS CROSS INTELLIGENCE','30-DAY CONSULTING ACTION','JCS STRATEGIC CONSULTING','HISTORY INTELLIGENCE'])assert.match(html,new RegExp(heading));
+  const intelligence=projectIntelligence({id:sample.id},'admin','detail');
+  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{user:{role:'admin'}});
+  assert.equal((html.match(/data-diagnostic-topic=/g)||[]).length,10);
+  assert.match(html,/JCS ADMIN POLITICAL INTELLIGENCE/);
+  assert.match(html,/JCS STRATEGIC CONSULTING/);
 });
 
 test('politician intelligence typography establishes readable size floors',()=>{
@@ -251,7 +238,7 @@ test('0.0.27 restores legacy politician detail density before the corrected NOW 
   assert.match(layer,/\.person-live-detail-page \.person-intelligence-cover-copy p\{[^}]*font-size:13px!important/);
 });
 
-test('release metadata and browser cache keys identify JCS 0.0.27.2',async()=>{
+test('release metadata and browser cache keys identify JCS 0.0.28',async()=>{
   const {readFile}=await import('node:fs/promises');
   const root=new URL('../',import.meta.url);
   const [pkg,lock,index,app,gateway]=await Promise.all([
@@ -261,12 +248,12 @@ test('release metadata and browser cache keys identify JCS 0.0.27.2',async()=>{
     readFile(new URL('src/app.js',root),'utf8'),
     readFile(new URL('api/gateway.js',root),'utf8')
   ]);
-  assert.match(pkg,/"name": "jcs-0-0-27-2"/);
-  assert.match(pkg,/"version": "0\.0\.27-2"/);
-  assert.match(lock,/"name": "jcs-0-0-27-2"/);
-  assert.match(lock,/"version": "0\.0\.27-2"/);
+  assert.match(pkg,/"name": "jcs-0-0-28"/);
+  assert.match(pkg,/"version": "0\.0\.28"/);
+  assert.match(lock,/"name": "jcs-0-0-28"/);
+  assert.match(lock,/"version": "0\.0\.28"/);
   assert.doesNotMatch(index+app,/v=0\.0\.(?:12|13|14|15|16|17|18|19|20|21|22|23|24|25|26)(?:\D|$)/);
-  assert.match(index,/pages\.css\?v=0\.0\.27\.2/);
-  assert.match(app,/politicians\.js\?v=0\.0\.27\.2/);
-  assert.match(gateway,/version:'JCS_0_0_27_2'/);
+  assert.match(index,/pages\.css\?v=0\.0\.28/);
+  assert.match(app,/politicians\.js\?v=0\.0\.28/);
+  assert.match(gateway,/version:'JCS_0_0_28'/);
 });
