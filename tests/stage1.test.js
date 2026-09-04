@@ -42,7 +42,18 @@ test('request and partner applications persist', async()=>{
   assert.equal((await content.list('partnerApplications')).length,1);
 });
 import { normalizeLegacyMembers } from '../src/core/member-migration.js';
+import { updateUserRole } from '../lib/rebuild-store.js';
 test('legacy member normalizer keeps id and compatible password hash fields',()=>{
   const rows=normalizeLegacyMembers([{userId:'u-9',displayName:'기존',passwordHash:'abc',role:'admin'}]);
   assert.deepEqual(rows[0],{id:'u-9',nickname:'기존',email:'',role:'admin',createdAt:'',profile:{},passwordHash:'abc'});
+});
+
+test('administrator role grants are server persisted and protected from self or last-admin demotion',async()=>{
+  let users={admin:{id:'admin',nickname:'관리자',role:'admin'},member:{id:'member',nickname:'회원',role:'member'}};
+  const command=async args=>{if(args[0]==='GET')return JSON.stringify(users);if(args[0]==='SET'){users=JSON.parse(args[2]);return 'OK';}throw new Error('UNSUPPORTED');};
+  const granted=await updateUserRole(command,'member','admin','admin');
+  assert.equal(granted.user.role,'admin');
+  assert.equal(granted.user.roleAudit.changedBy,'admin');
+  const blocked=await updateUserRole(command,'admin','member','admin');
+  assert.equal(blocked.error,'SELF_ADMIN_DEMOTION_FORBIDDEN');
 });

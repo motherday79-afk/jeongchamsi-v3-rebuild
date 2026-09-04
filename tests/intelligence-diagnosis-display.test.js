@@ -26,13 +26,15 @@ test('administrator diagnoses expose ten distinct approved display contracts',()
   assert.equal(diagnoses[9].title,'JCS 종합해석');
 });
 
-test('demographic composition and support composition each total one hundred',()=>{
+test('demographic age totals sum to one hundred and each age splits male and female to one hundred',()=>{
   const report=projectIntelligence(buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
   const demographic=report.diagnoses.find(row=>row.id==='02').display;
   const support=report.diagnoses.find(row=>row.id==='04').display;
-  assert.equal(demographic.cohorts.reduce((sum,row)=>sum+row.male+row.female,0),100);
+  assert.equal(demographic.cohorts.reduce((sum,row)=>sum+row.total,0),100);
+  assert.equal(demographic.cohorts.every(row=>row.male+row.female===100),true);
   assert.equal(support.composition.reduce((sum,row)=>sum+row.value,0),100);
   assert.deepEqual(support.composition.map(row=>row.key),['core','floating','exit']);
+  assert.deepEqual(support.composition.map(row=>row.label),['코어','유동','이탈']);
 });
 
 test('competitor comparison is capped at three and campaign keeps verified profile history without inventing vote values',()=>{
@@ -46,6 +48,15 @@ test('competitor comparison is capped at three and campaign keeps verified profi
   assert.equal(campaign.elections[0].election,'제22대 국회의원 당선');
   assert.equal(campaign.elections[0].voteRate,null);
   assert.equal(campaign.elections[0].margin,null);
+});
+
+test('official election rows derive the vote margin and regional classification from recorded values',()=>{
+  const officialPerson={...person,elections:[{year:'2024',election:'제22대 국회의원선거',voteRate:'53.2%',opponent:'이경쟁',opponentRate:'45.1%',regions:[{name:'진단1동',voteRate:55,opponentRate:40},{name:'진단2동',voteRate:48,opponentRate:50}]}]};
+  const report=projectIntelligence(buildIntelligenceDraft(officialPerson,raw,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
+  const campaign=report.diagnoses.find(row=>row.id==='08').display;
+  assert.equal(campaign.elections[0].margin,8.1);
+  assert.equal(campaign.elections[0].regions[0].status,'우세');
+  assert.equal(campaign.elections[0].regions[1].status,'경합');
 });
 
 test('brand past risk signals link only to observed negative news evidence',()=>{
@@ -66,6 +77,29 @@ test('local diagnosis excludes national coverage that has no district evidence',
   const local=report.diagnoses.find(row=>row.id==='03').display;
   assert.equal(local.issues.reduce((sum,row)=>sum+row.count,0),1);
   assert.equal(local.messageFit.length,1);
+  assert.equal(local.issues[0].evidence[0].url,'https://example.com/local');
+  assert.match(local.issues[0].evidence[0].title,/지역 예산 확보/);
+  assert.equal(local.messageFit[0].gap,Math.abs(local.messageFit[0].localShare-local.messageFit[0].messageShare));
+});
+
+test('RSS publication dates are normalized before 24H 7D and 30D windows are counted',()=>{
+  const rssRaw={...raw,news:{items:[
+    {title:'김진단 지역 정책 발표',source:'연합뉴스',url:'https://example.com/rss-a',publishedAt:'Fri, 04 Sep 2026 00:00:00 GMT'},
+    {title:'김진단 경제 법안 제안',source:'KBS',url:'https://example.com/rss-b',publishedAt:'Thu, 03 Sep 2026 00:00:00 GMT'}
+  ]}};
+  const report=projectIntelligence(buildIntelligenceDraft(person,rssRaw,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
+  const brand=report.diagnoses.find(row=>row.id==='01').display;
+  const risk=report.diagnoses.find(row=>row.id==='06').display;
+  assert.deepEqual(brand.news.map(row=>row.value),[2,2,2]);
+  assert.deepEqual(risk.velocity.map(row=>row.value),[2,2,2]);
+  assert.equal(risk.persistence.durationDays>=1,true);
+  assert.equal(typeof risk.persistence.reignitionCount,'number');
+});
+
+test('policy rows expose an explicit current stage index',()=>{
+  const report=projectIntelligence(buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
+  const policy=report.diagnoses.find(row=>row.id==='09').display;
+  assert.equal(policy.policies.every(row=>Number.isInteger(row.stageIndex)&&row.stageIndex>=0&&row.stageIndex<=5),true);
 });
 
 test('local diagnosis exposes official electorate structure from the collected population context',()=>{

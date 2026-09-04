@@ -134,6 +134,22 @@ test('a failed politician is recorded while successful politicians remain comple
   assert.equal(job.failures[0].personId,'p2');
 });
 
+test('collection failure metadata is bounded and failed-only retry preserves prior successes',async()=>{
+  const redis=fakeRedis(),repository=createIntelligenceRepository(redis.command,{now:()=>6_000});
+  await repository.createJob('collect','snapshot-retry',['p1','p2','p3']);
+  const first=await repository.claimNextBatch('collect');
+  await repository.completeBatch('collect',{start:first.start,successIds:['p1','p3'],failures:[{personId:'p2',name:'오류정치인',stage:'news',code:'SOURCE_TIMEOUT',details:'x'.repeat(1000),at:'2026-09-04T00:00:00.000Z',attempts:3,retryable:true}]});
+  const retry=await repository.prepareFailedRetry('collect');
+  assert.deepEqual(retry.retryIds,['p2']);
+  assert.deepEqual(retry.successIds,['p1','p3']);
+  assert.equal(retry.failures[0].details.length<=240,true);
+  const batch=await repository.claimNextBatch('collect');
+  assert.deepEqual(batch.ids,['p2']);
+  const completed=await repository.completeBatch('collect',{start:batch.start,successIds:['p2'],failures:[]});
+  assert.equal(completed.status,'COMPLETED');
+  assert.deepEqual(completed.successIds.sort(),['p1','p2','p3']);
+});
+
 test('a terminal publication job keeps the final switch error for the administrator',async()=>{
   const redis=fakeRedis(),repository=createIntelligenceRepository(redis.command,{now:()=>3_500});
   await repository.createJob('publish','snapshot-error',['p1']);

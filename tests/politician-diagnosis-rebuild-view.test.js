@@ -21,7 +21,18 @@ async function adminHtml(){
 test('administrator detail renders all ten approved diagnosis-specific layouts',async()=>{
   const html=await adminHtml();
   assert.equal((html.match(/data-diagnosis-layout="\d{2}"/g)||[]).length,10);
-  for(const marker of ['NOW SIGNAL','BRAND INDICATORS','PAST RISK SIGNALS','BRAND TOTAL SIGN','AGE × GENDER COMPOSITION','기반 순위','공식 선거 기반','CORE','FLOATING','EXIT','이슈 확산 속도','매체 집중도','출마·당선 이력','정책 진행 단계','JCS TOTAL'])assert.match(html,new RegExp(marker));
+  for(const marker of ['NOW SIGNAL','BRAND INDICATORS','PAST RISK SIGNALS','BRAND TOTAL SIGN','AGE × GENDER COMPOSITION','기반 순위','공식 선거 기반','코어','유동','이탈','이슈 확산 속도','매체 집중도','출마·당선 이력','정책 진행 단계','JCS TOTAL'])assert.match(html,new RegExp(marker));
+  assert.doesNotMatch(html,/SUPPORT COMPOSITION <span>합계 100%/);
+  assert.match(html,/jcs-dx-local-overlap/);
+  assert.match(html,/jcs-dx-persistence-curve/);
+  assert.match(html,/is-current[^>]*>[^<]*(발표|제안|검토|통과|시행|완료)/);
+});
+
+test('media search values use compact K notation while retaining exact accessible values',async()=>{
+  const html=await adminHtml();
+  assert.match(html,/2K/);
+  assert.match(html,/8K/);
+  assert.match(html,/aria-label="정확한 검색량 2,000"/);
 });
 
 test('administrator diagnosis part omits the removed repeated prose fields',async()=>{

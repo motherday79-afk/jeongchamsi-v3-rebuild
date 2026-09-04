@@ -2,7 +2,7 @@ import { legacyRedisCommand, rebuildRedisCommand } from '../lib/redis-rest.js';
 import { collectLegacySnapshot, writeRebuildSnapshot, writePoliticianSeed, validatePoliticianSeed, TARGET_KEYS } from '../lib/migration-service.js';
 import { LEGACY_DOMAINS } from '../lib/migration-core.js';
 import { issueSessionToken, readSessionToken } from '../lib/session.js';
-import { readUsers, listUsers, getUser, registerUser, authenticateUser, updateProfile, publicUser, readDomain, readDomainWithViews, writeDomain, readActivity, writeActivity } from '../lib/rebuild-store.js';
+import { readUsers, listUsers, getUser, registerUser, authenticateUser, updateProfile, updateUserRole, publicUser, readDomain, readDomainWithViews, writeDomain, readActivity, writeActivity } from '../lib/rebuild-store.js';
 import { POLITICIAN_COUNTS, POLITICIAN_TYPES, cleanPoliticianType, readPoliticianType, readPoliticianPhotos, getPolitician, searchPoliticianProfiles } from '../lib/politician-store.js';
 import { createIntelligenceService } from '../lib/intelligence-service.js';
 import { accessTierForUser, projectIntelligence } from '../lib/intelligence-access.js';
@@ -190,6 +190,7 @@ export async function dispatchAdminIntelligence(route,method,service,input={}){
     'admin/intelligence/status':{method:'GET',run:()=>service.status()},
     'admin/intelligence/collect/start':{method:'POST',run:()=>service.startCollection()},
     'admin/intelligence/collect/step':{method:'POST',run:()=>service.runCollectionStep()},
+    'admin/intelligence/collect/retry-failures':{method:'POST',run:()=>service.retryCollectionFailures()},
     'admin/intelligence/preview':{method:'GET',run:()=>service.preview()},
     'admin/intelligence/draft':{method:'PATCH',run:()=>service.updateDraft(input)},
     'admin/intelligence/approve':{method:'POST',run:()=>service.approveDraft(input)},
@@ -225,7 +226,9 @@ async function handleAdmin(req,res,route,command){
     return json(res,200,{ok:true,users:enriched});
   }
   if(route==='admin/users'&&req.method==='PATCH'){
-    const body=bodyOf(req),target=await getUser(command,body.id),result=await dispatchBadgeRequest(route,req.method,user,body,createBadgeService(command),target);
+    const body=bodyOf(req);
+    if(body.role!==undefined){const result=await updateUserRole(command,body.id,body.role,user.id);return json(res,result.ok?200:result.error==='USER_NOT_FOUND'?404:409,result);}
+    const target=await getUser(command,body.id),result=await dispatchBadgeRequest(route,req.method,user,body,createBadgeService(command),target);
     return json(res,result.status,result.body);
   }
   if(route==='admin/badges'&&req.method==='GET'){

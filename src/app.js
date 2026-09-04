@@ -175,6 +175,12 @@ document.addEventListener('submit',async event=>{
 });
 
 document.addEventListener('click',async event=>{
+  const retryFailures=event.target.closest('[data-intelligence-retry-failures]');
+  if(retryFailures){event.preventDefault();retryFailures.disabled=true;const result=await auth.intelligenceRetryFailures();if(!result?.ok){alert(result?.error||'실패 항목 재시도를 시작하지 못했습니다.');retryFailures.disabled=false;return;}void runAdminIntelligence('collect',true);return;}
+  const copyErrors=event.target.closest('[data-intelligence-copy-errors]');
+  if(copyErrors){event.preventDefault();const report=copyErrors.closest('[data-intelligence-error-report]'),text=[...report.querySelectorAll('[data-error-row]')].map(row=>row.innerText.trim()).join('\n\n');await navigator.clipboard?.writeText(text);copyErrors.textContent='복사 완료';return;}
+  const memberRoleSave=event.target.closest('[data-member-role-save]');
+  if(memberRoleSave){event.preventDefault();const id=memberRoleSave.dataset.memberRoleSave,manager=document.querySelector(`[data-member-badge-manager="${CSS.escape(id)}"]`),role=manager?.querySelector(`[data-member-role="${CSS.escape(id)}"]`)?.value,state=manager?.querySelector(`[data-member-role-state="${CSS.escape(id)}"]`);memberRoleSave.disabled=true;const result=await auth.updateMemberRole(id,role);if(state)state.textContent=result?.ok?'회원 권한을 저장했습니다.':(result?.error||'권한을 저장하지 못했습니다.');memberRoleSave.disabled=false;if(result?.ok)await render();return;}
   const intelligenceApprove=event.target.closest('[data-intelligence-approve]');
   if(intelligenceApprove){event.preventDefault();intelligenceApprove.disabled=true;const result=await auth.intelligenceApprove();if(!result?.ok)alert(result?.error||'검수 승인에 실패했습니다.');await render({preserveScroll:true});return;}
   const participationFeature=event.target.closest('[data-participation-feature]');

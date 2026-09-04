@@ -53,3 +53,13 @@ test('admin publication card shows the persisted final switch error after rerend
   const html=await renderAdminStable(admin,failed);
   assert.match(html,/최종 게시 실패 · ANALYSIS_VERSION_NOT_FOUND/);
 });
+
+test('collection failures show actionable details and a failed-only retry control',async()=>{
+  const failed={...auth,async intelligenceStatus(){const value=await auth.intelligenceStatus();return {...value,collection:{status:'COMPLETED_WITH_ERRORS',completed:541,total:542,failed:1,failures:[{personId:'p2',name:'오류 정치인',stage:'news',code:'SOURCE_TIMEOUT',details:'Google RSS 응답 시간 초과',at:'2026-09-04T00:00:00.000Z',attempts:3,retryable:true}]}};}};
+  const html=await renderAdminStable(admin,failed);
+  assert.match(html,/오류 정치인/);
+  assert.match(html,/SOURCE_TIMEOUT/);
+  assert.match(html,/Google RSS 응답 시간 초과/);
+  assert.match(html,/data-intelligence-retry-failures/);
+  assert.match(html,/data-intelligence-error-report/);
+});

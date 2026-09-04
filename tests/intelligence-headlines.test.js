@@ -56,7 +56,7 @@ test('headline intelligence identifies the dominant event before judging whether
     {title:'김민석 민생 정책 발표',source:'D뉴스',url:'https://news/d',publishedAt:'2026-07-01T09:00:00Z'}
   ];
   const result=analyzeNewsHeadlines(person,crisisRows);
-  assert.deepEqual(result.dominantEvent,{title:'김민석 발언 논란 확산',date:'2026-09-03',source:'A뉴스',agendaTag:'논란·위기',frame:'부정·위기',agency:'외부 서사'});
+  assert.deepEqual(result.dominantEvent,{title:'김민석 발언 논란 확산',date:'2026-09-03T09:00:00.000Z',source:'A뉴스',agendaTag:'논란·위기',frame:'부정·위기',agency:'외부 서사'});
   assert.deepEqual(result.frameSummary,{positive:0,neutral:1,negative:3,dominant:'부정·위기'});
   assert.equal(result.attentionQuality,'정치적 부담');
   assert.match(result.politicalMeaning,/부정 프레임|정치적 부담/);
