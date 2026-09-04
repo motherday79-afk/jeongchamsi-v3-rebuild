@@ -139,3 +139,89 @@ test('policy diagnosis excludes party creation and dissolution coverage without 
   assert.equal(policy.policies.some(row=>/해산|창당/.test(row.name)),false);
   assert.equal(policy.policies.some(row=>/주거 공약/.test(row.name)),true);
 });
+
+test('JCS demographic interpretation produces a differentiated 100 percent age composition',()=>{
+  const mobileHeavy={...raw,searchAds:{volume:{pc:1200,mobile:18800}}};
+  const report=projectIntelligence(buildIntelligenceDraft(person,mobileHeavy,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
+  const demographic=report.diagnoses.find(row=>row.id==='02').display;
+  const totals=demographic.cohorts.map(row=>row.total);
+  assert.equal(totals.reduce((sum,value)=>sum+value,0),100);
+  assert.ok(Math.max(...totals)-Math.min(...totals)>=5,'연령별 구성은 평평한 1/n 배분이 아니어야 한다');
+  assert.ok(new Set(totals).size>=4,'다섯 연령대가 같은 값으로 반복되면 안 된다');
+  assert.equal(demographic.cohorts.every(row=>row.male+row.female===100),true);
+  assert.match(demographic.interpretation,/남성 기반은 .*여성 기반은/);
+  assert.equal(demographic.label,'JCS 연령·성별 지지구조 해석');
+});
+
+test('JCS demographic fallback differentiates the gender split by age without official population rows',()=>{
+  const mobileHeavy={...raw,searchAds:{volume:{pc:1200,mobile:18800}}};
+  const report=projectIntelligence(buildIntelligenceDraft(person,mobileHeavy,{...context,ageSex:undefined},'JCS_INTELLIGENCE_V3'),'admin','detail');
+  const demographic=report.diagnoses.find(row=>row.id==='02').display;
+  assert.equal(demographic.cohorts.every(row=>row.male+row.female===100),true);
+  assert.ok(new Set(demographic.cohorts.map(row=>`${row.male}/${row.female}`)).size>=3,'공식 인구 행이 없어도 전 연령이 같은 성별 비율로 복제되면 안 된다');
+});
+
+test('local evidence requires a real place or local-government issue and rejects generic citizen wording',()=>{
+  const song={...person,name:'송영길',jurisdiction:'인천 계양구',region:'인천'};
+  const localRaw={...raw,news:{items:[
+    {title:"'송영길 창당' 소나무당 공식 해산…시민사회 반응",source:'정치뉴스',url:'https://example.com/dissolution',publishedAt:'2026-09-04T00:00:00.000Z'},
+    {title:'송영길 인천 계양구 교통 예산 확보 촉구',source:'인천일보',url:'https://example.com/incheon',publishedAt:'2026-09-03T00:00:00.000Z'}
+  ]}};
+  const report=projectIntelligence(buildIntelligenceDraft(song,localRaw,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
+  const local=report.diagnoses.find(row=>row.id==='03').display;
+  const links=local.issues.flatMap(row=>row.evidence.map(item=>item.url));
+  assert.deepEqual(links,['https://example.com/incheon']);
+});
+
+test('issue persistence uses all thirty calendar positions and actual daily article counts',()=>{
+  const dated={...raw,news:{items:[
+    {title:'김진단 주거 정책 논란 확산',source:'A',url:'https://example.com/p1',publishedAt:'2026-08-06T00:00:00.000Z'},
+    {title:'김진단 주거 정책 논란 재점화',source:'B',url:'https://example.com/p2',publishedAt:'2026-09-03T00:00:00.000Z'},
+    {title:'김진단 주거 정책 논란 후속',source:'C',url:'https://example.com/p3',publishedAt:'2026-09-03T08:00:00.000Z'}
+  ]}};
+  const report=projectIntelligence(buildIntelligenceDraft(person,dated,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
+  const persistence=report.diagnoses.find(row=>row.id==='06').display.persistence;
+  assert.equal(persistence.daily.length,30);
+  assert.equal(persistence.daily[0].count,1);
+  assert.equal(persistence.daily[28].count,2);
+  assert.equal(persistence.maxDaily,2);
+});
+
+test('media spread groups every distinct outlet by observed publication frequency',()=>{
+  const mediaRaw={...raw,news:{items:[
+    ...Array.from({length:3},(_,i)=>({title:`김진단 정책 A ${i}`,source:'반복매체',url:`https://example.com/r${i}`,publishedAt:'2026-09-04T00:00:00.000Z'})),
+    ...Array.from({length:2},(_,i)=>({title:`김진단 정책 B ${i}`,source:'이중매체',url:`https://example.com/d${i}`,publishedAt:'2026-09-03T00:00:00.000Z'})),
+    {title:'김진단 정책 C',source:'단일매체',url:'https://example.com/s',publishedAt:'2026-09-02T00:00:00.000Z'}
+  ]}};
+  const report=projectIntelligence(buildIntelligenceDraft(person,mediaRaw,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
+  const media=report.diagnoses.find(row=>row.id==='07').display;
+  assert.deepEqual(media.frequencyBands,{repeat:1,double:1,single:1});
+  assert.equal(Object.values(media.frequencyBands).reduce((sum,value)=>sum+value,0),media.sourceCount);
+  assert.equal(media.topSources.length,3);
+  assert.deepEqual(media.remainingSources,[]);
+});
+
+test('campaign fallback is populated from current JCS signals without pretending they are official vote records',()=>{
+  const report=projectIntelligence(buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
+  const competitor=report.diagnoses.find(row=>row.id==='05').display;
+  const campaign=report.diagnoses.find(row=>row.id==='08').display;
+  assert.equal(competitor.people.every(row=>row.competition&&Number.isFinite(row.competition.index)),true);
+  assert.equal(campaign.mode,'jcs-current');
+  assert.ok(campaign.currentSignals.length>=3);
+  assert.ok(campaign.regionalStructure.length>=1);
+  assert.doesNotMatch(JSON.stringify({competitor,campaign}),/공식 프로필 기록|연결 전/);
+  assert.equal(Object.hasOwn(campaign,'competitors'),false);
+});
+
+test('policy fallback is explicitly a major-issue reaction and never relabels party dissolution as policy',()=>{
+  const onlyPartyNews={...raw,news:{items:[
+    {title:"'김진단 창당' 소나무당 공식 해산…선관위 공고",source:'정치뉴스',url:'https://example.com/party',publishedAt:'2026-09-04T00:00:00.000Z'}
+  ]}};
+  const report=projectIntelligence(buildIntelligenceDraft(person,onlyPartyNews,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
+  const policy=report.diagnoses.find(row=>row.id==='09').display;
+  assert.equal(policy.mode,'issue');
+  assert.equal(policy.title,'주요 의제 반응');
+  assert.equal(policy.policies[0].evidenceUrl,'https://example.com/party');
+  assert.equal(policy.policies[0].isPolicy,false);
+  assert.doesNotMatch(policy.policies[0].name,/창당|해산/);
+});

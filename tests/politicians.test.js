@@ -146,11 +146,11 @@ test('administrator demographic diagnosis renders separate male and female cohor
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
   const intelligence=projectIntelligence(reportForSample(sample),'admin','detail');
   const demographic=intelligence.diagnoses.find(topic=>topic.id==='02');
-  demographic.display={kind:'demographic',cohorts:[{age:'20대',male:23,female:14},{age:'30대',male:18,female:15},{age:'40대',male:9,female:8},{age:'50대',male:5,female:4},{age:'60대 이상',male:2,female:2}],maleRank:[{age:'20대',value:23},{age:'30대',value:18}],femaleRank:[{age:'30대',value:15},{age:'20대',value:14}],total:100};
+  demographic.display={kind:'demographic',label:'JCS 연령·성별 지지구조 해석',cohorts:[{age:'20대',total:28,male:62,female:38},{age:'30대',total:24,male:55,female:45},{age:'40대',total:20,male:48,female:52},{age:'50대',total:16,male:44,female:56},{age:'60대 이상',total:12,male:41,female:59}],maleRank:[{age:'20대',value:17},{age:'30대',value:13}],femaleRank:[{age:'20대',value:11},{age:'30대',value:11}],total:100,interpretation:'남성 기반은 20대가 가장 강하고, 여성 기반은 20대가 가장 강합니다.'};
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{user:{role:'admin'}});
-  assert.match(html,/20대[\s\S]*23%[\s\S]*14%/);
-  assert.match(html,/30대[\s\S]*18%[\s\S]*15%/);
-  assert.match(html,/합계 100%/);
+  assert.match(html,/62[\s\S]*38[\s\S]*28%[\s\S]*20대/);
+  assert.match(html,/55[\s\S]*45[\s\S]*24%[\s\S]*30대/);
+  assert.match(html,/JCS 연령·성별 지지구조 해석/);
 });
 
 test('administrator report uses compact topic headers and report fields',async()=>{
@@ -158,7 +158,7 @@ test('administrator report uses compact topic headers and report fields',async()
   const intelligence=projectIntelligence(reportForSample(sample),'admin','detail');
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{user:{role:'admin'}});
   assert.equal((html.match(/data-diagnosis-layout="\d{2}"/g)||[]).length,10);
-  for(const field of ['NOW SIGNAL','BRAND INDICATORS','AGE × GENDER COMPOSITION','SUPPORT COMPOSITION','경쟁 정치인 직접 비교','이슈 확산 속도','매체 집중도','출마·당선 이력','정책 진행 단계','JCS TOTAL'])assert.match(html,new RegExp(field));
+  for(const field of ['NOW SIGNAL','BRAND INDICATORS','JCS 연령·성별 지지구조 해석','SUPPORT COMPOSITION','경쟁 정치인 직접 비교','이슈 확산 속도','매체 집중도','출마·당선 이력','정책 진행 단계','JCS TOTAL'])assert.match(html,new RegExp(field));
   const diagnosisPart=html.slice(html.indexOf('<div class="jcs-diagnosis-part">'),html.indexOf('<section class="jcs-v2-summary">'));
   assert.doesNotMatch(diagnosisPart,/>현재 위치<|>변화 흐름<|>기회 요인<|>위험 요인<|>비교 기준<|>분석 기준</);
 });

@@ -1,0 +1,30 @@
+JCS_0_0_31_11 DIAGNOSIS DATA & VISUAL COMPLETION PATCH
+
+Production files
+- index.html
+- css/hotfix-31-11.css
+- lib/intelligence-access.js
+- lib/intelligence-analysis.js
+- lib/intelligence-diagnostics.js
+- lib/intelligence-service.js
+- lib/intelligence-storage.js
+- src/core/release.js
+- src/views/politicians.js
+
+Regression tests
+- tests/intelligence-admin-view.test.js
+- tests/intelligence-analysis.test.js
+- tests/intelligence-diagnosis-display.test.js
+- tests/intelligence-v3.test.js
+- tests/politician-diagnosis-rebuild-view.test.js
+- tests/politician-diagnostics-view.test.js
+- tests/politicians.test.js
+
+Documentation
+- JCS_0_0_31_11_DIAGNOSIS_DATA_VISUAL_COMPLETION_PATCH.md
+
+Excluded
+- Politician photos and other image assets
+- Earlier PATCH ZIP files
+- Unrelated main/navigation/board files
+- Local planning files

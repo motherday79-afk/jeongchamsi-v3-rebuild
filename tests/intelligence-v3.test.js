@@ -50,6 +50,16 @@ test('compact storage retains only reconstructable V3 inputs instead of every di
   assert.ok(Buffer.byteLength(JSON.stringify(stored),'utf8')<5000);
 });
 
+test('compact storage keeps a small outlet frequency ledger for media reconstruction',()=>{
+  const repeated={...raw,news:{items:[
+    ...raw.news.items,
+    {title:'이진숙 후속 보도 1',source:'대표 뉴스',url:'https://news/3',publishedAt:'2026-09-01T09:00:00Z'},
+    {title:'이진숙 후속 보도 2',source:'세번째 뉴스',url:'https://news/4',publishedAt:'2026-08-31T09:00:00Z'}
+  ]}};
+  const stored=compactIntelligenceDraft(buildIntelligenceDraft(person,repeated,context,'JCS_INTELLIGENCE_V3'));
+  assert.deepEqual(stored.input.news.sourceCounts,[{name:'대표 뉴스',count:2},{name:'두번째 뉴스',count:1},{name:'세번째 뉴스',count:1}]);
+});
+
 test('role projection exposes V3 review intelligence only to administrators',()=>{
   const report=buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V3');
   const guest=projectIntelligence(report,'public','detail'),member=projectIntelligence(report,'member','detail'),admin=projectIntelligence(report,'admin','detail');

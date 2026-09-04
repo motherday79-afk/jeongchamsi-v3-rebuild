@@ -21,7 +21,7 @@ async function adminHtml(){
 test('administrator detail renders all ten approved diagnosis-specific layouts',async()=>{
   const html=await adminHtml();
   assert.equal((html.match(/data-diagnosis-layout="\d{2}"/g)||[]).length,10);
-  for(const marker of ['NOW SIGNAL','BRAND INDICATORS','PAST RISK SIGNALS','BRAND TOTAL SIGN','AGE × GENDER COMPOSITION','기반 순위','공식 선거 기반','코어','유동','이탈','이슈 확산 속도','매체 집중도','출마·당선 이력','정책 진행 단계','JCS TOTAL'])assert.match(html,new RegExp(marker));
+  for(const marker of ['NOW SIGNAL','BRAND INDICATORS','PAST RISK SIGNALS','BRAND TOTAL SIGN','JCS 연령·성별 지지구조 해석','기반 순위','공식 선거 기반','코어','유동','이탈','이슈 확산 속도','매체 집중도','출마·당선 이력','정책 진행 단계','JCS TOTAL'])assert.match(html,new RegExp(marker));
   assert.doesNotMatch(html,/SUPPORT COMPOSITION <span>합계 100%/);
   assert.match(html,/jcs-dx-local-overlap/);
   assert.match(html,/jcs-dx-persistence-curve/);
@@ -68,4 +68,32 @@ test('demographic and support visuals reset legacy positioning and keep three in
   assert.match(css,/\.jcs-dx-age-row header b\s*\{[^}]*position:static/);
   assert.match(css,/\.jcs-dx-support-orbit\s*\{[^}]*grid-template-columns:repeat\(3/);
   assert.match(css,/\.jcs-dx-support-orbit>div\s*\{[^}]*position:relative/);
+});
+
+test('approved demographic and support markup uses vertical age columns and three distinct shapes',async()=>{
+  const html=await adminHtml();
+  assert.match(html,/JCS 연령·성별 지지구조 해석/);
+  assert.match(html,/jcs-dx-age-columns/);
+  assert.match(html,/jcs-dx-age-bars/);
+  assert.match(html,/jcs-dx-support-shape jcs-dx-core-shape/);
+  assert.match(html,/jcs-dx-support-shape jcs-dx-floating-shape/);
+  assert.match(html,/jcs-dx-support-shape jcs-dx-exit-shape/);
+});
+
+test('persistence and media markup preserves all calendar days and expands the full outlet list',async()=>{
+  const html=await adminHtml();
+  assert.equal((html.match(/class="jcs-dx-day"/g)||[]).length,30);
+  assert.match(html,/D−30/);
+  assert.match(html,/오늘/);
+  assert.match(html,/3회 이상/);
+  assert.match(html,/2회 보도/);
+  assert.match(html,/1회 보도/);
+  assert.match(html,/<details class="jcs-dx-more-sources"/);
+  assert.match(html,/전체 목록 보기/);
+});
+
+test('campaign and policy renderers remove repeated and connection-pending placeholders',async()=>{
+  const html=await adminHtml();
+  assert.doesNotMatch(html,/공식 프로필 기록|공식 득표율 연결 전|공식 득표 격차 연결 전|공식 경쟁자 기록 연결 전|지역별 공식 개표 데이터 연결 전/);
+  assert.match(html,/JCS 현재 캠페인 신호/);
 });

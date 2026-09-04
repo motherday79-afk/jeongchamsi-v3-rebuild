@@ -26,7 +26,7 @@ test('admin control center exposes ten processing stages and draft review before
   assert.match(html,/data-intelligence-approve/);
   assert.match(html,/draft-1.*draft|draft.*draft-1/s);
   assert.match(html,/public-0.*published|published.*public-0/s);
-  assert.match(html,/JCS_0_0_31_10/);
+  assert.match(html,/JCS_0_0_31_11/);
   assert.match(html,/관리자 화면 버전/);
 });
 

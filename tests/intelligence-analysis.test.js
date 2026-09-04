@@ -45,10 +45,12 @@ test('age by gender cells are independently derived instead of cloning one scala
   assert.equal(validateIntelligenceDraft(draft).ok,true);
 });
 
-test('age by gender attention does not receive a fixed bonus from party identity',()=>{
+test('JCS age and gender interpretation reflects the collected party-support context',()=>{
   const democratic=buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V1');
   const conservative=buildIntelligenceDraft({...person,party:'국민의힘'},raw,context,'JCS_INTELLIGENCE_V1');
-  assert.deepEqual(democratic.cohorts,conservative.cohorts);
+  assert.notDeepEqual(democratic.cohorts,conservative.cohorts);
+  assert.ok(democratic.cohorts[0].female>conservative.cohorts[0].female);
+  assert.ok(conservative.cohorts.at(-1).male>democratic.cohorts.at(-1).male);
 });
 
 test('a cloned age by gender vector is rejected before publication',()=>{
