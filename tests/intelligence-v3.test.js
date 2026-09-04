@@ -24,11 +24,15 @@ test('V3 draft connects event clusters, asset effects, history and classificatio
   assert.match(report.pastPresentConnections[0].outcome,/당선/);
   assert.equal(report.diagnoses.length,10);
   assert.equal(report.prescriptions.length,10);
+  const evidenceUse=new Map();
   for(const diagnosis of report.diagnoses){
     for(const key of diagnosisRequired)assert.ok(diagnosis[key]!==undefined&&diagnosis[key]!==null&&diagnosis[key]!=='' ,`${diagnosis.id}.${key}`);
-    assert.ok(diagnosis.evidenceIds.some(id=>String(id).startsWith('news-')));
+    assert.ok(diagnosis.evidenceIds.length>=2);
+    for(const id of diagnosis.evidenceIds)evidenceUse.set(id,(evidenceUse.get(id)||0)+1);
     assert.equal(diagnosis.dominantEvent.eventId,report.eventClusters[0].eventId);
   }
+  assert.ok(report.diagnoses.find(item=>item.id==='01').evidenceIds.some(id=>String(id).startsWith('news-')));
+  assert.ok([...evidenceUse.values()].every(count=>count<=2));
   for(const prescription of report.prescriptions){
     for(const key of prescriptionRequired)assert.ok(prescription[key]!==undefined&&prescription[key]!==null&&prescription[key]!=='' ,`${prescription.id}.${key}`);
     assert.ok(prescription.linkedDiagnosisIds.length>0);

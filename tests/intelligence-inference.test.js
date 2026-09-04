@@ -43,6 +43,20 @@ test('ten inference topics use separate decisions and evidence routes',()=>{
   assert.match(states.find(row=>row.id==='10').judgment,/5선|시장직|신뢰/);
 });
 
+test('diagnosis fields are independently written and evidence ownership is bounded',()=>{
+  const narrative=analyzeNewsHeadlines(person,newsItems);
+  const facts=extractPoliticalFacts(person,{newsNarrative:narrative,searchMetrics:{pc:12400,mobile:48600,total:61000},competitors:context.peers});
+  const states=inferPoliticalStates(person,{facts,newsNarrative:narrative,competitors:context.peers});
+  const useCount=new Map();
+  for(const state of states){
+    assert.notEqual(state.currentPosition,state.politicalMeaning,`${state.id}: position/meaning`);
+    assert.equal(state.interpretation.includes(state.currentPosition),false,`${state.id}: position copied into interpretation`);
+    assert.equal(state.interpretation.includes(state.politicalMeaning),false,`${state.id}: meaning copied into interpretation`);
+    for(const evidenceId of state.evidenceIds)useCount.set(evidenceId,(useCount.get(evidenceId)||0)+1);
+  }
+  assert.ok([...useCount.values()].every(count=>count<=2),JSON.stringify([...useCount.entries()].filter(([,count])=>count>2)));
+});
+
 test('golden report has ten fact-led judgments and prescriptions cite facts instead of diagnosis titles',()=>{
   const report=buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V3');
   const meanings=report.diagnoses.map(row=>row.politicalMeaning);
@@ -52,6 +66,9 @@ test('golden report has ten fact-led judgments and prescriptions cite facts inst
   assert.match(report.diagnoses.find(row=>row.id==='09').politicalMeaning,/31만호|주택/);
   assert.equal(report.prescriptions.every(row=>row.sourceFindings.length>=2),true);
   assert.equal(report.prescriptions.some(row=>row.sourceFindings.some(value=>/^\d{2}\s*·/.test(value))),false);
+  assert.equal(new Set(report.prescriptions.map(row=>row.expectedImpact)).size,10);
+  assert.equal(report.prescriptions.some(row=>/현재 판단을 .*실행 성과로 전환/.test(row.expectedImpact)),false);
+  assert.equal(new Set(report.prescriptions.map(row=>row.monitoringIndicators.join('|'))).size,10);
 });
 
 test('structural-only politicians still receive ten differentiated fact-backed judgments',()=>{

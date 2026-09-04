@@ -49,3 +49,19 @@ test('search volume cannot become the headline or primary political conclusion',
   assert.equal(validation.ok,false);
   assert.ok(validation.errors.includes('SEARCH_USED_AS_PRIMARY_CONCLUSION'));
 });
+
+test('cross-field copies, overused evidence and repeated prescription monitoring block publication',()=>{
+  const broken=clone(report());
+  for(const diagnosis of broken.diagnoses){
+    diagnosis.politicalMeaning=diagnosis.currentPosition;
+    diagnosis.interpretation=[diagnosis.currentPosition];
+    diagnosis.evidenceIds=['shared-news'];
+  }
+  for(const prescription of broken.prescriptions){
+    prescription.expectedImpact='현재 판단을 정치 활동 실행 성과로 전환';
+    prescription.monitoringIndicators=['정치 활동 뉴스 점유','지역 메시지 반응'];
+  }
+  broken.diagnoses[0].currentPosition='[object Object]';
+  const validation=validateIntelligenceConsistency(broken);
+  for(const code of ['DIAGNOSIS_FIELDS_COPIED','EVIDENCE_OVERUSED','EXPECTED_IMPACT_COPY_REPEATED','MONITORING_COPY_REPEATED','OBJECT_TEXT_RENDERED'])assert.ok(validation.errors.includes(code),code);
+});

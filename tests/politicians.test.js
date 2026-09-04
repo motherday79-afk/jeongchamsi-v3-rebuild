@@ -138,7 +138,18 @@ test('admin Kim Min-seok detail renders all ten evidence and prescription module
   assert.equal((html.match(/data-diagnostic-topic=/g)||[]).length,10);
   assert.match(html,/근거 데이터/);
   assert.match(html,/실행 처방/);
+  assert.doesNotMatch(html,/\[object Object\]/);
   assert.doesNotMatch(html,/modeled.*fallback|"raw"/i);
+});
+
+test('administrator demographic diagnosis renders separate male and female cohort values',async()=>{
+  const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
+  const intelligence=projectIntelligence(reportForSample(sample),'admin','detail');
+  const demographic=intelligence.diagnoses.find(topic=>topic.id==='02');
+  demographic.visualization={type:'cohort-diverging',rows:[{label:'20대',left:71,right:43},{label:'30대',left:64,right:52}]};
+  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{user:{role:'admin'}});
+  assert.match(html,/20대[\s\S]*남성 71[\s\S]*여성 43/);
+  assert.match(html,/30대[\s\S]*남성 64[\s\S]*여성 52/);
 });
 
 test('administrator report uses compact topic headers and report fields',async()=>{
@@ -217,7 +228,9 @@ test('politician intelligence v3 final layer fixes typography and approved high-
     const marker='JCS_0_0_13 · DATA-DENSE POLITICAL INTELLIGENCE FINAL LAYER';
     const start=text.lastIndexOf(marker);
     assert.ok(start>text.lastIndexOf('JCS_0_0_12 · LUXURY POLITICAL INTELLIGENCE FINAL LAYER'));
-    const end=text.indexOf('JCS_0_0_27 · LEGACY DETAIL DENSITY',start);
+    const nextLayer=text.indexOf('JCS_0_0_31 · INTELLIGENCE PIPELINE',start);
+    const legacyLayer=text.indexOf('JCS_0_0_27 · LEGACY DETAIL DENSITY',start);
+    const end=Math.min(...[nextLayer,legacyLayer].filter(value=>value>=0));
     const layer=text.slice(start,end<0?undefined:end);
     assert.match(layer,/--jcs-v3-text:#173133/);
     assert.match(layer,/--jcs-v3-body:#30484a/i);
@@ -240,7 +253,7 @@ test('0.0.27 restores legacy politician detail density before the corrected NOW 
   assert.match(layer,/\.person-live-detail-page \.person-intelligence-cover-copy p\{[^}]*font-size:13px!important/);
 });
 
-test('release metadata and browser cache keys identify JCS 0.0.30.4',async()=>{
+test('release metadata and browser cache keys identify JCS 0.0.31',async()=>{
   const {readFile}=await import('node:fs/promises');
   const root=new URL('../',import.meta.url);
   const [pkg,lock,index,app,gateway]=await Promise.all([
@@ -250,12 +263,12 @@ test('release metadata and browser cache keys identify JCS 0.0.30.4',async()=>{
     readFile(new URL('src/app.js',root),'utf8'),
     readFile(new URL('api/gateway.js',root),'utf8')
   ]);
-  assert.match(pkg,/"name": "jcs-0-0-30-4"/);
-  assert.match(pkg,/"version": "0\.0\.30-4"/);
-  assert.match(lock,/"name": "jcs-0-0-30-4"/);
-  assert.match(lock,/"version": "0\.0\.30-4"/);
+  assert.match(pkg,/"name": "jcs-0-0-31"/);
+  assert.match(pkg,/"version": "0\.0\.31"/);
+  assert.match(lock,/"name": "jcs-0-0-31"/);
+  assert.match(lock,/"version": "0\.0\.31"/);
   assert.doesNotMatch(index+app,/v=0\.0\.(?:12|13|14|15|16|17|18|19|20|21|22|23|24|25|26)(?:\D|$)/);
-  assert.match(index,/pages\.css\?v=0\.0\.30\.4/);
-  assert.match(app,/politicians\.js\?v=0\.0\.30\.4/);
-  assert.match(gateway,/version:'JCS_0_0_30_4'/);
+  assert.match(index,/pages\.css\?v=0\.0\.31/);
+  assert.match(app,/politicians\.js\?v=0\.0\.31/);
+  assert.match(gateway,/version:'JCS_0_0_31'/);
 });

@@ -1,0 +1,28 @@
+JCS 0.0.31.5 DEDUPLICATED INTELLIGENCE ENGINE PATCH
+Date: 2026-09-04
+
+PATCH FILES
+lib/intelligence-analysis.js
+lib/intelligence-consistency.js
+lib/intelligence-diagnostics.js
+lib/intelligence-facts.js
+lib/intelligence-inference.js
+src/views/politicians.js
+tests/intelligence-consistency.test.js
+tests/intelligence-inference.test.js
+tests/intelligence-v3.test.js
+tests/politicians.test.js
+JCS_0_0_31_5_DEDUPLICATED_INTELLIGENCE_ENGINE_PATCH.md
+JCS_0_0_31_5_DEDUPLICATED_INTELLIGENCE_ENGINE_MANIFEST.txt
+
+EXCLUDED
+assets/
+politician photos
+all image files
+node_modules/
+previous patch archives
+
+VERIFICATION
+npm test: 276 passed, 0 failed
+542-politician generation contract: passed
+image count in archive: 0
