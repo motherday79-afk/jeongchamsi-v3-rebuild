@@ -49,8 +49,22 @@ test('JCS age and gender interpretation reflects the collected party-support con
   const democratic=buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V1');
   const conservative=buildIntelligenceDraft({...person,party:'국민의힘'},raw,context,'JCS_INTELLIGENCE_V1');
   assert.notDeepEqual(democratic.cohorts,conservative.cohorts);
-  assert.ok(democratic.cohorts[0].female>conservative.cohorts[0].female);
-  assert.ok(conservative.cohorts.at(-1).male>democratic.cohorts.at(-1).male);
+  assert.ok(conservative.cohorts[0].male>democratic.cohorts[0].male);
+  assert.ok(democratic.cohorts[2].female>conservative.cohorts[2].female);
+});
+
+test('democratic-lineage politicians start from 4050 strength and are then differentiated by personal signals',()=>{
+  const song={...person,id:'assembly-song',name:'송영길',party:'소나무당'};
+  const weakRaw={...raw,searchAds:{volume:{pc:10,mobile:20}},news:{items:[{title:'송영길 정치 활동 관련 보도',source:'정치뉴스',publishedAt:'2026-09-02T00:00:00.000Z'}]}};
+  const strongRaw={...raw,searchAds:{volume:{pc:24000,mobile:176000}},news:{items:Array.from({length:8},(_,index)=>({title:`송영길 민생 정책 성과 발표 ${index}`,source:`정책뉴스${index}`,publishedAt:'2026-09-02T00:00:00.000Z'}))}};
+  const weak=buildIntelligenceDraft(song,weakRaw,context,'JCS_INTELLIGENCE_V3').diagnoses.find(row=>row.id==='02').display;
+  const strong=buildIntelligenceDraft(song,strongRaw,context,'JCS_INTELLIGENCE_V3').diagnoses.find(row=>row.id==='02').display;
+  const strongest=[...strong.cohorts].sort((a,b)=>b.total-a.total)[0].age;
+  assert.match(strongest,/40대|50대/);
+  assert.match(strong.maleRank.at(-1).age,/20대|30대/);
+  assert.notDeepEqual(strong.cohorts,weak.cohorts);
+  assert.equal(strong.cohorts.reduce((sum,row)=>sum+row.total,0),100);
+  assert.equal(strong.cohorts.every(row=>row.male+row.female===100),true);
 });
 
 test('a cloned age by gender vector is rejected before publication',()=>{

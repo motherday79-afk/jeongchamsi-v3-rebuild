@@ -1,0 +1,33 @@
+JCS_0_0_31_12 AGE · MEDIA · COMPARE HOTFIX
+
+[배포 파일]
+index.html
+css/hotfix-31-12.css
+lib/intelligence-analysis.js
+lib/intelligence-diagnostics.js
+lib/intelligence-consistency.js
+src/core/release.js
+src/views/politician-compare.js
+
+[회귀 테스트]
+tests/intelligence-admin-view.test.js
+tests/intelligence-analysis.test.js
+tests/intelligence-diagnosis-display.test.js
+tests/intelligence-consistency.test.js
+tests/politician-diagnostics-compare.test.js
+
+[문서]
+JCS_0_0_31_12_AGE_MEDIA_COMPARE_HOTFIX.md
+JCS_0_0_31_12_AGE_MEDIA_COMPARE_HOTFIX_MANIFEST.txt
+
+[제외]
+정치인 사진 및 이미지 자산
+이전 PATCH ZIP
+이전 패치 문서
+이번 핫픽스와 관계없는 파일
+
+[검증]
+npm test: 331 passed / 0 failed
+node --check: 4 production JavaScript files passed
+git diff --check: passed
+

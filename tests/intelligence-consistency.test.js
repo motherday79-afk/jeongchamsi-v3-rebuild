@@ -43,6 +43,21 @@ test('legal suspicion cannot be narrated as a final conviction and negative atte
   assert.ok(validation.errors.includes('NEGATIVE_ATTENTION_MARKED_AS_ASSET'));
 });
 
+test('negative event cluster count does not override a positive article majority',()=>{
+  const current=clone(report());
+  current.newsNarrative.frameSummary={positive:2,neutral:0,negative:1,dominant:'긍정·성과'};
+  current.newsNarrative.items=[
+    {frame:'긍정·성과'},{frame:'긍정·성과'},{frame:'부정·위기'}
+  ];
+  current.eventClusters=[
+    {direction:'positive',politicalFrame:'긍정·성과'},
+    {direction:'negative',politicalFrame:'부정·위기'}
+  ];
+  for(const diagnosis of current.diagnoses)diagnosis.attentionQuality='정치 자산';
+  const validation=validateIntelligenceConsistency(current);
+  assert.equal(validation.errors.includes('NEGATIVE_ATTENTION_MARKED_AS_ASSET'),false);
+});
+
 test('search volume cannot become the headline or primary political conclusion',()=>{
   const broken=clone(report());broken.diagnoses[6].headline='모바일 검색량이 높으므로 영향력이 강하다.';
   const validation=validateIntelligenceConsistency(broken);

@@ -199,6 +199,22 @@ test('media spread groups every distinct outlet by observed publication frequenc
   assert.equal(Object.values(media.frequencyBands).reduce((sum,value)=>sum+value,0),media.sourceCount);
   assert.equal(media.topSources.length,3);
   assert.deepEqual(media.remainingSources,[]);
+  assert.equal(media.topSources.every(row=>Number.isFinite(row.share)&&row.share>0),true);
+  assert.equal(media.topSources.reduce((sum,row)=>sum+row.share,0),100);
+});
+
+test('media concentration excludes distribution domains and keeps one consistent source ledger',()=>{
+  const mediaRaw={...raw,news:{items:[
+    {title:'김진단 정책 A',source:'v.daum.net',url:'https://example.com/portal',publishedAt:'2026-09-04T00:00:00.000Z'},
+    {title:'김진단 정책 B',source:'인천일보',url:'https://example.com/1',publishedAt:'2026-09-04T00:00:00.000Z'},
+    {title:'김진단 정책 C',source:'인천일보',url:'https://example.com/2',publishedAt:'2026-09-03T00:00:00.000Z'},
+    {title:'김진단 정책 D',source:'한국일보',url:'https://example.com/3',publishedAt:'2026-09-02T00:00:00.000Z'}
+  ]}};
+  const report=projectIntelligence(buildIntelligenceDraft(person,mediaRaw,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
+  const media=report.diagnoses.find(row=>row.id==='07').display;
+  assert.deepEqual(media.topSources.map(row=>row.name),['인천일보','한국일보']);
+  assert.equal(media.sourceCount,2);
+  assert.equal(media.topSources.length+media.remainingSources.length,media.sourceCount);
 });
 
 test('campaign fallback is populated from current JCS signals without pretending they are official vote records',()=>{

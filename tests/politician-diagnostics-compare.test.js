@@ -68,6 +68,17 @@ test('administrator comparison caps selection at four and renders all ten topics
   for(let index=0;index<4;index++)assert.match(html,new RegExp(reportFor(people[index],index).politicianType.primaryType));
 });
 
+test('administrator comparison uses aligned compact cells instead of nesting full detail dashboards',async()=>{
+  const ids=people.slice(0,4).map(person=>person.id).join(',');
+  const html=await renderPoliticianCompare(serviceFor('admin'),`/compare?ids=${ids}&run=1`,{user:{role:'admin'}});
+  assert.equal((html.match(/data-compare-topic-axis=/g)||[]).length,10);
+  assert.equal((html.match(/data-compare-person-cell=/g)||[]).length,40);
+  assert.equal((html.match(/data-compare-display="competitor"/g)||[]).length,4);
+  assert.doesNotMatch(html,/jcs-dx-competitor-grid/);
+  assert.doesNotMatch(html,/2026-\d{2}-\d{2}T\d{2}/);
+  assert.doesNotMatch(html,/jcs-dx-stack|jcs-dx-grid-2|jcs-dx-summary-grid/);
+});
+
 test('administrator target strategy produces one response card per selected rival for two three and four people',async()=>{
   for(const count of [2,3,4]){
     const ids=people.slice(0,count).map(person=>person.id).join(',');
