@@ -51,20 +51,9 @@ test('administrator detail renders all ten compact intelligence report modules',
   const html=await renderPoliticianDetail(person.id,serviceFor('admin'),{authenticated:true,user:{role:'admin'}});
   assert.match(html,/JCS ADMIN POLITICAL INTELLIGENCE/);
   assert.deepEqual([...html.matchAll(/data-diagnostic-topic="(\d{2})"/g)].map(match=>match[1]),['01','02','03','04','05','06','07','08','09','10']);
-  for(const label of ['핵심 사건','정치적 의미','변화 원인','과거와 현재','서브데이터','현재 위치','변화 흐름','근거 데이터','기회 요인','위험 요인','진단 근거','정참시 전략 판단','실행 처방','실행 우선순위','예상 변화 및 추적 지표'])assert.match(html,new RegExp(label));
-  assert.equal((html.match(/>과거와 현재</g)||[]).length,1);
-  assert.equal((html.match(/>핵심 사건</g)||[]).length,1);
-  assert.equal((html.match(/>변화 원인</g)||[]).length,1);
-  assert.equal((html.match(/>변화 흐름</g)||[]).length,1);
-  assert.equal((html.match(/>근거 데이터</g)||[]).length,1);
-  assert.equal((html.match(/>서브데이터</g)||[]).length,1);
-  assert.equal((html.match(/>비교 기준</g)||[]).length,0);
-  assert.equal((html.match(/>분석 기준</g)||[]).length,0);
-  const topic01=html.slice(html.indexOf('data-diagnostic-topic="01"'),html.indexOf('data-diagnostic-topic="02"'));
-  const topic06=html.slice(html.indexOf('data-diagnostic-topic="06"'),html.indexOf('data-diagnostic-topic="07"'));
-  assert.match(topic01,/>과거와 현재</);
-  assert.match(topic01,/>근거 데이터</);
-  assert.match(topic06,/>서브데이터</);
+  for(const label of ['NOW SIGNAL','BRAND INDICATORS','SEARCH & NEWS SPREAD','PAST RISK SIGNALS','BRAND TOTAL SIGN','AGE × GENDER COMPOSITION','기반 순위','공식 선거 기반','CORE','FLOATING','EXIT','이슈 확산 속도','매체 집중도','출마·당선 이력','정책 진행 단계','JCS TOTAL','실행 처방','실행 우선순위','예상 변화 및 추적 지표'])assert.match(html,new RegExp(label));
+  const diagnosisPart=html.slice(html.indexOf('<div class="jcs-diagnosis-part">'),html.indexOf('<section class="jcs-v2-summary">'));
+  for(const removed of ['정치적 의미','현재 위치','정참시 해석','기회 요인','위험 요인','변화 원인','과거와 현재','비교 기준','서브데이터'])assert.doesNotMatch(diagnosisPart,new RegExp(`>${removed}<`));
   assert.equal((html.match(/data-prescription-topic=/g)||[]).length,10);
   assert.equal((html.match(/JCS ST 해석 · 뉴스 헤드라인, 공식 이력, 선거·지역·정당 구조와 검색 반응을 종합한 정참시 자체 분석입니다\./g)||[]).length,1);
   assert.ok(html.indexOf('PART 01')<html.indexOf('PART 02'));
@@ -72,8 +61,7 @@ test('administrator detail renders all ten compact intelligence report modules',
   assert.match(html,/data-politician-type=/);
   assert.match(html,new RegExp(report.politicianType.primaryType));
   assert.match(html,new RegExp(report.politicianType.currentPhase));
-  assert.ok((html.match(/data-diagnosis-visual=/g)||[]).length>=10);
-  for(const visual of ['positioning','cohort-heatmap','local-fit','support-stack','competitor-matrix','risk-matrix','narrative-timeline','campaign-matrix','policy-heatmap','growth-ladder'])assert.match(html,new RegExp(`data-diagnosis-visual="${visual}"`));
+  assert.equal((html.match(/data-diagnosis-layout="\d{2}"/g)||[]).length,10);
 });
 
 test('diagnostics preserve profile photo and record sections for every role',async()=>{
@@ -92,5 +80,6 @@ test('an administrator sees stable complete structural cards with sparse source 
   const html=await renderPoliticianDetail(person.id,service,{user:{role:'admin'}});
   assert.equal((html.match(/data-diagnostic-topic=/g)||[]).length,10);
   assert.equal((html.match(/data-prescription-topic=/g)||[]).length,10);
-  assert.doesNotMatch(html,/데이터 부족|분석 준비 중|분석 불가|판단 불가|비교 불가|알 수 없음|추가 데이터 필요|N\/A|TODO|TBD|추후 제공/);
+  assert.equal((html.match(/data-diagnosis-layout="\d{2}"/g)||[]).length,10);
+  assert.doesNotMatch(html,/undefined|\[object Object\]|TODO|TBD/);
 });

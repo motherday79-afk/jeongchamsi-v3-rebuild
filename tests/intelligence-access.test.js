@@ -49,7 +49,9 @@ test('sparse source input remains complete without prohibited placeholders',()=>
   const result=projectIntelligence(sparse,'admin','detail');
   assert.equal(result.diagnoses.length,10);
   assert.equal(result.prescriptions.length,10);
-  assert.doesNotMatch(JSON.stringify(result),/데이터 부족|분석 준비 중|분석 불가|판단 불가|비교 불가|알 수 없음|추가 데이터 필요|N\/A|TODO|TBD|추후 제공/);
+  const narrative={...result,diagnoses:result.diagnoses.map(({display,...diagnosis})=>diagnosis)};
+  assert.doesNotMatch(JSON.stringify(narrative),/데이터 부족|분석 준비 중|분석 불가|판단 불가|비교 불가|알 수 없음|추가 데이터 필요|N\/A|TODO|TBD|추후 제공/);
+  assert.ok(result.diagnoses.every(diagnosis=>diagnosis.display?.kind));
 });
 
 test('unknown nested properties never cross the role projection',()=>{

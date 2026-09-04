@@ -1,0 +1,67 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { buildIntelligenceDraft } from '../lib/intelligence-analysis.js';
+import { projectIntelligence } from '../lib/intelligence-access.js';
+
+const person={id:'assembly-display',type:'assembly',roleLabel:'국회의원',name:'김진단',party:'더불어민주당',region:'서울',jurisdiction:'서울 진단구',terms:'재선',committee:'정무위원회',office:'제22대 국회의원',electionLabel:'제22대 국회의원 당선'};
+const raw={snapshotId:'jcs-display',collectedAt:'2026-09-04T00:00:00.000Z',searchAds:{volume:{pc:2400,mobile:7600}},news:{items:[
+  {title:'김진단 청년 주거 정책 발표 - 연합뉴스',source:'연합뉴스',url:'https://example.com/a',publishedAt:'2026-09-04T00:00:00.000Z'},
+  {title:'김진단 지역 예산 확보 성과',source:'KBS',url:'https://example.com/b',publishedAt:'2026-09-03T00:00:00.000Z'},
+  {title:'김진단 과거 발언 논란 재점화',source:'MBC',url:'https://example.com/c',publishedAt:'2026-08-20T00:00:00.000Z'},
+  {title:'김진단 주거 법안 비판 확산',source:'SBS',url:'https://example.com/d',publishedAt:'2026-07-10T00:00:00.000Z'}
+]},sourceErrors:[]};
+const context={peers:[
+  {id:'r1',name:'이경쟁',type:'assembly',party:'더불어민주당',region:'서울',jurisdiction:'서울 진단구',terms:'3선',office:'국회의원'},
+  {id:'r2',name:'박경쟁',type:'assembly',party:'국민의힘',region:'서울',terms:'초선',office:'국회의원'},
+  {id:'r3',name:'최경쟁',type:'assembly',party:'무소속',region:'경기',terms:'재선',office:'국회의원'},
+  {id:'r4',name:'정경쟁',type:'assembly',party:'더불어민주당',region:'부산',terms:'4선',office:'국회의원'}
+],ageSex:[
+  {age:'20대',maleShare:49,femaleShare:51},{age:'30대',maleShare:50,femaleShare:50},{age:'40대',maleShare:51,femaleShare:49},{age:'50대',maleShare:49,femaleShare:51},{age:'60대 이상',maleShare:46,femaleShare:54}
+]};
+
+test('administrator diagnoses expose ten distinct approved display contracts',()=>{
+  const report=buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V3');
+  const diagnoses=projectIntelligence(report,'admin','detail').diagnoses;
+  assert.deepEqual(diagnoses.map(row=>row.display?.kind),['brand','demographic','local','support','competitor','risk','media','campaign','policy','summary']);
+  assert.equal(diagnoses[9].title,'JCS 종합해석');
+});
+
+test('demographic composition and support composition each total one hundred',()=>{
+  const report=projectIntelligence(buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
+  const demographic=report.diagnoses.find(row=>row.id==='02').display;
+  const support=report.diagnoses.find(row=>row.id==='04').display;
+  assert.equal(demographic.cohorts.reduce((sum,row)=>sum+row.male+row.female,0),100);
+  assert.equal(support.composition.reduce((sum,row)=>sum+row.value,0),100);
+  assert.deepEqual(support.composition.map(row=>row.key),['core','floating','exit']);
+});
+
+test('competitor comparison is capped at three and campaign data never invents election values',()=>{
+  const report=projectIntelligence(buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
+  const competitor=report.diagnoses.find(row=>row.id==='05').display;
+  const campaign=report.diagnoses.find(row=>row.id==='08').display;
+  assert.equal(competitor.people.length,4);
+  assert.equal(competitor.people[0].name,'김진단');
+  assert.equal(new Set(competitor.people.slice(1).map(row=>row.name)).size,3);
+  assert.equal(campaign.elections.length,0);
+  assert.equal(campaign.status,'비교 가능한 공식 선거 데이터 부족');
+});
+
+test('brand past risk signals link only to observed negative news evidence',()=>{
+  const report=projectIntelligence(buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
+  const brand=report.diagnoses.find(row=>row.id==='01').display;
+  assert.ok(brand.pastRisks.length>=1&&brand.pastRisks.length<=5);
+  assert.equal(brand.pastRisks.every(row=>row.tag.startsWith('#')&&row.url),true);
+  assert.match(brand.nowSignal,/김진단/);
+  assert.doesNotMatch(brand.nowSignal,/연합뉴스$/);
+});
+
+test('local diagnosis excludes national coverage that has no district evidence',()=>{
+  const localRaw={...raw,news:{items:[
+    {title:'김진단 서울 진단구 지역 예산 확보',source:'지역신문',url:'https://example.com/local',publishedAt:'2026-09-04T00:00:00.000Z'},
+    {title:'김진단 국회 외교 정책 발표',source:'전국신문',url:'https://example.com/national',publishedAt:'2026-09-03T00:00:00.000Z'}
+  ]}};
+  const report=projectIntelligence(buildIntelligenceDraft(person,localRaw,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
+  const local=report.diagnoses.find(row=>row.id==='03').display;
+  assert.equal(local.issues.reduce((sum,row)=>sum+row.count,0),1);
+  assert.equal(local.messageFit.length,1);
+});

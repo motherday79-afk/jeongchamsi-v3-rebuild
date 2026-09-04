@@ -19,8 +19,9 @@ test('a published politician uses live ranks and all ten projected administrator
   assert.equal((html.match(/data-diagnostic-topic=/g)||[]).length,10);
   assert.match(html,/정치인 브랜드 진단/);
   assert.match(html,/세대·성별 지지구조 분석/);
-  assert.match(html,/중장기 정치 성장 진단/);
-  assert.match(html,/근거 데이터/);
+  assert.match(html,/JCS 종합해석/);
+  assert.equal((html.match(/data-diagnosis-layout="\d{2}"/g)||[]).length,10);
+  assert.match(html,/BRAND INDICATORS/);
   assert.match(html,/실행 처방/);
   assert.equal((html.match(/data-prescription-topic=/g)||[]).length,10);
   assert.doesNotMatch(html,/"raw"|data-generated-value/);

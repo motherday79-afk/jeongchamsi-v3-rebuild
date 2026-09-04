@@ -16,11 +16,15 @@ const news=[
 const raw={personId:basePerson.id,snapshotId:'snapshot-v2',collectedAt:'2026-09-03T00:00:00Z',officialProfile:basePerson,searchAds:{volume:{pc:1500,mobile:10000}},news:{items:news},sourceErrors:[]};
 const context={peers:[basePerson,{...basePerson,id:'assembly-032',name:'이경쟁',terms:'초선',region:'서울'},{...basePerson,id:'assembly-033',name:'박경쟁',party:'국민의힘',terms:'5선'}],ageSex:[{age:'20대',maleShare:49.1,femaleShare:50.9},{age:'30대',maleShare:50.3,femaleShare:49.7},{age:'40대',maleShare:50.7,femaleShare:49.3},{age:'50대',maleShare:50.1,femaleShare:49.9},{age:'60대 이상',maleShare:46.5,femaleShare:53.5}],source:{title:'공식 연령×성별 인구표',url:'https://jumin.mois.go.kr/ageStatMonth.do'}};
 
-const diagnosisFields=['id','title','headline','currentPosition','coreEvent','politicalMeaning','changeReason','pastPresentConnection','supportingData','attentionQuality','score','percentile','trend','benchmark','visualization','interpretation','evidence','opportunity','risk','sourceTypes','updatedAt','algorithmVersion','basis'];
+const diagnosisFields=['id','title','headline','currentPosition','coreEvent','politicalMeaning','changeReason','pastPresentConnection','supportingData','attentionQuality','score','percentile','trend','benchmark','visualization','display','interpretation','evidence','opportunity','risk','sourceTypes','updatedAt','algorithmVersion','basis'];
 const prescriptionFields=['id','linkedDiagnosisIds','diagnosisBasis','title','objective','strategicJudgment','actions','target','messageDirection','channels','timing','priority','expectedImpact','monitoringIndicators','visualization','updatedAt','algorithmVersion'];
 const diagnosisVisuals=['positioning-matrix','cohort-diverging','issue-fit-bars','support-stack','competitor-heatmap','risk-matrix','narrative-timeline','campaign-matrix','policy-heatmap','growth-gap'];
 const prescriptionVisuals=['message-pyramid','target-matrix','local-playbook','support-flow','response-matrix','crisis-timeline','propagation-flow','resource-allocation','policy-quadrant','growth-timeline'];
 const forbidden=/데이터 부족|분석 준비 중|분석 불가|판단 불가|비교 불가|알 수 없음|추가 데이터 필요|N\/A|TODO|TBD|추후 제공/;
+const narrativeOnly=report=>({
+  ...report,
+  diagnoses:report.diagnoses.map(({display,...diagnosis})=>diagnosis)
+});
 
 test('every registered-style profile receives ten complete diagnoses followed by ten linked prescriptions',()=>{
   const draft=buildIntelligenceDraft(basePerson,raw,context,'JCS_INTELLIGENCE_V2');
@@ -30,7 +34,7 @@ test('every registered-style profile receives ten complete diagnoses followed by
   assert.deepEqual(draft.prescriptions.map(item=>item.visualization.type),prescriptionVisuals);
   for(const item of draft.diagnoses)for(const field of diagnosisFields)assert.ok(item[field]!==null&&item[field]!==undefined&&item[field]!=='' ,`diagnosis ${item.id}.${field}`);
   for(const item of draft.prescriptions){for(const field of prescriptionFields)assert.ok(item[field]!==null&&item[field]!==undefined&&item[field]!=='' ,`prescription ${item.id}.${field}`);assert.ok(item.linkedDiagnosisIds.length>0);}
-  assert.doesNotMatch(JSON.stringify({diagnoses:draft.diagnoses,prescriptions:draft.prescriptions}),forbidden);
+  assert.doesNotMatch(JSON.stringify(narrativeOnly({diagnoses:draft.diagnoses,prescriptions:draft.prescriptions})),forbidden);
 });
 
 test('prescriptions are diagnosis-linked and priorities resolve to 3 immediate 3 monthly 2 quarterly and 2 long-term',()=>{
@@ -43,7 +47,7 @@ test('prescriptions are diagnosis-linked and priorities resolve to 3 immediate 3
 
 test('diagnosis narrative is news and structure led while search remains a supporting signal',()=>{
   const draft=buildIntelligenceDraft(basePerson,raw,context,'JCS_INTELLIGENCE_V2');
-  const narrative=JSON.stringify({diagnoses:draft.diagnoses,prescriptions:draft.prescriptions,summary:draft.diagnosisSummary});
+  const narrative=JSON.stringify(narrativeOnly({diagnoses:draft.diagnoses,prescriptions:draft.prescriptions,summary:draft.diagnosisSummary}));
   assert.match(narrative,/민생·경제|지역·현장|뉴스|정무위원회/);
   assert.doesNotMatch(narrative,/모바일 검색|PC 검색|모바일 이용자|모바일 우위/);
   assert.equal(draft.news.length<=10,true);
@@ -83,9 +87,13 @@ test('diagnosis shows the cleaned core event once and keeps it out of repeated a
   for(const diagnosis of draft.diagnoses){
     assert.equal(diagnosis.coreEvent,"'5.18 도발' 이진숙의 운명은?");
     assert.equal(diagnosis.changeReason,'대표 뉴스는 최근 30일 0건, 90일 0건으로 집계되며 유지 흐름을 보입니다.');
-    const repeated=JSON.stringify({...diagnosis,coreEvent:''});
+    const {display,...copy}=diagnosis;
+    const repeated=JSON.stringify({...copy,coreEvent:''});
     assert.doesNotMatch(repeated,/한강만평|한강타임즈|5\.18 도발|이진숙의 운명/);
   }
+  assert.equal(draft.diagnoses.find(row=>row.id==='01').display.nowSignal,"'5.18 도발' 이진숙의 운명은?");
+  assert.equal(draft.diagnoses.find(row=>row.id==='06').display.nowSignal,"'5.18 도발' 이진숙의 운명은?");
+  assert.equal(draft.diagnoses.filter(row=>!['01','06'].includes(row.id)).some(row=>JSON.stringify(row.display).includes('5.18 도발')),false);
 });
 
 test('Lee Jin-sook receives ten distinct JCS judgments with direct topic-specific opportunities and risks',()=>{
@@ -140,7 +148,7 @@ test('sparse-news politicians still receive complete non-cloned structural intel
   assert.ok(new Set(first.diagnoses.map(item=>item.score)).size>=5);
   assert.notDeepEqual(first.diagnoses.map(item=>item.score),other.diagnoses.map(item=>item.score));
   assert.notEqual(first.diagnosisSummary.strongestAsset,other.diagnosisSummary.strongestAsset);
-  assert.doesNotMatch(JSON.stringify(first),forbidden);
+  assert.doesNotMatch(JSON.stringify(narrativeOnly(first)),forbidden);
   assert.equal(validateIntelligenceDraft(first).ok,true);
 });
 
@@ -183,7 +191,7 @@ test('all 542 registered politicians receive a deterministic 10 diagnosis and 10
     assert.equal(report.diagnoses.length,10,person.id);
     assert.equal(report.prescriptions.length,10,person.id);
     assert.deepEqual(report.prescriptions.map(row=>row.id),report.diagnoses.map(row=>row.id),person.id);
-    assert.doesNotMatch(JSON.stringify({diagnoses:report.diagnoses,prescriptions:report.prescriptions}),/데이터 부족|분석 준비 중|분석 불가|판단 불가|비교 불가|알 수 없음|추가 데이터 필요|N\/A|TODO|TBD|추후 제공/,person.id);
+    assert.doesNotMatch(JSON.stringify(narrativeOnly({diagnoses:report.diagnoses,prescriptions:report.prescriptions})),/데이터 부족|분석 준비 중|분석 불가|판단 불가|비교 불가|알 수 없음|추가 데이터 필요|N\/A|TODO|TBD|추후 제공/,person.id);
     assert.equal(new Set(report.diagnoses.map(row=>row.interpretation.join(' '))).size,10,`${person.id} interpretations`);
     assert.equal(new Set(report.diagnoses.map(row=>row.opportunity)).size,10,`${person.id} opportunities`);
     assert.equal(new Set(report.diagnoses.map(row=>row.risk)).size,10,`${person.id} risks`);

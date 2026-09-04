@@ -134,9 +134,9 @@ test('admin Kim Min-seok detail renders all ten evidence and prescription module
   const intelligence=projectIntelligence(reportForSample(sample),'admin','detail');
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{user:{role:'admin'}});
   const text=html.replaceAll('&amp;','&');
-  for(const marker of ['JCS ADMIN POLITICAL INTELLIGENCE','정치인 브랜드 진단','세대·성별 지지구조 분석','핵심 지지층 결집도 분석','이슈·위기 위험도 진단','선거·캠페인 경쟁력 진단','중장기 정치 성장 진단','JCS STRATEGIC CONSULTING'])assert.match(text,new RegExp(marker));
+  for(const marker of ['JCS ADMIN POLITICAL INTELLIGENCE','정치인 브랜드 진단','세대·성별 지지구조 분석','핵심 지지층 결집도 분석','이슈·위기 위험도 진단','선거·캠페인 경쟁력 진단','JCS 종합해석','JCS STRATEGIC CONSULTING'])assert.match(text,new RegExp(marker));
   assert.equal((html.match(/data-diagnostic-topic=/g)||[]).length,10);
-  assert.match(html,/근거 데이터/);
+  assert.match(html,/BRAND INDICATORS/);
   assert.match(html,/실행 처방/);
   assert.doesNotMatch(html,/\[object Object\]/);
   assert.doesNotMatch(html,/modeled.*fallback|"raw"/i);
@@ -146,19 +146,21 @@ test('administrator demographic diagnosis renders separate male and female cohor
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
   const intelligence=projectIntelligence(reportForSample(sample),'admin','detail');
   const demographic=intelligence.diagnoses.find(topic=>topic.id==='02');
-  demographic.visualization={type:'cohort-diverging',rows:[{label:'20대',left:71,right:43},{label:'30대',left:64,right:52}]};
+  demographic.display={kind:'demographic',cohorts:[{age:'20대',male:23,female:14},{age:'30대',male:18,female:15},{age:'40대',male:9,female:8},{age:'50대',male:5,female:4},{age:'60대 이상',male:2,female:2}],maleRank:[{age:'20대',value:23},{age:'30대',value:18}],femaleRank:[{age:'30대',value:15},{age:'20대',value:14}],total:100};
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{user:{role:'admin'}});
-  assert.match(html,/20대[\s\S]*남성 71[\s\S]*여성 43/);
-  assert.match(html,/30대[\s\S]*남성 64[\s\S]*여성 52/);
+  assert.match(html,/20대[\s\S]*23%[\s\S]*14%/);
+  assert.match(html,/30대[\s\S]*18%[\s\S]*15%/);
+  assert.match(html,/합계 100%/);
 });
 
 test('administrator report uses compact topic headers and report fields',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
   const intelligence=projectIntelligence(reportForSample(sample),'admin','detail');
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{user:{role:'admin'}});
-  assert.equal((html.match(/class="jcs-diagnostic-topic jcs-diagnostic-admin-topic"/g)||[]).length,10);
-  for(const field of ['현재 위치','변화 흐름','근거 데이터','기회 요인','위험 요인','정참시 전략 판단','실행 처방','실행 우선순위','예상 변화 및 추적 지표'])assert.match(html,new RegExp(field));
-  assert.doesNotMatch(html,/>비교 기준<|>분석 기준</);
+  assert.equal((html.match(/data-diagnosis-layout="\d{2}"/g)||[]).length,10);
+  for(const field of ['NOW SIGNAL','BRAND INDICATORS','AGE × GENDER COMPOSITION','SUPPORT COMPOSITION','경쟁 정치인 직접 비교','이슈 확산 속도','매체 집중도','출마·당선 이력','정책 진행 단계','JCS TOTAL'])assert.match(html,new RegExp(field));
+  const diagnosisPart=html.slice(html.indexOf('<div class="jcs-diagnosis-part">'),html.indexOf('<section class="jcs-v2-summary">'));
+  assert.doesNotMatch(diagnosisPart,/>현재 위치<|>변화 흐름<|>기회 요인<|>위험 요인<|>비교 기준<|>분석 기준</);
 });
 
 test('administrator report does not use a collapsed dashboard gate',async()=>{
