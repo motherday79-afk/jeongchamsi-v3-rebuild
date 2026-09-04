@@ -64,6 +64,8 @@ test('administrator comparison caps selection at four and renders all ten topics
   for(const label of ['핵심 사건','변화 원인','과거와 현재','최근 변화','근거 데이터'])assert.equal((html.match(new RegExp(`>${label}<`,'g'))||[]).length,4);
   assert.equal((html.match(/>서브데이터</g)||[]).length,4);
   assert.equal((html.match(/>비교 기준</g)||[]).length,0);
+  assert.equal((html.match(/data-politician-type=/g)||[]).length,4);
+  for(let index=0;index<4;index++)assert.match(html,new RegExp(reportFor(people[index],index).politicianType.primaryType));
 });
 
 test('administrator target strategy produces one response card per selected rival for two three and four people',async()=>{

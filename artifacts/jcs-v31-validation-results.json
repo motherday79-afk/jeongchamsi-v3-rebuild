@@ -1,0 +1,856 @@
+{
+  "generatedAt": "2026-09-04T00:00:00Z",
+  "algorithmVersion": "JCS_INTELLIGENCE_V3",
+  "registeredActiveProfiles": 542,
+  "goldenSample": {
+    "name": "이진숙",
+    "primaryType": "코어지지층 결집형",
+    "secondaryTypes": [
+      "미디어·이슈주도형",
+      "개혁·전투형"
+    ],
+    "currentPhase": "부정 이슈 고주목 · 외연 확장 위험",
+    "eventClusters": [
+      {
+        "eventId": "event-1rfme4z",
+        "eventTitle": "5·18 유공자들, 이진숙 상대 손배소 청구…1인당 3000만원",
+        "eventType": "법적 사건",
+        "dateRange": {
+          "from": "2026-09-02",
+          "to": "2026-09-03"
+        },
+        "relatedNewsIds": [
+          "news-yu15z3",
+          "news-16mhz2y"
+        ],
+        "mainActors": [
+          "이진숙"
+        ],
+        "coreKeywords": [
+          "5·18",
+          "손배소",
+          "발언",
+          "손해배상",
+          "소송"
+        ],
+        "politicalFrame": "부정·위기",
+        "direction": "negative",
+        "affectedGroups": [
+          "핵심 지지층",
+          "중도층",
+          "비지지층"
+        ],
+        "affectedPoliticalAssets": [
+          "brand",
+          "mediaAttention",
+          "policyIdentity",
+          "coreSupport",
+          "moderateExpansion",
+          "electionCompetitiveness",
+          "crisisRisk",
+          "growthPotential"
+        ],
+        "severity": "medium",
+        "persistence": "반복",
+        "evidence": [
+          {
+            "evidenceId": "news-yu15z3",
+            "newsId": "news-yu15z3",
+            "title": "5·18 유공자들, 이진숙 상대 손배소 청구…1인당 3000만원",
+            "date": "2026-09-03",
+            "source": "검증 자료",
+            "frame": "부정·위기"
+          },
+          {
+            "evidenceId": "news-16mhz2y",
+            "newsId": "news-16mhz2y",
+            "title": "이진숙 5·18 발언 놓고 유공자 손해배상 소송 제기",
+            "date": "2026-09-02",
+            "source": "검증 자료",
+            "frame": "부정·위기"
+          }
+        ],
+        "legalStatus": "민사소송",
+        "historyLinks": [],
+        "assetEffects": {
+          "brand": {
+            "direction": "negative",
+            "impactStrength": "medium",
+            "affectedGroups": [
+              "핵심 지지층",
+              "중도층",
+              "비지지층"
+            ],
+            "evidenceIds": [
+              "news-yu15z3",
+              "news-16mhz2y"
+            ],
+            "explanation": "5·18 유공자들, 이진숙 상대 손배소 청구…1인당 3000만원의 부정 프레임이 인물 이미지에 손실을 만든다."
+          },
+          "mediaAttention": {
+            "direction": "positive",
+            "impactStrength": "medium",
+            "affectedGroups": [
+              "핵심 지지층",
+              "중도층",
+              "비지지층"
+            ],
+            "evidenceIds": [
+              "news-yu15z3",
+              "news-16mhz2y"
+            ],
+            "explanation": "5·18 유공자들, 이진숙 상대 손배소 청구…1인당 3000만원 보도로 언론 주목도는 상승한다."
+          },
+          "policyIdentity": {
+            "direction": "negative",
+            "impactStrength": "medium",
+            "affectedGroups": [
+              "핵심 지지층",
+              "중도층",
+              "비지지층"
+            ],
+            "evidenceIds": [
+              "news-yu15z3",
+              "news-16mhz2y"
+            ],
+            "explanation": "논란 서사가 정책·성과 노출을 밀어낸다."
+          },
+          "regionalBase": {
+            "direction": "neutral",
+            "impactStrength": "weak",
+            "affectedGroups": [
+              "핵심 지지층",
+              "중도층",
+              "비지지층"
+            ],
+            "evidenceIds": [
+              "news-yu15z3",
+              "news-16mhz2y"
+            ],
+            "explanation": "5·18 유공자들, 이진숙 상대 손배소 청구…1인당 3000만원에서 regionalBase의 직접 변화는 확인하지 않는다."
+          },
+          "coreSupport": {
+            "direction": "positive",
+            "impactStrength": "medium",
+            "affectedGroups": [
+              "핵심 지지층"
+            ],
+            "evidenceIds": [
+              "news-yu15z3",
+              "news-16mhz2y"
+            ],
+            "explanation": "외부 비판에 대한 방어 반응이 핵심 지지층 결집으로 작용한다."
+          },
+          "moderateExpansion": {
+            "direction": "negative",
+            "impactStrength": "medium",
+            "affectedGroups": [
+              "중도층",
+              "비지지층"
+            ],
+            "evidenceIds": [
+              "news-yu15z3",
+              "news-16mhz2y"
+            ],
+            "explanation": "논란에 대한 거부감이 외연 확장을 막는다."
+          },
+          "partyAlliance": {
+            "direction": "neutral",
+            "impactStrength": "weak",
+            "affectedGroups": [
+              "핵심 지지층",
+              "중도층",
+              "비지지층"
+            ],
+            "evidenceIds": [
+              "news-yu15z3",
+              "news-16mhz2y"
+            ],
+            "explanation": "5·18 유공자들, 이진숙 상대 손배소 청구…1인당 3000만원에서 partyAlliance의 직접 변화는 확인하지 않는다."
+          },
+          "politicalResilience": {
+            "direction": "neutral",
+            "impactStrength": "weak",
+            "affectedGroups": [
+              "핵심 지지층",
+              "중도층",
+              "비지지층"
+            ],
+            "evidenceIds": [
+              "news-yu15z3",
+              "news-16mhz2y"
+            ],
+            "explanation": "5·18 유공자들, 이진숙 상대 손배소 청구…1인당 3000만원에서 politicalResilience의 직접 변화는 확인하지 않는다."
+          },
+          "electionCompetitiveness": {
+            "direction": "negative",
+            "impactStrength": "medium",
+            "affectedGroups": [
+              "중도층",
+              "경합 유권자"
+            ],
+            "evidenceIds": [
+              "news-yu15z3",
+              "news-16mhz2y"
+            ],
+            "explanation": "후보 검증 이슈로 전환될 경우 경합 득표에 손실을 만든다."
+          },
+          "crisisRisk": {
+            "direction": "negative",
+            "impactStrength": "medium",
+            "affectedGroups": [
+              "핵심 지지층",
+              "중도층",
+              "비지지층"
+            ],
+            "evidenceIds": [
+              "news-yu15z3",
+              "news-16mhz2y"
+            ],
+            "explanation": "추가 보도와 당사자 대응에 따라 위기 위험이 커진다."
+          },
+          "growthPotential": {
+            "direction": "negative",
+            "impactStrength": "medium",
+            "affectedGroups": [
+              "중도층",
+              "당내 의사결정층"
+            ],
+            "evidenceIds": [
+              "news-yu15z3",
+              "news-16mhz2y"
+            ],
+            "explanation": "부정 이미지가 고착되면 다음 정치 단계의 명분이 약해진다."
+          }
+        }
+      }
+    ],
+    "politicalAssetMatrix": {
+      "assets": [
+        "brand",
+        "mediaAttention",
+        "policyIdentity",
+        "regionalBase",
+        "coreSupport",
+        "moderateExpansion",
+        "partyAlliance",
+        "politicalResilience",
+        "electionCompetitiveness",
+        "crisisRisk",
+        "growthPotential"
+      ],
+      "byEvent": [
+        {
+          "eventId": "event-1rfme4z",
+          "eventTitle": "5·18 유공자들, 이진숙 상대 손배소 청구…1인당 3000만원",
+          "effects": {
+            "brand": {
+              "direction": "negative",
+              "impactStrength": "medium",
+              "affectedGroups": [
+                "핵심 지지층",
+                "중도층",
+                "비지지층"
+              ],
+              "evidenceIds": [
+                "news-yu15z3",
+                "news-16mhz2y"
+              ],
+              "explanation": "5·18 유공자들, 이진숙 상대 손배소 청구…1인당 3000만원의 부정 프레임이 인물 이미지에 손실을 만든다."
+            },
+            "mediaAttention": {
+              "direction": "positive",
+              "impactStrength": "medium",
+              "affectedGroups": [
+                "핵심 지지층",
+                "중도층",
+                "비지지층"
+              ],
+              "evidenceIds": [
+                "news-yu15z3",
+                "news-16mhz2y"
+              ],
+              "explanation": "5·18 유공자들, 이진숙 상대 손배소 청구…1인당 3000만원 보도로 언론 주목도는 상승한다."
+            },
+            "policyIdentity": {
+              "direction": "negative",
+              "impactStrength": "medium",
+              "affectedGroups": [
+                "핵심 지지층",
+                "중도층",
+                "비지지층"
+              ],
+              "evidenceIds": [
+                "news-yu15z3",
+                "news-16mhz2y"
+              ],
+              "explanation": "논란 서사가 정책·성과 노출을 밀어낸다."
+            },
+            "regionalBase": {
+              "direction": "neutral",
+              "impactStrength": "weak",
+              "affectedGroups": [
+                "핵심 지지층",
+                "중도층",
+                "비지지층"
+              ],
+              "evidenceIds": [
+                "news-yu15z3",
+                "news-16mhz2y"
+              ],
+              "explanation": "5·18 유공자들, 이진숙 상대 손배소 청구…1인당 3000만원에서 regionalBase의 직접 변화는 확인하지 않는다."
+            },
+            "coreSupport": {
+              "direction": "positive",
+              "impactStrength": "medium",
+              "affectedGroups": [
+                "핵심 지지층"
+              ],
+              "evidenceIds": [
+                "news-yu15z3",
+                "news-16mhz2y"
+              ],
+              "explanation": "외부 비판에 대한 방어 반응이 핵심 지지층 결집으로 작용한다."
+            },
+            "moderateExpansion": {
+              "direction": "negative",
+              "impactStrength": "medium",
+              "affectedGroups": [
+                "중도층",
+                "비지지층"
+              ],
+              "evidenceIds": [
+                "news-yu15z3",
+                "news-16mhz2y"
+              ],
+              "explanation": "논란에 대한 거부감이 외연 확장을 막는다."
+            },
+            "partyAlliance": {
+              "direction": "neutral",
+              "impactStrength": "weak",
+              "affectedGroups": [
+                "핵심 지지층",
+                "중도층",
+                "비지지층"
+              ],
+              "evidenceIds": [
+                "news-yu15z3",
+                "news-16mhz2y"
+              ],
+              "explanation": "5·18 유공자들, 이진숙 상대 손배소 청구…1인당 3000만원에서 partyAlliance의 직접 변화는 확인하지 않는다."
+            },
+            "politicalResilience": {
+              "direction": "neutral",
+              "impactStrength": "weak",
+              "affectedGroups": [
+                "핵심 지지층",
+                "중도층",
+                "비지지층"
+              ],
+              "evidenceIds": [
+                "news-yu15z3",
+                "news-16mhz2y"
+              ],
+              "explanation": "5·18 유공자들, 이진숙 상대 손배소 청구…1인당 3000만원에서 politicalResilience의 직접 변화는 확인하지 않는다."
+            },
+            "electionCompetitiveness": {
+              "direction": "negative",
+              "impactStrength": "medium",
+              "affectedGroups": [
+                "중도층",
+                "경합 유권자"
+              ],
+              "evidenceIds": [
+                "news-yu15z3",
+                "news-16mhz2y"
+              ],
+              "explanation": "후보 검증 이슈로 전환될 경우 경합 득표에 손실을 만든다."
+            },
+            "crisisRisk": {
+              "direction": "negative",
+              "impactStrength": "medium",
+              "affectedGroups": [
+                "핵심 지지층",
+                "중도층",
+                "비지지층"
+              ],
+              "evidenceIds": [
+                "news-yu15z3",
+                "news-16mhz2y"
+              ],
+              "explanation": "추가 보도와 당사자 대응에 따라 위기 위험이 커진다."
+            },
+            "growthPotential": {
+              "direction": "negative",
+              "impactStrength": "medium",
+              "affectedGroups": [
+                "중도층",
+                "당내 의사결정층"
+              ],
+              "evidenceIds": [
+                "news-yu15z3",
+                "news-16mhz2y"
+              ],
+              "explanation": "부정 이미지가 고착되면 다음 정치 단계의 명분이 약해진다."
+            }
+          }
+        }
+      ],
+      "summary": {
+        "brand": {
+          "direction": "negative",
+          "positiveEvents": 0,
+          "negativeEvents": 1,
+          "evidenceIds": [
+            "news-yu15z3",
+            "news-16mhz2y"
+          ],
+          "explanation": "brand의 손실 신호가 우세하다."
+        },
+        "mediaAttention": {
+          "direction": "positive",
+          "positiveEvents": 1,
+          "negativeEvents": 0,
+          "evidenceIds": [
+            "news-yu15z3",
+            "news-16mhz2y"
+          ],
+          "explanation": "mediaAttention의 강화 신호가 우세하다."
+        },
+        "policyIdentity": {
+          "direction": "negative",
+          "positiveEvents": 0,
+          "negativeEvents": 1,
+          "evidenceIds": [
+            "news-yu15z3",
+            "news-16mhz2y"
+          ],
+          "explanation": "policyIdentity의 손실 신호가 우세하다."
+        },
+        "regionalBase": {
+          "direction": "neutral",
+          "positiveEvents": 0,
+          "negativeEvents": 0,
+          "evidenceIds": [
+            "news-yu15z3",
+            "news-16mhz2y"
+          ],
+          "explanation": "regionalBase의 직접 변화는 확인하지 않는다."
+        },
+        "coreSupport": {
+          "direction": "positive",
+          "positiveEvents": 1,
+          "negativeEvents": 0,
+          "evidenceIds": [
+            "news-yu15z3",
+            "news-16mhz2y"
+          ],
+          "explanation": "coreSupport의 강화 신호가 우세하다."
+        },
+        "moderateExpansion": {
+          "direction": "negative",
+          "positiveEvents": 0,
+          "negativeEvents": 1,
+          "evidenceIds": [
+            "news-yu15z3",
+            "news-16mhz2y"
+          ],
+          "explanation": "moderateExpansion의 손실 신호가 우세하다."
+        },
+        "partyAlliance": {
+          "direction": "neutral",
+          "positiveEvents": 0,
+          "negativeEvents": 0,
+          "evidenceIds": [
+            "news-yu15z3",
+            "news-16mhz2y"
+          ],
+          "explanation": "partyAlliance의 직접 변화는 확인하지 않는다."
+        },
+        "politicalResilience": {
+          "direction": "neutral",
+          "positiveEvents": 0,
+          "negativeEvents": 0,
+          "evidenceIds": [
+            "news-yu15z3",
+            "news-16mhz2y"
+          ],
+          "explanation": "politicalResilience의 직접 변화는 확인하지 않는다."
+        },
+        "electionCompetitiveness": {
+          "direction": "negative",
+          "positiveEvents": 0,
+          "negativeEvents": 1,
+          "evidenceIds": [
+            "news-yu15z3",
+            "news-16mhz2y"
+          ],
+          "explanation": "electionCompetitiveness의 손실 신호가 우세하다."
+        },
+        "crisisRisk": {
+          "direction": "negative",
+          "positiveEvents": 0,
+          "negativeEvents": 1,
+          "evidenceIds": [
+            "news-yu15z3",
+            "news-16mhz2y"
+          ],
+          "explanation": "crisisRisk의 손실 신호가 우세하다."
+        },
+        "growthPotential": {
+          "direction": "negative",
+          "positiveEvents": 0,
+          "negativeEvents": 1,
+          "evidenceIds": [
+            "news-yu15z3",
+            "news-16mhz2y"
+          ],
+          "explanation": "growthPotential의 손실 신호가 우세하다."
+        }
+      }
+    },
+    "validation": {
+      "ok": true,
+      "errors": []
+    }
+  },
+  "validationGroup": [
+    {
+      "name": "한동훈",
+      "id": "assembly-005",
+      "primaryType": "미디어·이슈주도형",
+      "secondaryTypes": [
+        "전국 인지도·차기주자형"
+      ],
+      "currentPhase": "미디어 주목 상승 · 정치 자산 전환 구간",
+      "evidence": [
+        {
+          "type": "미디어·이슈주도형",
+          "score": 61,
+          "evidenceIds": [
+            "news-1yc1da6"
+          ],
+          "basis": "핵심 사건·정치 자산 영향·공식 이력"
+        },
+        {
+          "type": "전국 인지도·차기주자형",
+          "score": 40,
+          "evidenceIds": [
+            "news-1yc1da6"
+          ],
+          "basis": "핵심 사건·정치 자산 영향·공식 이력"
+        }
+      ],
+      "validation": {
+        "ok": true,
+        "errors": []
+      }
+    },
+    {
+      "name": "천하람",
+      "id": "assembly-299",
+      "primaryType": "미디어·이슈주도형",
+      "secondaryTypes": [
+        "전국 인지도·차기주자형"
+      ],
+      "currentPhase": "미디어 주목 상승 · 정치 자산 전환 구간",
+      "evidence": [
+        {
+          "type": "미디어·이슈주도형",
+          "score": 61,
+          "evidenceIds": [
+            "news-u0ju3z"
+          ],
+          "basis": "핵심 사건·정치 자산 영향·공식 이력"
+        },
+        {
+          "type": "전국 인지도·차기주자형",
+          "score": 40,
+          "evidenceIds": [
+            "news-u0ju3z"
+          ],
+          "basis": "핵심 사건·정치 자산 영향·공식 이력"
+        }
+      ],
+      "validation": {
+        "ok": true,
+        "errors": []
+      }
+    },
+    {
+      "name": "김민석",
+      "id": "assembly-001",
+      "primaryType": "미디어·이슈주도형",
+      "secondaryTypes": [
+        "전국 인지도·차기주자형"
+      ],
+      "currentPhase": "미디어 주목 상승 · 정치 자산 전환 구간",
+      "evidence": [
+        {
+          "type": "미디어·이슈주도형",
+          "score": 61,
+          "evidenceIds": [
+            "news-148p07i"
+          ],
+          "basis": "핵심 사건·정치 자산 영향·공식 이력"
+        },
+        {
+          "type": "전국 인지도·차기주자형",
+          "score": 50,
+          "evidenceIds": [
+            "news-148p07i"
+          ],
+          "basis": "핵심 사건·정치 자산 영향·공식 이력"
+        }
+      ],
+      "validation": {
+        "ok": true,
+        "errors": []
+      }
+    },
+    {
+      "name": "전용기",
+      "id": "assembly-182",
+      "primaryType": "미디어·이슈주도형",
+      "secondaryTypes": [
+        "전국 인지도·차기주자형"
+      ],
+      "currentPhase": "미디어 주목 상승 · 정치 자산 전환 구간",
+      "evidence": [
+        {
+          "type": "미디어·이슈주도형",
+          "score": 61,
+          "evidenceIds": [
+            "news-16s8qeb"
+          ],
+          "basis": "핵심 사건·정치 자산 영향·공식 이력"
+        },
+        {
+          "type": "전국 인지도·차기주자형",
+          "score": 40,
+          "evidenceIds": [
+            "news-16s8qeb"
+          ],
+          "basis": "핵심 사건·정치 자산 영향·공식 이력"
+        }
+      ],
+      "validation": {
+        "ok": true,
+        "errors": []
+      }
+    },
+    {
+      "name": "용혜인",
+      "id": "assembly-051",
+      "primaryType": "미디어·이슈주도형",
+      "secondaryTypes": [
+        "전국 인지도·차기주자형"
+      ],
+      "currentPhase": "미디어 주목 상승 · 정치 자산 전환 구간",
+      "evidence": [
+        {
+          "type": "미디어·이슈주도형",
+          "score": 61,
+          "evidenceIds": [
+            "news-ysid62"
+          ],
+          "basis": "핵심 사건·정치 자산 영향·공식 이력"
+        },
+        {
+          "type": "전국 인지도·차기주자형",
+          "score": 40,
+          "evidenceIds": [
+            "news-ysid62"
+          ],
+          "basis": "핵심 사건·정치 자산 영향·공식 이력"
+        }
+      ],
+      "validation": {
+        "ok": true,
+        "errors": []
+      }
+    },
+    {
+      "name": "송영길",
+      "id": "assembly-004",
+      "primaryType": "미디어·이슈주도형",
+      "secondaryTypes": [
+        "전국 인지도·차기주자형"
+      ],
+      "currentPhase": "미디어 주목 상승 · 정치 자산 전환 구간",
+      "evidence": [
+        {
+          "type": "미디어·이슈주도형",
+          "score": 61,
+          "evidenceIds": [
+            "news-9yt5ee"
+          ],
+          "basis": "핵심 사건·정치 자산 영향·공식 이력"
+        },
+        {
+          "type": "전국 인지도·차기주자형",
+          "score": 50,
+          "evidenceIds": [
+            "news-9yt5ee"
+          ],
+          "basis": "핵심 사건·정치 자산 영향·공식 이력"
+        }
+      ],
+      "validation": {
+        "ok": true,
+        "errors": []
+      }
+    },
+    {
+      "name": "오세훈",
+      "id": "metropolitan-001",
+      "primaryType": "지역기반·생활행정형",
+      "secondaryTypes": [
+        "미디어·이슈주도형",
+        "행정성과형"
+      ],
+      "currentPhase": "미디어 주목 상승 · 정치 자산 전환 구간",
+      "evidence": [
+        {
+          "type": "지역기반·생활행정형",
+          "score": 68,
+          "evidenceIds": [
+            "news-13j4w32"
+          ],
+          "basis": "핵심 사건·정치 자산 영향·공식 이력"
+        },
+        {
+          "type": "미디어·이슈주도형",
+          "score": 61,
+          "evidenceIds": [
+            "news-13j4w32"
+          ],
+          "basis": "핵심 사건·정치 자산 영향·공식 이력"
+        },
+        {
+          "type": "행정성과형",
+          "score": 44,
+          "evidenceIds": [
+            "news-13j4w32"
+          ],
+          "basis": "핵심 사건·정치 자산 영향·공식 이력"
+        }
+      ],
+      "validation": {
+        "ok": true,
+        "errors": []
+      }
+    },
+    {
+      "name": "추경호",
+      "id": "metropolitan-004",
+      "primaryType": "지역기반·생활행정형",
+      "secondaryTypes": [
+        "미디어·이슈주도형",
+        "행정성과형"
+      ],
+      "currentPhase": "미디어 주목 상승 · 정치 자산 전환 구간",
+      "evidence": [
+        {
+          "type": "지역기반·생활행정형",
+          "score": 68,
+          "evidenceIds": [
+            "news-1ki5n36"
+          ],
+          "basis": "핵심 사건·정치 자산 영향·공식 이력"
+        },
+        {
+          "type": "미디어·이슈주도형",
+          "score": 61,
+          "evidenceIds": [
+            "news-1ki5n36"
+          ],
+          "basis": "핵심 사건·정치 자산 영향·공식 이력"
+        },
+        {
+          "type": "행정성과형",
+          "score": 44,
+          "evidenceIds": [
+            "news-1ki5n36"
+          ],
+          "basis": "핵심 사건·정치 자산 영향·공식 이력"
+        }
+      ],
+      "validation": {
+        "ok": true,
+        "errors": []
+      }
+    },
+    {
+      "name": "신상진",
+      "id": "basic-038",
+      "primaryType": "지역기반·생활행정형",
+      "secondaryTypes": [
+        "미디어·이슈주도형",
+        "행정성과형"
+      ],
+      "currentPhase": "미디어 주목 상승 · 정치 자산 전환 구간",
+      "evidence": [
+        {
+          "type": "지역기반·생활행정형",
+          "score": 68,
+          "evidenceIds": [
+            "news-1mj1z6e"
+          ],
+          "basis": "핵심 사건·정치 자산 영향·공식 이력"
+        },
+        {
+          "type": "미디어·이슈주도형",
+          "score": 61,
+          "evidenceIds": [
+            "news-1mj1z6e"
+          ],
+          "basis": "핵심 사건·정치 자산 영향·공식 이력"
+        },
+        {
+          "type": "행정성과형",
+          "score": 44,
+          "evidenceIds": [
+            "news-1mj1z6e"
+          ],
+          "basis": "핵심 사건·정치 자산 영향·공식 이력"
+        }
+      ],
+      "validation": {
+        "ok": true,
+        "errors": []
+      }
+    },
+    {
+      "name": "김용민",
+      "id": "assembly-047",
+      "primaryType": "미디어·이슈주도형",
+      "secondaryTypes": [
+        "전국 인지도·차기주자형"
+      ],
+      "currentPhase": "미디어 주목 상승 · 정치 자산 전환 구간",
+      "evidence": [
+        {
+          "type": "미디어·이슈주도형",
+          "score": 61,
+          "evidenceIds": [
+            "news-12u27nz"
+          ],
+          "basis": "핵심 사건·정치 자산 영향·공식 이력"
+        },
+        {
+          "type": "전국 인지도·차기주자형",
+          "score": 40,
+          "evidenceIds": [
+            "news-12u27nz"
+          ],
+          "basis": "핵심 사건·정치 자산 영향·공식 이력"
+        }
+      ],
+      "validation": {
+        "ok": true,
+        "errors": []
+      }
+    }
+  ]
+}

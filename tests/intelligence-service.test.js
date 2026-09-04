@@ -39,7 +39,9 @@ function createService(redis,rows,options={}){
     collectRaw:options.collectRaw||((person,context)=>Promise.resolve({personId:person.id,snapshotId:context.snapshotId,officialProfile:person,sourceErrors:[]})),
     analyze:options.analyze||((person,raw)=>({id:person.id,snapshot:raw.snapshotId,signal:{index:Number(person.id.slice(-3))%100},raw:{officialProfile:person}})),
     validateDraft:()=>({ok:true,errors:[]}),
-    validateSnapshot:(drafts,expectedIds)=>({ok:drafts.length===expectedIds.length,total:drafts.length,expected:expectedIds.length,missingIds:[],duplicateIds:[],unexpectedIds:[],invalid:[]})
+    validateSnapshot:(drafts,expectedIds)=>({ok:drafts.length===expectedIds.length,total:drafts.length,expected:expectedIds.length,missingIds:[],duplicateIds:[],unexpectedIds:[],invalid:[]}),
+    validateStoredSnapshot:(drafts,expectedIds)=>({ok:drafts.length===expectedIds.length,total:drafts.length,expected:expectedIds.length,missingIds:[],duplicateIds:[],unexpectedIds:[],invalid:[]}),
+    requireReviewApproval:options.requireReviewApproval??false
   });
 }
 
@@ -80,7 +82,7 @@ test('one politician failure is recorded and later politicians still complete',a
   assert.ok(redis.map.has([...redis.map.keys()].find(key=>key.endsWith(':assembly-003'))));
 });
 
-test('collection validates the full analysis before storing only its compact rendering inputs',async()=>{
+test('collection validates the full analysis before storing its compact publishable rendering inputs',async()=>{
   const redis=fakeRedis(),rows=profiles(1);let validatedFull=false;
   const service=createIntelligenceService({
     command:redis.command,profiles:rows,env:{NAVER_AD_ACCESS_LICENSE:'a',NAVER_AD_SECRET_KEY:'b',NAVER_AD_CUSTOMER_ID:'c'},now:()=>1_788_400_000_000,
@@ -93,8 +95,8 @@ test('collection validates the full analysis before storing only its compact ren
   const stored=JSON.parse(redis.map.get(INTELLIGENCE_KEYS.draft(started.job.snapshotId,rows[0].id)));
   assert.equal(result.job.status,'COMPLETED');
   assert.equal(validatedFull,true);
-  assert.equal(stored.diagnoses,undefined);
-  assert.equal(stored.prescriptions,undefined);
+  assert.deepEqual(stored.diagnoses,[{id:'01'}]);
+  assert.deepEqual(stored.prescriptions,[{id:'01'}]);
   assert.equal(stored.rankingInput.searchTotal,30);
 });
 
@@ -185,7 +187,9 @@ test('published ranks use operating 40 search 60 news weights and synchronize de
     },
     analyze:(person,raw)=>({id:person.id,snapshot:raw.snapshotId,signal:{index:100},rank:{overall:null,category:null,temporary:false},raw}),
     validateDraft:()=>({ok:true,errors:[]}),
-    validateSnapshot:(drafts,expectedIds)=>({ok:drafts.length===expectedIds.length,total:drafts.length,expected:expectedIds.length,missingIds:[],duplicateIds:[],unexpectedIds:[],invalid:[]})
+    validateSnapshot:(drafts,expectedIds)=>({ok:drafts.length===expectedIds.length,total:drafts.length,expected:expectedIds.length,missingIds:[],duplicateIds:[],unexpectedIds:[],invalid:[]}),
+    validateStoredSnapshot:(drafts,expectedIds)=>({ok:drafts.length===expectedIds.length,total:drafts.length,expected:expectedIds.length,missingIds:[],duplicateIds:[],unexpectedIds:[],invalid:[]}),
+    requireReviewApproval:false
   });
   await service.startCollection();await service.runCollectionStep();await service.startPublish();await service.runPublishStep();
   const rankings=await service.getPublicRankings();
@@ -196,7 +200,7 @@ test('published ranks use operating 40 search 60 news weights and synchronize de
   assert.equal(detail.rank.overall,1);
 });
 
-test('repeated collection and publication keeps only the latest snapshot and no intelligence history',async()=>{
+test('repeated collection and publication preserves every validated published analysis version',async()=>{
   const redis=fakeRedis(),rows=profiles(30);let clock=1_788_400_000_000;
   redis.map.set('jcs:rebuild:v2:users','preserve-users');
   const service=createService(redis,rows,{now:()=>clock});
@@ -210,8 +214,47 @@ test('repeated collection and publication keeps only the latest snapshot and no 
   const current=redis.map.get(INTELLIGENCE_KEYS.publicPointer);
   const fullDraftKeys=[...redis.map.keys()].filter(key=>key.startsWith(`${INTELLIGENCE_KEYS.prefix}:draft:`)&&key!==INTELLIGENCE_KEYS.latestDraft);
   const historyKeys=[...redis.map.keys()].filter(key=>key.startsWith(`${INTELLIGENCE_KEYS.prefix}:history:`)&&key!==INTELLIGENCE_KEYS.historyIndex);
-  assert.equal(fullDraftKeys.length,30);
-  assert.equal(fullDraftKeys.every(key=>key.includes(`:${current}:`)),true);
+  assert.equal(fullDraftKeys.length,90);
+  assert.equal(fullDraftKeys.some(key=>key.includes(`:${current}:`)),true);
   assert.equal(historyKeys.length,0);
+  const versions=(await service.status()).versions;
+  assert.equal(versions.length,3);
+  assert.equal(versions.filter(row=>row.status==='published').length,1);
+  assert.equal(versions.filter(row=>row.status==='archived').length,2);
   assert.equal(redis.map.get('jcs:rebuild:v2:users'),'preserve-users');
+});
+
+test('production review flow requires an approved validated draft before publication',async()=>{
+  const redis=fakeRedis(),rows=profiles(2),service=createService(redis,rows,{requireReviewApproval:true});
+  const started=await service.startCollection();await service.runCollectionStep();
+  await assert.rejects(()=>service.startPublish(),/DRAFT_APPROVAL_REQUIRED/);
+  const approved=await service.approveDraft({reviewedBy:'admin'});
+  assert.equal(approved.version.status,'approved');
+  await service.startPublish();await service.runPublishStep();
+  const status=await service.status();
+  assert.equal(status.publicSnapshot,started.job.snapshotId);
+  assert.equal(status.versions[0].status,'published');
+});
+
+test('a second publication preserves the first full report as an archived version',async()=>{
+  const redis=fakeRedis(),rows=profiles(2);let clock=1_788_400_000_000;
+  const service=createService(redis,rows,{now:()=>clock,requireReviewApproval:true});
+  const publishCycle=async()=>{const started=await service.startCollection();await service.runCollectionStep();await service.approveDraft({reviewedBy:'admin'});await service.startPublish();await service.runPublishStep();return started.job.snapshotId;};
+  const first=await publishCycle();clock+=1_000;const second=await publishCycle();
+  const status=await service.status();
+  assert.equal(status.publicSnapshot,second);
+  assert.equal(status.versions.find(row=>row.analysisVersion===first).status,'archived');
+  assert.equal(JSON.parse(redis.map.get(INTELLIGENCE_KEYS.draft(first,rows[0].id))).snapshot,first);
+});
+
+test('administrator draft edits create a revision and require reapproval',async()=>{
+  const redis=fakeRedis(),rows=profiles(1),service=createService(redis,rows,{requireReviewApproval:true});
+  const started=await service.startCollection();await service.runCollectionStep();
+  const original=JSON.parse(redis.map.get(INTELLIGENCE_KEYS.draft(started.job.snapshotId,rows[0].id)));
+  original.diagnoses=[{id:'01',headline:'기존 진단'}];original.prescriptions=[{id:'01',linkedDiagnosisIds:['01'],strategicJudgment:'기존 처방'}];
+  redis.map.set(INTELLIGENCE_KEYS.draft(started.job.snapshotId,rows[0].id),JSON.stringify(original));
+  const edited=await service.updateDraft({personId:rows[0].id,editorId:'admin',diagnoses:[{id:'01',headline:'관리자 수정 진단'}]});
+  assert.equal(edited.draft.diagnoses[0].headline,'관리자 수정 진단');
+  assert.equal((await service.status()).versions[0].reviewStatus,'changes_pending');
+  assert.equal(JSON.parse(redis.map.get(INTELLIGENCE_KEYS.revisions(started.job.snapshotId))).length,1);
 });

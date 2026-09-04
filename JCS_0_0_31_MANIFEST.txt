@@ -1,0 +1,61 @@
+JCS 0.0.31 PATCH MANIFEST
+
+RELEASE
+- package.json
+- package-lock.json
+- index.html
+
+INTELLIGENCE ENGINE V3
+- lib/intelligence-analysis.js
+- lib/intelligence-headlines.js
+- lib/intelligence-events.js
+- lib/intelligence-classification.js
+- lib/intelligence-diagnostics.js
+- lib/intelligence-consistency.js
+- lib/intelligence-validation.js
+- lib/intelligence-storage.js
+- lib/intelligence-keys.js
+- lib/intelligence-repository.js
+- lib/intelligence-service.js
+- lib/intelligence-access.js
+
+API AND ADMIN
+- api/gateway.js
+- src/core/auth.js
+- src/views/stage1.js
+- src/app.js
+
+DETAIL AND COMPARE
+- src/views/politicians.js
+- src/views/politician-compare.js
+- css/pages.css
+
+V3 TESTS
+- tests/intelligence-events.test.js
+- tests/intelligence-classification.test.js
+- tests/intelligence-consistency.test.js
+- tests/intelligence-v3.test.js
+- tests/intelligence-validation-group.test.js
+- tests/intelligence-admin-api.test.js
+- tests/intelligence-admin-view.test.js
+- tests/intelligence-repository.test.js
+- tests/intelligence-service.test.js
+- tests/intelligence-access.test.js
+- tests/politician-diagnostics-view.test.js
+- tests/politician-diagnostics-compare.test.js
+- tests/politician-diagnostics-api.test.js
+- tests/politician-diagnostics-css.test.js
+
+EVIDENCE
+- scripts/generate-v31-evidence.mjs
+- artifacts/jcs-v31-validation-results.json
+- artifacts/jcs-v31-test-output.txt
+- artifacts/jcs-v31-admin-detail-desktop.html
+- artifacts/jcs-v31-admin-compare-mobile.html
+
+HANDOFF
+- JCS_0_0_31_HANDOFF.md
+- JCS_0_0_31_MANIFEST.txt
+
+The PATCH ZIP contains only the files listed in this manifest.
+Existing politician photos and unchanged project assets are not included.

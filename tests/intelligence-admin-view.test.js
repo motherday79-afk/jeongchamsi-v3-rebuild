@@ -6,16 +6,31 @@ const admin={authenticated:true,user:{role:'admin'}};
 const auth={
   async adminSummary(){return {ok:true,users:{total:11,admins:1},contents:{columns:2}};},
   async exportMembers(){return [];},
-  async intelligenceStatus(){return {ok:true,sources:{naverSearchAds:{configured:false}},collection:{status:'RUNNING',completed:25,total:542,failed:0},publication:null,latestDraft:'draft-1',publicSnapshot:'public-0',validation:null};},
+  async intelligenceStatus(){return {ok:true,sources:{naverSearchAds:{configured:true}},collection:{status:'COMPLETED',completed:542,total:542,failed:0},publication:null,latestDraft:'draft-1',publicSnapshot:'public-0',validation:{ok:true,errors:[]},versions:[{analysisVersion:'draft-1',status:'draft',reviewStatus:'pending',generatedAt:1},{analysisVersion:'public-0',status:'published',reviewStatus:'approved',generatedAt:0}]};},
+  async intelligencePreview(){return {ok:true,version:{analysisVersion:'draft-1',status:'draft'},validation:{ok:true,errors:[]},reviewSample:{personId:'p1',news:[{title:'대표 정책 발표'}],eventClusters:[{eventId:'e1',eventTitle:'대표 정책 발표',eventType:'정책·입법'}],politicianType:{primaryType:'정책·성과형',secondaryTypes:['정책의제 선점형'],currentPhase:'정책 성과 축적'},diagnoses:Array.from({length:10},(_,i)=>({id:String(i+1).padStart(2,'0'),headline:`진단 ${i+1}`})),prescriptions:Array.from({length:10},(_,i)=>({id:String(i+1).padStart(2,'0'),strategicJudgment:`처방 ${i+1}`}))}};},
 };
 
-test('admin control center exposes one-click resumable collect and publish controls',async()=>{
+test('admin control center exposes ten processing stages and draft review before approval',async()=>{
   const html=await renderAdminStable(admin,auth);
   assert.match(html,/data-intelligence-action="collect"/);
-  assert.match(html,/data-intelligence-action="collect" disabled/);
+  assert.doesNotMatch(html,/data-intelligence-action="collect" disabled/);
   assert.match(html,/data-intelligence-action="publish" disabled/);
-  assert.match(html,/25 \/ 542/);
-  assert.match(html,/중단되어도 현재 위치부터 재개/);
+  assert.match(html,/542 \/ 542/);
   assert.match(html,/NAVER SEARCH ADS/);
-  assert.match(html,/연결 필요/);
+  assert.match(html,/연결됨/);
+  assert.equal((html.match(/data-intelligence-stage=/g)||[]).length,10);
+  assert.match(html,/핵심 사건 추출/);
+  assert.match(html,/정책·성과형/);
+  assert.match(html,/대표 정책 발표/);
+  assert.match(html,/진단 10개 · 처방 10개/);
+  assert.match(html,/data-intelligence-approve/);
+  assert.match(html,/draft-1.*draft|draft.*draft-1/s);
+  assert.match(html,/public-0.*published|published.*public-0/s);
+});
+
+test('approved reviewed draft enables publication',async()=>{
+  const approved={...auth,async intelligenceStatus(){const value=await auth.intelligenceStatus();return {...value,versions:[{...value.versions[0],status:'approved',reviewStatus:'approved'},value.versions[1]]};},async intelligencePreview(){const value=await auth.intelligencePreview();return {...value,version:{...value.version,status:'approved'}};}};
+  const html=await renderAdminStable(admin,approved);
+  assert.doesNotMatch(html,/data-intelligence-action="publish" disabled/);
+  assert.doesNotMatch(html,/data-intelligence-approve/);
 });

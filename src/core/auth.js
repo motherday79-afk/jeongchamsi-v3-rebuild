@@ -21,6 +21,8 @@ function createRemoteAuthService(){
     async intelligenceCollectStart(){return request('admin/intelligence/collect/start',{method:'POST',body:'{}'});},
     async intelligenceCollectStep(){return request('admin/intelligence/collect/step',{method:'POST',body:'{}'});},
     async intelligencePreview(){return request('admin/intelligence/preview');},
+    async intelligenceDraftUpdate(input={}){return request('admin/intelligence/draft',{method:'PATCH',body:JSON.stringify(input)});},
+    async intelligenceApprove(){return request('admin/intelligence/approve',{method:'POST',body:'{}'});},
     async intelligencePublishStart(){return request('admin/intelligence/publish/start',{method:'POST',body:'{}'});},
     async intelligencePublishStep(){return request('admin/intelligence/publish/step',{method:'POST',body:'{}'});},
     async migrationRun(secret){return request('migration/run',{method:'POST',headers:{'x-jcs-migration-secret':secret},body:JSON.stringify({})});},

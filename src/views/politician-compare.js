@@ -64,8 +64,8 @@ function relativePositions(entries,topicId){
 }
 
 function compareProfileHeader(entry){
-  const brand=comparisonTopic(entry,'01'),rank=entry.intelligence?.rank||{};
-  return `<article class="jcs-compare-matrix-profile" data-compare-matrix-profile="${esc(entry.item.id)}">${profilePhoto(entry.item,'jcs-compare-matrix-avatar')}<div><h3>${esc(entry.item.name)}</h3><p>${esc(entry.item.party)}</p><small>${esc(entry.item.office||entry.item.roleLabel||entry.item.jurisdiction)}</small><em>${esc(entry.item.jurisdiction)}</em></div><footer><b>${rank.overall?`전체 ${rank.overall}위`:'NOW 순위 산정 전'}</b><span>${esc(brand?.trend?.direction||'유지')}</span></footer></article>`;
+  const brand=comparisonTopic(entry,'01'),rank=entry.intelligence?.rank||{},type=entry.intelligence?.politicianType;
+  return `<article class="jcs-compare-matrix-profile" data-compare-matrix-profile="${esc(entry.item.id)}">${profilePhoto(entry.item,'jcs-compare-matrix-avatar')}<div><h3>${esc(entry.item.name)}</h3><p>${esc(entry.item.party)}</p><small>${esc(entry.item.office||entry.item.roleLabel||entry.item.jurisdiction)}</small><em>${esc(entry.item.jurisdiction)}</em></div>${type?`<div class="jcs-compare-type" data-politician-type="${esc(type.primaryType)}"><b>${esc(type.primaryType)}</b><span>${esc(type.currentPhase)}</span></div>`:''}<footer><b>${rank.overall?`전체 ${rank.overall}위`:'NOW 순위 산정 전'}</b><span>${esc(brand?.trend?.direction||'유지')}</span></footer></article>`;
 }
 
 const compareField=(label,value,className='')=>`<div class="jcs-compare-field ${className}"><b>${esc(label)}</b><div>${compareText(value)}</div></div>`;

@@ -185,12 +185,14 @@ async function handleAction(req,res,command){
   return json(res,400,{ok:false,error:'UNKNOWN_ACTION'});
 }
 
-export async function dispatchAdminIntelligence(route,method,service){
+export async function dispatchAdminIntelligence(route,method,service,input={}){
   const actions={
     'admin/intelligence/status':{method:'GET',run:()=>service.status()},
     'admin/intelligence/collect/start':{method:'POST',run:()=>service.startCollection()},
     'admin/intelligence/collect/step':{method:'POST',run:()=>service.runCollectionStep()},
     'admin/intelligence/preview':{method:'GET',run:()=>service.preview()},
+    'admin/intelligence/draft':{method:'PATCH',run:()=>service.updateDraft(input)},
+    'admin/intelligence/approve':{method:'POST',run:()=>service.approveDraft(input)},
     'admin/intelligence/publish/start':{method:'POST',run:()=>service.startPublish()},
     'admin/intelligence/publish/step':{method:'POST',run:()=>service.runPublishStep()},
   };
@@ -200,7 +202,7 @@ export async function dispatchAdminIntelligence(route,method,service){
   try{return {status:200,body:{ok:true,...await action.run()}};}
   catch(error){
     const code=String(error?.code||error?.message||'INTELLIGENCE_OPERATION_FAILED');
-    const status=['COLLECTION_NOT_READY','COLLECTION_VALIDATION_REQUIRED','NAVER_CREDENTIALS_MISSING'].includes(code)?409:500;
+    const status=['COLLECTION_NOT_READY','COLLECTION_VALIDATION_REQUIRED','DRAFT_APPROVAL_REQUIRED','NAVER_CREDENTIALS_MISSING'].includes(code)?409:['DRAFT_NOT_FOUND','DRAFT_NOT_EDITABLE','DRAFT_VALIDATION_FAILED'].includes(code)?400:500;
     if(status===500)console.error('[admin-intelligence]',{route,code,message:String(error?.message||''),cause:String(error?.cause?.code||error?.cause?.message||'')});
     return {status,body:{ok:false,error:code}};
   }
@@ -216,7 +218,7 @@ async function handleAdmin(req,res,route,command){
       await writeDomain(command,domain,result.data);return json(res,200,{ok:true,item:result.item,data:result.data});
     }catch(error){return json(res,400,{ok:false,error:error.message||'PARTICIPATION_SAVE_FAILED'});}
   }
-  if(route.startsWith('admin/intelligence/')){const result=await dispatchAdminIntelligence(route,req.method,createIntelligenceService({command}));return json(res,result.status,result.body);}
+  if(route.startsWith('admin/intelligence/')){const result=await dispatchAdminIntelligence(route,req.method,createIntelligenceService({command}),{...bodyOf(req),reviewedBy:user.id,editorId:user.id});return json(res,result.status,result.body);}
   if(route==='admin/users'&&req.method==='GET'){
     const users=await listUsers(command),service=createBadgeService(command);
     const enriched=await Promise.all(users.map(async target=>{const activity=await readActivity(command,target.id),status=await service.statusForUser(target,activity);return {...target,grantedBadges:activity.grantedBadges||[],representativeBadge:status.representativeBadge,showcaseBadges:status.showcaseBadges,earnedBadges:status.earnedBadges,eligibleBadges:status.eligibleBadges};}));
@@ -247,7 +249,7 @@ export default async function handler(req,res){
     if(route==='action')return handleAction(req,res,command);
     if(route==='stats'){const users=await listUsers(command);return json(res,200,{ok:true,members:users.length});}
     if(route.startsWith('admin/')){const handled=await handleAdmin(req,res,route,command);if(handled!==false)return handled;}
-    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_30_4'});
+    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_31'});
     return json(res,404,{ok:false,error:'NOT_FOUND'});
   }catch(error){return json(res,error.code==='STORAGE_MISSING'?503:500,{ok:false,error:error.code||error.message||'SERVER_ERROR'});}
 }

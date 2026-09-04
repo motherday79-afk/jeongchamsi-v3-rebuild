@@ -35,7 +35,7 @@ test('politician batches can never be configured above 25 records',()=>{
   assert.throws(()=>chunkKeys(Array.from({length:26},(_,i)=>`p${i+1}`),26),/BATCH_SIZE_EXCEEDS_25/);
 });
 
-test('legacy unfinished collection is reset without touching the public snapshot or user data',async()=>{
+test('legacy unfinished collection is reset into versioned mode without touching public or historical data',async()=>{
   const redis=fakeRedis(),repository=createIntelligenceRepository(redis.command,{now:()=>4_000});
   await repository.createJob('collect','new-snapshot',['p1','p2']);
   await repository.putDraft('new-snapshot','p1',{id:'p1'});
@@ -50,11 +50,11 @@ test('legacy unfinished collection is reset without touching the public snapshot
   const recovered=await repository.prepareCompactCollection();
 
   assert.equal(recovered.cursor,0);
-  assert.equal(recovered.storageMode,'LATEST_ONLY_V3');
+  assert.equal(recovered.storageMode,'VERSIONED_V3');
   assert.equal(redis.map.has(INTELLIGENCE_KEYS.draft('new-snapshot','p1')),false);
   assert.equal(redis.map.has(INTELLIGENCE_KEYS.draft('public-snapshot','p1')),true);
   assert.equal(redis.map.get('jcs:rebuild:v2:users'),'preserve-users');
-  assert.equal(redis.map.has(`${INTELLIGENCE_KEYS.prefix}:history:old-snapshot`),false);
+  assert.equal(redis.map.has(`${INTELLIGENCE_KEYS.prefix}:history:old-snapshot`),true);
 });
 
 test('latest-only storage clears intelligence history without touching users or the public snapshot',async()=>{
@@ -132,4 +132,27 @@ test('a failed politician is recorded while successful politicians remain comple
   assert.equal(job.completed,3);
   assert.deepEqual(job.successIds,['p1','p3']);
   assert.equal(job.failures[0].personId,'p2');
+});
+
+test('analysis versions and administrator revisions are preserved in newest-first history',async()=>{
+  const redis=fakeRedis(),repository=createIntelligenceRepository(redis.command,{now:()=>4_000});
+  await repository.putVersion({rawSnapshotId:'snapshot-1',analysisVersion:'snapshot-1',algorithmVersion:'JCS_INTELLIGENCE_V3',status:'draft',generatedAt:1,reviewStatus:'pending'});
+  await repository.putVersion({rawSnapshotId:'snapshot-2',analysisVersion:'snapshot-2',algorithmVersion:'JCS_INTELLIGENCE_V3',status:'approved',generatedAt:2,reviewStatus:'approved'});
+  await repository.appendRevision('snapshot-2',{personId:'p1',editorId:'admin',fields:['diagnoses.01.headline'],editedAt:3});
+  const versions=await repository.listVersions();
+  assert.deepEqual(versions.map(row=>row.analysisVersion),['snapshot-2','snapshot-1']);
+  assert.equal((await repository.getVersion('snapshot-2')).reviewStatus,'approved');
+  assert.equal((await repository.getRevisions('snapshot-2'))[0].editorId,'admin');
+});
+
+test('publishing a new version archives metadata without deleting the prior published report',async()=>{
+  const redis=fakeRedis(),repository=createIntelligenceRepository(redis.command,{now:()=>5_000});
+  await repository.putVersion({analysisVersion:'old',rawSnapshotId:'old',status:'published',reviewStatus:'approved'});
+  await repository.putVersion({analysisVersion:'new',rawSnapshotId:'new',status:'approved',reviewStatus:'approved'});
+  await repository.putDraft('old','p1',{id:'p1',snapshot:'old'});
+  await repository.putDraft('new','p1',{id:'p1',snapshot:'new'});
+  await repository.archiveVersion('old','new');
+  assert.equal((await repository.getVersion('old')).status,'archived');
+  assert.equal((await repository.getVersion('old')).replacedByVersionId,'new');
+  assert.equal((await repository.getDrafts('old',['p1']))[0].value.snapshot,'old');
 });
