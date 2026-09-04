@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createIntelligenceService } from '../lib/intelligence-service.js';
 import { INTELLIGENCE_KEYS } from '../lib/intelligence-keys.js';
+import { buildIntelligenceDraft } from '../lib/intelligence-analysis.js';
 
 function fakeRedis(options={}){
   const map=new Map(),calls=[];
@@ -82,7 +83,7 @@ test('one politician failure is recorded and later politicians still complete',a
   assert.ok(redis.map.has([...redis.map.keys()].find(key=>key.endsWith(':assembly-003'))));
 });
 
-test('collection validates the full analysis before storing its compact publishable rendering inputs',async()=>{
+test('collection validates the full analysis but stores only compact reconstruction inputs',async()=>{
   const redis=fakeRedis(),rows=profiles(1);let validatedFull=false;
   const service=createIntelligenceService({
     command:redis.command,profiles:rows,env:{NAVER_AD_ACCESS_LICENSE:'a',NAVER_AD_SECRET_KEY:'b',NAVER_AD_CUSTOMER_ID:'c'},now:()=>1_788_400_000_000,
@@ -95,9 +96,45 @@ test('collection validates the full analysis before storing its compact publisha
   const stored=JSON.parse(redis.map.get(INTELLIGENCE_KEYS.draft(started.job.snapshotId,rows[0].id)));
   assert.equal(result.job.status,'COMPLETED');
   assert.equal(validatedFull,true);
-  assert.deepEqual(stored.diagnoses,[{id:'01'}]);
-  assert.deepEqual(stored.prescriptions,[{id:'01'}]);
+  assert.equal(stored.diagnoses,undefined);
+  assert.equal(stored.prescriptions,undefined);
+  assert.deepEqual(stored.input.news.items,[]);
   assert.equal(stored.rankingInput.searchTotal,30);
+});
+
+test('public detail reconstructs the complete V3 report from compact current-snapshot input',async()=>{
+  const redis=fakeRedis(),rows=profiles(1);
+  const service=createIntelligenceService({
+    command:redis.command,profiles:rows,env:{NAVER_AD_ACCESS_LICENSE:'a',NAVER_AD_SECRET_KEY:'b',NAVER_AD_CUSTOMER_ID:'c'},now:()=>1_788_400_000_000,
+    collectRaw:async(person,context)=>({personId:person.id,snapshotId:context.snapshotId,officialProfile:person,searchAds:{volume:{pc:120,mobile:880}},news:{items:[{title:`${person.name} 민생 정책 현장 발표`,source:'검증 뉴스',url:'https://news.example/1',publishedAt:'2026-09-04T00:00:00Z'}]},sourceErrors:[]}),
+    analyze:(person,raw,context,version)=>buildIntelligenceDraft(person,raw,context,version),
+    requireReviewApproval:false
+  });
+  const started=await service.startCollection();
+  await service.runCollectionStep();
+  const stored=JSON.parse(redis.map.get(INTELLIGENCE_KEYS.draft(started.job.snapshotId,rows[0].id)));
+  assert.equal(stored.diagnoses,undefined);
+  assert.ok(Buffer.byteLength(JSON.stringify(stored),'utf8')<5000);
+  await service.startPublish();
+  await service.runPublishStep();
+  const detail=await service.getPublicIntelligence(rows[0].id);
+  assert.equal(detail.diagnoses.length,10);
+  assert.equal(detail.prescriptions.length,10);
+  assert.equal(detail.news[0].title,`${rows[0].name} 민생 정책 현장 발표`);
+});
+
+test('a legacy rich running collection is reset before it consumes more Redis capacity',async()=>{
+  const redis=fakeRedis(),rows=profiles(2),service=createService(redis,rows);
+  const started=await service.startCollection();
+  const legacyDraft={id:rows[0].id,snapshot:started.job.snapshotId,diagnoses:Array.from({length:10},()=>({body:'x'.repeat(10000)})),prescriptions:Array.from({length:10},()=>({body:'y'.repeat(10000)}))};
+  redis.map.set(INTELLIGENCE_KEYS.draft(started.job.snapshotId,rows[0].id),JSON.stringify(legacyDraft));
+  const job=JSON.parse(redis.map.get(INTELLIGENCE_KEYS.job('collect')));
+  Object.assign(job,{cursor:1,completed:1,succeeded:1,successIds:[rows[0].id],storageMode:'VERSIONED_V3'});
+  redis.map.set(INTELLIGENCE_KEYS.job('collect'),JSON.stringify(job));
+  const resumed=await service.startCollection();
+  assert.equal(resumed.job.completed,0);
+  assert.equal(resumed.job.storageMode,'INPUT_ONLY_V4');
+  assert.equal(redis.map.has(INTELLIGENCE_KEYS.draft(started.job.snapshotId,rows[0].id)),false);
 });
 
 test('publishing is rejected until a complete validated collection exists',async()=>{
@@ -200,7 +237,7 @@ test('published ranks use operating 40 search 60 news weights and synchronize de
   assert.equal(detail.rank.overall,1);
 });
 
-test('repeated collection and publication preserves every validated published analysis version',async()=>{
+test('repeated collection and publication keeps only the latest Redis snapshot',async()=>{
   const redis=fakeRedis(),rows=profiles(30);let clock=1_788_400_000_000;
   redis.map.set('jcs:rebuild:v2:users','preserve-users');
   const service=createService(redis,rows,{now:()=>clock});
@@ -214,13 +251,13 @@ test('repeated collection and publication preserves every validated published an
   const current=redis.map.get(INTELLIGENCE_KEYS.publicPointer);
   const fullDraftKeys=[...redis.map.keys()].filter(key=>key.startsWith(`${INTELLIGENCE_KEYS.prefix}:draft:`)&&key!==INTELLIGENCE_KEYS.latestDraft);
   const historyKeys=[...redis.map.keys()].filter(key=>key.startsWith(`${INTELLIGENCE_KEYS.prefix}:history:`)&&key!==INTELLIGENCE_KEYS.historyIndex);
-  assert.equal(fullDraftKeys.length,90);
-  assert.equal(fullDraftKeys.some(key=>key.includes(`:${current}:`)),true);
+  assert.equal(fullDraftKeys.length,30);
+  assert.equal(fullDraftKeys.every(key=>key.includes(`:${current}:`)),true);
   assert.equal(historyKeys.length,0);
   const versions=(await service.status()).versions;
-  assert.equal(versions.length,3);
+  assert.equal(versions.length,1);
   assert.equal(versions.filter(row=>row.status==='published').length,1);
-  assert.equal(versions.filter(row=>row.status==='archived').length,2);
+  assert.equal(versions.filter(row=>row.status==='archived').length,0);
   assert.equal(redis.map.get('jcs:rebuild:v2:users'),'preserve-users');
 });
 
@@ -236,25 +273,23 @@ test('production review flow requires an approved validated draft before publica
   assert.equal(status.versions[0].status,'published');
 });
 
-test('a second publication preserves the first full report as an archived version',async()=>{
+test('a second publication removes the first snapshot and keeps only the current one',async()=>{
   const redis=fakeRedis(),rows=profiles(2);let clock=1_788_400_000_000;
   const service=createService(redis,rows,{now:()=>clock,requireReviewApproval:true});
   const publishCycle=async()=>{const started=await service.startCollection();await service.runCollectionStep();await service.approveDraft({reviewedBy:'admin'});await service.startPublish();await service.runPublishStep();return started.job.snapshotId;};
   const first=await publishCycle();clock+=1_000;const second=await publishCycle();
   const status=await service.status();
   assert.equal(status.publicSnapshot,second);
-  assert.equal(status.versions.find(row=>row.analysisVersion===first).status,'archived');
-  assert.equal(JSON.parse(redis.map.get(INTELLIGENCE_KEYS.draft(first,rows[0].id))).snapshot,first);
+  assert.equal(status.versions.some(row=>row.analysisVersion===first),false);
+  assert.equal(redis.map.has(INTELLIGENCE_KEYS.draft(first,rows[0].id)),false);
 });
 
-test('administrator draft edits create a revision and require reapproval',async()=>{
-  const redis=fakeRedis(),rows=profiles(1),service=createService(redis,rows,{requireReviewApproval:true});
+test('administrator draft edits preserve only edited fields beside compact collection input',async()=>{
+  const redis=fakeRedis(),rows=profiles(1),service=createService(redis,rows,{requireReviewApproval:true,analyze:(person,raw)=>({id:person.id,snapshot:raw.snapshotId,diagnoses:[{id:'01',headline:'기존 진단'}],prescriptions:[{id:'01',linkedDiagnosisIds:['01'],strategicJudgment:'기존 처방'}],raw})});
   const started=await service.startCollection();await service.runCollectionStep();
-  const original=JSON.parse(redis.map.get(INTELLIGENCE_KEYS.draft(started.job.snapshotId,rows[0].id)));
-  original.diagnoses=[{id:'01',headline:'기존 진단'}];original.prescriptions=[{id:'01',linkedDiagnosisIds:['01'],strategicJudgment:'기존 처방'}];
-  redis.map.set(INTELLIGENCE_KEYS.draft(started.job.snapshotId,rows[0].id),JSON.stringify(original));
   const edited=await service.updateDraft({personId:rows[0].id,editorId:'admin',diagnoses:[{id:'01',headline:'관리자 수정 진단'}]});
   assert.equal(edited.draft.diagnoses[0].headline,'관리자 수정 진단');
   assert.equal((await service.status()).versions[0].reviewStatus,'changes_pending');
   assert.equal(JSON.parse(redis.map.get(INTELLIGENCE_KEYS.revisions(started.job.snapshotId))).length,1);
+  assert.equal(JSON.parse(redis.map.get(INTELLIGENCE_KEYS.draft(started.job.snapshotId,rows[0].id))).adminOverrides.diagnoses[0].headline,'관리자 수정 진단');
 });

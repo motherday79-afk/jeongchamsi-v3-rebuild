@@ -36,14 +36,14 @@ test('V3 draft connects event clusters, asset effects, history and classificatio
   }
 });
 
-test('compact storage preserves publishable V3 intelligence but drops duplicate full raw payloads',()=>{
+test('compact storage retains only reconstructable V3 inputs instead of every diagnosis and prescription',()=>{
   const report=buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V3'),stored=compactIntelligenceDraft(report);
-  assert.equal(stored.diagnoses.length,10);
-  assert.equal(stored.prescriptions.length,10);
-  assert.equal(stored.eventClusters.length,1);
-  assert.equal(stored.politicianType.primaryType,report.politicianType.primaryType);
-  assert.equal(stored.raw.news,undefined);
-  assert.equal(stored.news.length<=10,true);
+  assert.equal(stored.diagnoses,undefined);
+  assert.equal(stored.prescriptions,undefined);
+  assert.equal(stored.input.news.items.length,2);
+  assert.equal(stored.input.searchAds.volume.mobile,231200);
+  assert.equal(stored.rankingInput.searchTotal,279800);
+  assert.ok(Buffer.byteLength(JSON.stringify(stored),'utf8')<5000);
 });
 
 test('role projection exposes V3 review intelligence only to administrators',()=>{

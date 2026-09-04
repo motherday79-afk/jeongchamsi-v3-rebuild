@@ -1,0 +1,18 @@
+JCS 0.0.31.1 REDIS CAPACITY HOTFIX MANIFEST
+
+CODE
+- lib/intelligence-storage.js
+- lib/intelligence-repository.js
+- lib/intelligence-service.js
+
+TESTS
+- tests/intelligence-analysis.test.js
+- tests/intelligence-repository.test.js
+- tests/intelligence-service.test.js
+- tests/intelligence-v3.test.js
+
+HANDOFF
+- JCS_0_0_31_1_REDIS_CAPACITY_HOTFIX.md
+- JCS_0_0_31_1_REDIS_CAPACITY_MANIFEST.txt
+
+This ZIP contains only the Redis capacity hotfix files. Politician photos and unchanged assets are not included.

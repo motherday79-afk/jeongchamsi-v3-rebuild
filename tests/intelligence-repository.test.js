@@ -35,7 +35,7 @@ test('politician batches can never be configured above 25 records',()=>{
   assert.throws(()=>chunkKeys(Array.from({length:26},(_,i)=>`p${i+1}`),26),/BATCH_SIZE_EXCEEDS_25/);
 });
 
-test('legacy unfinished collection is reset into versioned mode without touching public or historical data',async()=>{
+test('legacy unfinished collection is reset into compact input mode without touching public or historical data',async()=>{
   const redis=fakeRedis(),repository=createIntelligenceRepository(redis.command,{now:()=>4_000});
   await repository.createJob('collect','new-snapshot',['p1','p2']);
   await repository.putDraft('new-snapshot','p1',{id:'p1'});
@@ -50,7 +50,7 @@ test('legacy unfinished collection is reset into versioned mode without touching
   const recovered=await repository.prepareCompactCollection();
 
   assert.equal(recovered.cursor,0);
-  assert.equal(recovered.storageMode,'VERSIONED_V3');
+  assert.equal(recovered.storageMode,'INPUT_ONLY_V4');
   assert.equal(redis.map.has(INTELLIGENCE_KEYS.draft('new-snapshot','p1')),false);
   assert.equal(redis.map.has(INTELLIGENCE_KEYS.draft('public-snapshot','p1')),true);
   assert.equal(redis.map.get('jcs:rebuild:v2:users'),'preserve-users');
