@@ -1,0 +1,22 @@
+JCS 0.0.31.3 CUMULATIVE PUBLISH FINALIZE HOTFIX MANIFEST
+
+CODE
+- lib/intelligence-storage.js
+- lib/intelligence-repository.js
+- lib/intelligence-service.js
+- src/core/intelligence-runner.js
+- src/views/stage1.js
+
+TESTS
+- tests/intelligence-analysis.test.js
+- tests/intelligence-repository.test.js
+- tests/intelligence-service.test.js
+- tests/intelligence-v3.test.js
+- tests/intelligence-runner.test.js
+- tests/intelligence-admin-view.test.js
+
+HANDOFF
+- JCS_0_0_31_3_PUBLISH_FINALIZE_HOTFIX.md
+- JCS_0_0_31_3_PUBLISH_FINALIZE_MANIFEST.txt
+
+This ZIP is cumulative for the 0.0.31.1 through 0.0.31.3 intelligence storage and publication hotfixes. Politician photos and unrelated assets are not included.

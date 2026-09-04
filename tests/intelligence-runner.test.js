@@ -53,6 +53,11 @@ test('runner bounds persistent storage retries instead of hammering the publish 
   assert.equal(attempts,3);
 });
 
+test('runner reports a failed final publication switch instead of treating 542 processed rows as published',async()=>{
+  const auth={async intelligencePublishStep(){return {ok:true,job:{status:'COMPLETED',completed:542,total:542},finalized:{ok:false,validation:{errors:['SNAPSHOT_INVALID']}}};}};
+  await assert.rejects(()=>runIntelligenceAction(auth,'publish',{resume:true}),/PUBLICATION_FINALIZE_FAILED/);
+});
+
 test('automatic resume is attempted only once until the administrator clicks again',()=>{
   const guard=createIntelligenceAutoResumeGuard();
   assert.equal(guard.claim('publish'),true);

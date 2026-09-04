@@ -21,6 +21,7 @@ function fakeRedis(options={}){
       if(op==='MGET')return args.slice(1).map(item=>map.get(item)??null);
       if(op==='DEL'){let removed=0;for(const item of args.slice(1)){if(map.delete(String(item)))removed+=1;}return removed;}
       if(op==='SCAN'){
+        if(options.failScanAfterPointerChangeFrom&&map.get(INTELLIGENCE_KEYS.publicPointer)!==options.failScanAfterPointerChangeFrom)throw Object.assign(new Error('STORAGE_REQUEST'),{code:'STORAGE_REQUEST'});
         const pattern=String(args[3]||'*').replace(/[.+^${}()|[\]\\]/g,'\\$&').replaceAll('*','.*');
         return ['0',[...map.keys()].filter(item=>new RegExp(`^${pattern}$`).test(item))];
       }
@@ -107,6 +108,48 @@ test('a collection with source errors publishes only current successful records 
   assert.equal((await service.status()).publicSnapshot,started.job.snapshotId);
   assert.equal((await service.getPublicRankings()).overall.length,2);
   assert.equal(await service.getPublicIntelligence('assembly-002'),null);
+});
+
+test('publication start removes abandoned analysis snapshots while keeping the current draft and public fallback',async()=>{
+  const redis=fakeRedis(),rows=profiles(2),service=createService(redis,rows,{requireReviewApproval:true});
+  redis.map.set(INTELLIGENCE_KEYS.publicPointer,'public-fallback');
+  redis.map.set(INTELLIGENCE_KEYS.draft('public-fallback',rows[0].id),JSON.stringify({id:rows[0].id,snapshot:'public-fallback'}));
+  const started=await service.startCollection();await service.runCollectionStep();await service.approveDraft({reviewedBy:'admin'});
+  redis.map.set(INTELLIGENCE_KEYS.draft('abandoned-snapshot',rows[0].id),JSON.stringify({id:rows[0].id,snapshot:'abandoned-snapshot'}));
+  redis.map.set(INTELLIGENCE_KEYS.version('abandoned-snapshot'),JSON.stringify({analysisVersion:'abandoned-snapshot'}));
+  redis.map.set(INTELLIGENCE_KEYS.history('abandoned-snapshot'),JSON.stringify([{id:'old-history'}]));
+
+  await service.startPublish();
+
+  assert.equal(redis.map.has(INTELLIGENCE_KEYS.draft('abandoned-snapshot',rows[0].id)),false);
+  assert.equal(redis.map.has(INTELLIGENCE_KEYS.version('abandoned-snapshot')),false);
+  assert.equal(redis.map.has(INTELLIGENCE_KEYS.history('abandoned-snapshot')),false);
+  assert.equal(redis.map.has(INTELLIGENCE_KEYS.draft('public-fallback',rows[0].id)),true);
+  assert.equal(redis.map.has(INTELLIGENCE_KEYS.draft(started.job.snapshotId,rows[0].id)),true);
+});
+
+test('a published pointer remains successful when only post-publication cleanup fails',async()=>{
+  const redis=fakeRedis({failScanAfterPointerChangeFrom:'public-fallback'}),rows=profiles(2),service=createService(redis,rows,{storageRetryDelays:[0,0,0]});
+  redis.map.set(INTELLIGENCE_KEYS.publicPointer,'public-fallback');
+  redis.map.set(INTELLIGENCE_KEYS.version('public-fallback'),JSON.stringify({analysisVersion:'public-fallback',status:'published'}));
+  const started=await service.startCollection();await service.runCollectionStep();await service.startPublish();
+
+  const result=await service.runPublishStep();
+
+  assert.equal(result.finalized.ok,true);
+  assert.equal(redis.map.get(INTELLIGENCE_KEYS.publicPointer),started.job.snapshotId);
+  assert.deepEqual(result.finalized.cleanupWarnings,['STORAGE_REQUEST','STORAGE_REQUEST']);
+});
+
+test('missing metadata for the previous public snapshot cannot block the new public pointer',async()=>{
+  const redis=fakeRedis(),rows=profiles(2),service=createService(redis,rows);
+  redis.map.set(INTELLIGENCE_KEYS.publicPointer,'public-without-version-metadata');
+  const started=await service.startCollection();await service.runCollectionStep();await service.startPublish();
+
+  const result=await service.runPublishStep();
+
+  assert.equal(result.finalized.ok,true);
+  assert.equal(redis.map.get(INTELLIGENCE_KEYS.publicPointer),started.job.snapshotId);
 });
 
 test('collection validates the full analysis but stores only compact reconstruction inputs',async()=>{

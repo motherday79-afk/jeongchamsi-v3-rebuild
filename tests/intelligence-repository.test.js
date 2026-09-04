@@ -134,6 +134,18 @@ test('a failed politician is recorded while successful politicians remain comple
   assert.equal(job.failures[0].personId,'p2');
 });
 
+test('a terminal publication job keeps the final switch error for the administrator',async()=>{
+  const redis=fakeRedis(),repository=createIntelligenceRepository(redis.command,{now:()=>3_500});
+  await repository.createJob('publish','snapshot-error',['p1']);
+  const batch=await repository.claimNextBatch('publish');
+  await repository.completeBatch('publish',{start:batch.start,successIds:['p1'],failures:[]});
+
+  const job=await repository.setJobError('publish','ANALYSIS_VERSION_NOT_FOUND');
+
+  assert.equal(job.lastError,'ANALYSIS_VERSION_NOT_FOUND');
+  assert.equal((await repository.readJob('publish')).lastError,'ANALYSIS_VERSION_NOT_FOUND');
+});
+
 test('analysis versions and administrator revisions are preserved in newest-first history',async()=>{
   const redis=fakeRedis(),repository=createIntelligenceRepository(redis.command,{now:()=>4_000});
   await repository.putVersion({rawSnapshotId:'snapshot-1',analysisVersion:'snapshot-1',algorithmVersion:'JCS_INTELLIGENCE_V3',status:'draft',generatedAt:1,reviewStatus:'pending'});

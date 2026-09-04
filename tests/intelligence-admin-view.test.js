@@ -41,3 +41,9 @@ test('approved partial-current draft enables publication when collection complet
   assert.doesNotMatch(html,/data-intelligence-action="publish" disabled/);
   assert.match(html,/오류 11건 기록됨/);
 });
+
+test('admin publication card shows the persisted final switch error after rerender',async()=>{
+  const failed={...auth,async intelligenceStatus(){const value=await auth.intelligenceStatus();return {...value,publication:{status:'COMPLETED',completed:542,total:542,failed:0,lastError:'ANALYSIS_VERSION_NOT_FOUND'}};}};
+  const html=await renderAdminStable(admin,failed);
+  assert.match(html,/최종 게시 실패 · ANALYSIS_VERSION_NOT_FOUND/);
+});

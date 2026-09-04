@@ -32,6 +32,7 @@ export async function runIntelligenceAction(auth,kind,options={}){
   for(let count=0;count<100;count++){
     if(job&&TERMINAL.has(job.status))return job;
     const result=await runStepWithRetry(step,options);job=result.job;options.onProgress?.(job);
+    if(kind==='publish'&&result?.finalized?.ok===false)throw new Error('PUBLICATION_FINALIZE_FAILED');
     if(job&&TERMINAL.has(job.status))return job;
   }
   throw new Error('INTELLIGENCE_STEP_LIMIT_EXCEEDED');
