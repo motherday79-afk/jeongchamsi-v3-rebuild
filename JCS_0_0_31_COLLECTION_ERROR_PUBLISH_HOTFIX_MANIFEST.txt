@@ -1,0 +1,25 @@
+JCS 0.0.31 COLLECTION ERROR / PUBLISH HOTFIX
+
+CHANGED
+- lib/intelligence-repository.js
+
+UNCHANGED SUPPORT FILES INCLUDED FOR STANDALONE TEST
+- lib/intelligence-keys.js
+- lib/intelligence-storage.js
+
+TESTS
+- tests/intelligence-partial-recovery.test.js
+- tests/intelligence-redis-capacity.test.js
+
+SCOPE
+- per-politician collection error recovery
+- publish-blocking COMPLETED_WITH_ERRORS prevention when prior published data exists
+- running compact collection cursor preservation
+- Redis capacity cleanup compatibility
+
+UNCHANGED
+- UI design
+- diagnosis / prescription algorithms
+- NOW ranking formula
+- auth / profiles / photos
+- news / Naver collector rules

@@ -28,7 +28,7 @@ test('running V3 collection reclaims obsolete heavy snapshots before resuming cu
   const seed={
     [INTELLIGENCE_KEYS.job('collect')]:JSON.stringify(job),
     [INTELLIGENCE_KEYS.publicPointer]:published,
-    [INTELLIGENCE_KEYS.draft(current,'p1')]:JSON.stringify({id:'p1'}),
+    [INTELLIGENCE_KEYS.draft(current,'p1')]:JSON.stringify({storageMode:'INPUT_ONLY_V4',id:'p1',snapshot:current,input:{news:{items:[]},sourceErrors:[]},rankingInput:{searchTotal:0,articleCount:0,sourceCount:0,latestPublishedAt:'',searchStatus:'MISSING',newsStatus:'DIRECT'}}),
     [INTELLIGENCE_KEYS.draft(published,'p1')]:JSON.stringify({id:'p1'}),
     [INTELLIGENCE_KEYS.draft(old,'p1')]:JSON.stringify({id:'p1',payload:'x'.repeat(1000)}),
     [INTELLIGENCE_KEYS.published(old,'p1')]:JSON.stringify({id:'p1'}),
@@ -42,6 +42,7 @@ test('running V3 collection reclaims obsolete heavy snapshots before resuming cu
   const result=await repo.prepareCompactCollection();
 
   assert.equal(result.cursor,1,'resume cursor must not reset');
+  assert.equal(result.storageMode,'INPUT_ONLY_V4','running compact collection must be normalized without restart');
   assert.equal(store.has(INTELLIGENCE_KEYS.draft(current,'p1')),true,'current partial draft must survive');
   assert.equal(store.has(INTELLIGENCE_KEYS.draft(published,'p1')),true,'currently published snapshot must survive');
   assert.equal(store.has(INTELLIGENCE_KEYS.draft(old,'p1')),false,'obsolete draft must be reclaimed');
