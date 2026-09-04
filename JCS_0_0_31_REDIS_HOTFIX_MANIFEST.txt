@@ -1,0 +1,21 @@
+JCS 0.0.31 REDIS CAPACITY HOTFIX
+
+SCOPE
+- Redis capacity / stale intelligence snapshot cleanup only
+- No UI, diagnosis, prescription, ranking, auth, profile, photo, or collection-source changes
+
+CHANGED
+- lib/intelligence-repository.js
+
+ADDED TEST
+- tests/intelligence-redis-capacity.test.js
+
+FIX
+- Collection resume now reclaims obsolete heavy intelligence snapshot payloads even when the running job already uses VERSIONED_V3 storage.
+- Protects both the currently published snapshot and the in-progress collection snapshot.
+- Preserves job cursor, current partial drafts, public snapshot, version metadata, revisions, and history keys.
+- Removes obsolete draft/published/raw/validation/rankings payloads to free Redis capacity before the next collection batch.
+
+EXPECTED RECOVERY
+- After deployment, the next collection step can resume from the saved cursor (for example 150/542) instead of starting over.
+- Old heavy snapshot payloads are reclaimed before the next batch writes new data.
