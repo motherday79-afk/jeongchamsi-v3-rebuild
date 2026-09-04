@@ -34,3 +34,10 @@ test('approved reviewed draft enables publication',async()=>{
   assert.doesNotMatch(html,/data-intelligence-action="publish" disabled/);
   assert.doesNotMatch(html,/data-intelligence-approve/);
 });
+
+test('approved partial-current draft enables publication when collection completed with source errors',async()=>{
+  const partial={...auth,async intelligenceStatus(){const value=await auth.intelligenceStatus();return {...value,collection:{status:'COMPLETED_WITH_ERRORS',completed:542,total:542,succeeded:531,failed:11},versions:[{...value.versions[0],status:'approved',reviewStatus:'approved'},value.versions[1]]};},async intelligencePreview(){const value=await auth.intelligencePreview();return {...value,version:{...value.version,status:'approved'}};}};
+  const html=await renderAdminStable(admin,partial);
+  assert.doesNotMatch(html,/data-intelligence-action="publish" disabled/);
+  assert.match(html,/오류 11건 기록됨/);
+});

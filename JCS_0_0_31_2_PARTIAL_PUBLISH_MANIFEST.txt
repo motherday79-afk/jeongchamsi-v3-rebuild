@@ -1,0 +1,15 @@
+JCS 0.0.31.2 PARTIAL CURRENT PUBLISH HOTFIX MANIFEST
+
+CODE
+- lib/intelligence-service.js
+- src/views/stage1.js
+
+TESTS
+- tests/intelligence-service.test.js
+- tests/intelligence-admin-view.test.js
+
+HANDOFF
+- JCS_0_0_31_2_PARTIAL_PUBLISH_HOTFIX.md
+- JCS_0_0_31_2_PARTIAL_PUBLISH_MANIFEST.txt
+
+This ZIP contains only the partial-current publication hotfix files. Politician photos and unchanged assets are not included.

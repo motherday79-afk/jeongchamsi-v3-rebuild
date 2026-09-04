@@ -83,6 +83,32 @@ test('one politician failure is recorded and later politicians still complete',a
   assert.ok(redis.map.has([...redis.map.keys()].find(key=>key.endsWith(':assembly-003'))));
 });
 
+test('a collection with source errors publishes only current successful records without restoring old data',async()=>{
+  const redis=fakeRedis(),rows=profiles(3),service=createService(redis,rows,{
+    requireReviewApproval:true,
+    collectRaw:async(person,context)=>{
+      if(person.id==='assembly-002')throw Object.assign(new Error('SOURCE_TIMEOUT'),{code:'SOURCE_TIMEOUT'});
+      return {personId:person.id,snapshotId:context.snapshotId,officialProfile:person,sourceErrors:[]};
+    }
+  });
+  const started=await service.startCollection();
+  const collected=await service.runCollectionStep();
+
+  assert.equal(collected.job.status,'COMPLETED_WITH_ERRORS');
+  assert.equal(collected.validation.ok,true);
+  assert.equal((await service.status()).versions[0].status,'draft');
+
+  await service.approveDraft({reviewedBy:'admin'});
+  const publication=await service.startPublish();
+  assert.deepEqual(publication.job.ids,['assembly-001','assembly-003']);
+  assert.equal(publication.job.total,2);
+  await service.runPublishStep();
+
+  assert.equal((await service.status()).publicSnapshot,started.job.snapshotId);
+  assert.equal((await service.getPublicRankings()).overall.length,2);
+  assert.equal(await service.getPublicIntelligence('assembly-002'),null);
+});
+
 test('collection validates the full analysis but stores only compact reconstruction inputs',async()=>{
   const redis=fakeRedis(),rows=profiles(1);let validatedFull=false;
   const service=createIntelligenceService({
