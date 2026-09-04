@@ -26,6 +26,14 @@ test('admin control center exposes ten processing stages and draft review before
   assert.match(html,/data-intelligence-approve/);
   assert.match(html,/draft-1.*draft|draft.*draft-1/s);
   assert.match(html,/public-0.*published|published.*public-0/s);
+  assert.match(html,/JCS_0_0_31_9/);
+  assert.match(html,/관리자 화면 버전/);
+});
+
+test('admin warns when browser bundle and server release versions differ',async()=>{
+  const stale={...auth,async intelligenceStatus(){const value=await auth.intelligenceStatus();return {...value,release:{version:'JCS_0_0_31_8',commit:'old123'}};}};
+  const html=await renderAdminStable(admin,stale);
+  assert.match(html,/강력 새로고침 필요/);
 });
 
 test('approved reviewed draft enables publication',async()=>{

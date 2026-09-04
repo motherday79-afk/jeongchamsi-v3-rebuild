@@ -31,8 +31,9 @@ test('guest comparison waits for the button then renders only 01 07 09 for two p
   assert.match(html,/data-compare-limit="2"/);
   assert.deepEqual([...html.matchAll(/data-comparison-topic="(\d{2})"/g)].map(match=>match[1]),['01','07','09']);
   assert.match(html,/로그인하고 상세 비교 보기/);
-  assert.equal((html.match(/>핵심 사건</g)||[]).length,2);
-  assert.equal((html.match(/>최근 흐름</g)||[]).length,2);
+  assert.equal((html.match(/data-diagnosis-display="brand"/g)||[]).length,2);
+  assert.equal((html.match(/data-diagnosis-display="media"/g)||[]).length,2);
+  assert.equal((html.match(/data-diagnosis-display="policy"/g)||[]).length,2);
   assert.doesNotMatch(html,/핵심 원인|실행 처방|세대·성별 지지구조 분석/);
 });
 
@@ -40,9 +41,8 @@ test('member comparison renders six interpreted topics for exactly two people',a
   const html=await renderPoliticianCompare(serviceFor('member'),'/compare?ids=assembly-101,assembly-102,assembly-103&run=1',{authenticated:true,user:{role:'member'}});
   assert.deepEqual([...html.matchAll(/data-comparison-topic="(\d{2})"/g)].map(match=>match[1]),['01','02','03','05','07','09']);
   assert.equal((html.match(/data-compare-matrix-profile=/g)||[]).length,2);
-  assert.match(html,/정참시 비교 해석/);
-  for(const label of ['핵심 사건','변화 원인','과거와 현재','최근 변화'])assert.equal((html.match(new RegExp(`>${label}<`,'g'))||[]).length,2);
-  assert.equal((html.match(/>서브데이터</g)||[]).length,0);
+  for(const kind of ['brand','demographic','local','competitor','media','policy'])assert.equal((html.match(new RegExp(`data-diagnosis-display="${kind}"`,'g'))||[]).length,2);
+  assert.doesNotMatch(html,/>정치적 의미<|>현재 위치<|>기회 요인<|>위험 요인<|>서브데이터</);
   assert.doesNotMatch(html,/실행 처방|관리해야 할 위험|경쟁 대응 우선순위/);
 });
 
@@ -55,14 +55,14 @@ test('administrator comparison caps selection at four and renders all ten topics
   assert.doesNotMatch(html,/data-compare-selected="assembly-105"/);
   assert.deepEqual([...html.matchAll(/data-comparison-topic="(\d{2})"/g)].map(match=>match[1]),['01','02','03','04','05','06','07','08','09','10']);
   for(let index=101;index<=104;index++)assert.match(html,new RegExp(`/assets/politicians/assembly-${index}\\.jpg`));
-  for(const label of ['활용 가능한 기회','관리해야 할 위험','정참시 전략 판단','실행 처방','실행 우선순위'])assert.match(html,new RegExp(label));
+  for(const kind of ['brand','demographic','local','support','competitor','risk','media','campaign','policy','summary'])assert.equal((html.match(new RegExp(`data-diagnosis-display="${kind}"`,'g'))||[]).length,4);
+  for(const label of ['정참시 전략 판단','실행 처방','실행 우선순위'])assert.match(html,new RegExp(label));
   assert.equal((html.match(/data-prescription-topic=/g)||[]).length,10);
   assert.match(html,/진단 근거/);
   assert.equal((html.match(/data-competitor-response=/g)||[]).length,3);
   for(const label of ['공세 영역','방어 영역','회피 영역','단기 역전 가능 영역'])assert.match(html,new RegExp(label));
   assert.equal((html.match(/대표 뉴스는 핵심 이슈 주제에서 벗어난 관련 기사 집계를 의미합니다\./g)||[]).length,1);
-  for(const label of ['핵심 사건','변화 원인','과거와 현재','최근 변화','근거 데이터'])assert.equal((html.match(new RegExp(`>${label}<`,'g'))||[]).length,4);
-  assert.equal((html.match(/>서브데이터</g)||[]).length,4);
+  assert.doesNotMatch(html,/>정치적 의미<|>현재 위치<|>기회 요인<|>위험 요인<|>서브데이터</);
   assert.equal((html.match(/>비교 기준</g)||[]).length,0);
   assert.equal((html.match(/data-politician-type=/g)||[]).length,4);
   for(let index=0;index<4;index++)assert.match(html,new RegExp(reportFor(people[index],index).politicianType.primaryType));
@@ -80,8 +80,8 @@ test('administrator target strategy produces one response card per selected riva
 test('comparison cells use the same projected topic values as detail data',async()=>{
   const projected=projectIntelligence(reportFor(people[0],0),'member','detail');
   const html=await renderPoliticianCompare(serviceFor('member'),'/compare?ids=assembly-101,assembly-102&run=1',{user:{role:'member'}});
-  assert.match(html,new RegExp(projected.diagnoses[0].currentPosition));
-  assert.match(html,/정참시 비교 해석/);
+  assert.match(html,new RegExp(projected.diagnoses[0].display.nowSignal));
+  assert.match(html,/data-diagnosis-display="brand"/);
 });
 
 test('administrator can change the strategy baseline politician',async()=>{

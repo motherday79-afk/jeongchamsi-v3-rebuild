@@ -1,3 +1,5 @@
+import { renderDiagnosisDisplay } from './politicians.js';
+
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 
 function queryRoute(ids,run=false){
@@ -76,6 +78,8 @@ function memberCompareCell(topic,position){const primary=topic?.id==='01';return
 
 function adminCompareCell(topic,position){const primary=topic?.id==='01';return `<article class="jcs-compare-topic-cell">${primary?compareField('핵심 사건',topic?.coreEvent):''}${compareField('정치적 의미',topic?.politicalMeaning,'is-meaning')}${compareField('현재 위치',topic?.currentPosition,'is-position')}${primary?compareField('변화 원인',topic?.changeReason):''}${primary?compareField('과거와 현재',topic?.pastPresentConnection):''}${compareField('점수·상대 위치',`${position.label} · ${topic?.score}`)}${compareField('직군 위치',topic?.percentile)}${primary?compareField('최근 변화',topic?.trend):''}${primary?compareField('근거 데이터',topic?.evidence):''}${topic?.id==='06'?compareField('서브데이터',topic?.supportingData):''}${compareField('정참시 해석',topic?.interpretation,'is-interpretation')}${compareField('활용 가능한 기회',topic?.opportunity)}${compareField('관리해야 할 위험',topic?.risk)}</article>`;}
 
+function visualCompareCell(topic,position){return `<article class="jcs-compare-topic-cell jcs-compare-visual-cell">${renderDiagnosisDisplay(topic)}<footer><b>${esc(position.label)}</b>${available(position.value)?`<span>상대 지수 ${esc(position.value)}</span>`:''}</footer></article>`;}
+
 function adminComparisonSummary(entries,topicIds){
   const comparable=topicIds.map(id=>{
     const values=entries.map(entry=>topicSignal(comparisonTopic(entry,id)));
@@ -103,7 +107,7 @@ function renderDiagnosticComparison(entries,role,strategyId=''){
   const header=`<div class="jcs-compare-matrix-profile-row" style="--compare-count:${entries.length}"><div class="jcs-compare-matrix-corner"><span>COMPARE</span><b>동일 기준 비교</b></div>${entries.map(compareProfileHeader).join('')}</div>`;
   const sections=topicIds.map(id=>{
     const topic=comparisonTopic(entries[0],id),positions=relativePositions(entries,id);
-    return `<section class="jcs-compare-topic" data-comparison-topic="${id}"><header><span>${id}</span><h2>${esc(topic?.title)}</h2></header><div class="jcs-compare-topic-row" style="--compare-count:${entries.length}">${entries.map((entry,index)=>{const current=comparisonTopic(entry,id);return role==='admin'?adminCompareCell(current,positions[index]):role==='member'?memberCompareCell(current,positions[index]):publicCompareCell(current,positions[index]);}).join('')}</div></section>`;
+    return `<section class="jcs-compare-topic" data-comparison-topic="${id}"><header><span>${id}</span><h2>${esc(topic?.title)}</h2></header><div class="jcs-compare-topic-row" style="--compare-count:${entries.length}">${entries.map((entry,index)=>visualCompareCell(comparisonTopic(entry,id),positions[index])).join('')}</div></section>`;
   }).join('');
   const target=entries.find(entry=>entry.item.id===strategyId)||entries[0],prescriptions=target?.intelligence?.prescriptions||[],targetSelector=role==='admin'?`<nav class="jcs-strategy-target"><b>전략 기준 정치인</b>${entries.map(entry=>`<button type="button" class="${entry.item.id===target.item.id?'active':''}" data-layout-route="/compare?ids=${encodeURIComponent(entries.map(row=>row.item.id).join(','))}&run=1&strategy=${encodeURIComponent(entry.item.id)}">${esc(entry.item.name)}</button>`).join('')}</nav>`:'';
   const adminRx=role==='admin'?`${targetSelector}${competitorResponseCards(entries,target,topicIds)}<section class="jcs-compare-transition"><span>FROM DIAGNOSIS TO PRESCRIPTION</span><h2>${esc(target.item.name)} 기준 전략 처방</h2><p>위 비교 진단을 기준 정치인의 실행 전략으로 전환합니다.</p></section><div class="jcs-compare-prescriptions">${prescriptions.map(item=>comparePrescription(item,target)).join('')}</div>${comparePriority(target.intelligence?.prescriptionPriorities,prescriptions)}`:'';

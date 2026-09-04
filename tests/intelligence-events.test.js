@@ -50,3 +50,12 @@ test('event processing is deterministic and never expands beyond ten representat
   assert.deepEqual(first,second);
   assert.ok(first.flatMap(row=>row.relatedNewsIds).length<=10);
 });
+
+test('an official current role becomes a neutral structural event when news is empty',()=>{
+  const official={...person,office:'제22대 국회의원',roleLabel:'국회의원',sourceId:'assembly-official'};
+  const clusters=buildEventClusters(official,{items:[]},[{id:'role-22',title:'제22대 국회의원',effectiveFrom:'2024-05-30',roleStatus:'active'}]);
+  assert.equal(clusters.length,1);
+  assert.equal(clusters[0].direction,'neutral');
+  assert.match(clusters[0].eventTitle,/제22대 국회의원/);
+  assert.equal(clusters[0].evidence[0].source,'공식 프로필');
+});

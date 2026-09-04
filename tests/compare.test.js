@@ -72,7 +72,7 @@ test('member comparison reveals six interpreted topics only after compare is pre
   assert.match(html,/data-compare-role="member"[^>]*data-compare-limit="2"/);
   assert.equal((html.match(/data-compare-slot/g)||[]).length,2);
   assert.equal((html.match(/data-comparison-topic=/g)||[]).length,6);
-  for(const marker of ['JCS MEMBER POLITICAL COMPARISON','세대·성별 지지구조 분석','지역구 민심·메시지 진단','정참시 비교 해석'])assert.match(html,new RegExp(marker));
+  for(const marker of ['JCS MEMBER POLITICAL COMPARISON','세대·성별 지지구조 분석','지역구 민심·메시지 진단','data-diagnosis-display="demographic"'])assert.match(html,new RegExp(marker));
   assert.doesNotMatch(html,/실행 처방|경쟁 대응 우선순위/);
 });
 
@@ -84,7 +84,7 @@ test('JCS support conversion remains populated when Gallup context is unavailabl
   }};
   const html=await renderPoliticianCompare({...serviceFor('member'),getForCompare:noGallup.getForCompare},'/compare?ids=assembly-001,assembly-002&run=1',{authenticated:true,user:{role:'member'}});
   assert.match(html,/세대·성별 지지구조 분석/);
-  assert.match(html,/JCS 상대지수|정참시 비교 해석/);
+  assert.match(html,/data-diagnosis-display="demographic"/);
   assert.doesNotMatch(html,/실행 처방/);
 });
 
@@ -101,7 +101,7 @@ test('admin comparison accepts four people and renders ten-topic matrix only aft
   assert.match(html,/관리자 다중 비교/);
   assert.match(html,/최대 4명/);
   assert.equal((html.match(/data-comparison-topic=/g)||[]).length,10);
-  for(const marker of ['관리자 경쟁 분석 요약','가장 격차가 큰 영역','정참시 해석','실행 처방'])assert.match(html,new RegExp(marker));
+  for(const marker of ['관리자 경쟁 분석 요약','가장 격차가 큰 영역','data-diagnosis-display="summary"','실행 처방'])assert.match(html,new RegExp(marker));
 });
 
 test('one failed comparison load preserves successful people and identifies the retry id',async()=>{
@@ -200,7 +200,7 @@ test('embedded compare search has a readable slot-local result layer',async()=>{
   const css=await readFile(new URL('../css/pages.css',import.meta.url),'utf8');
   const start=css.lastIndexOf('JCS_0_0_14 · EMBEDDED POLITICIAN COMPARE SEARCH');
   assert.ok(start>=0);
-  const end=css.indexOf('JCS_0_0_27 · LEGACY DETAIL DENSITY',start),layer=css.slice(start,end<0?undefined:end);
+  const nextLayer=css.indexOf('JCS_0_0_31 · INTELLIGENCE PIPELINE',start),legacyLayer=css.indexOf('JCS_0_0_27 · LEGACY DETAIL DENSITY',start),end=Math.min(...[nextLayer,legacyLayer].filter(value=>value>=0)),layer=css.slice(start,end<0?undefined:end);
   assert.match(layer,/\.politician-compare-slot-search/);
   assert.match(layer,/\.politician-compare-search-results/);
   assert.match(layer,/input\[type="search"\]/);

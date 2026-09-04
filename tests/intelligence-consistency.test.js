@@ -55,6 +55,7 @@ test('cross-field copies, overused evidence and repeated prescription monitoring
   for(const diagnosis of broken.diagnoses){
     diagnosis.politicalMeaning=diagnosis.currentPosition;
     diagnosis.interpretation=[diagnosis.currentPosition];
+    diagnosis.headline='모든 항목에 복사된 동일 진단';
     diagnosis.evidenceIds=['shared-news'];
   }
   for(const prescription of broken.prescriptions){
@@ -64,4 +65,11 @@ test('cross-field copies, overused evidence and repeated prescription monitoring
   broken.diagnoses[0].currentPosition='[object Object]';
   const validation=validateIntelligenceConsistency(broken);
   for(const code of ['DIAGNOSIS_FIELDS_COPIED','EVIDENCE_OVERUSED','EXPECTED_IMPACT_COPY_REPEATED','MONITORING_COPY_REPEATED','OBJECT_TEXT_RENDERED'])assert.ok(validation.errors.includes(code),code);
+});
+
+test('removed legacy prose does not block an otherwise valid visual diagnosis',()=>{
+  const current=clone(report());
+  for(const diagnosis of current.diagnoses){diagnosis.currentPosition='분석 준비 중';diagnosis.politicalMeaning='분석 준비 중';diagnosis.interpretation=['분석 준비 중'];}
+  const validation=validateIntelligenceDraft(current);
+  assert.equal(validation.errors.includes('PROHIBITED_INTELLIGENCE_COPY'),false);
 });

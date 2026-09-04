@@ -62,3 +62,10 @@ test('competitor renderer uses row agenda and election data rather than hard-cod
   assert.match(render,/row\.agendas/);
   assert.match(render,/row\.election/);
 });
+
+test('demographic and support visuals reset legacy positioning and keep three independent circles',async()=>{
+  const css=await readFile(new URL('../css/pages.css',import.meta.url),'utf8');
+  assert.match(css,/\.jcs-dx-age-row header b\s*\{[^}]*position:static/);
+  assert.match(css,/\.jcs-dx-support-orbit\s*\{[^}]*grid-template-columns:repeat\(3/);
+  assert.match(css,/\.jcs-dx-support-orbit>div\s*\{[^}]*position:relative/);
+});

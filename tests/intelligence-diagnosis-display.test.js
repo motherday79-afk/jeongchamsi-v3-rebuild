@@ -59,6 +59,16 @@ test('official election rows derive the vote margin and regional classification 
   assert.equal(campaign.elections[0].regions[1].status,'경합');
 });
 
+test('collected official election context feeds both competitor and campaign displays',()=>{
+  const official={elections:[{year:'2024',election:'제22대 국회의원선거',voteRate:54.7,opponent:'이경쟁',opponentRate:43.2,regions:[{name:'진단1동',voteRate:58,opponentRate:40}]}]};
+  const report=projectIntelligence(buildIntelligenceDraft(person,raw,{...context,officialElection:official},'JCS_INTELLIGENCE_V3'),'admin','detail');
+  const competitor=report.diagnoses.find(row=>row.id==='05').display;
+  const campaign=report.diagnoses.find(row=>row.id==='08').display;
+  assert.equal(campaign.elections[0].voteRate,54.7);
+  assert.equal(campaign.elections[0].margin,11.5);
+  assert.equal(competitor.people[0].election.voteRate,54.7);
+});
+
 test('brand past risk signals link only to observed negative news evidence',()=>{
   const report=projectIntelligence(buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
   const brand=report.diagnoses.find(row=>row.id==='01').display;
@@ -117,4 +127,15 @@ test('policy diagnosis uses retained supplemental evidence as observed policy ro
   const report=projectIntelligence(buildIntelligenceDraft(person,supplemental,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
   const policy=report.diagnoses.find(row=>row.id==='09').display;
   assert.ok(policy.policies.some(row=>row.name.includes('청년 주거 공약')));
+});
+
+test('policy diagnosis excludes party creation and dissolution coverage without a policy action',()=>{
+  const nonPolicy={...raw,news:{items:[
+    {title:"'김진단 창당' 소나무당 공식 해산…선관위 공고로 활동 마무리",source:'정치뉴스',url:'https://example.com/dissolve',publishedAt:'2026-09-04T00:00:00.000Z'},
+    {title:'김진단 청년 주거 공약 예산안 발의',source:'정책뉴스',url:'https://example.com/policy-real',publishedAt:'2026-09-03T00:00:00.000Z'}
+  ]}};
+  const report=projectIntelligence(buildIntelligenceDraft(person,nonPolicy,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
+  const policy=report.diagnoses.find(row=>row.id==='09').display;
+  assert.equal(policy.policies.some(row=>/해산|창당/.test(row.name)),false);
+  assert.equal(policy.policies.some(row=>/주거 공약/.test(row.name)),true);
 });
