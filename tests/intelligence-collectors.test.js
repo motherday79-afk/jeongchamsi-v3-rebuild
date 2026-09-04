@@ -50,11 +50,12 @@ test('Naver less-than-ten values remain bounded source facts',async()=>{
 });
 
 test('Google News collector parses Korean RSS items and keeps provenance',async()=>{
-  const rss=`<?xml version="1.0"?><rss><channel><item><title><![CDATA[김민석 민생 행보 - 연합뉴스]]></title><link>https://news.google.com/articles/one</link><pubDate>Wed, 02 Sep 2026 01:00:00 GMT</pubDate><source url="https://yna.co.kr">연합뉴스</source></item><item><title>김민석 당대표 메시지 - MBC</title><link>https://news.google.com/articles/two</link><pubDate>Tue, 01 Sep 2026 01:00:00 GMT</pubDate><source url="https://imnews.imbc.com">MBC</source></item></channel></rss>`;
+  const rss=`<?xml version="1.0"?><rss><channel><item><title><![CDATA[김민석 민생 행보 - 연합뉴스]]></title><description><![CDATA[<p>청년 주택 3만호 공급 계획을 발표했다.</p>]]></description><link>https://news.google.com/articles/one</link><pubDate>Wed, 02 Sep 2026 01:00:00 GMT</pubDate><source url="https://yna.co.kr">연합뉴스</source></item><item><title>김민석 당대표 메시지 - MBC</title><link>https://news.google.com/articles/two</link><pubDate>Tue, 01 Sep 2026 01:00:00 GMT</pubDate><source url="https://imnews.imbc.com">MBC</source></item></channel></rss>`;
   const result=await fetchGoogleNews({id:'assembly-001',name:'김민석'},{fetchImpl:async()=>({ok:true,status:200,text:async()=>rss}),now:()=>1700000000000});
   assert.equal(result.items.length,2);
   assert.equal(result.items[0].source,'연합뉴스');
   assert.equal(result.items[0].title,'김민석 민생 행보 - 연합뉴스');
+  assert.equal(result.items[0].description,'청년 주택 3만호 공급 계획을 발표했다.');
   assert.equal(result.provider,'GOOGLE_NEWS_RSS');
 });
 
@@ -71,4 +72,3 @@ test('one source failure is recorded without discarding another allowed source',
   assert.equal(raw.officialProfile.name,'김민석');
   assert.doesNotMatch(JSON.stringify(raw),/access-license|secret-key|customer-1/);
 });
-

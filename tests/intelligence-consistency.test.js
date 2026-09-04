@@ -28,11 +28,11 @@ test('technical collection failure cannot be published as a zero-news maintenanc
 
 test('duplicate judgments, cloned scores and disconnected prescriptions block publication',()=>{
   const broken=clone(report()),first=broken.diagnoses[0];
-  for(const diagnosis of broken.diagnoses){diagnosis.score=50;diagnosis.opportunity=first.opportunity;diagnosis.risk=first.risk;diagnosis.interpretation=[first.interpretation[0]];}
+  for(const diagnosis of broken.diagnoses){diagnosis.score=50;diagnosis.opportunity=first.opportunity;diagnosis.risk=first.risk;diagnosis.interpretation=[first.interpretation[0]];diagnosis.politicalMeaning=first.politicalMeaning;}
   broken.prescriptions[0].linkedDiagnosisIds=['99'];
   const validation=validateIntelligenceConsistency(broken);
   assert.equal(validation.ok,false);
-  for(const code of ['DIAGNOSIS_SCORE_CLONED','OPPORTUNITY_COPY_REPEATED','RISK_COPY_REPEATED','INTERPRETATION_COPY_REPEATED','PRESCRIPTION_LINK_INVALID'])assert.ok(validation.errors.includes(code),code);
+  for(const code of ['DIAGNOSIS_SCORE_CLONED','OPPORTUNITY_COPY_REPEATED','RISK_COPY_REPEATED','INTERPRETATION_COPY_REPEATED','POLITICAL_MEANING_COPY_REPEATED','PRESCRIPTION_LINK_INVALID'])assert.ok(validation.errors.includes(code),code);
 });
 
 test('legal suspicion cannot be narrated as a final conviction and negative attention cannot become a positive brand judgment',()=>{

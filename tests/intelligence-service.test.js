@@ -59,6 +59,19 @@ test('a 542-person collection completes in exactly 22 steps of at most 25 people
   assert.equal((await service.status()).collection.status,'COMPLETED');
 });
 
+test('version metadata never stores thousands of article URLs in one Redis value',async()=>{
+  const redis=fakeRedis(),rows=profiles(30),service=createService(redis,rows,{
+    collectRaw:async(person,context)=>({personId:person.id,snapshotId:context.snapshotId,officialProfile:person,sourceErrors:[],news:{items:Array.from({length:10},(_,index)=>({title:`${person.name} 정책 ${index}`,source:`매체${index}`,url:`https://news.example/${person.id}/${index}/`+'x'.repeat(300),publishedAt:'2026-09-04T00:00:00.000Z'}))}}),
+    analyze:(person,raw)=>({id:person.id,snapshot:raw.snapshotId,algorithmVersion:'JCS_INTELLIGENCE_V3',signal:{index:1},raw})
+  });
+  const started=await service.startCollection();
+  while(true){const step=await service.runCollectionStep();if(step.job.status!=='RUNNING')break;}
+  const encoded=redis.map.get(INTELLIGENCE_KEYS.version(started.job.snapshotId)),version=JSON.parse(encoded);
+  assert.deepEqual(version.newsIds,[]);
+  assert.equal(version.newsCount,300);
+  assert.ok(encoded.length<5000);
+});
+
 test('a new service instance resumes from the persisted collection cursor',async()=>{
   const redis=fakeRedis(),rows=profiles(30),first=createService(redis,rows);
   await first.startCollection();

@@ -90,3 +90,13 @@ test('stored intelligence keeps only current rendering inputs and compact rankin
   assert.equal(stored.cohorts,undefined);
   assert.ok(JSON.stringify(stored).length<5000);
 });
+
+test('compact storage bounds article descriptions and remains a single reconstructable record',()=>{
+  const oversized=structuredClone(raw);
+  oversized.news.items=Array.from({length:30},(_,index)=>({...raw.news.items[index%3],title:`${index} ${raw.news.items[index%3].title}`,description:'정책 근거 '.repeat(300)}));
+  const stored=compactIntelligenceDraft(buildIntelligenceDraft(person,oversized,context,'JCS_INTELLIGENCE_V3'));
+  assert.equal(stored.input.news.items.length,10);
+  assert.equal(stored.input.news.items.every(row=>row.description.length<=360),true);
+  assert.equal(stored.storageMode,'INPUT_ONLY_V4');
+  assert.ok(JSON.stringify(stored).length<15000);
+});

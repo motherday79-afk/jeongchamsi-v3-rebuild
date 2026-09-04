@@ -1,0 +1,32 @@
+JCS 0.0.31.4 CUMULATIVE EVIDENCE INFERENCE / REDIS PUBLISH HOTFIX MANIFEST
+
+CODE
+- lib/google-news.js
+- lib/intelligence-analysis.js
+- lib/intelligence-consistency.js
+- lib/intelligence-diagnostics.js
+- lib/intelligence-facts.js
+- lib/intelligence-headlines.js
+- lib/intelligence-inference.js
+- lib/intelligence-repository.js
+- lib/intelligence-service.js
+- lib/intelligence-storage.js
+- src/core/intelligence-runner.js
+- src/views/stage1.js
+
+TESTS
+- tests/intelligence-admin-view.test.js
+- tests/intelligence-analysis.test.js
+- tests/intelligence-collectors.test.js
+- tests/intelligence-consistency.test.js
+- tests/intelligence-inference.test.js
+- tests/intelligence-repository.test.js
+- tests/intelligence-runner.test.js
+- tests/intelligence-service.test.js
+- tests/intelligence-v3.test.js
+
+HANDOFF
+- JCS_0_0_31_4_EVIDENCE_INFERENCE_ENGINE_PATCH.md
+- JCS_0_0_31_4_EVIDENCE_INFERENCE_ENGINE_MANIFEST.txt
+
+This ZIP is cumulative for the 0.0.31.1 through 0.0.31.4 intelligence storage, publication, evidence inference and publish-button hotfixes. Politician photos, uploaded images and unrelated assets are not included.

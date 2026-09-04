@@ -42,6 +42,12 @@ test('approved partial-current draft enables publication when collection complet
   assert.match(html,/오류 11건 기록됨/);
 });
 
+test('publication readiness falls back to the completed collection snapshot when latest pointer lookup is empty',async()=>{
+  const recovered={...auth,async intelligenceStatus(){const value=await auth.intelligenceStatus();return {...value,collection:{...value.collection,snapshotId:'draft-1'},latestDraft:'',versions:[{...value.versions[0],status:'approved',reviewStatus:'approved'},value.versions[1]]};},async intelligencePreview(){return {ok:false};}};
+  const html=await renderAdminStable(admin,recovered);
+  assert.doesNotMatch(html,/data-intelligence-action="publish" disabled/);
+});
+
 test('admin publication card shows the persisted final switch error after rerender',async()=>{
   const failed={...auth,async intelligenceStatus(){const value=await auth.intelligenceStatus();return {...value,publication:{status:'COMPLETED',completed:542,total:542,failed:0,lastError:'ANALYSIS_VERSION_NOT_FOUND'}};}};
   const html=await renderAdminStable(admin,failed);
