@@ -35,3 +35,19 @@ test('diagnosis visual styles use compact gradient modules with a mobile reflow'
   assert.match(css,/@media\(max-width:760px\)[\s\S]*\.jcs-dx-module/);
   assert.match(css,/linear-gradient\(/);
 });
+
+test('media panels expose full outlet names instead of ellipsized fragments',async()=>{
+  const html=await adminHtml(),css=await readFile(new URL('../css/pages.css',import.meta.url),'utf8');
+  assert.match(html,/jcs-dx-media-legend/);
+  assert.match(html,/>연합뉴스</);
+  const legendCss=css.slice(css.lastIndexOf('.jcs-dx-media-legend'));
+  assert.doesNotMatch(legendCss,/text-overflow:ellipsis/);
+});
+
+test('competitor renderer uses row agenda and election data rather than hard-coded empty cells',async()=>{
+  const source=await readFile(new URL('../src/views/politicians.js',import.meta.url),'utf8');
+  const render=source.slice(source.indexOf('function renderDxCompetitor'),source.indexOf('function renderDxRisk'));
+  assert.doesNotMatch(render,/rows\.map\(\(\)=>'<div class="is-empty">데이터 부족<\/div>'\)/);
+  assert.match(render,/row\.agendas/);
+  assert.match(render,/row\.election/);
+});

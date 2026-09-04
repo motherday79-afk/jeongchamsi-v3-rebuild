@@ -50,7 +50,7 @@ test('legacy unfinished collection is reset into compact input mode without touc
   const recovered=await repository.prepareCompactCollection();
 
   assert.equal(recovered.cursor,0);
-  assert.equal(recovered.storageMode,'INPUT_ONLY_V4');
+  assert.equal(recovered.storageMode,'INPUT_ONLY_V5');
   assert.equal(redis.map.has(INTELLIGENCE_KEYS.draft('new-snapshot','p1')),false);
   assert.equal(redis.map.has(INTELLIGENCE_KEYS.draft('public-snapshot','p1')),true);
   assert.equal(redis.map.get('jcs:rebuild:v2:users'),'preserve-users');

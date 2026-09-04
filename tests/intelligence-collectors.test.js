@@ -59,6 +59,12 @@ test('Google News collector parses Korean RSS items and keeps provenance',async(
   assert.equal(result.provider,'GOOGLE_NEWS_RSS');
 });
 
+test('Google News collector keeps up to forty current articles for evidence routing',async()=>{
+  const items=Array.from({length:40},(_,index)=>`<item><title>김민석 정책 지역 기사 ${index}</title><link>https://news.google.com/${index}</link><pubDate>Wed, 02 Sep 2026 01:00:00 GMT</pubDate><source>매체 ${index}</source></item>`).join('');
+  const result=await fetchGoogleNews({id:'assembly-001',name:'김민석'},{fetchImpl:async()=>({ok:true,status:200,text:async()=>`<rss><channel>${items}</channel></rss>`}),now:()=>1700000000000});
+  assert.equal(result.items.length,40);
+});
+
 test('one source failure is recorded without discarding another allowed source',async()=>{
   const rss=`<rss><channel><item><title>정치 뉴스</title><link>https://news.google.com/a</link><pubDate>Wed, 02 Sep 2026 01:00:00 GMT</pubDate><source>테스트뉴스</source></item></channel></rss>`;
   const fetchImpl=async url=>String(url).includes('api.searchad.naver.com')

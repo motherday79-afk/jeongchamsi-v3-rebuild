@@ -1,0 +1,31 @@
+JCS 0.0.31.7 DIAGNOSIS DATA COMPLETION HOTFIX
+
+Production files
+css/pages.css
+lib/google-news.js
+lib/intelligence-access.js
+lib/intelligence-analysis.js
+lib/intelligence-diagnostics.js
+lib/intelligence-repository.js
+lib/intelligence-service.js
+lib/intelligence-storage.js
+src/views/politicians.js
+
+Verification files
+tests/intelligence-analysis.test.js
+tests/intelligence-collectors.test.js
+tests/intelligence-diagnosis-display.test.js
+tests/intelligence-repository.test.js
+tests/intelligence-service.test.js
+tests/politician-diagnosis-rebuild-view.test.js
+
+Documentation
+JCS_0_0_31_7_DIAGNOSIS_DATA_COMPLETION_HOTFIX.md
+JCS_0_0_31_7_DIAGNOSIS_DATA_COMPLETION_MANIFEST.txt
+docs/superpowers/plans/2026-09-04-diagnosis-data-completion-hotfix.md
+
+Excluded
+assets/politicians/**
+all image files
+node_modules/**
+.git/**

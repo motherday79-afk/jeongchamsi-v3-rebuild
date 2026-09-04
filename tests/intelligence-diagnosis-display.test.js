@@ -35,15 +35,17 @@ test('demographic composition and support composition each total one hundred',()
   assert.deepEqual(support.composition.map(row=>row.key),['core','floating','exit']);
 });
 
-test('competitor comparison is capped at three and campaign data never invents election values',()=>{
+test('competitor comparison is capped at three and campaign keeps verified profile history without inventing vote values',()=>{
   const report=projectIntelligence(buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
   const competitor=report.diagnoses.find(row=>row.id==='05').display;
   const campaign=report.diagnoses.find(row=>row.id==='08').display;
   assert.equal(competitor.people.length,4);
   assert.equal(competitor.people[0].name,'김진단');
   assert.equal(new Set(competitor.people.slice(1).map(row=>row.name)).size,3);
-  assert.equal(campaign.elections.length,0);
-  assert.equal(campaign.status,'비교 가능한 공식 선거 데이터 부족');
+  assert.equal(campaign.elections.length,1);
+  assert.equal(campaign.elections[0].election,'제22대 국회의원 당선');
+  assert.equal(campaign.elections[0].voteRate,null);
+  assert.equal(campaign.elections[0].margin,null);
 });
 
 test('brand past risk signals link only to observed negative news evidence',()=>{
@@ -64,4 +66,21 @@ test('local diagnosis excludes national coverage that has no district evidence',
   const local=report.diagnoses.find(row=>row.id==='03').display;
   assert.equal(local.issues.reduce((sum,row)=>sum+row.count,0),1);
   assert.equal(local.messageFit.length,1);
+});
+
+test('local diagnosis exposes official electorate structure from the collected population context',()=>{
+  const report=projectIntelligence(buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
+  const local=report.diagnoses.find(row=>row.id==='03').display;
+  assert.equal(local.population.length,5);
+  assert.deepEqual(local.population[0],{age:'20대',maleShare:49,femaleShare:51});
+  assert.equal(local.populationBasis,'광역 연령·성별 인구 구조');
+});
+
+test('policy diagnosis uses retained supplemental evidence as observed policy rows',()=>{
+  const supplemental={...raw,news:{items:raw.news.items,evidenceItems:[
+    {title:'김진단 청년 주거 공약 예산 300억원 추진',source:'정책뉴스',url:'https://example.com/policy',publishedAt:'2026-09-02T00:00:00.000Z'}
+  ]}};
+  const report=projectIntelligence(buildIntelligenceDraft(person,supplemental,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
+  const policy=report.diagnoses.find(row=>row.id==='09').display;
+  assert.ok(policy.policies.some(row=>row.name.includes('청년 주거 공약')));
 });

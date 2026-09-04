@@ -205,6 +205,41 @@ test('public detail reconstructs the complete V3 report from compact current-sna
   assert.equal(detail.news[0].title,`${rows[0].name} 민생 정책 현장 발표`);
 });
 
+test('compact storage retains bounded local and policy evidence outside the representative ten',async()=>{
+  const redis=fakeRedis(),rows=profiles(1);
+  const general=Array.from({length:10},(_,index)=>({title:`${rows[0].name} 정치 일반 기사 ${index}`,source:`일반매체${index}`,url:`https://news.example/general-${index}`,publishedAt:'2026-09-04T00:00:00Z'}));
+  const evidence=[
+    {title:`${rows[0].name} ${rows[0].jurisdiction} 지역 예산 확보`,source:'지역신문',url:'https://news.example/local',publishedAt:'2026-09-03T00:00:00Z'},
+    {title:`${rows[0].name} 청년 주거 공약 발표`,source:'정책신문',url:'https://news.example/policy',publishedAt:'2026-09-02T00:00:00Z'}
+  ];
+  const service=createIntelligenceService({
+    command:redis.command,profiles:rows,env:{NAVER_AD_ACCESS_LICENSE:'a',NAVER_AD_SECRET_KEY:'b',NAVER_AD_CUSTOMER_ID:'c'},now:()=>1_788_400_000_000,
+    collectRaw:async(person,context)=>({personId:person.id,snapshotId:context.snapshotId,officialProfile:person,searchAds:{volume:{pc:10,mobile:20}},news:{items:[...general,...evidence]},sourceErrors:[]}),
+    analyze:(person,raw)=>({id:person.id,snapshot:raw.snapshotId,algorithmVersion:'JCS_INTELLIGENCE_V3',raw}),validateDraft:()=>({ok:true,errors:[]}),requireReviewApproval:false
+  });
+  const started=await service.startCollection();await service.runCollectionStep();
+  const stored=JSON.parse(redis.map.get(INTELLIGENCE_KEYS.draft(started.job.snapshotId,rows[0].id)));
+  assert.equal(stored.input.news.items.length,10);
+  assert.deepEqual(stored.input.news.evidenceItems.map(row=>row.url),['https://news.example/local','https://news.example/policy']);
+  assert.ok(Buffer.byteLength(JSON.stringify(stored),'utf8')<9000);
+});
+
+test('public detail joins three competitors from their own current snapshot records',async()=>{
+  const redis=fakeRedis(),rows=profiles(4);
+  const service=createIntelligenceService({
+    command:redis.command,profiles:rows,env:{NAVER_AD_ACCESS_LICENSE:'a',NAVER_AD_SECRET_KEY:'b',NAVER_AD_CUSTOMER_ID:'c'},now:()=>1_788_400_000_000,
+    collectRaw:async(person,context)=>{const order=Number(person.id.slice(-3));return {personId:person.id,snapshotId:context.snapshotId,officialProfile:person,searchAds:{volume:{pc:order*100,mobile:order*1000}},news:{items:Array.from({length:order},(_,index)=>({title:`${person.name} 정책 발표 ${index}`,source:`매체${order}-${index}`,url:`https://news.example/${order}/${index}`,publishedAt:'2026-09-04T00:00:00Z'}))},sourceErrors:[]};},
+    analyze:(person,raw,context,version)=>buildIntelligenceDraft(person,raw,context,version),requireReviewApproval:false
+  });
+  await service.startCollection();await service.runCollectionStep();await service.startPublish();await service.runPublishStep();
+  const detail=await service.getPublicIntelligence(rows[0].id),people=detail.diagnoses.find(row=>row.id==='05').display.people;
+  assert.equal(people.length,4);
+  assert.equal(people.slice(1).every(row=>Number.isFinite(row.pc)&&Number.isFinite(row.mobile)),true);
+  assert.equal(people.slice(1).every(row=>Number.isFinite(row.newsCount)&&Number.isFinite(row.sourceCount)),true);
+  assert.equal(people.slice(1).every(row=>Number.isFinite(row.overallRank)&&Number.isFinite(row.categoryRank)),true);
+  assert.equal(people.slice(1).every(row=>Array.isArray(row.agendas)&&row.agendas.length>0),true);
+});
+
 test('a legacy rich running collection is reset before it consumes more Redis capacity',async()=>{
   const redis=fakeRedis(),rows=profiles(2),service=createService(redis,rows);
   const started=await service.startCollection();
@@ -215,7 +250,7 @@ test('a legacy rich running collection is reset before it consumes more Redis ca
   redis.map.set(INTELLIGENCE_KEYS.job('collect'),JSON.stringify(job));
   const resumed=await service.startCollection();
   assert.equal(resumed.job.completed,0);
-  assert.equal(resumed.job.storageMode,'INPUT_ONLY_V4');
+  assert.equal(resumed.job.storageMode,'INPUT_ONLY_V5');
   assert.equal(redis.map.has(INTELLIGENCE_KEYS.draft(started.job.snapshotId,rows[0].id)),false);
 });
 

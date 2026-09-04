@@ -80,7 +80,7 @@ test('snapshot validation requires every expected politician exactly once',()=>{
 test('stored intelligence keeps only current rendering inputs and compact ranking inputs',()=>{
   const full=buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V1');
   const stored=compactIntelligenceDraft(full);
-  assert.equal(stored.storageMode,'INPUT_ONLY_V4');
+  assert.equal(stored.storageMode,'INPUT_ONLY_V5');
   assert.equal(stored.input.news.items.length,3);
   assert.deepEqual(stored.input.searchAds,{volume:{pc:1500,mobile:10000,total:11500}});
   assert.deepEqual(stored.rankingInput,{searchTotal:11500,articleCount:3,sourceCount:3,latestPublishedAt:'2026-09-02T00:00:00.000Z',searchStatus:'DIRECT',newsStatus:'DIRECT'});
@@ -99,6 +99,6 @@ test('compact storage bounds article descriptions and remains a single reconstru
   assert.equal(stored.rankingInput.articleCount,30);
   assert.equal(stored.rankingInput.sourceCount,3);
   assert.equal(stored.input.news.items.every(row=>row.description.length<=360),true);
-  assert.equal(stored.storageMode,'INPUT_ONLY_V4');
+  assert.equal(stored.storageMode,'INPUT_ONLY_V5');
   assert.ok(JSON.stringify(stored).length<15000);
 });
