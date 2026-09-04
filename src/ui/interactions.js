@@ -23,6 +23,7 @@ export function setupLauncherExpansion(root=document){
   root.addEventListener('keydown',event=>{if(event.key==='Escape'&&!panel.hidden){setOpen(false);toggle.focus();}});
 }
 export function setupLayoutNavigation(root=document){
+  root.querySelectorAll('a[data-layout-route]').forEach(link=>{const route=link.dataset.layoutRoute;if(route)link.setAttribute('href',route);});
   root.addEventListener('click',event=>{const target=event.target.closest('[data-layout-route]');if(!target)return;const route=target.dataset.layoutRoute;if(!route)return;event.preventDefault();window.dispatchEvent(new CustomEvent('jcs:layout-route',{detail:{route}}));});
   root.querySelector('[data-layout-search]')?.addEventListener('submit',event=>{event.preventDefault();const query=new FormData(event.currentTarget).get('q')||'';window.dispatchEvent(new CustomEvent('jcs:layout-search',{detail:{query:String(query)}}));});
 }

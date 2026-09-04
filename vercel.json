@@ -1,7 +1,18 @@
 {
-  "functions":{"api/gateway.js":{"maxDuration":60}},
+  "functions":{"api/gateway.js":{"maxDuration":60},"api/share.js":{"maxDuration":10}},
   "rewrites":[
     {"source":"/api/v3/:path*","destination":"/api/gateway?path=:path*"},
+    {"source":"/person/:path*","destination":"/api/share?path=person/:path*"},
+    {"source":"/column/:path*","destination":"/api/share?path=column/:path*"},
+    {"source":"/news/:path*","destination":"/api/share?path=news/:path*"},
+    {"source":"/itsme/:path*","destination":"/api/share?path=itsme/:path*"},
+    {"source":"/community/:path*","destination":"/api/share?path=community/:path*"},
+    {"source":"/academy/:path*","destination":"/api/share?path=academy/:path*"},
+    {"source":"/poll/:path*","destination":"/api/share?path=poll/:path*"},
+    {"source":"/national-evaluation/:path*","destination":"/api/share?path=national-evaluation/:path*"},
+    {"source":"/generation-president/:path*","destination":"/api/share?path=generation-president/:path*"},
+    {"source":"/president/:path*","destination":"/api/share?path=president/:path*"},
+    {"source":"/compare","destination":"/api/share?path=compare"},
     {"source":"/(.*)","destination":"/index.html"}
   ],
   "headers":[{"source":"/(.*)","headers":[{"key":"Cache-Control","value":"no-store"}]}]

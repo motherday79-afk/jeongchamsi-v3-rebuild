@@ -4,17 +4,18 @@ import assert from 'node:assert/strict';
 function fakeWindow(){
   const listeners={};
   const stack=[{url:'#/',state:null}],win={
-    location:{hash:'#/',href:'https://example.test/#/'},scrollX:0,scrollY:0,
+    location:{hash:'#/',href:'https://example.test/#/',pathname:'/',search:''},scrollX:0,scrollY:0,
     history:{
       state:null,
-      replaceState(state,_title,url){this.state=structuredClone(state);stack[stack.length-1]={state:this.state,url};win.location.hash=String(url).slice(String(url).indexOf('#'));},
-      pushState(state,_title,url){this.state=structuredClone(state);stack.push({state:this.state,url});win.location.hash=String(url).slice(String(url).indexOf('#'));}
+      replaceState(state,_title,url){this.state=structuredClone(state);stack[stack.length-1]={state:this.state,url};applyUrl(url);},
+      pushState(state,_title,url){this.state=structuredClone(state);stack.push({state:this.state,url});applyUrl(url);}
     },
     addEventListener(type,fn){listeners[type]=fn;},
     requestAnimationFrame(fn){fn();},
     scrollTo(x,y){this.scrollX=x;this.scrollY=y;}
   };
-  return {win,stack,pop(index){const entry=stack[index];win.history.state=structuredClone(entry.state);win.location.hash=String(entry.url).slice(String(entry.url).indexOf('#'));listeners.popstate({state:win.history.state});}};
+  function applyUrl(value){const url=new URL(String(value),'https://example.test/');win.location.href=url.href;win.location.pathname=url.pathname;win.location.search=url.search;win.location.hash=url.hash;}
+  return {win,stack,pop(index){const entry=stack[index];win.history.state=structuredClone(entry.state);applyUrl(entry.url);listeners.popstate({state:win.history.state});}};
 }
 
 test('navigation records the current snapshot and restores it immediately on browser Back',async()=>{
@@ -47,7 +48,7 @@ test('navigation keeps query strings and renders uncached browser entries',async
   const navigation=createNavigation({window:browser.win,readSnapshot:()=>markup,restoreSnapshot:()=>{},rebind:()=>{},onRoute:route=>renders.push(route)});
   navigation.start();
   navigation.navigate('/search?q=%EA%B9%80%EB%AF%BC%EC%84%9D');
-  assert.equal(browser.win.location.hash,'#/search?q=%EA%B9%80%EB%AF%BC%EC%84%9D');
+  assert.equal(`${browser.win.location.pathname}${browser.win.location.search}`,'/search?q=%EA%B9%80%EB%AF%BC%EC%84%9D');
   assert.equal(navigation.route(),'/search?q=김민석');
   browser.win.history.state={__jcsNav:true,key:'external',route:'/compare?ids=a,b&run=1',x:0,y:0};
   browser.win.location.hash='#/compare?ids=a,b&run=1';
