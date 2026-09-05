@@ -167,3 +167,38 @@ test('media removes duplicate search panel and summary contains only approved se
   for(const id of ['01','02','03','04','05','06','09'])assert.match(html,new RegExp(`data-summary-source="${id}"`));
   assert.doesNotMatch(html,/data-summary-source="0[78]"/);
 });
+
+test('approved report stays white and keeps the desktop two by two layouts',async()=>{
+  const css=await readFile(new URL('../css/diagnosis-approved.css',import.meta.url),'utf8');
+  const desktop=css.slice(0,css.indexOf('@media'));
+  assert.match(desktop,/#jcs-intelligence-nine\s*\{[^}]*color-scheme:\s*light/);
+  assert.doesNotMatch(desktop,/light-dark\(/);
+  assert.match(desktop,/\.jcs-competitors\s*\{[^}]*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+  assert.match(desktop,/\.jcs-foundations\s*\{[^}]*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+});
+
+test('local diagnosis always renders four message stages and four gap quadrants',async()=>{
+  const html=await adminHtml();
+  const local=html.slice(html.indexOf('data-diagnosis-layout="03"'),html.indexOf('data-diagnosis-layout="04"'));
+  assert.equal((local.match(/class="jcs-message-node"/g)||[]).length,4);
+  assert.equal((local.match(/class="jcs-gap-cell"/g)||[]).length,4);
+  for(const label of ['수요 높음 · 대응 강함','수요 높음 · 대응 약함','수요 낮음 · 대응 강함','수요 낮음 · 대응 약함'])assert.match(local,new RegExp(label));
+});
+
+test('competitor period controls expose real period values for every comparison card',async()=>{
+  const html=await adminHtml();
+  const competitor=html.slice(html.indexOf('data-diagnosis-layout="05"'),html.indexOf('data-diagnosis-layout="06"'));
+  assert.equal((competitor.match(/class="jcs-competitor(?: me)?"/g)||[]).length,4);
+  assert.equal((competitor.match(/data-jcs-period="(?:24H|7D|30D)"/g)||[]).length,3);
+  assert.equal((competitor.match(/data-jcs-period-value="(?:24H|7D|30D)"/g)||[]).length,12);
+  assert.match(competitor,/data-jcs-period-label>30일 뉴스</);
+});
+
+test('media disclosure has a real controlled list and summary shows local fit status',async()=>{
+  const html=await adminHtml();
+  assert.match(html,/class="jcs-media-toggle"[^>]*aria-controls="jcs-media-all"/);
+  assert.match(html,/class="jcs-media-list" id="jcs-media-all"/);
+  const summary=html.slice(html.indexOf('data-diagnosis-layout="10"'),html.indexOf('<\/div><\/section><section class="jcs-report-transition"'));
+  assert.match(summary,/data-local-fit-status="(?:우세|중립|열세)"/);
+  assert.match(summary,/메시지 적합 \d+/);
+});

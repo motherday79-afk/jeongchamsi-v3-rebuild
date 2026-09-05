@@ -100,7 +100,7 @@ test('local diagnosis always exposes a complete voter structure and JCS message 
   assert.equal(local.population.reduce((sum,row)=>sum+row.totalShare,0),100);
   assert.equal(local.population.every(row=>row.maleShare+row.femaleShare===100),true);
   assert.deepEqual(local.issues,[]);
-  assert.equal(local.messagePath.length,3);
+  assert.equal(local.messagePath.length,4);
   assert.equal(local.messagePath.every(row=>Number.isFinite(row.value)),true);
   assert.match(local.localJudgment,/JCS 지역 진단/);
   assert.doesNotMatch(JSON.stringify(local),/데이터 부족|연결 전/);

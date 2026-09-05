@@ -1,0 +1,38 @@
+JCS_0_0_31_18_APPROVED_DIAGNOSIS_VISUAL_INTERACTION_FIX_FINAL
+
+PRODUCTION
+index.html
+css/diagnosis-approved.css
+lib/intelligence-access.js
+lib/intelligence-analysis.js
+lib/intelligence-diagnostics.js
+lib/intelligence-service.js
+lib/intelligence-storage.js
+src/app.js
+src/core/release.js
+src/ui/interactions.js
+src/views/politician-compare.js
+src/views/politicians.js
+src/views/stage1.js
+
+TESTS
+tests/diagnosis-interactions.test.js
+tests/intelligence-admin-view.test.js
+tests/intelligence-diagnosis-display.test.js
+tests/intelligence-service.test.js
+tests/intelligence-v2.test.js
+tests/intelligence-v3.test.js
+tests/politician-diagnosis-rebuild-view.test.js
+tests/politician-diagnostics-compare.test.js
+tests/politician-diagnostics-view.test.js
+tests/politicians.test.js
+
+DOCUMENTATION
+JCS_0_0_31_18_APPROVED_DIAGNOSIS_VISUAL_INTERACTION_FIX_PATCH.md
+JCS_0_0_31_18_APPROVED_DIAGNOSIS_VISUAL_INTERACTION_FIX_MANIFEST.txt
+
+EXCLUDED
+- politician photos and image assets
+- Redis data and public snapshots
+- previous patch ZIP files
+- unrelated source files

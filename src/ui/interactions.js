@@ -50,6 +50,33 @@ export function setupPoliticianPhotoFallback(root=document){
     image.remove();
   },{once:true}));
 }
+export function setupDiagnosisInteractions(root=document){
+  const periodLabels={'24H':'24시간 뉴스','7D':'7일 뉴스','30D':'30일 뉴스'};
+  root.querySelectorAll('.jcs-periods').forEach(group=>{
+    if(group.dataset.jcsPeriodsReady==='true')return;
+    group.dataset.jcsPeriodsReady='true';
+    const buttons=[...group.querySelectorAll('button')],chapter=group.closest?.('.jcs-chapter')||root;
+    buttons.forEach(button=>button.addEventListener('click',()=>{
+      const period=button.dataset.jcsPeriod||String(button.textContent||'').trim();
+      buttons.forEach(peer=>peer.setAttribute('aria-pressed',String(peer===button)));
+      chapter.querySelectorAll('[data-jcs-period-value]').forEach(value=>{value.hidden=value.dataset.jcsPeriodValue!==period;});
+      const label=chapter.querySelector?.('[data-jcs-period-label]');
+      if(label&&periodLabels[period])label.textContent=periodLabels[period];
+    }));
+  });
+  root.querySelectorAll('.jcs-media-toggle').forEach(toggle=>{
+    if(toggle.dataset.jcsMediaToggleReady==='true')return;
+    toggle.dataset.jcsMediaToggleReady='true';
+    const list=toggle.closest?.('.jcs-open-section')?.querySelector?.('.jcs-media-list');
+    if(!list)return;
+    toggle.addEventListener('click',()=>{
+      const expanded=toggle.getAttribute('aria-expanded')==='true';
+      toggle.setAttribute('aria-expanded',String(!expanded));
+      list.hidden=expanded;
+      toggle.innerHTML=expanded?'전체 목록 보기 <span>＋</span>':'전체 목록 접기 <span>−</span>';
+    });
+  });
+}
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 export async function loadPoliticianSuggestions(query,search){const term=String(query||'').trim();if(!term||typeof search!=='function')return [];const response=await search(term,25);return response?.ok===false||!Array.isArray(response?.items)?[]:response.items.slice(0,25);}
 export function politicianSuggestionMarkup(items=[]){return items.map(item=>{const src=String(item?.photo?.localPath||''),initial=esc(String(item?.name||'?').slice(0,1)),avatar=src?`<span class="politician-autocomplete-avatar has-photo" data-politician-avatar style="--photo-position:${esc(item.photo?.focus||'50% 28%')}"><span class="politician-photo-initial">${initial}</span><img data-politician-photo src="${esc(src)}" alt=""></span>`:`<span class="politician-autocomplete-avatar is-empty" data-politician-avatar><span class="politician-photo-initial">${initial}</span></span>`;return `<button type="button" data-politician-suggestion="${esc(item.id)}">${avatar}<span><b>${esc(item.name)}</b><small>${esc([item.party,item.jurisdiction,item.office||item.roleLabel].filter(Boolean).join(' · '))}</small></span><em>선택</em></button>`;}).join('');}
@@ -66,4 +93,4 @@ export function setupPoliticianAutocomplete(root=document,search=null){
     results.addEventListener('click',event=>{const button=event.target.closest('[data-politician-suggestion]');if(button)select(rows.find(item=>String(item.id)===button.dataset.politicianSuggestion));});
   }
 }
-export function setupLayoutInteractions(root=document,options={}){setupDrawer(root);setupLauncherExpansion(root);setupNowCarousel(root);setupLayoutNavigation(root);setupCompareSearch(root);setupPoliticianPhotoFallback(root);setupPoliticianAutocomplete(root,options.politicianSearch);}
+export function setupLayoutInteractions(root=document,options={}){setupDrawer(root);setupLauncherExpansion(root);setupNowCarousel(root);setupLayoutNavigation(root);setupCompareSearch(root);setupPoliticianPhotoFallback(root);setupPoliticianAutocomplete(root,options.politicianSearch);setupDiagnosisInteractions(root);}
