@@ -50,8 +50,28 @@ export function setupPoliticianPhotoFallback(root=document){
     image.remove();
   },{once:true}));
 }
+const diagnosisInteractionRoots=new WeakSet();
+const diagnosisPeriodLabels={'24H':'24시간 뉴스','7D':'7일 뉴스','30D':'30일 뉴스'};
+function activateDiagnosisPeriod(origin,root){
+  const button=origin?.closest?.('[data-jcs-period]');if(!button)return false;
+  const group=button.closest?.('.jcs-periods')||origin.closest?.('.jcs-periods');if(!group)return false;
+  const period=button.dataset.jcsPeriod||String(button.textContent||'').trim(),chapter=group.closest?.('.jcs-chapter')||root;
+  group.querySelectorAll('[data-jcs-period]').forEach(peer=>peer.setAttribute('aria-pressed',String(peer===button)));
+  chapter.querySelectorAll('[data-jcs-period-value]').forEach(value=>{value.hidden=value.dataset.jcsPeriodValue!==period;});
+  chapter.querySelectorAll('[data-jcs-period-panel]').forEach(panel=>{panel.hidden=panel.dataset.jcsPeriodPanel!==period;});
+  const label=chapter.querySelector?.('[data-jcs-period-label]');if(label&&diagnosisPeriodLabels[period])label.textContent=diagnosisPeriodLabels[period];
+  return true;
+}
+function toggleMediaList(origin){
+  const toggle=origin?.closest?.('.jcs-media-toggle');if(!toggle)return false;
+  const panel=toggle.closest?.('.jcs-media-period-panel')||toggle.closest?.('.jcs-open-section'),list=panel?.querySelector?.('.jcs-media-list');if(!list)return false;
+  const expanded=toggle.getAttribute('aria-expanded')==='true';toggle.setAttribute('aria-expanded',String(!expanded));list.hidden=expanded;toggle.innerHTML=expanded?'전체 목록 보기 <span>＋</span>':'전체 목록 접기 <span>−</span>';return true;
+}
 export function setupDiagnosisInteractions(root=document){
-  const periodLabels={'24H':'24시간 뉴스','7D':'7일 뉴스','30D':'30일 뉴스'};
+  if(root&&typeof root.addEventListener==='function'){
+    if(diagnosisInteractionRoots.has(root))return;
+    diagnosisInteractionRoots.add(root);root.addEventListener('click',event=>{if(activateDiagnosisPeriod(event.target,root))return;toggleMediaList(event.target);});return;
+  }
   root.querySelectorAll('.jcs-periods').forEach(group=>{
     if(group.dataset.jcsPeriodsReady==='true')return;
     group.dataset.jcsPeriodsReady='true';
@@ -61,13 +81,13 @@ export function setupDiagnosisInteractions(root=document){
       buttons.forEach(peer=>peer.setAttribute('aria-pressed',String(peer===button)));
       chapter.querySelectorAll('[data-jcs-period-value]').forEach(value=>{value.hidden=value.dataset.jcsPeriodValue!==period;});
       const label=chapter.querySelector?.('[data-jcs-period-label]');
-      if(label&&periodLabels[period])label.textContent=periodLabels[period];
+      if(label&&diagnosisPeriodLabels[period])label.textContent=diagnosisPeriodLabels[period];
     }));
   });
   root.querySelectorAll('.jcs-media-toggle').forEach(toggle=>{
     if(toggle.dataset.jcsMediaToggleReady==='true')return;
     toggle.dataset.jcsMediaToggleReady='true';
-    const list=toggle.closest?.('.jcs-open-section')?.querySelector?.('.jcs-media-list');
+    const list=(toggle.closest?.('.jcs-media-period-panel')||toggle.closest?.('.jcs-open-section'))?.querySelector?.('.jcs-media-list');
     if(!list)return;
     toggle.addEventListener('click',()=>{
       const expanded=toggle.getAttribute('aria-expanded')==='true';

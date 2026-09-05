@@ -196,9 +196,31 @@ test('competitor period controls expose real period values for every comparison 
 
 test('media disclosure has a real controlled list and summary shows local fit status',async()=>{
   const html=await adminHtml();
-  assert.match(html,/class="jcs-media-toggle"[^>]*aria-controls="jcs-media-all"/);
-  assert.match(html,/class="jcs-media-list" id="jcs-media-all"/);
+  assert.equal((html.match(/data-jcs-period-panel="(?:24H|7D|30D)"/g)||[]).length,3);
+  assert.equal((html.match(/class="jcs-media-toggle"/g)||[]).length,3);
+  assert.match(html,/aria-controls="jcs-media-all-24h"/);
+  assert.match(html,/class="jcs-media-list" id="jcs-media-all-30d"/);
   const summary=html.slice(html.indexOf('data-diagnosis-layout="10"'),html.indexOf('<\/div><\/section><section class="jcs-report-transition"'));
   assert.match(summary,/data-local-fit-status="(?:우세|중립|열세)"/);
   assert.match(summary,/메시지 적합 \d+/);
+});
+
+test('administrator identity and actions live in the approved report header without the legacy hero',async()=>{
+  const html=await adminHtml(),head=html.slice(html.indexOf('<header class="jcs-report-head">'),html.indexOf('</header>',html.indexOf('<header class="jcs-report-head">')));
+  assert.doesNotMatch(html,/person-detail-hero|person-live-hero/);
+  for(const marker of ['국회의원','더불어민주당 · 서울 시각구','재선','정무위원회','목록으로','즐겨찾기 준비 중','비교하기','전체 NOW','분야별 NOW'])assert.match(head,new RegExp(marker));
+  assert.match(head,/data-layout-route="\/now\?type=assembly"/);
+  assert.match(head,/data-layout-route="\/compare\?ids=assembly-visual"/);
+});
+
+test('approved stylesheet is loaded last so its exact source typography wins the cascade',async()=>{
+  const [index,html]=await Promise.all([readFile(new URL('../index.html',import.meta.url),'utf8'),adminHtml()]);
+  const styles=[...index.matchAll(/<link[^>]+href="([^"]+\.css(?:\?[^\"]*)?)"/g)].map(match=>match[1]);
+  assert.equal(styles.at(-1).split('?')[0],'/css/diagnosis-approved.css');
+  assert.match(html,/person-live-detail-page jcs-approved-intelligence/);
+  assert.doesNotMatch(html,/person-live-detail-page jcs-public-intelligence-v3/);
+  assert.equal(await effectiveCssDeclaration('#jcs-intelligence-nine .jcs-person strong','font-size'),'18px');
+  assert.equal(await effectiveCssDeclaration('#jcs-intelligence-nine .jcs-person small','font-size'),'12px');
+  assert.equal(await effectiveCssDeclaration('#jcs-intelligence-nine .jcs-comp-row','font-size'),'11px');
+  assert.equal(await effectiveCssDeclaration('#jcs-intelligence-nine .jcs-media-toggle','font-size'),'12px');
 });

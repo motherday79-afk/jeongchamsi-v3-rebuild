@@ -239,6 +239,9 @@ test('public detail joins three competitors from their own current snapshot reco
   assert.equal(people.slice(1).every(row=>Number.isFinite(row.overallRank)&&Number.isFinite(row.categoryRank)),true);
   assert.equal(people.slice(1).every(row=>Array.isArray(row.agendas)&&row.agendas.length>0),true);
   assert.equal(people.slice(1).every(row=>Array.isArray(row.newsPeriods)&&row.newsPeriods.length===3),true);
+  const media=detail.diagnoses.find(row=>row.id==='07').display;
+  assert.deepEqual(media.periods.map(row=>row.label),['24H','7D','30D']);
+  assert.equal(media.periods.every(row=>Number.isFinite(row.articleCount)&&Array.isArray(row.allSources)),true);
 });
 
 test('a legacy rich running collection is reset before it consumes more Redis capacity',async()=>{

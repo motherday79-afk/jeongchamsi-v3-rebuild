@@ -38,3 +38,51 @@ test('diagnosis media disclosure actually hides and restores the full outlet lis
   assert.equal(list.hidden,false);
   assert.equal(toggle.attrs['aria-expanded'],'true');
 });
+
+test('delegated diagnosis controls keep working for markup rendered after setup',()=>{
+  const listeners={};
+  const root={
+    dataset:{},
+    querySelectorAll:()=>[],
+    addEventListener:(type,listener)=>{listeners[type]=listener;}
+  };
+  setupDiagnosisInteractions(root);
+  assert.equal(typeof listeners.click,'function');
+
+  const buttons=['24H','7D','30D'].map(period=>({
+    dataset:{jcsPeriod:period},attrs:{'aria-pressed':String(period==='30D')},
+    setAttribute(name,value){this.attrs[name]=String(value);}
+  }));
+  const panels=['24H','7D','30D'].map(period=>({dataset:{jcsPeriodPanel:period},hidden:period!=='30D'}));
+  const chapter={
+    querySelectorAll(selector){
+      if(selector==='[data-jcs-period-panel]')return panels;
+      if(selector==='[data-jcs-period-value]')return [];
+      return [];
+    },
+    querySelector:()=>null
+  };
+  const group={querySelectorAll:selector=>selector==='[data-jcs-period]'?buttons:[],closest:selector=>selector==='.jcs-chapter'?chapter:null};
+  const target={dataset:buttons[0].dataset,closest(selector){if(selector==='[data-jcs-period]')return buttons[0];if(selector==='.jcs-periods')return group;return null;}};
+  listeners.click({target});
+  assert.deepEqual(buttons.map(item=>item.attrs['aria-pressed']),['true','false','false']);
+  assert.deepEqual(panels.map(item=>item.hidden),[false,true,true]);
+});
+
+test('delegated media disclosure controls the list in the active period panel',()=>{
+  const listeners={};
+  const root={dataset:{},querySelectorAll:()=>[],addEventListener:(type,listener)=>{listeners[type]=listener;}};
+  setupDiagnosisInteractions(root);
+  const list={hidden:false},attrs={'aria-expanded':'true'};
+  const panel={querySelector:selector=>selector==='.jcs-media-list'?list:null};
+  const toggle={
+    innerHTML:'전체 목록 접기 <span>−</span>',
+    getAttribute:name=>attrs[name],setAttribute:(name,value)=>{attrs[name]=String(value);},
+    closest:selector=>selector==='.jcs-media-period-panel'?panel:null
+  };
+  const target={closest:selector=>selector==='.jcs-media-toggle'?toggle:null};
+  listeners.click({target});
+  assert.equal(list.hidden,true);
+  assert.equal(attrs['aria-expanded'],'false');
+  assert.match(toggle.innerHTML,/전체 목록 보기/);
+});

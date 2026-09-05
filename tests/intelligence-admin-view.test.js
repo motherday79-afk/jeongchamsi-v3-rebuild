@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { renderAdminStable } from '../src/views/stage1.js';
+import { APP_RELEASE } from '../src/core/release.js';
 
 const admin={authenticated:true,user:{role:'admin'}};
 const auth={
@@ -28,7 +29,7 @@ test('admin control center exposes ten processing stages and draft review before
   assert.match(html,/name="pastRisks"/);
   assert.match(html,/draft-1.*draft|draft.*draft-1/s);
   assert.match(html,/public-0.*published|published.*public-0/s);
-  assert.match(html,/JCS_0_0_31_18/);
+  assert.match(html,/JCS_0_0_31_19/);
   assert.match(html,/관리자 화면 버전/);
 });
 
@@ -45,6 +46,10 @@ test('admin warns when browser bundle and server release versions differ',async(
   const stale={...auth,async intelligenceStatus(){const value=await auth.intelligenceStatus();return {...value,release:{version:'JCS_0_0_31_8',commit:'old123'}};}};
   const html=await renderAdminStable(admin,stale);
   assert.match(html,/강력 새로고침 필요/);
+});
+
+test('approved interaction and profile package reports release 31.19',()=>{
+  assert.equal(APP_RELEASE,'JCS_0_0_31_19');
 });
 
 test('approved reviewed draft enables publication',async()=>{

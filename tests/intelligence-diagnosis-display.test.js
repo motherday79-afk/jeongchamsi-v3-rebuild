@@ -282,6 +282,34 @@ test('competitor rows use period news counts and frame counts without duplicatin
   assert.equal(Object.hasOwn(people[0],'sourceSpread'),false);
 });
 
+test('competitor contract preserves distinct observed period counts for every comparison row',()=>{
+  const peers=context.peers.map((row,index)=>({...row,
+    newsPeriods:[{label:'24H',value:index+1},{label:'7D',value:(index+1)*10},{label:'30D',value:(index+1)*100}],
+    frames:{positive:index+2,neutral:index+3,negative:index+4}
+  }));
+  const report=projectIntelligence(buildIntelligenceDraft(person,raw,{...context,peers},'JCS_INTELLIGENCE_V3'),'admin','detail');
+  const people=report.diagnoses.find(row=>row.id==='05').display.people;
+  assert.deepEqual(people.slice(1).map(row=>row.newsPeriods.map(period=>period.value)),[[1,10,100],[2,20,200],[4,40,400]]);
+  assert.deepEqual(people.slice(1).map(row=>row.frames.positive),[2,3,5]);
+});
+
+test('media contract exposes complete and distinct source datasets for 24H 7D and 30D',()=>{
+  const mediaRaw={...raw,collectedAt:'2026-09-04T12:00:00.000Z',news:{items:[
+    {title:'김진단 당일 정책 발표',source:'연합뉴스',url:'https://example.com/m1',publishedAt:'2026-09-04T10:00:00.000Z'},
+    {title:'김진단 전날 정책 후속',source:'연합뉴스',url:'https://example.com/m2',publishedAt:'2026-09-03T18:00:00.000Z'},
+    {title:'김진단 주간 지역 행보',source:'한겨레',url:'https://example.com/m3',publishedAt:'2026-08-31T12:00:00.000Z'},
+    {title:'김진단 월간 의정 활동',source:'지역신문',url:'https://example.com/m4',publishedAt:'2026-08-20T12:00:00.000Z'}
+  ]}};
+  const report=projectIntelligence(buildIntelligenceDraft(person,mediaRaw,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
+  const media=report.diagnoses.find(row=>row.id==='07').display;
+  assert.deepEqual(media.periods.map(row=>row.label),['24H','7D','30D']);
+  assert.deepEqual(media.periods.map(row=>row.articleCount),[2,3,4]);
+  assert.deepEqual(media.periods.map(row=>row.sourceCount),[1,2,3]);
+  assert.deepEqual(media.periods[0].allSources,[{name:'연합뉴스',count:2,value:2,share:100}]);
+  assert.equal(media.periods[1].majorShare,33);
+  assert.equal(media.periods[2].nonMajorShare,75);
+});
+
 test('JCS summary is derived only from diagnoses 01 02 03 04 05 06 and 09',()=>{
   const report=projectIntelligence(buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
   const summary=report.diagnoses.find(row=>row.id==='10').display;

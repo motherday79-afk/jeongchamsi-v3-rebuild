@@ -57,7 +57,11 @@ test('compact storage keeps a small outlet frequency ledger for media reconstruc
     {title:'이진숙 후속 보도 2',source:'세번째 뉴스',url:'https://news/4',publishedAt:'2026-08-31T09:00:00Z'}
   ]}};
   const stored=compactIntelligenceDraft(buildIntelligenceDraft(person,repeated,context,'JCS_INTELLIGENCE_V3'));
-  assert.deepEqual(stored.input.news.sourceCounts,[{name:'대표 뉴스',count:2},{name:'두번째 뉴스',count:1},{name:'세번째 뉴스',count:1}]);
+  assert.deepEqual(stored.input.news.sourceCounts,[
+    {name:'대표 뉴스',count:2,h24:1,d7:2,d30:2},
+    {name:'두번째 뉴스',count:1,h24:0,d7:1,d30:1},
+    {name:'세번째 뉴스',count:1,h24:0,d7:1,d30:1}
+  ]);
 });
 
 test('compact storage preserves full period counts while retaining only ten representative articles',()=>{

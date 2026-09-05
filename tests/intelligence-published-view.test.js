@@ -13,8 +13,8 @@ test('a published politician uses live ranks and all ten projected administrator
   const service={async get(){return {ok:true,item:person,intelligence:projectIntelligence(report,'admin','detail')};}};
   const html=await renderPoliticianDetail(person.id,service,{authenticated:true,user:{role:'admin'}});
   assert.doesNotMatch(html,/공개 스냅샷 운영 순위|국회의원 NOW 독립 순위/);
-  assert.match(html,/전체 NOW<\/span><strong>12위/);
-  assert.match(html,/국회의원<\/span><strong>9위/);
+  assert.match(html,/전체 NOW<\/span><b>12위/);
+  assert.match(html,/분야별 NOW<\/span><b>9위/);
   assert.match(html,/JCS ADMIN POLITICAL INTELLIGENCE/);
   assert.equal((html.match(/data-diagnostic-topic=/g)||[]).length,10);
   assert.match(html,/정치인 브랜드 진단/);
