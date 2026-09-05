@@ -18,13 +18,30 @@ async function adminHtml(){
   return renderPoliticianDetail(person.id,{get:async()=>({ok:true,item:person,intelligence})},{user:{role:'admin'}});
 }
 
+async function effectiveCssDeclaration(selector,property){
+  const index=await readFile(new URL('../index.html',import.meta.url),'utf8');
+  const hrefs=[...index.matchAll(/<link[^>]+href="([^"]+\.css(?:\?[^\"]*)?)"/g)]
+    .map(match=>match[1].split('?')[0]);
+  const css=(await Promise.all(hrefs.map(href=>readFile(new URL(`..${href}`,import.meta.url),'utf8')))).join('\n');
+  let value='';
+  for(const match of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)){
+    if(!match[1].split(',').map(item=>item.trim()).includes(selector))continue;
+    for(const declaration of match[2].split(';')){
+      const colon=declaration.indexOf(':');
+      if(colon<0)continue;
+      if(declaration.slice(0,colon).trim()===property)value=declaration.slice(colon+1).trim().replace(/!important$/,'').trim();
+    }
+  }
+  return value;
+}
+
 test('administrator detail renders all ten approved diagnosis-specific layouts',async()=>{
   const html=await adminHtml();
   assert.equal((html.match(/data-diagnosis-layout="\d{2}"/g)||[]).length,10);
-  for(const marker of ['NOW SIGNAL','BRAND INDICATORS','PAST RISK SIGNALS','BRAND TOTAL SIGN','서칭엔진 검색추이','JCS 연령·성별 지지구조 해석','기반 순위','지역 유권자 구조','코어','유동','이탈','이슈 확산 속도','매체 집중도','5대 메이저','정치 기반 흐름','정치 활동 구성','미디어 전환','JCS TOTAL'])assert.match(html,new RegExp(marker));
+  for(const marker of ['NOW SIGNAL','BRAND INDICATORS','PAST RISK SIGNALS','BRAND TOTAL SIGN','서칭엔진 검색추이','AGE × GENDER COMPOSITION','기반 순위','지역 유권자 구조','코어','유동','이탈','이슈 확산 속도','매체 집중도','5대 메이저','정치 기반 흐름','정치 행보 구성','관련 보도','JCS TOTAL SCORE'])assert.match(html,new RegExp(marker));
   assert.doesNotMatch(html,/SUPPORT COMPOSITION <span>합계 100%/);
-  assert.match(html,/jcs-dx-local-overlap/);
-  assert.match(html,/jcs-dx-persistence-curve/);
+  assert.match(html,/jcs-region-structure/);
+  assert.match(html,/jcs-persistence/);
   assert.doesNotMatch(html,/정책 진행 단계|공식 데이터 연결 전|JCS 현재 캠페인 신호/);
 });
 
@@ -36,29 +53,68 @@ test('brand search values use compact K notation while retaining exact accessibl
 });
 
 test('administrator diagnosis part omits the removed repeated prose fields',async()=>{
-  const html=await adminHtml(),start=html.indexOf('<div class="jcs-diagnosis-part">'),end=html.indexOf('<section class="jcs-v2-summary">'),diagnosis=html.slice(start,end);
+  const html=await adminHtml(),start=html.indexOf('<section id="jcs-intelligence-nine"'),end=html.indexOf('<section class="jcs-report-transition">'),diagnosis=html.slice(start,end);
   for(const removed of ['정치적 의미','현재 위치','정참시 해석','기회 요인','위험 요인','변화 원인','과거와 현재','비교 기준','서브데이터'])assert.doesNotMatch(diagnosis,new RegExp(`>${removed}<`));
 });
 
-test('diagnosis visual styles use compact gradient modules with a mobile reflow',async()=>{
-  const css=await readFile(new URL('../css/pages.css',import.meta.url),'utf8');
-  for(const marker of ['.jcs-dx-brand-axis','.jcs-dx-demographic-chart','.jcs-dx-support-orbit','.jcs-dx-competitor-grid','.jcs-dx-summary-grid'])assert.match(css,new RegExp(marker.replaceAll('.','\\.')));
-  assert.match(css,/@media\(max-width:760px\)[\s\S]*\.jcs-dx-module/);
+test('approved source-native stylesheet includes all visual families and mobile reflow',async()=>{
+  const css=await readFile(new URL('../css/diagnosis-approved.css',import.meta.url),'utf8');
+  for(const marker of ['.jcs-sheet','.jcs-chapter','.jcs-brand-tools','.jcs-age-chart','.jcs-support-svg','.jcs-competitors','.jcs-treemap','.jcs-foundations','.jcs-total-grid'])assert.match(css,new RegExp(marker.replaceAll('.','\\.')));
+  assert.match(css,/@media \(max-width: 680px\)/);
   assert.match(css,/linear-gradient\(/);
 });
 
-test('approved final stylesheet preserves the exact local support media and compare visual contracts',async()=>{
+test('approved final stylesheet preserves the exact diagnosis and compact compare visual contracts',async()=>{
   const css=await readFile(new URL('../css/diagnosis-approved.css',import.meta.url),'utf8');
-  for(const marker of ['.jcs-dx-local-layout','.jcs-dx-local-ages','.jcs-dx-local-genders','.jcs-dx-core-shape','.jcs-dx-floating-shape','.jcs-dx-exit-shape','.jcs-dx-media-treemap','.jcs-compare-report-admin .jcs-compare-matrix'])assert.match(css,new RegExp(marker.replaceAll('.','\\.')));
-  assert.match(css,/repeating-conic-gradient/);
-  assert.match(css,/@media\(max-width:760px\)/);
+  for(const marker of ['.jcs-region-structure','.jcs-age-share','.jcs-support','.jcs-media-list','.jcs-total-opening','.jcs-compare-report-admin .jcs-compare-matrix'])assert.match(css,new RegExp(marker.replaceAll('.','\\.')));
+  assert.match(css,/@media \(max-width: 680px\)/);
+});
+
+test('approved diagnosis headers and signals use the source ink colors',async()=>{
+  const css=await readFile(new URL('../css/diagnosis-approved.css',import.meta.url),'utf8');
+  assert.match(css,/#jcs-intelligence-nine\s*\{[^}]*color:\s*var\(--jcs-ink\)/);
+  assert.match(css,/\.jcs-signal-copy\s*\{[^}]*font-size:/);
+});
+
+test('administrator diagnosis report exposes direct 01 through 10 navigation without internal run ids',async()=>{
+  const html=await adminHtml();
+  assert.match(html,/<nav class="jcs-nav"[^>]*aria-label="진단 항목 바로가기"/);
+  for(let number=1;number<=10;number+=1){
+    const id=String(number).padStart(2,'0');
+    assert.match(html,new RegExp(`href="#jcs-d${id}"[^>]*>${id}<\\/a>`));
+    assert.match(html,new RegExp(`id="jcs-d${id}"[^>]*data-diagnostic-topic="${id}"`));
+  }
+  assert.doesNotMatch(html,/>jcs-visual</);
+});
+
+test('administrator diagnosis uses the approved editorial sheet instead of the legacy green card shell',async()=>{
+  const html=await adminHtml();
+  assert.match(html,/class="jcs-diagnostics-report jcs-diagnostics-admin"/);
+  assert.match(html,/class="jcs-report-head"/);
+  assert.match(html,/class="jcs-sheet"/);
+  assert.match(html,/<p class="jcs-en">POLITICAL BRAND<\/p>/);
+  assert.match(html,/<p class="jcs-en">JCS TOTAL DIAGNOSIS<\/p>/);
+  assert.doesNotMatch(html,/class="jcs-report-index"/);
+  assert.doesNotMatch(html,/class="jcs-diagnosis-part/);
+});
+
+test('administrator diagnosis renders the approved source-native 01 through 10 design instead of a restyled legacy renderer',async()=>{
+  const html=await adminHtml();
+  assert.match(html,/class="jcs-sheet"/);
+  assert.match(html,/class="jcs-report-head"/);
+  assert.match(html,/class="jcs-nav"/);
+  assert.equal((html.match(/class="jcs-chapter"/g)||[]).length,10);
+  for(const marker of ['jcs-brand-tools','jcs-search-trend','jcs-age-chart','jcs-region-structure','jcs-support-svg','jcs-competitors','jcs-direction','jcs-persistence','jcs-treemap','jcs-foundations','jcs-action-metrics','jcs-total-grid'])assert.match(html,new RegExp(marker));
+  assert.doesNotMatch(html,/class="[^"]*jcs-dx-module/);
+  assert.doesNotMatch(html,/class="[^"]*jcs-dx-panel/);
+  assert.doesNotMatch(html,/class="[^"]*jcs-approved-sheet/);
 });
 
 test('media panels expose full outlet names instead of ellipsized fragments',async()=>{
-  const html=await adminHtml(),css=await readFile(new URL('../css/pages.css',import.meta.url),'utf8');
-  assert.match(html,/jcs-dx-media-legend/);
+  const html=await adminHtml(),css=await readFile(new URL('../css/diagnosis-approved.css',import.meta.url),'utf8');
+  assert.match(html,/jcs-media-list-grid/);
   assert.match(html,/>연합뉴스</);
-  const legendCss=css.slice(css.lastIndexOf('.jcs-dx-media-legend'));
+  const legendCss=css.slice(css.lastIndexOf('#jcs-intelligence-nine .jcs-media-name'));
   assert.doesNotMatch(legendCss,/text-overflow:ellipsis/);
 });
 
@@ -79,24 +135,22 @@ test('demographic and support visuals reset legacy positioning and keep three in
 
 test('approved demographic and support markup uses vertical age columns and three distinct shapes',async()=>{
   const html=await adminHtml();
-  assert.match(html,/JCS 연령·성별 지지구조 해석/);
-  assert.match(html,/jcs-dx-age-columns/);
-  assert.match(html,/jcs-dx-age-bars/);
-  assert.match(html,/jcs-dx-support-shape jcs-dx-core-shape/);
-  assert.match(html,/jcs-dx-support-shape jcs-dx-floating-shape/);
-  assert.match(html,/jcs-dx-support-shape jcs-dx-exit-shape/);
+  assert.match(html,/AGE × GENDER COMPOSITION/);
+  assert.equal((html.match(/class="jcs-age-col"/g)||[]).length,5);
+  assert.equal((html.match(/class="jcs-support-svg"/g)||[]).length,3);
+  for(const label of ['코어','유동','이탈'])assert.match(html,new RegExp(`<p class="jcs-support-name">${label}<`));
 });
 
-test('persistence and media markup preserves all calendar days and expands the full outlet list',async()=>{
+test('persistence and media markup uses the approved curve and full outlet list',async()=>{
   const html=await adminHtml();
-  assert.equal((html.match(/class="jcs-dx-day"/g)||[]).length,30);
-  assert.match(html,/D−30/);
+  assert.match(html,/class="jcs-persistence"/);
+  assert.match(html,/30일 전/);
   assert.match(html,/오늘/);
   assert.match(html,/5대 메이저/);
   assert.match(html,/비메이저/);
-  assert.match(html,/jcs-dx-media-treemap/);
-  assert.match(html,/<details class="jcs-dx-more-sources"/);
-  assert.match(html,/전체 목록 보기/);
+  assert.match(html,/jcs-treemap/);
+  assert.match(html,/jcs-media-list-grid/);
+  assert.match(html,/전체 목록 접기/);
 });
 
 test('campaign and policy renderers remove repeated and connection-pending placeholders',async()=>{

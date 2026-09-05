@@ -148,18 +148,18 @@ test('administrator demographic diagnosis renders separate male and female cohor
   const demographic=intelligence.diagnoses.find(topic=>topic.id==='02');
   demographic.display={kind:'demographic',label:'JCS 연령·성별 지지구조 해석',cohorts:[{age:'20대',total:28,male:62,female:38},{age:'30대',total:24,male:55,female:45},{age:'40대',total:20,male:48,female:52},{age:'50대',total:16,male:44,female:56},{age:'60대 이상',total:12,male:41,female:59}],maleRank:[{age:'20대',value:17},{age:'30대',value:13}],femaleRank:[{age:'20대',value:11},{age:'30대',value:11}],total:100,interpretation:'남성 기반은 20대가 가장 강하고, 여성 기반은 20대가 가장 강합니다.'};
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{user:{role:'admin'}});
-  assert.match(html,/62[\s\S]*38[\s\S]*28%[\s\S]*20대/);
-  assert.match(html,/55[\s\S]*45[\s\S]*24%[\s\S]*30대/);
+  assert.match(html,/jcs-age-total">28%<[^]*class="male">62<[^]*class="female">38<[^]*jcs-age-name">20대</);
+  assert.match(html,/jcs-age-total">24%<[^]*class="male">55<[^]*class="female">45<[^]*jcs-age-name">30대</);
   assert.match(html,/JCS 연령·성별 지지구조 해석/);
 });
 
-test('administrator report uses compact topic headers and report fields',async()=>{
+test('administrator report uses approved chapter headers and native report fields',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
   const intelligence=projectIntelligence(reportForSample(sample),'admin','detail');
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{user:{role:'admin'}});
   assert.equal((html.match(/data-diagnosis-layout="\d{2}"/g)||[]).length,10);
-  for(const field of ['NOW SIGNAL','BRAND INDICATORS','JCS 연령·성별 지지구조 해석','SUPPORT COMPOSITION','경쟁 정치인 직접 비교','이슈 확산 속도','매체 집중도','정치 기반 흐름','정치 활동 구성','JCS TOTAL'])assert.match(html,new RegExp(field));
-  const diagnosisPart=html.slice(html.indexOf('<div class="jcs-diagnosis-part">'),html.indexOf('<section class="jcs-v2-summary">'));
+  for(const field of ['NOW SIGNAL','BRAND INDICATORS','JCS 연령·성별 지지구조 해석','SUPPORT COMPOSITION','경쟁 정치인 비교 분석','이슈 확산 속도','매체 집중도','정치 기반 흐름','정치 행보 구성','JCS TOTAL'])assert.match(html,new RegExp(field));
+  const diagnosisPart=html.slice(html.indexOf('<section id="jcs-intelligence-nine"'),html.indexOf('</section>',html.indexOf('<article class="jcs-chapter" id="jcs-d10"'))+10);
   assert.doesNotMatch(diagnosisPart,/>현재 위치<|>변화 흐름<|>기회 요인<|>위험 요인<|>비교 기준<|>분석 기준</);
 });
 

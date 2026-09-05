@@ -47,20 +47,20 @@ test('member detail renders the exact six analysis modules without administrator
   assert.doesNotMatch(html,/핵심 원인|실행 처방|즉시 실행|90일 이내 실행/);
 });
 
-test('administrator detail renders all ten compact intelligence report modules',async()=>{
+test('administrator detail renders all ten approved native intelligence chapters',async()=>{
   const html=await renderPoliticianDetail(person.id,serviceFor('admin'),{authenticated:true,user:{role:'admin'}});
   assert.match(html,/JCS ADMIN POLITICAL INTELLIGENCE/);
   assert.deepEqual([...html.matchAll(/data-diagnostic-topic="(\d{2})"/g)].map(match=>match[1]),['01','02','03','04','05','06','07','08','09','10']);
-  for(const label of ['NOW SIGNAL','BRAND INDICATORS','서칭엔진 검색추이','PAST RISK SIGNALS','BRAND TOTAL SIGN','JCS 연령·성별 지지구조 해석','기반 순위','지역 유권자 구조','지역 메시지 경로','코어','유동','이탈','이슈 확산 속도','매체 집중도','정치 기반 흐름','정치 활동 구성','JCS TOTAL','실행 처방','실행 우선순위','예상 변화 및 추적 지표'])assert.match(html,new RegExp(label));
-  const diagnosisPart=html.slice(html.indexOf('<div class="jcs-diagnosis-part">'),html.indexOf('<section class="jcs-v2-summary">'));
+  for(const label of ['NOW SIGNAL','BRAND INDICATORS','서칭엔진 검색추이','PAST RISK SIGNALS','BRAND TOTAL SIGN','JCS 연령·성별 지지구조 해석','기반 순위','지역 유권자 구조','현재 메시지 도달 경로','코어','유동','이탈','이슈 확산 속도','매체 집중도','정치 기반 흐름','정치 행보 구성','JCS TOTAL','실행 처방','실행 우선순위','예상 변화 및 추적 지표'])assert.match(html,new RegExp(label));
+  const diagnosisPart=html.slice(html.indexOf('<section id="jcs-intelligence-nine"'),html.indexOf('</section>',html.indexOf('<article class="jcs-chapter" id="jcs-d10"'))+10);
   for(const removed of ['정치적 의미','현재 위치','정참시 해석','기회 요인','위험 요인','변화 원인','과거와 현재','비교 기준','서브데이터'])assert.doesNotMatch(diagnosisPart,new RegExp(`>${removed}<`));
   assert.equal((html.match(/data-prescription-topic=/g)||[]).length,10);
   assert.equal((html.match(/JCS ST 해석 · 뉴스 헤드라인, 공식 이력, 선거·지역·정당 구조와 검색 반응을 종합한 정참시 자체 분석입니다\./g)||[]).length,1);
   assert.ok(html.indexOf('PART 01')<html.indexOf('PART 02'));
   assert.equal((html.match(/대표 뉴스는 핵심 이슈 주제에서 벗어난 관련 기사 집계를 의미합니다\./g)||[]).length,1);
-  assert.match(html,/data-politician-type=/);
-  assert.match(html,new RegExp(report.politicianType.primaryType));
-  assert.match(html,new RegExp(report.politicianType.currentPhase));
+  assert.match(html,/class="jcs-sheet"/);
+  assert.equal((html.match(/class="jcs-chapter"/g)||[]).length,10);
+  assert.doesNotMatch(diagnosisPart,/jcs-dx-module|data-politician-type=/);
   assert.equal((html.match(/data-diagnosis-layout="\d{2}"/g)||[]).length,10);
 });
 
