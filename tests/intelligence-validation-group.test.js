@@ -32,3 +32,13 @@ test('all 542 active profiles produce a valid V3 event-to-diagnosis-to-prescript
     assert.equal(validateIntelligenceDraft(report).ok,true,person.id);
   }
 });
+
+test('all 542 profiles keep cohort scores inside zero to one hundred under maximum collected signals',()=>{
+  for(const person of people){
+    const news=Array.from({length:40},(_,index)=>({title:`${person.name} 20대 남성 민생 정책 성과 지원 발표 ${index}`,source:`검증매체${index}`,url:`https://news.test/${person.id}/${index}`,publishedAt:'2026-09-04'}));
+    const report=buildIntelligenceDraft(person,{snapshotId:'cohort-boundary-2026-09-04',collectedAt:'2026-09-04T20:27:00Z',officialProfile:person,searchAds:{volume:{pc:50000,mobile:300000}},news:{items:news},sourceErrors:[]},context,'JCS_INTELLIGENCE_V3');
+    const scores=report.cohorts.flatMap(row=>[row.male,row.female]);
+    assert.equal(scores.every(value=>Number.isFinite(value)&&value>=0&&value<=100),true,`${person.id} cohort range`);
+    assert.equal(validateIntelligenceDraft(report).errors.includes('COHORT_SCORE_INVALID'),false,person.id);
+  }
+});

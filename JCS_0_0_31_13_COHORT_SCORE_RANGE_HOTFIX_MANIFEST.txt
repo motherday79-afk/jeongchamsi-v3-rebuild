@@ -1,0 +1,19 @@
+JCS_0_0_31_13_COHORT_SCORE_RANGE_HOTFIX
+
+PRODUCTION
+index.html
+lib/intelligence-analysis.js
+src/core/release.js
+
+TESTS
+tests/intelligence-admin-view.test.js
+tests/intelligence-validation-group.test.js
+
+DOCUMENTATION
+JCS_0_0_31_13_COHORT_SCORE_RANGE_HOTFIX.md
+JCS_0_0_31_13_COHORT_SCORE_RANGE_HOTFIX_MANIFEST.txt
+
+EXCLUDED
+- politician photos and image assets
+- prior patch ZIP files
+- unrelated source files
