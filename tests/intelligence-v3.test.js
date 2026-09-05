@@ -60,6 +60,22 @@ test('compact storage keeps a small outlet frequency ledger for media reconstruc
   assert.deepEqual(stored.input.news.sourceCounts,[{name:'대표 뉴스',count:2},{name:'두번째 뉴스',count:1},{name:'세번째 뉴스',count:1}]);
 });
 
+test('compact storage preserves full period counts while retaining only ten representative articles',()=>{
+  const items=Array.from({length:18},(_,index)=>({title:`이진숙 기간 집계 기사 ${index}`,source:`매체 ${index}`,url:`https://news/period-${index}`,publishedAt:index<12?'2026-09-04T00:00:00Z':index<16?'2026-09-01T00:00:00Z':'2026-08-10T00:00:00Z'}));
+  const stored=compactIntelligenceDraft(buildIntelligenceDraft(person,{...raw,news:{items}},context,'JCS_INTELLIGENCE_V3'));
+  assert.equal(stored.input.news.items.length,10);
+  assert.deepEqual(stored.input.news.periodCounts,[{label:'24H',value:12},{label:'7D',value:16},{label:'30D',value:18}]);
+  assert.equal(stored.input.collectedAt,'2026-09-04T00:00:00Z');
+});
+
+test('compact storage preserves administrator-curated past risk signals without storing the full report',()=>{
+  const report=buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V3');
+  const pastRisks=[{tag:'#역사인식',title:'5·18 관련 과거 발언',url:'https://evidence.example/history',date:'2024-05-18'}];
+  const stored=compactIntelligenceDraft(report,{adminOverrides:{diagnoses:[{id:'01',pastRisks}]}});
+  assert.deepEqual(stored.adminOverrides.diagnoses[0].pastRisks,pastRisks);
+  assert.equal(stored.diagnoses,undefined);
+});
+
 test('role projection exposes V3 review intelligence only to administrators',()=>{
   const report=buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V3');
   const guest=projectIntelligence(report,'public','detail'),member=projectIntelligence(report,'member','detail'),admin=projectIntelligence(report,'admin','detail');

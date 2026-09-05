@@ -99,7 +99,7 @@ test('Kim Min-seok published report fills the three approved public diagnostic t
   const intelligence=projectIntelligence(reportForSample(sample),'public','detail');
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})});
   const text=html.replaceAll('&amp;','&');
-  for(const marker of ['JCS OPEN POLITICAL SNAPSHOT','정치인 브랜드 진단','언론·온라인 영향력 분석','정책·공약 반응 분석','RECENT NEWS','PROFILE & RECORD','RELATED POLITICIANS'])assert.match(text,new RegExp(marker));
+  for(const marker of ['JCS OPEN POLITICAL SNAPSHOT','정치인 브랜드 진단','언론·온라인 영향력 분석','정치 활동·미디어 전환 진단','RECENT NEWS','PROFILE & RECORD','RELATED POLITICIANS'])assert.match(text,new RegExp(marker));
   assert.match(html,/PROFILE & RECORD/);
   assert.match(html,/공식 프로필과 정치 기록/);
   assert.match(html,/기본정보/);
@@ -158,7 +158,7 @@ test('administrator report uses compact topic headers and report fields',async()
   const intelligence=projectIntelligence(reportForSample(sample),'admin','detail');
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{user:{role:'admin'}});
   assert.equal((html.match(/data-diagnosis-layout="\d{2}"/g)||[]).length,10);
-  for(const field of ['NOW SIGNAL','BRAND INDICATORS','JCS 연령·성별 지지구조 해석','SUPPORT COMPOSITION','경쟁 정치인 직접 비교','이슈 확산 속도','매체 집중도','출마·당선 이력','정책 진행 단계','JCS TOTAL'])assert.match(html,new RegExp(field));
+  for(const field of ['NOW SIGNAL','BRAND INDICATORS','JCS 연령·성별 지지구조 해석','SUPPORT COMPOSITION','경쟁 정치인 직접 비교','이슈 확산 속도','매체 집중도','정치 기반 흐름','정치 활동 구성','JCS TOTAL'])assert.match(html,new RegExp(field));
   const diagnosisPart=html.slice(html.indexOf('<div class="jcs-diagnosis-part">'),html.indexOf('<section class="jcs-v2-summary">'));
   assert.doesNotMatch(diagnosisPart,/>현재 위치<|>변화 흐름<|>기회 요인<|>위험 요인<|>비교 기준<|>분석 기준</);
 });

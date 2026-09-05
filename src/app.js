@@ -8,9 +8,9 @@ import { createPoliticianService } from './core/politicians.js';
 import { createNavigation } from './core/navigation.js?v=0.0.31';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31';
-import * as views from './views/stage1.js';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.9';
-import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.9';
+import * as views from './views/stage1.js?v=0.0.31.14';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.14';
+import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.14';
 import { renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31';
 import { renderPresidentPage } from './views/president.js?v=0.0.31';
 import { renderSearchPage } from './views/search-page.js?v=0.0.31';
@@ -145,10 +145,13 @@ navigation=createNavigation({window,readSnapshot:()=>app.innerHTML,restoreSnapsh
 navigation.start();
 window.addEventListener('jcs:layout-route',event=>navigation.navigate(event.detail?.route||'/'));
 window.addEventListener('jcs:layout-search',event=>navigation.navigate(`/search?q=${encodeURIComponent(String(event.detail?.query||'').trim())}`));
+document.addEventListener('change',event=>{const select=event.target.closest('[data-intelligence-past-risk-form] select[name="personId"]');if(!select)return;const textarea=select.closest('form')?.querySelector('textarea[name="pastRisks"]');if(textarea)textarea.value='';});
 
 document.addEventListener('submit',async event=>{
   const intelligenceDraft=event.target.closest('[data-intelligence-draft-form]');
   if(intelligenceDraft){event.preventDefault();const data=new FormData(intelligenceDraft),state=intelligenceDraft.querySelector('[data-intelligence-draft-state]'),result=await auth.intelligenceDraftUpdate({personId:intelligenceDraft.dataset.personId,diagnoses:[{id:'01',headline:String(data.get('diagnosisHeadline')||'')}],prescriptions:[{id:'01',strategicJudgment:String(data.get('prescriptionJudgment')||'')}]});if(state)state.textContent=result?.ok?'수정본을 저장했습니다. 다시 검수 승인해 주세요.':(result?.error||'수정본을 저장하지 못했습니다.');if(result?.ok)await render({preserveScroll:true});return;}
+  const pastRiskForm=event.target.closest('[data-intelligence-past-risk-form]');
+  if(pastRiskForm){event.preventDefault();const data=new FormData(pastRiskForm),state=pastRiskForm.querySelector('[data-intelligence-draft-state]'),pastRisks=String(data.get('pastRisks')||'').split(/\r?\n/).map(line=>line.split('|').map(value=>value.trim())).filter(parts=>parts[0]&&parts[1]&&/^https?:\/\//.test(parts[2])).slice(0,5).map(([tag,title,url,date])=>({tag:tag.startsWith('#')?tag:`#${tag}`,title,url,date:date||''})),result=await auth.intelligenceDraftUpdate({personId:String(data.get('personId')||''),diagnoses:[{id:'01',pastRisks}]});if(state)state.textContent=result?.ok?'PAST RISK SIGNALS를 저장했습니다. 다시 검수 승인해 주세요.':(result?.error||'PAST RISK SIGNALS를 저장하지 못했습니다.');if(result?.ok)await render({preserveScroll:true});return;}
   const participationAdmin=event.target.closest('[data-participation-admin-form]');
   if(participationAdmin){event.preventDefault();const data=Object.fromEntries(new FormData(participationAdmin));data.applyToMain=data.applyToMain==='true';const result=await content.createParticipation(participationAdmin.dataset.participationAdminForm,data),state=participationAdmin.querySelector('[data-form-state]');if(state)state.textContent=result?.ok?'저장하고 적용했습니다.':(result?.error||'저장하지 못했습니다.');if(result?.ok)await render();return;}
   const generationSearch=event.target.closest('[data-generation-search]');

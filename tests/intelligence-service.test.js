@@ -238,6 +238,7 @@ test('public detail joins three competitors from their own current snapshot reco
   assert.equal(people.slice(1).every(row=>Number.isFinite(row.newsCount)&&Number.isFinite(row.sourceCount)),true);
   assert.equal(people.slice(1).every(row=>Number.isFinite(row.overallRank)&&Number.isFinite(row.categoryRank)),true);
   assert.equal(people.slice(1).every(row=>Array.isArray(row.agendas)&&row.agendas.length>0),true);
+  assert.equal(people.slice(1).every(row=>Array.isArray(row.newsPeriods)&&row.newsPeriods.length===3),true);
 });
 
 test('a legacy rich running collection is reset before it consumes more Redis capacity',async()=>{
@@ -404,9 +405,13 @@ test('a second publication removes the first snapshot and keeps only the current
 test('administrator draft edits preserve only edited fields beside compact collection input',async()=>{
   const redis=fakeRedis(),rows=profiles(1),service=createService(redis,rows,{requireReviewApproval:true,analyze:(person,raw)=>({id:person.id,snapshot:raw.snapshotId,diagnoses:[{id:'01',headline:'기존 진단'}],prescriptions:[{id:'01',linkedDiagnosisIds:['01'],strategicJudgment:'기존 처방'}],raw})});
   const started=await service.startCollection();await service.runCollectionStep();
-  const edited=await service.updateDraft({personId:rows[0].id,editorId:'admin',diagnoses:[{id:'01',headline:'관리자 수정 진단'}]});
+  const pastRisks=[{tag:'#법적분쟁',title:'과거 법적 분쟁 근거',url:'https://evidence.example/legal',date:'2020-01-01'}];
+  const edited=await service.updateDraft({personId:rows[0].id,editorId:'admin',diagnoses:[{id:'01',headline:'관리자 수정 진단',pastRisks}]});
   assert.equal(edited.draft.diagnoses[0].headline,'관리자 수정 진단');
+  assert.deepEqual(edited.draft.diagnoses[0].display.pastRisks,pastRisks);
   assert.equal((await service.status()).versions[0].reviewStatus,'changes_pending');
   assert.equal(JSON.parse(redis.map.get(INTELLIGENCE_KEYS.revisions(started.job.snapshotId))).length,1);
-  assert.equal(JSON.parse(redis.map.get(INTELLIGENCE_KEYS.draft(started.job.snapshotId,rows[0].id))).adminOverrides.diagnoses[0].headline,'관리자 수정 진단');
+  const stored=JSON.parse(redis.map.get(INTELLIGENCE_KEYS.draft(started.job.snapshotId,rows[0].id)));
+  assert.equal(stored.adminOverrides.diagnoses[0].headline,'관리자 수정 진단');
+  assert.deepEqual(stored.adminOverrides.diagnoses[0].pastRisks,pastRisks);
 });

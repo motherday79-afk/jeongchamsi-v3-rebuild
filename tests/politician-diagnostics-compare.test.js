@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { projectIntelligence } from '../lib/intelligence-access.js';
 import { buildIntelligenceDraft } from '../lib/intelligence-analysis.js';
 import { renderPoliticianCompare } from '../src/views/politician-compare.js';
@@ -33,7 +34,7 @@ test('guest comparison waits for the button then renders only 01 07 09 for two p
   assert.match(html,/로그인하고 상세 비교 보기/);
   assert.equal((html.match(/data-diagnosis-display="brand"/g)||[]).length,2);
   assert.equal((html.match(/data-diagnosis-display="media"/g)||[]).length,2);
-  assert.equal((html.match(/data-diagnosis-display="policy"/g)||[]).length,2);
+  assert.equal((html.match(/data-diagnosis-display="action"/g)||[]).length,2);
   assert.doesNotMatch(html,/핵심 원인|실행 처방|세대·성별 지지구조 분석/);
 });
 
@@ -41,7 +42,7 @@ test('member comparison renders six interpreted topics for exactly two people',a
   const html=await renderPoliticianCompare(serviceFor('member'),'/compare?ids=assembly-101,assembly-102,assembly-103&run=1',{authenticated:true,user:{role:'member'}});
   assert.deepEqual([...html.matchAll(/data-comparison-topic="(\d{2})"/g)].map(match=>match[1]),['01','02','03','05','07','09']);
   assert.equal((html.match(/data-compare-matrix-profile=/g)||[]).length,2);
-  for(const kind of ['brand','demographic','local','competitor','media','policy'])assert.equal((html.match(new RegExp(`data-diagnosis-display="${kind}"`,'g'))||[]).length,2);
+  for(const kind of ['brand','demographic','local','competitor','media','action'])assert.equal((html.match(new RegExp(`data-diagnosis-display="${kind}"`,'g'))||[]).length,2);
   assert.doesNotMatch(html,/>정치적 의미<|>현재 위치<|>기회 요인<|>위험 요인<|>서브데이터</);
   assert.doesNotMatch(html,/실행 처방|관리해야 할 위험|경쟁 대응 우선순위/);
 });
@@ -55,7 +56,7 @@ test('administrator comparison caps selection at four and renders all ten topics
   assert.doesNotMatch(html,/data-compare-selected="assembly-105"/);
   assert.deepEqual([...html.matchAll(/data-comparison-topic="(\d{2})"/g)].map(match=>match[1]),['01','02','03','04','05','06','07','08','09','10']);
   for(let index=101;index<=104;index++)assert.match(html,new RegExp(`/assets/politicians/assembly-${index}\\.jpg`));
-  for(const kind of ['brand','demographic','local','support','competitor','risk','media','campaign','policy','summary'])assert.equal((html.match(new RegExp(`data-diagnosis-display="${kind}"`,'g'))||[]).length,4);
+  for(const kind of ['brand','demographic','local','support','competitor','risk','media','campaign','action','summary'])assert.equal((html.match(new RegExp(`data-diagnosis-display="${kind}"`,'g'))||[]).length,4);
   for(const label of ['정참시 전략 판단','실행 처방','실행 우선순위'])assert.match(html,new RegExp(label));
   assert.equal((html.match(/data-prescription-topic=/g)||[]).length,10);
   assert.match(html,/진단 근거/);
@@ -93,6 +94,14 @@ test('comparison cells use the same projected topic values as detail data',async
   const html=await renderPoliticianCompare(serviceFor('member'),'/compare?ids=assembly-101,assembly-102&run=1',{user:{role:'member'}});
   assert.match(html,new RegExp(projected.diagnoses[0].display.nowSignal));
   assert.match(html,/data-diagnosis-display="brand"/);
+});
+
+test('local comparison uses the approved voter structure and JCS message path without empty election placeholders',async()=>{
+  const source=await readFile(new URL('../src/views/politician-compare.js',import.meta.url),'utf8');
+  const block=source.slice(source.indexOf('function compareLocal'),source.indexOf('function compareSupport'));
+  assert.match(block,/data\.population/);
+  assert.match(block,/data\.messagePath/);
+  assert.doesNotMatch(block,/data\.elections|선거 기록|득표율/);
 });
 
 test('administrator can change the strategy baseline politician',async()=>{

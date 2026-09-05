@@ -7,7 +7,7 @@ const auth={
   async adminSummary(){return {ok:true,users:{total:11,admins:1},contents:{columns:2}};},
   async exportMembers(){return [];},
   async intelligenceStatus(){return {ok:true,sources:{naverSearchAds:{configured:true}},collection:{status:'COMPLETED',completed:542,total:542,failed:0},publication:null,latestDraft:'draft-1',publicSnapshot:'public-0',validation:{ok:true,errors:[]},versions:[{analysisVersion:'draft-1',status:'draft',reviewStatus:'pending',generatedAt:1},{analysisVersion:'public-0',status:'published',reviewStatus:'approved',generatedAt:0}]};},
-  async intelligencePreview(){return {ok:true,version:{analysisVersion:'draft-1',status:'draft'},validation:{ok:true,errors:[]},reviewSample:{personId:'p1',news:[{title:'대표 정책 발표'}],eventClusters:[{eventId:'e1',eventTitle:'대표 정책 발표',eventType:'정책·입법'}],politicianType:{primaryType:'정책·성과형',secondaryTypes:['정책의제 선점형'],currentPhase:'정책 성과 축적'},diagnoses:Array.from({length:10},(_,i)=>({id:String(i+1).padStart(2,'0'),headline:`진단 ${i+1}`})),prescriptions:Array.from({length:10},(_,i)=>({id:String(i+1).padStart(2,'0'),strategicJudgment:`처방 ${i+1}`}))}};},
+  async intelligencePreview(){return {ok:true,version:{analysisVersion:'draft-1',status:'draft'},validation:{ok:true,errors:[]},reviewTargets:[{id:'p1',name:'대표 정치인'},{id:'p2',name:'두번째 정치인'}],reviewSample:{personId:'p1',news:[{title:'대표 정책 발표'}],eventClusters:[{eventId:'e1',eventTitle:'대표 정책 발표',eventType:'정책·입법'}],politicianType:{primaryType:'정책·성과형',secondaryTypes:['정책의제 선점형'],currentPhase:'정책 성과 축적'},diagnoses:Array.from({length:10},(_,i)=>({id:String(i+1).padStart(2,'0'),headline:`진단 ${i+1}`})),prescriptions:Array.from({length:10},(_,i)=>({id:String(i+1).padStart(2,'0'),strategicJudgment:`처방 ${i+1}`}))}};},
 };
 
 test('admin control center exposes ten processing stages and draft review before approval',async()=>{
@@ -24,10 +24,21 @@ test('admin control center exposes ten processing stages and draft review before
   assert.match(html,/대표 정책 발표/);
   assert.match(html,/진단 10개 · 처방 10개/);
   assert.match(html,/data-intelligence-approve/);
+  assert.match(html,/PAST RISK SIGNALS/);
+  assert.match(html,/name="pastRisks"/);
   assert.match(html,/draft-1.*draft|draft.*draft-1/s);
   assert.match(html,/public-0.*published|published.*public-0/s);
-  assert.match(html,/JCS_0_0_31_13/);
+  assert.match(html,/JCS_0_0_31_14/);
   assert.match(html,/관리자 화면 버전/);
+});
+
+test('past risk signals have a separate administrator editor that can target every collected politician',async()=>{
+  const html=await renderAdminStable(admin,auth);
+  assert.match(html,/data-intelligence-past-risk-form/);
+  assert.match(html,/name="personId"/);
+  assert.match(html,/대표 정치인 · p1/);
+  assert.match(html,/두번째 정치인 · p2/);
+  assert.match(html,/PAST RISK SIGNALS만 저장/);
 });
 
 test('admin warns when browser bundle and server release versions differ',async()=>{

@@ -18,7 +18,7 @@ const context={peers:[basePerson,{...basePerson,id:'assembly-032',name:'이경�
 
 const diagnosisFields=['id','title','headline','currentPosition','coreEvent','politicalMeaning','changeReason','pastPresentConnection','supportingData','attentionQuality','score','percentile','trend','benchmark','visualization','display','interpretation','evidence','opportunity','risk','sourceTypes','updatedAt','algorithmVersion','basis'];
 const prescriptionFields=['id','linkedDiagnosisIds','diagnosisBasis','title','objective','strategicJudgment','actions','target','messageDirection','channels','timing','priority','expectedImpact','monitoringIndicators','visualization','updatedAt','algorithmVersion'];
-const diagnosisVisuals=['positioning-matrix','cohort-diverging','issue-fit-bars','support-stack','competitor-heatmap','risk-matrix','narrative-timeline','campaign-matrix','policy-heatmap','growth-gap'];
+const diagnosisVisuals=['positioning-matrix','cohort-diverging','issue-fit-bars','support-stack','competitor-heatmap','risk-matrix','narrative-timeline','campaign-matrix','action-conversion','growth-gap'];
 const prescriptionVisuals=['message-pyramid','target-matrix','local-playbook','support-flow','response-matrix','crisis-timeline','propagation-flow','resource-allocation','policy-quadrant','growth-timeline'];
 const forbidden=/데이터 부족|분석 준비 중|분석 불가|판단 불가|비교 불가|알 수 없음|추가 데이터 필요|N\/A|TODO|TBD|추후 제공/;
 const narrativeOnly=report=>({

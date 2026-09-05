@@ -21,14 +21,14 @@ async function adminHtml(){
 test('administrator detail renders all ten approved diagnosis-specific layouts',async()=>{
   const html=await adminHtml();
   assert.equal((html.match(/data-diagnosis-layout="\d{2}"/g)||[]).length,10);
-  for(const marker of ['NOW SIGNAL','BRAND INDICATORS','PAST RISK SIGNALS','BRAND TOTAL SIGN','JCS 연령·성별 지지구조 해석','기반 순위','공식 선거 기반','코어','유동','이탈','이슈 확산 속도','매체 집중도','출마·당선 이력','정책 진행 단계','JCS TOTAL'])assert.match(html,new RegExp(marker));
+  for(const marker of ['NOW SIGNAL','BRAND INDICATORS','PAST RISK SIGNALS','BRAND TOTAL SIGN','서칭엔진 검색추이','JCS 연령·성별 지지구조 해석','기반 순위','지역 유권자 구조','코어','유동','이탈','이슈 확산 속도','매체 집중도','5대 메이저','정치 기반 흐름','정치 활동 구성','미디어 전환','JCS TOTAL'])assert.match(html,new RegExp(marker));
   assert.doesNotMatch(html,/SUPPORT COMPOSITION <span>합계 100%/);
   assert.match(html,/jcs-dx-local-overlap/);
   assert.match(html,/jcs-dx-persistence-curve/);
-  assert.match(html,/is-current[^>]*>[^<]*(발표|제안|검토|통과|시행|완료)/);
+  assert.doesNotMatch(html,/정책 진행 단계|공식 데이터 연결 전|JCS 현재 캠페인 신호/);
 });
 
-test('media search values use compact K notation while retaining exact accessible values',async()=>{
+test('brand search values use compact K notation while retaining exact accessible values',async()=>{
   const html=await adminHtml();
   assert.match(html,/2K/);
   assert.match(html,/8K/);
@@ -45,6 +45,13 @@ test('diagnosis visual styles use compact gradient modules with a mobile reflow'
   for(const marker of ['.jcs-dx-brand-axis','.jcs-dx-demographic-chart','.jcs-dx-support-orbit','.jcs-dx-competitor-grid','.jcs-dx-summary-grid'])assert.match(css,new RegExp(marker.replaceAll('.','\\.')));
   assert.match(css,/@media\(max-width:760px\)[\s\S]*\.jcs-dx-module/);
   assert.match(css,/linear-gradient\(/);
+});
+
+test('approved final stylesheet preserves the exact local support media and compare visual contracts',async()=>{
+  const css=await readFile(new URL('../css/diagnosis-approved.css',import.meta.url),'utf8');
+  for(const marker of ['.jcs-dx-local-layout','.jcs-dx-local-ages','.jcs-dx-local-genders','.jcs-dx-core-shape','.jcs-dx-floating-shape','.jcs-dx-exit-shape','.jcs-dx-media-treemap','.jcs-compare-report-admin .jcs-compare-matrix'])assert.match(css,new RegExp(marker.replaceAll('.','\\.')));
+  assert.match(css,/repeating-conic-gradient/);
+  assert.match(css,/@media\(max-width:760px\)/);
 });
 
 test('media panels expose full outlet names instead of ellipsized fragments',async()=>{
@@ -85,9 +92,9 @@ test('persistence and media markup preserves all calendar days and expands the f
   assert.equal((html.match(/class="jcs-dx-day"/g)||[]).length,30);
   assert.match(html,/D−30/);
   assert.match(html,/오늘/);
-  assert.match(html,/3회 이상/);
-  assert.match(html,/2회 보도/);
-  assert.match(html,/1회 보도/);
+  assert.match(html,/5대 메이저/);
+  assert.match(html,/비메이저/);
+  assert.match(html,/jcs-dx-media-treemap/);
   assert.match(html,/<details class="jcs-dx-more-sources"/);
   assert.match(html,/전체 목록 보기/);
 });
@@ -95,5 +102,14 @@ test('persistence and media markup preserves all calendar days and expands the f
 test('campaign and policy renderers remove repeated and connection-pending placeholders',async()=>{
   const html=await adminHtml();
   assert.doesNotMatch(html,/공식 프로필 기록|공식 득표율 연결 전|공식 득표 격차 연결 전|공식 경쟁자 기록 연결 전|지역별 공식 개표 데이터 연결 전/);
-  assert.match(html,/JCS 현재 캠페인 신호/);
+  assert.match(html,/정치 기반 흐름/);
+  assert.match(html,/정치 활동·미디어 전환 진단/);
+});
+
+test('media removes duplicate search panel and summary contains only approved seven diagnosis sources',async()=>{
+  const html=await adminHtml();
+  const media=html.slice(html.indexOf('data-diagnosis-layout="07"'),html.indexOf('data-diagnosis-layout="08"'));
+  assert.doesNotMatch(media,/PC·모바일 검색 관심|서칭엔진 검색추이/);
+  for(const id of ['01','02','03','04','05','06','09'])assert.match(html,new RegExp(`data-summary-source="${id}"`));
+  assert.doesNotMatch(html,/data-summary-source="0[78]"/);
 });
