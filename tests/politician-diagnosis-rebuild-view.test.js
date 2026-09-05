@@ -208,7 +208,7 @@ test('media disclosure has a real controlled list and summary shows local fit st
 test('administrator identity and actions live in the approved report header without the legacy hero',async()=>{
   const html=await adminHtml(),head=html.slice(html.indexOf('<header class="jcs-report-head">'),html.indexOf('</header>',html.indexOf('<header class="jcs-report-head">')));
   assert.doesNotMatch(html,/person-detail-hero|person-live-hero/);
-  for(const marker of ['국회의원','더불어민주당 · 서울 시각구','재선','정무위원회','목록으로','즐겨찾기 준비 중','비교하기','전체 NOW','분야별 NOW'])assert.match(head,new RegExp(marker));
+  for(const marker of ['국회의원','더불어민주당 · 서울 시각구','재선','정무위원회','목록으로','즐겨찾기 준비 중','비교하기','전체 NOW'])assert.match(head,new RegExp(marker));
   assert.match(head,/data-layout-route="\/now\?type=assembly"/);
   assert.match(head,/data-layout-route="\/compare\?ids=assembly-visual"/);
 });

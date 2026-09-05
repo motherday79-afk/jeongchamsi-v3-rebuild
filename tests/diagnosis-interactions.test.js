@@ -86,3 +86,19 @@ test('delegated media disclosure controls the list in the active period panel',(
   assert.equal(attrs['aria-expanded'],'false');
   assert.match(toggle.innerHTML,/전체 목록 보기/);
 });
+
+test('delegated period control updates only its nearest comparison cell scope',()=>{
+  const listeners={};
+  const root={dataset:{},querySelectorAll:()=>[],addEventListener:(type,listener)=>{listeners[type]=listener;}};
+  setupDiagnosisInteractions(root);
+  const buttons=['24H','7D','30D'].map(period=>({dataset:{jcsPeriod:period},attrs:{'aria-pressed':String(period==='30D')},setAttribute(name,value){this.attrs[name]=String(value);}}));
+  const localPanels=['24H','7D','30D'].map(period=>({dataset:{jcsPeriodPanel:period},hidden:period!=='30D'}));
+  const otherPanels=['24H','7D','30D'].map(period=>({dataset:{jcsPeriodPanel:period},hidden:period!=='30D'}));
+  const scope={querySelectorAll:selector=>selector==='[data-jcs-period-panel]'?localPanels:[],querySelector:()=>null};
+  const group={querySelectorAll:selector=>selector==='[data-jcs-period]'?buttons:[],closest:selector=>selector==='[data-jcs-period-scope]'?scope:null};
+  const target={closest(selector){if(selector==='[data-jcs-period]')return buttons[0];if(selector==='.jcs-periods')return group;return null;}};
+  root.querySelectorAll=selector=>selector==='[data-jcs-period-panel]'?[...localPanels,...otherPanels]:[];
+  listeners.click({target});
+  assert.deepEqual(localPanels.map(item=>item.hidden),[false,true,true]);
+  assert.deepEqual(otherPanels.map(item=>item.hidden),[true,true,false]);
+});

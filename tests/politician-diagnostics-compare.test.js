@@ -47,6 +47,33 @@ test('member comparison renders six interpreted topics for exactly two people',a
   assert.doesNotMatch(html,/실행 처방|관리해야 할 위험|경쟁 대응 우선순위/);
 });
 
+test('every comparison tier uses the approved light report language and chapter axes',async()=>{
+  for(const [tier,session,count] of [['public',null,3],['member',{authenticated:true,user:{role:'member'}},6],['admin',{authenticated:true,user:{role:'admin'}},10]]){
+    const html=await renderPoliticianCompare(serviceFor(tier),'/compare?ids=assembly-101,assembly-102&run=1',session);
+    assert.match(html,new RegExp(`class="jcs-compare-report jcs-compare-report-${tier} jcs-approved-compare"[^>]*data-approved-access="${tier}"`));
+    assert.equal((html.match(/class="jcs-compare-topic-axis jcs-chapter-head"/g)||[]).length,count);
+    assert.equal((html.match(/class="jcs-no"/g)||[]).length,count);
+    assert.equal((html.match(/class="jcs-en"/g)||[]).length,count);
+  }
+});
+
+test('comparison period controls are real and scoped to each politician cell',async()=>{
+  const member=await renderPoliticianCompare(serviceFor('member'),'/compare?ids=assembly-101,assembly-102&run=1',{authenticated:true,user:{role:'member'}});
+  assert.equal((member.match(/data-jcs-competitor-period-scope/g)||[]).length,2);
+  assert.equal((member.match(/data-jcs-competitor-period-scope[\s\S]*?data-jcs-period="24H"/g)||[]).length,2);
+  assert.equal((member.match(/data-jcs-competitor-period-scope[\s\S]*?data-jcs-period="7D"/g)||[]).length,2);
+  assert.equal((member.match(/data-jcs-competitor-period-scope[\s\S]*?data-jcs-period="30D"/g)||[]).length,2);
+  const guest=await renderPoliticianCompare(serviceFor('public'),'/compare?ids=assembly-101,assembly-102&run=1',null);
+  assert.equal((guest.match(/data-jcs-media-period-scope/g)||[]).length,2);
+  assert.equal((guest.match(/class="jcs-media-toggle"/g)||[]).length,6);
+});
+
+test('comparison brand keeps the five approved indicators visually distinct',async()=>{
+  const html=await renderPoliticianCompare(serviceFor('public'),'/compare?ids=assembly-101,assembly-102&run=1',null);
+  for(const tool of ['ring','segments','axis','radar','trend'])assert.equal((html.match(new RegExp(`data-brand-tool="${tool}"`,'g'))||[]).length,2);
+  assert.doesNotMatch(html,/class="jcs-cmp-bars"><div class="jcs-cmp-bar"><span>브랜드 선명도/);
+});
+
 test('administrator comparison caps selection at four and renders all ten topics with photo headers',async()=>{
   const ids=people.map(person=>person.id).join(',');
   const html=await renderPoliticianCompare(serviceFor('admin'),`/compare?ids=${ids}&run=1`,{authenticated:true,user:{role:'admin'}});

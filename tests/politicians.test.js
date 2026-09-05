@@ -61,9 +61,7 @@ test('published detail uses one two-column NOW card without operational descript
   assert.match(html,/data-recent-name="김민석"/);
   assert.match(html,/data-recent-photo="\/assets\/politicians\/assembly-001\.jpg"/);
   assert.equal((html.match(/<span>전체 NOW<\/span>/g)||[]).length,1);
-  assert.equal((html.match(/person-hero-rank-cell"><span>국회의원<\/span>/g)||[]).length,1);
-  assert.match(html,/<strong>3위<\/strong>/);
-  assert.match(html,/<strong>2위<\/strong>/);
+  assert.match(html,/class="jcs-ranks"[\s\S]*?<span>전체 NOW<\/span><b>3위<\/b>[\s\S]*?<span>국회의원<\/span><b>2위<\/b>/);
   assert.doesNotMatch(html,/공개 스냅샷 운영 순위|국회의원 NOW 독립 순위/);
   assert.match(html,/JCS OPEN POLITICAL SNAPSHOT/);
   assert.equal((html.match(/data-diagnostic-topic=/g)||[]).length,3);
@@ -78,8 +76,8 @@ test('missing operating ranks render 집계 전 in the same compact NOW card',as
   const sample={...POLITICIAN_SEED.profiles.assembly[1]};
   const intelligence=structuredClone(reportForSample(sample));intelligence.rank={overall:null,category:null,temporary:false};
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence:projectIntelligence(intelligence,'public','detail')})});
-  assert.equal((html.match(/<strong>집계 전<\/strong>/g)||[]).length,2);
-  assert.match(html,/person-hero-rank-split/);
+  assert.equal((html.match(/<b>집계 전<\/b>/g)||[]).length,2);
+  assert.match(html,/class="jcs-ranks"/);
 });
 
 test('administrator consulting callout follows the strategic conclusion inside the intelligence report',async()=>{
@@ -112,13 +110,14 @@ test('Kim Min-seok published report fills the three approved public diagnostic t
   assert.doesNotMatch(html,/JCS ADMIN PRIVATE POLITICAL INTELLIGENCE/);
 });
 
-test('public politician detail uses the compact three-card diagnostic system',async()=>{
+test('public politician detail uses the approved three-chapter diagnostic system',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
   const intelligence=projectIntelligence(reportForSample(sample),'public','detail');
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})});
-  assert.match(html,/jcs-diagnostics-public-grid/);
-  assert.equal((html.match(/jcs-diagnostic-public-topic/g)||[]).length,3);
-  assert.match(html,/jcs-diagnostic-spark/);
+  assert.match(html,/id="jcs-intelligence-nine"[^>]*data-approved-access="public"/);
+  assert.equal((html.match(/class="jcs-chapter"/g)||[]).length,3);
+  assert.equal((html.match(/data-approved-role-visual="public"/g)||[]).length,3);
+  assert.match(html,/class="jcs-line-chart"/);
 });
 
 test('public politician diagnostics omit member and administrator modules',async()=>{

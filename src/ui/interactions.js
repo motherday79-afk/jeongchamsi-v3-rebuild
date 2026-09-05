@@ -55,7 +55,7 @@ const diagnosisPeriodLabels={'24H':'24시간 뉴스','7D':'7일 뉴스','30D':'3
 function activateDiagnosisPeriod(origin,root){
   const button=origin?.closest?.('[data-jcs-period]');if(!button)return false;
   const group=button.closest?.('.jcs-periods')||origin.closest?.('.jcs-periods');if(!group)return false;
-  const period=button.dataset.jcsPeriod||String(button.textContent||'').trim(),chapter=group.closest?.('.jcs-chapter')||root;
+  const period=button.dataset.jcsPeriod||String(button.textContent||'').trim(),chapter=group.closest?.('[data-jcs-period-scope]')||group.closest?.('.jcs-chapter')||root;
   group.querySelectorAll('[data-jcs-period]').forEach(peer=>peer.setAttribute('aria-pressed',String(peer===button)));
   chapter.querySelectorAll('[data-jcs-period-value]').forEach(value=>{value.hidden=value.dataset.jcsPeriodValue!==period;});
   chapter.querySelectorAll('[data-jcs-period-panel]').forEach(panel=>{panel.hidden=panel.dataset.jcsPeriodPanel!==period;});

@@ -29,7 +29,7 @@ test('admin control center exposes ten processing stages and draft review before
   assert.match(html,/name="pastRisks"/);
   assert.match(html,/draft-1.*draft|draft.*draft-1/s);
   assert.match(html,/public-0.*published|published.*public-0/s);
-  assert.match(html,/JCS_0_0_31_19/);
+  assert.match(html,/JCS_0_0_31_20/);
   assert.match(html,/관리자 화면 버전/);
 });
 
@@ -48,8 +48,8 @@ test('admin warns when browser bundle and server release versions differ',async(
   assert.match(html,/강력 새로고침 필요/);
 });
 
-test('approved interaction and profile package reports release 31.19',()=>{
-  assert.equal(APP_RELEASE,'JCS_0_0_31_19');
+test('approved access-tier design package reports release 31.20',()=>{
+  assert.equal(APP_RELEASE,'JCS_0_0_31_20');
 });
 
 test('approved reviewed draft enables publication',async()=>{
