@@ -47,8 +47,10 @@ Path('verification/build-config.json').write_text(json.dumps({**cfg,'versionCode
 PY
 "$BT/aapt2" compile --dir res -o build/resources.zip
 "$BT/aapt2" link -o build/resources.apk -I "$ANDROID_JAR" \
-  --min-sdk-version 26 --target-sdk-version 35 \
-  --manifest build/AndroidManifest.xml -A assets build/resources.zip
+  --manifest build/AndroidManifest.xml \
+  --min-sdk-version 26 \
+  --target-sdk-version 35 \
+  -A assets build/resources.zip
 mapfile -t SOURCES < <(find src stubs build/generated -name '*.java' -type f | sort)
 # Use the JDK 8 API surface for java.* (including LambdaMetafactory) and Android SDK as classpath.
 # D8 will desugar Java 8 lambdas for minSdk 26. Using android.jar as javac bootclasspath hides
