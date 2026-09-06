@@ -24,8 +24,16 @@ test('automatic discovery registers five politicians per resumable step',async()
   assert.deepEqual(searched,['p1','p2','p3','p4','p5','p6','p7']);
   const status=await service.status();
   assert.equal(status.registered,7);
+  assert.equal(status.profiles.length,7);
+  assert.equal(status.profiles.every(row=>row.registered),true);
   assert.equal(status.channels[0].sourceMode,'AUTO');
   assert.doesNotMatch(JSON.stringify(status),/secret/);
+});
+
+test('status exposes unregistered politicians so an administrator can register any one manually',async()=>{
+  const service=createYouTubeChannelService({command:fakeRedis().command,profiles:profiles(2),env:{YOUTUBE_DATA_API_KEY:'secret'}});
+  const status=await service.status();
+  assert.deepEqual(status.profiles.map(row=>({id:row.personId,registered:row.registered})),[{id:'p1',registered:false},{id:'p2',registered:false}]);
 });
 
 test('manual mappings are excluded from automatic discovery and remain locked',async()=>{

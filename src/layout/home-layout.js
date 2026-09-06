@@ -8,7 +8,7 @@ const publishedItems=data=>(Array.isArray(data?.items)?data.items:[]).filter(ite
 const dateLabel=value=>{if(!value)return '';const date=new Date(value);return Number.isNaN(date.getTime())?'':date.toLocaleDateString('ko-KR');};
 const academyDate=value=>{const match=String(value||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);if(!match)return {date:String(value||'일정'),day:''};const [,year,month,day]=match,week=['일','월','화','수','목','금','토'][new Date(Date.UTC(Number(year),Number(month)-1,Number(day))).getUTCDay()];return {date:`${month}.${day}`,day:week};};
 const imageUrl=value=>{const url=String(value||'').trim();return /^(https:\/\/|\/)/i.test(url)?url:'';};
-const politicianPhoto=(person,klass)=>{const src=String(person?.photo?.localPath||''),initial=esc(String(person?.name||'?').slice(0,1));return src?`<span class="${klass} has-photo" data-politician-avatar style="--photo-position:${esc(person.photo?.focus||'50% 28%')}"><span class="politician-photo-initial">${initial}</span><img data-politician-photo src="${esc(src)}" alt="" loading="lazy"></span>`:`<span class="${klass} is-empty" data-politician-avatar><span class="politician-photo-initial">${initial}</span></span>`;};
+const politicianPhoto=(person,klass)=>{const src=String(person?.photo?.url||person?.photo?.localPath||''),initial=esc(String(person?.name||'?').slice(0,1));return src?`<span class="${klass} has-photo" data-politician-avatar style="--photo-position:${esc(person.photo?.focus||'50% 28%')}"><span class="politician-photo-initial">${initial}</span><img data-politician-photo src="${esc(src)}" alt="" loading="lazy"></span>`:`<span class="${klass} is-empty" data-politician-avatar><span class="politician-photo-initial">${initial}</span></span>`;};
 const NATIONAL_SUBJECT_FALLBACK=Object.freeze({
   'assembly-182':{name:'전용기',party:'더불어민주당',jurisdiction:'경기 화성시정'},
   'basic-038':{name:'신상진',party:'국민의힘',jurisdiction:'경기도 성남시'}
@@ -42,7 +42,7 @@ function accountPanel(session={},mobile=false){
 }
 
 function recentPoliticianCard(item){
-  const src=String(item?.photo?.localPath||''),initial=esc(String(item?.name||'?').slice(0,1));
+  const src=String(item?.photo?.url||item?.photo?.localPath||''),initial=esc(String(item?.name||'?').slice(0,1));
   const avatar=src?`<span class="recent-circle-avatar has-photo" data-politician-avatar style="--photo-position:${esc(item.photo?.focus||'50% 28%')}"><span class="politician-photo-initial" aria-hidden="true">${initial}</span><img data-politician-photo src="${esc(src)}" alt="" width="54" height="54" loading="lazy" decoding="async"></span>`:`<span class="recent-circle-avatar is-empty" data-politician-avatar><span class="politician-photo-initial" aria-hidden="true">${initial}</span></span>`;
   return `<button type="button" class="recent-visual-card" data-layout-route="/person/${esc(item.id)}" aria-label="${esc(item.name)} 상세페이지">${avatar}<b>${esc(item.name)}</b><small>${esc([item.party,item.office].filter(Boolean).join(' · '))}</small></button>`;
 }

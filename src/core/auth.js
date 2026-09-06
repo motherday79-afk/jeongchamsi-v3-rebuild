@@ -1,5 +1,5 @@
 const clean=v=>String(v??'').trim();
-const publicUser=u=>u?({id:u.id,nickname:u.nickname||u.id,role:u.role||'member',email:u.email||'',createdAt:u.createdAt||'',profile:u.profile||{},name:u.name||'',phone:u.phone||'',birthYear:u.birthYear||'',regionProvince:u.regionProvince||'',regionCity:u.regionCity||'',regionDistrict:u.regionDistrict||'',region:u.region||'',preferredParty:u.preferredParty||''}):null;
+const publicUser=u=>u?({id:u.id,nickname:u.nickname||u.id,role:u.role||'member',status:u.status||'active',email:u.email||'',createdAt:u.createdAt||'',profile:u.profile||{},name:u.name||'',phone:u.phone||'',birthYear:u.birthYear||'',regionProvince:u.regionProvince||'',regionCity:u.regionCity||'',regionDistrict:u.regionDistrict||'',region:u.region||'',preferredParty:u.preferredParty||'',mustChangePassword:!!u.mustChangePassword,sessionVersion:Number(u.sessionVersion)||0}):null;
 async function digest(value){const bytes=new TextEncoder().encode(String(value));const hash=await globalThis.crypto.subtle.digest('SHA-256',bytes);return [...new Uint8Array(hash)].map(x=>x.toString(16).padStart(2,'0')).join('');}
 async function request(path,options={}){const res=await fetch(`/api/v3/${path}`,{credentials:'same-origin',headers:{'Content-Type':'application/json',...(options.headers||{})},...options});const data=await res.json().catch(()=>({ok:false,error:'INVALID_RESPONSE'}));if(!res.ok&&data?.ok!==false)data.ok=false;return {status:res.status,...data};}
 
@@ -10,12 +10,15 @@ function createRemoteAuthService(){
     async logout(){return request('user/logout',{method:'POST',body:'{}'});},
     async session(){const x=await request('user/session');return x.status===200?{authenticated:!!x.authenticated,user:x.user||null}:{authenticated:false,user:null,error:x.error};},
     async updateProfile(patch={}){return request('user/profile',{method:'POST',body:JSON.stringify(patch)});},
+    async completePasswordChange(password){return request('user/password',{method:'POST',body:JSON.stringify({password})});},
     async badgeStatus(){const x=await request('user/badges');return x.ok?x.status:null;},
     async setRepresentativeBadge(badgeKey){return request('action',{method:'POST',body:JSON.stringify({action:'badge-representative-set',payload:{badgeKey}})});},
     async toggleShowcaseBadge(badgeKey){return request('action',{method:'POST',body:JSON.stringify({action:'badge-showcase-toggle',payload:{badgeKey}})});},
     async recordBadgeVisit(){return request('action',{method:'POST',body:JSON.stringify({action:'badge-visit',payload:{}})});},
     async updateMemberBadges(id,grantedBadges){return request('admin/users',{method:'PATCH',body:JSON.stringify({id,grantedBadges})});},
     async updateMemberRole(id,role){return request('admin/users',{method:'PATCH',body:JSON.stringify({id,role})});},
+    async updateMemberProfile(input={}){return request('admin/users',{method:'PATCH',body:JSON.stringify({operation:'profile',...input})});},
+    async resetMemberPassword(id,temporaryPassword){return request('admin/users',{method:'PATCH',body:JSON.stringify({operation:'password-reset',id,temporaryPassword})});},
     async exportMembers(){const x=await request('admin/users');return x.ok?x.users:[];},
     async adminSummary(){return request('admin/summary');},
     async intelligenceStatus(){return request('admin/intelligence/status');},
@@ -32,6 +35,14 @@ function createRemoteAuthService(){
     async youtubeChannelSave(input={}){return request('admin/intelligence/youtube/channel',{method:'PATCH',body:JSON.stringify(input)});},
     async youtubeChannelRediscover(personId){return request('admin/intelligence/youtube/channel/rediscover',{method:'POST',body:JSON.stringify({personId})});},
     async youtubeChannelDelete(personId){return request('admin/intelligence/youtube/channel',{method:'DELETE',body:JSON.stringify({personId})});},
+    async adminPoliticians(query=''){return request(`admin/politicians?q=${encodeURIComponent(query)}`);},
+    async savePoliticianPastRisks(personId,pastRisks){return request('admin/politicians',{method:'PATCH',body:JSON.stringify({operation:'past-risks',personId,pastRisks})});},
+    async savePoliticianNewsExclusions(personId,newsExclusions){return request('admin/politicians',{method:'PATCH',body:JSON.stringify({operation:'news-exclusions',personId,newsExclusions})});},
+    async uploadPoliticianPhoto(input={}){return request('admin/politicians/photo',{method:'POST',body:JSON.stringify(input)});},
+    async adminAudit(){return request('admin/audit');},
+    async refreshPolitician(personId){return request('admin/intelligence/person/refresh',{method:'POST',body:JSON.stringify({personId})});},
+    async approvePoliticianRefresh(personId){return request('admin/intelligence/person/approve',{method:'POST',body:JSON.stringify({personId})});},
+    async publishPoliticianRefresh(personId){return request('admin/intelligence/person/publish',{method:'POST',body:JSON.stringify({personId})});},
     async migrationRun(secret){return request('migration/run',{method:'POST',headers:{'x-jcs-migration-secret':secret},body:JSON.stringify({})});},
     async politicianMigrationRun(secret){return request('migration/politicians/run',{method:'POST',headers:{'x-jcs-migration-secret':secret},body:JSON.stringify({})});},
     async politicianMigrationPreview(secret){return request('migration/politicians/preview',{headers:{'x-jcs-migration-secret':secret}});},
@@ -49,11 +60,14 @@ function createLocalAuthService(store){
     async session(){const s=await store.get(sessionKey,null);if(!s?.userId)return {authenticated:false,user:null};const u=await this.getMember(s.userId);return {authenticated:!!u,user:u};},
     async getMember(id){const members=await store.get(membersKey,{});return publicUser(members[clean(id)]||null);},
     async updateProfile(patch={}){const s=await store.get(sessionKey,null);if(!s?.userId)return {ok:false,error:'LOGIN_REQUIRED'};const members=await store.get(membersKey,{});const u=members[s.userId];if(!u)return {ok:false,error:'USER_NOT_FOUND'};u.nickname=clean(patch.nickname)||u.nickname;u.email=clean(patch.email)||u.email;u.profile={...(u.profile||{}),...(patch.profile||{})};await store.set(membersKey,members);return {ok:true,user:publicUser(u)};},
+    async completePasswordChange(password){const s=await store.get(sessionKey,null),members=await store.get(membersKey,{}),u=members[s?.userId];if(!u)return {ok:false,error:'LOGIN_REQUIRED'};if(String(password||'').length<8)return {ok:false,error:'WEAK_PASSWORD'};u.passwordHash=await digest(password);u.mustChangePassword=false;await store.set(membersKey,members);return {ok:true,user:publicUser(u)};},
     async badgeStatus(){return {earnedBadges:[],eligibleBadges:[],grantedBadges:[],representativeBadge:'',showcaseBadges:[],progress:{}};},
     async setRepresentativeBadge(){return {ok:false,error:'REMOTE_ONLY'};},
     async toggleShowcaseBadge(){return {ok:false,error:'REMOTE_ONLY'};},
     async recordBadgeVisit(){return {ok:true};},
     async updateMemberBadges(){return {ok:false,error:'REMOTE_ONLY'};},
+    async updateMemberProfile(){return {ok:false,error:'REMOTE_ONLY'};},
+    async resetMemberPassword(){return {ok:false,error:'REMOTE_ONLY'};},
     async importMembers(rows=[]){const members=await store.get(membersKey,{});let imported=0,skipped=0;for(const row of Array.isArray(rows)?rows:[]){const id=clean(row?.id);if(!id||members[id]){skipped++;continue;}members[id]={id,nickname:clean(row.nickname)||id,email:clean(row.email),role:row.role==='admin'?'admin':'member',createdAt:row.createdAt||new Date().toISOString(),profile:row.profile||{},passwordHash:row.passwordHash||''};imported++;}await store.set(membersKey,members);return {ok:true,imported,skipped};},
     async exportMembers(){const members=await store.get(membersKey,{});return Object.values(members).map(publicUser);}
   };

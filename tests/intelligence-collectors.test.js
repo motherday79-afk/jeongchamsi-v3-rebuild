@@ -13,6 +13,7 @@ const credentials={
   NAVER_AD_SECRET_KEY:'secret-key',
   NAVER_AD_CUSTOMER_ID:'customer-1'
 };
+const NEWS_NOW=Date.parse('2026-09-03T00:00:00Z');
 
 test('Naver signature matches the documented HMAC-SHA256 Base64 contract',()=>{
   assert.equal(createNaverSignature({timestamp:'1700000000000',method:'GET',uri:'/keywordstool',secret:'secret-key'}),'W36UoKa4A2YA0CeiPcIkr6EEjdpEfLZmO+/k+2kP8CY=');
@@ -51,7 +52,7 @@ test('Naver less-than-ten values remain bounded source facts',async()=>{
 
 test('Google News collector parses Korean RSS items and keeps provenance',async()=>{
   const rss=`<?xml version="1.0"?><rss><channel><item><title><![CDATA[김민석 민생 행보 - 연합뉴스]]></title><description><![CDATA[<p>청년 주택 3만호 공급 계획을 발표했다.</p>]]></description><link>https://news.google.com/articles/one</link><pubDate>Wed, 02 Sep 2026 01:00:00 GMT</pubDate><source url="https://yna.co.kr">연합뉴스</source></item><item><title>김민석 당대표 메시지 - MBC</title><link>https://news.google.com/articles/two</link><pubDate>Tue, 01 Sep 2026 01:00:00 GMT</pubDate><source url="https://imnews.imbc.com">MBC</source></item></channel></rss>`;
-  const result=await fetchGoogleNews({id:'assembly-001',name:'김민석'},{fetchImpl:async()=>({ok:true,status:200,text:async()=>rss}),now:()=>1700000000000});
+  const result=await fetchGoogleNews({id:'assembly-001',name:'김민석'},{fetchImpl:async()=>({ok:true,status:200,text:async()=>rss}),now:()=>NEWS_NOW});
   assert.equal(result.items.length,2);
   assert.equal(result.items[0].source,'연합뉴스');
   assert.equal(result.items[0].title,'김민석 민생 행보 - 연합뉴스');
@@ -61,16 +62,16 @@ test('Google News collector parses Korean RSS items and keeps provenance',async(
 
 test('Google News collector keeps up to forty current articles for evidence routing',async()=>{
   const items=Array.from({length:40},(_,index)=>`<item><title>김민석 정책 지역 기사 ${index}</title><link>https://news.google.com/${index}</link><pubDate>Wed, 02 Sep 2026 01:00:00 GMT</pubDate><source>매체 ${index}</source></item>`).join('');
-  const result=await fetchGoogleNews({id:'assembly-001',name:'김민석'},{fetchImpl:async()=>({ok:true,status:200,text:async()=>`<rss><channel>${items}</channel></rss>`}),now:()=>1700000000000});
+  const result=await fetchGoogleNews({id:'assembly-001',name:'김민석'},{fetchImpl:async()=>({ok:true,status:200,text:async()=>`<rss><channel>${items}</channel></rss>`}),now:()=>NEWS_NOW});
   assert.equal(result.items.length,40);
 });
 
 test('one source failure is recorded without discarding another allowed source',async()=>{
-  const rss=`<rss><channel><item><title>정치 뉴스</title><link>https://news.google.com/a</link><pubDate>Wed, 02 Sep 2026 01:00:00 GMT</pubDate><source>테스트뉴스</source></item></channel></rss>`;
+  const rss=`<rss><channel><item><title>김민석 정치 뉴스</title><link>https://news.google.com/a</link><pubDate>Wed, 02 Sep 2026 01:00:00 GMT</pubDate><source>테스트뉴스</source></item></channel></rss>`;
   const fetchImpl=async url=>String(url).includes('api.searchad.naver.com')
     ? {ok:false,status:503,json:async()=>({})}
     : {ok:true,status:200,text:async()=>rss};
-  const raw=await collectPoliticianRaw({id:'assembly-001',name:'김민석',party:'더불어민주당',jurisdiction:'서울 영등포구을'},{snapshotId:'s1'},{fetchImpl,env:credentials,now:()=>1700000000000,retryDelays:[]});
+  const raw=await collectPoliticianRaw({id:'assembly-001',name:'김민석',party:'더불어민주당',jurisdiction:'서울 영등포구을'},{snapshotId:'s1'},{fetchImpl,env:credentials,now:()=>NEWS_NOW,retryDelays:[]});
   assert.equal(raw.news.items.length,1);
   assert.equal(raw.searchAds,null);
   assert.equal(raw.sourceErrors.length,1);
@@ -91,11 +92,11 @@ test('registered YouTube channel is collected as an independent public source',a
 });
 
 test('YouTube failure is recorded without discarding search and news sources',async()=>{
-  const rss='<rss><channel><item><title>정치 뉴스</title><link>https://news.google.com/a</link><pubDate>Wed, 02 Sep 2026 01:00:00 GMT</pubDate><source>테스트뉴스</source></item></channel></rss>';
+  const rss='<rss><channel><item><title>김민석 정치 뉴스</title><link>https://news.google.com/a</link><pubDate>Wed, 02 Sep 2026 01:00:00 GMT</pubDate><source>테스트뉴스</source></item></channel></rss>';
   const raw=await collectPoliticianRaw(
     {id:'assembly-001',name:'김민석'},
     {snapshotId:'s1',youtubeChannel:{channelId:'UC_BROKEN'}},
-    {env:{...credentials,YOUTUBE_DATA_API_KEY:'youtube-secret'},retryDelays:[],fetchImpl:async url=>String(url).includes('api.searchad.naver.com')?{ok:true,status:200,json:async()=>({keywordList:[{relKeyword:'김민석',monthlyPcQcCnt:1,monthlyMobileQcCnt:2}]})}:{ok:true,status:200,text:async()=>rss},fetchYouTubeChannelData:async()=>{throw Object.assign(new Error('YOUTUBE_API_503'),{code:'YOUTUBE_API_503',status:503});}}
+    {env:{...credentials,YOUTUBE_DATA_API_KEY:'youtube-secret'},now:()=>NEWS_NOW,retryDelays:[],fetchImpl:async url=>String(url).includes('api.searchad.naver.com')?{ok:true,status:200,json:async()=>({keywordList:[{relKeyword:'김민석',monthlyPcQcCnt:1,monthlyMobileQcCnt:2}]})}:{ok:true,status:200,text:async()=>rss},fetchYouTubeChannelData:async()=>{throw Object.assign(new Error('YOUTUBE_API_503'),{code:'YOUTUBE_API_503',status:503});}}
   );
   assert.equal(raw.news.items.length,1);
   assert.equal(raw.searchAds.volume.total,3);

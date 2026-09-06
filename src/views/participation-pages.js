@@ -3,7 +3,7 @@ import { NATIONAL_EVALUATION_SLOT_KEYS, nationalEvaluationTypeLabel, normalizeNa
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const queryOf=route=>new URLSearchParams(String(route||'').split('?')[1]||'');
 const page=(eyebrow,title,description,body,klass='')=>`<main class="subpage ${klass}"><section class="page-hero"><span class="eyebrow">${eyebrow}</span><h1>${title}</h1><p>${description}</p></section>${body}</main>`;
-const photo=(person,klass='participation-avatar')=>person?.photo?.localPath?`<span class="${klass} has-photo" data-politician-avatar style="--photo-position:${esc(person.photo.focus||'50% 28%')}"><span class="politician-photo-initial">${esc(person.name?.slice(0,1)||'?')}</span><img data-politician-photo src="${esc(person.photo.localPath)}" alt="" loading="lazy"></span>`:`<span class="${klass} is-empty" data-politician-avatar><span class="politician-photo-initial">${esc(person?.name?.slice(0,1)||'?')}</span></span>`;
+const photo=(person,klass='participation-avatar')=>{const src=person?.photo?.url||person?.photo?.localPath;return src?`<span class="${klass} has-photo" data-politician-avatar style="--photo-position:${esc(person.photo.focus||'50% 28%')}"><span class="politician-photo-initial">${esc(person.name?.slice(0,1)||'?')}</span><img data-politician-photo src="${esc(src)}" alt="" loading="lazy"></span>`:`<span class="${klass} is-empty" data-politician-avatar><span class="politician-photo-initial">${esc(person?.name?.slice(0,1)||'?')}</span></span>`;};
 async function personFor(politicians,id){
   if(!id)return null;
   const result=await politicians?.get?.(id).catch(()=>null);

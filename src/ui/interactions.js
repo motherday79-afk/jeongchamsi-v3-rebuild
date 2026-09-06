@@ -1,5 +1,5 @@
-import { renderPrescriptionReport } from '../views/prescription-visuals.js?v=0.0.31.25';
-import { refreshFontScale, setupFontScaleControl } from './font-scale.js?v=0.0.31.25';
+import { renderPrescriptionReport } from '../views/prescription-visuals.js?v=0.0.31.26';
+import { refreshFontScale, setupFontScaleControl } from './font-scale.js?v=0.0.31.26';
 
 export function setupDrawer(root=document){
   const drawer=root.querySelector('[data-drawer]');
@@ -70,6 +70,11 @@ function toggleMediaList(origin){
   const panel=toggle.closest?.('.jcs-media-period-panel')||toggle.closest?.('.jcs-open-section'),list=panel?.querySelector?.('.jcs-media-list');if(!list)return false;
   const expanded=toggle.getAttribute('aria-expanded')==='true';toggle.setAttribute('aria-expanded',String(!expanded));list.hidden=expanded;toggle.innerHTML=expanded?'전체 목록 보기 <span>＋</span>':'전체 목록 접기 <span>−</span>';return true;
 }
+function toggleYouTubeVideos(origin){
+  const button=origin?.closest?.('[data-jcs-youtube-more]');if(!button)return false;
+  const root=button.closest('[data-jcs-youtube]'),expanded=button.getAttribute('aria-expanded')==='true';if(!root)return false;
+  root.querySelectorAll('[data-jcs-youtube-extra]').forEach(row=>{row.hidden=expanded;});button.setAttribute('aria-expanded',String(!expanded));button.textContent=expanded?'최근 영상 더보기 ＋':'최근 영상 접기 −';return true;
+}
 export function togglePrescriptionDisclosure(origin){
   const button=origin?.closest?.('[data-prescription-disclosure]');if(!button)return false;
   const shell=button.closest?.('[data-prescription-shell]'),payload=shell?.querySelector?.('[data-prescription-payload]'),mount=shell?.querySelector?.('[data-prescription-mount]');if(!payload||!mount)return false;
@@ -83,7 +88,7 @@ export function togglePrescriptionDisclosure(origin){
 export function setupDiagnosisInteractions(root=document){
   if(root&&typeof root.addEventListener==='function'){
     if(diagnosisInteractionRoots.has(root))return;
-    diagnosisInteractionRoots.add(root);root.addEventListener('click',event=>{if(togglePrescriptionDisclosure(event.target))return;if(activateDiagnosisPeriod(event.target,root))return;toggleMediaList(event.target);});return;
+    diagnosisInteractionRoots.add(root);root.addEventListener('click',event=>{if(togglePrescriptionDisclosure(event.target))return;if(toggleYouTubeVideos(event.target))return;if(activateDiagnosisPeriod(event.target,root))return;toggleMediaList(event.target);});return;
   }
   root.querySelectorAll('.jcs-periods').forEach(group=>{
     if(group.dataset.jcsPeriodsReady==='true')return;
@@ -112,7 +117,7 @@ export function setupDiagnosisInteractions(root=document){
 }
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 export async function loadPoliticianSuggestions(query,search){const term=String(query||'').trim();if(!term||typeof search!=='function')return [];const response=await search(term,25);return response?.ok===false||!Array.isArray(response?.items)?[]:response.items.slice(0,25);}
-export function politicianSuggestionMarkup(items=[]){return items.map(item=>{const src=String(item?.photo?.localPath||''),initial=esc(String(item?.name||'?').slice(0,1)),avatar=src?`<span class="politician-autocomplete-avatar has-photo" data-politician-avatar style="--photo-position:${esc(item.photo?.focus||'50% 28%')}"><span class="politician-photo-initial">${initial}</span><img data-politician-photo src="${esc(src)}" alt=""></span>`:`<span class="politician-autocomplete-avatar is-empty" data-politician-avatar><span class="politician-photo-initial">${initial}</span></span>`;return `<button type="button" data-politician-suggestion="${esc(item.id)}">${avatar}<span><b>${esc(item.name)}</b><small>${esc([item.party,item.jurisdiction,item.office||item.roleLabel].filter(Boolean).join(' · '))}</small></span><em>선택</em></button>`;}).join('');}
+export function politicianSuggestionMarkup(items=[]){return items.map(item=>{const src=String(item?.photo?.url||item?.photo?.localPath||''),initial=esc(String(item?.name||'?').slice(0,1)),avatar=src?`<span class="politician-autocomplete-avatar has-photo" data-politician-avatar style="--photo-position:${esc(item.photo?.focus||'50% 28%')}"><span class="politician-photo-initial">${initial}</span><img data-politician-photo src="${esc(src)}" alt=""></span>`:`<span class="politician-autocomplete-avatar is-empty" data-politician-avatar><span class="politician-photo-initial">${initial}</span></span>`;return `<button type="button" data-politician-suggestion="${esc(item.id)}">${avatar}<span><b>${esc(item.name)}</b><small>${esc([item.party,item.jurisdiction,item.office||item.roleLabel].filter(Boolean).join(' · '))}</small></span><em>선택</em></button>`;}).join('');}
 function compareSelectionRoute(base,id){const [path,raw='']=String(base||'/compare').split('?'),params=new URLSearchParams(raw),ids=String(params.get('ids')||'').split(',').filter(Boolean);if(!ids.includes(id))ids.push(id);params.set('ids',ids.join(','));params.delete('q');params.delete('slot');params.delete('run');return `${path}?${params.toString()}`;}
 export function setupPoliticianAutocomplete(root=document,search=null){
   if(typeof search!=='function')return;

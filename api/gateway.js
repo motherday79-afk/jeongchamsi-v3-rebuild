@@ -2,13 +2,15 @@ import { legacyRedisCommand, rebuildRedisCommand } from '../lib/redis-rest.js';
 import { collectLegacySnapshot, writeRebuildSnapshot, writePoliticianSeed, validatePoliticianSeed, TARGET_KEYS } from '../lib/migration-service.js';
 import { LEGACY_DOMAINS } from '../lib/migration-core.js';
 import { issueSessionToken, readSessionToken } from '../lib/session.js';
-import { readUsers, listUsers, getUser, registerUser, authenticateUser, updateProfile, updateUserRole, publicUser, readDomain, readDomainWithViews, writeDomain, readActivity, writeActivity } from '../lib/rebuild-store.js';
+import { readUsers, listUsers, getUser, registerUser, authenticateUser, updateProfile, updateUserRole, updateUserByAdmin, resetUserPassword, completeRequiredPasswordChange, publicUser, readDomain, readDomainWithViews, writeDomain, readActivity, writeActivity } from '../lib/rebuild-store.js';
 import { POLITICIAN_COUNTS, POLITICIAN_TYPES, cleanPoliticianType, readPoliticianType, readPoliticianPhotos, getPolitician, searchPoliticianProfiles } from '../lib/politician-store.js';
 import { createIntelligenceService } from '../lib/intelligence-service.js';
 import { accessTierForUser, projectIntelligence } from '../lib/intelligence-access.js';
 import { buildIntelligenceDraft } from '../lib/intelligence-analysis.js';
 import { createBadgeService } from '../lib/badge-service.js';
 import { createParticipationPost, featureParticipationPost } from '../lib/participation-admin.js';
+import { createAdminPoliticianService } from '../lib/admin-politician-service.js';
+import { createPoliticianPhotoService } from '../lib/politician-photo-service.js';
 
 const COOKIE='jcsr2_session';
 const MAX_AGE=60*60*24*30;
@@ -17,13 +19,14 @@ const bodyOf=req=>{if(req.body&&typeof req.body==='object')return req.body;if(ty
 const cookieMap=req=>Object.fromEntries(String(req.headers?.cookie||'').split(';').map(v=>v.trim()).filter(Boolean).map(v=>{const i=v.indexOf('=');return i<0?[v,'']:[v.slice(0,i),decodeURIComponent(v.slice(i+1))]}));
 const sessionSecret=()=>String(process.env.JCS_REBUILD_SESSION_SECRET||'');
 const migrationSecret=()=>String(process.env.JCS_MIGRATION_SECRET||'');
-const setSession=(res,userId)=>{const token=issueSessionToken(userId,sessionSecret());res.setHeader('Set-Cookie',`${COOKIE}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${MAX_AGE}; Secure`);};
+const setSession=(res,user)=>{const token=issueSessionToken(user?.id,sessionSecret(),Date.now(),user?.sessionVersion);res.setHeader('Set-Cookie',`${COOKIE}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${MAX_AGE}; Secure`);};
 const clearSession=res=>res.setHeader('Set-Cookie',`${COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0; Secure`);
 
-async function currentUser(req,command){const token=cookieMap(req)[COOKIE];const s=readSessionToken(token,sessionSecret());if(!s?.userId)return null;return publicUser(await getUser(command,s.userId));}
+async function currentUser(req,command){const token=cookieMap(req)[COOKIE],s=readSessionToken(token,sessionSecret());if(!s?.userId)return null;const user=await getUser(command,s.userId);if(!user||Number(s.sessionVersion)!==(Number(user.sessionVersion)||0))return null;return publicUser(user);}
 function ageGroup(birthYear){const y=Number(birthYear||0),current=new Date().getFullYear();if(!Number.isInteger(y)||y<1900||y>current)return '';const age=current-y;if(age<20)return '10대';if(age<30)return '20대';if(age<40)return '30대';if(age<50)return '40대';if(age<60)return '50대';return '60대+';}
 function contentItems(data){return Array.isArray(data?.items)?data.items:[];}
 function cleanDomain(domain){return LEGACY_DOMAINS.includes(String(domain||''))?String(domain):'';}
+const allPoliticianProfiles=command=>Promise.all(POLITICIAN_TYPES.map(type=>readPoliticianType(command,type))).then(groups=>groups.flat().filter(person=>person?.id&&person.isVacant!==true));
 export function sanitizeContentInput(input={}){const safe={};for(const [key,limit] of Object.entries({title:200,body:20000,summary:500,category:80,coverImage:1000})){const value=String(input?.[key]||'').trim().slice(0,limit);if(value)safe[key]=value;}return safe;}
 export function isActiveAcademySlot(data={},slotId=''){const id=String(slotId||'');return !!id&&(Array.isArray(data?.slots)?data.slots:contentItems(data)).some(slot=>String(slot?.id||'')===id&&slot?.published!==false&&!slot?.closedAt);}
 export async function findPublishedPost(command,domain,postId){if(!['columns','community','itsme'].includes(String(domain||''))||!postId)return null;const data=await readDomain(command,domain,{items:[]});return contentItems(data).find(post=>String(post.id)===String(postId)&&post.published!==false)||null;}
@@ -121,14 +124,20 @@ export async function dispatchBadgeRequest(route,method,user,body,service,target
 
 async function handleUser(req,res,route,command){
   if(route==='user/register'&&req.method==='POST'){
-    const result=await registerUser(command,bodyOf(req));if(!result.ok)return json(res,result.error==='DUPLICATE_ID'?409:400,result);setSession(res,result.user.id);return json(res,201,result);
+    const result=await registerUser(command,bodyOf(req));if(!result.ok)return json(res,result.error==='DUPLICATE_ID'?409:400,result);setSession(res,result.user);return json(res,201,result);
   }
   if(route==='user/login'&&req.method==='POST'){
-    const body=bodyOf(req);const user=await authenticateUser(command,body.id,body.password);if(!user)return json(res,401,{ok:false,error:'INVALID_LOGIN'});setSession(res,user.id);return json(res,200,{ok:true,user});
+    const body=bodyOf(req);const user=await authenticateUser(command,body.id,body.password);if(!user)return json(res,401,{ok:false,error:'INVALID_LOGIN'});setSession(res,user);return json(res,200,{ok:true,user});
   }
   if(route==='user/logout'&&req.method==='POST'){clearSession(res);return json(res,200,{ok:true});}
   if(route==='user/session'&&req.method==='GET'){const user=await currentUser(req,command);return json(res,200,{authenticated:!!user,user:user||null});}
   if(route==='user/profile'&&req.method==='POST'){const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});return json(res,200,await updateProfile(command,user.id,bodyOf(req)));}
+  if(route==='user/password'&&req.method==='POST'){
+    const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});
+    const result=await completeRequiredPasswordChange(command,user.id,bodyOf(req).password);
+    if(!result.ok)return json(res,result.error==='USER_NOT_FOUND'?404:400,result);
+    setSession(res,result.user);return json(res,200,result);
+  }
   if(route==='user/activity'&&req.method==='GET'){const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});return json(res,200,{ok:true,activity:await readActivity(command,user.id)});}
   if(route==='user/badges'){
     const result=await dispatchBadgeRequest(route,req.method,await currentUser(req,command),bodyOf(req),createBadgeService(command));
@@ -205,6 +214,9 @@ export async function dispatchAdminIntelligence(route,method,service,input={}){
     'admin/intelligence/youtube/discovery/step':{method:'POST',run:()=>service.runYouTubeDiscoveryStep()},
     'admin/intelligence/youtube/channel':{method:'PATCH',run:()=>service.saveYouTubeChannel(input)},
     'admin/intelligence/youtube/channel/rediscover':{method:'POST',run:()=>service.rediscoverYouTubeChannel(input)},
+    'admin/intelligence/person/refresh':{method:'POST',run:()=>service.refreshPerson(input)},
+    'admin/intelligence/person/approve':{method:'POST',run:()=>service.approvePersonRefresh(input)},
+    'admin/intelligence/person/publish':{method:'POST',run:()=>service.publishPersonRefresh(input)},
   };
   if(route==='admin/intelligence/youtube/channel'&&method==='DELETE'){
     try{return {status:200,body:{ok:true,...await service.deleteYouTubeChannel(input)}};}
@@ -216,7 +228,7 @@ export async function dispatchAdminIntelligence(route,method,service,input={}){
   try{return {status:200,body:{ok:true,...await action.run()}};}
   catch(error){
     const code=String(error?.code||error?.message||'INTELLIGENCE_OPERATION_FAILED');
-    const status=['COLLECTION_NOT_READY','COLLECTION_VALIDATION_REQUIRED','DRAFT_APPROVAL_REQUIRED','NAVER_CREDENTIALS_MISSING','YOUTUBE_CREDENTIALS_MISSING','YOUTUBE_SEARCH_QUOTA_REACHED'].includes(code)?409:['DRAFT_NOT_FOUND','DRAFT_NOT_EDITABLE','DRAFT_VALIDATION_FAILED','YOUTUBE_CHANNEL_REFERENCE_INVALID','YOUTUBE_DISCOVERY_NOT_STARTED'].includes(code)?400:['POLITICIAN_PROFILE_MISSING','YOUTUBE_CHANNEL_NOT_FOUND'].includes(code)?404:500;
+    const status=['COLLECTION_NOT_READY','COLLECTION_VALIDATION_REQUIRED','DRAFT_APPROVAL_REQUIRED','NAVER_CREDENTIALS_MISSING','YOUTUBE_CREDENTIALS_MISSING','YOUTUBE_SEARCH_QUOTA_REACHED','PERSON_REFRESH_APPROVAL_REQUIRED','PERSON_REFRESH_BASE_CHANGED'].includes(code)?409:['DRAFT_NOT_FOUND','DRAFT_NOT_EDITABLE','DRAFT_VALIDATION_FAILED','YOUTUBE_CHANNEL_REFERENCE_INVALID','YOUTUBE_DISCOVERY_NOT_STARTED','PERSON_REFRESH_NOT_READY'].includes(code)?400:['POLITICIAN_PROFILE_MISSING','YOUTUBE_CHANNEL_NOT_FOUND'].includes(code)?404:500;
     if(status===500)console.error('[admin-intelligence]',{route,code,message:String(error?.message||''),cause:String(error?.cause?.code||error?.cause?.message||'')});
     return {status,body:{ok:false,error:code}};
   }
@@ -224,6 +236,7 @@ export async function dispatchAdminIntelligence(route,method,service,input={}){
 
 async function handleAdmin(req,res,route,command){
   const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});if(user.role!=='admin')return json(res,403,{ok:false,error:'ADMIN_REQUIRED'});
+  const adminPoliticians=createAdminPoliticianService({command,profilesProvider:()=>allPoliticianProfiles(command)});
   if(route==='admin/participation'&&req.method==='POST'){
     const body=bodyOf(req),domain=String(body.domain||'');if(!['polls','nationalEvaluation'].includes(domain))return json(res,400,{ok:false,error:'INVALID_PARTICIPATION_DOMAIN'});
     const current=(await readDomain(command,domain,domain==='polls'?{items:[]}:{slots:{},results:{},history:[],items:[]}))||{};
@@ -232,7 +245,11 @@ async function handleAdmin(req,res,route,command){
       await writeDomain(command,domain,result.data);return json(res,200,{ok:true,item:result.item,data:result.data});
     }catch(error){return json(res,400,{ok:false,error:error.message||'PARTICIPATION_SAVE_FAILED'});}
   }
-  if(route.startsWith('admin/intelligence/')){const result=await dispatchAdminIntelligence(route,req.method,createIntelligenceService({command}),{...bodyOf(req),reviewedBy:user.id,editorId:user.id});return json(res,result.status,result.body);}
+  if(route.startsWith('admin/intelligence/')){
+    const input={...bodyOf(req),reviewedBy:user.id,editorId:user.id},result=await dispatchAdminIntelligence(route,req.method,createIntelligenceService({command}),input),auditedActions={'admin/intelligence/collect/start':'COLLECTION_START','admin/intelligence/collect/retry-failures':'COLLECTION_RETRY','admin/intelligence/approve':'COLLECTION_APPROVE','admin/intelligence/publish/start':'PUBLICATION_START','admin/intelligence/youtube/discovery/start':'YOUTUBE_DISCOVERY_START','admin/intelligence/youtube/channel':'YOUTUBE_CHANNEL_UPDATE','admin/intelligence/youtube/channel/rediscover':'YOUTUBE_CHANNEL_REDISCOVER','admin/intelligence/person/refresh':'PERSON_REFRESH','admin/intelligence/person/approve':'PERSON_REFRESH_APPROVE','admin/intelligence/person/publish':'PERSON_REFRESH_PUBLISH'},action=auditedActions[route];
+    if(result.status<300&&action)try{await adminPoliticians.log(user.id,action,input.personId||'',{method:req.method});}catch(error){console.error('[admin-audit]',{action,code:String(error?.code||error?.message||'AUDIT_WRITE_FAILED')});}
+    return json(res,result.status,result.body);
+  }
   if(route==='admin/users'&&req.method==='GET'){
     const users=await listUsers(command),service=createBadgeService(command);
     const enriched=await Promise.all(users.map(async target=>{const activity=await readActivity(command,target.id),status=await service.statusForUser(target,activity);return {...target,grantedBadges:activity.grantedBadges||[],representativeBadge:status.representativeBadge,showcaseBadges:status.showcaseBadges,earnedBadges:status.earnedBadges,eligibleBadges:status.eligibleBadges};}));
@@ -240,10 +257,35 @@ async function handleAdmin(req,res,route,command){
   }
   if(route==='admin/users'&&req.method==='PATCH'){
     const body=bodyOf(req);
+    if(body.operation==='profile'){
+      const result=await updateUserByAdmin(command,body,user.id);
+      if(result.ok)await adminPoliticians.log(user.id,'MEMBER_PROFILE_UPDATE',result.user.id,{changedFields:['nextId','name','nickname','email','phone','birthYear','regionProvince','regionCity','regionDistrict','preferredParty','status','role'].filter(key=>body[key]!==undefined),status:result.user.status,role:result.user.role});
+      return json(res,result.ok?200:result.error==='USER_NOT_FOUND'?404:['DUPLICATE_ID','SELF_ADMIN_CHANGE_FORBIDDEN','LAST_ADMIN_CHANGE_FORBIDDEN'].includes(result.error)?409:400,result);
+    }
+    if(body.operation==='password-reset'){
+      const result=await resetUserPassword(command,body,user.id);
+      if(result.ok)await adminPoliticians.log(user.id,'MEMBER_PASSWORD_RESET',result.user.id,{sessionsInvalidated:true,forcedPasswordChange:true});
+      return json(res,result.ok?200:result.error==='USER_NOT_FOUND'?404:400,result);
+    }
     if(body.role!==undefined){const result=await updateUserRole(command,body.id,body.role,user.id);return json(res,result.ok?200:result.error==='USER_NOT_FOUND'?404:409,result);}
     const target=await getUser(command,body.id),result=await dispatchBadgeRequest(route,req.method,user,body,createBadgeService(command),target);
     return json(res,result.status,result.body);
   }
+  if(route==='admin/politicians'&&req.method==='GET'){
+    const query=String(new URL(req.url||'/',`https://${req.headers.host||'localhost'}`).searchParams.get('q')||req.query?.q||'');
+    const [list,completeness]=await Promise.all([adminPoliticians.list(query),adminPoliticians.completeness()]);return json(res,200,{ok:true,...list,completeness});
+  }
+  if(route==='admin/politicians'&&req.method==='PATCH'){
+    const body=bodyOf(req);
+    try{const result=body.operation==='past-risks'?await adminPoliticians.savePastRisks(body.personId,body.pastRisks,user.id):body.operation==='news-exclusions'?await adminPoliticians.saveNewsExclusions(body.personId,body.newsExclusions,user.id):null;return result?json(res,200,{ok:true,...result}):json(res,400,{ok:false,error:'INVALID_OPERATION'});}
+    catch(error){return json(res,String(error.message)==='POLITICIAN_PROFILE_MISSING'?404:400,{ok:false,error:String(error.message||'POLITICIAN_SAVE_FAILED')});}
+  }
+  if(route==='admin/politicians/photo'&&req.method==='POST'){
+    const body=bodyOf(req),encoded=String(body.dataBase64||'');if(encoded.length>1_500_000)return json(res,413,{ok:false,error:'PHOTO_TOO_LARGE'});
+    try{const service=createPoliticianPhotoService({command,profilesProvider:()=>allPoliticianProfiles(command)}),result=await service.save({personId:body.personId,contentType:body.contentType,bytes:Buffer.from(encoded,'base64'),focus:body.focus},user.id);await adminPoliticians.log(user.id,'POLITICIAN_PHOTO_UPDATE',body.personId,{size:result.photo.size,contentType:result.photo.contentType,previousUrl:result.previous?.url||'',previousPathname:result.previous?.pathname||'',currentUrl:result.photo.url,currentPathname:result.photo.pathname});return json(res,200,{ok:true,...result});}
+    catch(error){const code=String(error.message||'PHOTO_UPLOAD_FAILED');return json(res,code==='POLITICIAN_PROFILE_MISSING'?404:code==='PHOTO_TOO_LARGE'?413:400,{ok:false,error:code});}
+  }
+  if(route==='admin/audit'&&req.method==='GET')return json(res,200,{ok:true,...await adminPoliticians.audit()});
   if(route==='admin/badges'&&req.method==='GET'){
     const users=await listUsers(command),service=createBadgeService(command),records=await Promise.all(users.map(async target=>({user:target,status:await service.statusForUser(target)})));
     return json(res,200,{ok:true,records});

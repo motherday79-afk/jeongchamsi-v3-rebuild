@@ -68,10 +68,17 @@ test('channel collection returns bounded videos, view counts and literal upload 
   assert.equal(result.videos.length,4);
   assert.deepEqual(result.videos.slice(0,3).map(item=>item.viewCount),[1200,800,350]);
   assert.deepEqual({h24:result.uploads.h24,d7:result.uploads.d7,d30:result.uploads.d30},{h24:1,d7:2,d30:3});
+  assert.deepEqual(result.uploads.averageViews,{h24:1200,d7:1000,d30:783});
   assert.equal(result.uploads.daily.length,30);
   assert.equal(result.uploads.daily.find(row=>row.date==='2026-09-06').count,1);
   assert.equal(result.uploads.daily.find(row=>row.date==='2026-09-03').count,1);
   assert.doesNotMatch(JSON.stringify(result),/server-secret-key/);
+});
+
+test('period averages are null when no videos were uploaded in the window',async()=>{
+  const fetchImpl=async raw=>{const url=new URL(String(raw));if(url.pathname.endsWith('/channels'))return response({items:[{id:'UC_EMPTY',snippet:{title:'빈 채널'},contentDetails:{relatedPlaylists:{uploads:'UU_EMPTY'}}}]});if(url.pathname.endsWith('/playlistItems'))return response({items:[]});throw new Error('unexpected');};
+  const result=await fetchYouTubeChannelData({channelId:'UC_EMPTY'},{fetchImpl,env,now:()=>Date.parse('2026-09-06T12:00:00Z')});
+  assert.deepEqual(result.uploads.averageViews,{h24:null,d7:null,d30:null});
 });
 
 test('YouTube API errors are stable and do not leak credentials or response bodies',async()=>{

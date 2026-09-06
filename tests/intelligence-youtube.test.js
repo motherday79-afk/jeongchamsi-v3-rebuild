@@ -7,7 +7,7 @@ import { projectIntelligence } from '../lib/intelligence-access.js';
 
 const person={id:'assembly-001',type:'assembly',name:'김민석',party:'더불어민주당',region:'서울',jurisdiction:'서울 영등포구을',terms:'4선',roleLabel:'국회의원',office:'국회의원'};
 const videos=Array.from({length:12},(_,index)=>({id:`video-${index+1}`,title:`정책 영상 ${index+1}`,url:`https://youtube.test/watch/${index+1}`,publishedAt:`2026-09-${String(6-Math.min(index,5)).padStart(2,'0')}T00:00:00.000Z`,viewCount:1200-index*10}));
-const youtube={provider:'YOUTUBE_DATA_API',collectedAt:'2026-09-06T12:00:00.000Z',channel:{id:'UC_OFFICIAL',title:'김민석 공식채널',url:'https://www.youtube.com/channel/UC_OFFICIAL'},videos,uploads:{h24:1,d7:6,d30:12,daily:Array.from({length:30},(_,index)=>({date:`2026-08-${String(index+1).padStart(2,'0')}`,count:index%4===0?1:0})),scanned:12,truncated:false}};
+const youtube={provider:'YOUTUBE_DATA_API',collectedAt:'2026-09-06T12:00:00.000Z',channel:{id:'UC_OFFICIAL',title:'김민석 공식채널',url:'https://www.youtube.com/channel/UC_OFFICIAL'},videos,uploads:{h24:1,d7:6,d30:12,averageViews:{h24:1200,d7:1175,d30:1145},daily:Array.from({length:30},(_,index)=>({date:`2026-08-${String(index+1).padStart(2,'0')}`,count:index%4===0?1:0})),scanned:12,truncated:false}};
 
 test('compact intelligence storage keeps only ten YouTube videos and thirty daily points',()=>{
   const compact=compactIntelligenceDraft({id:person.id,snapshot:'s1',algorithmVersion:'JCS_INTELLIGENCE_V3',raw:{collectedAt:'2026-09-06T12:00:00.000Z',officialProfile:person,news:{items:[]},youtube}});
@@ -25,7 +25,7 @@ test('diagnosis 07 carries YouTube channel, views and upload flow through access
   assert.equal(memberMedia.videos.length,5);
   assert.equal(adminMedia.videos.length,10);
   assert.equal(publicMedia.videos[0].viewCount,1200);
-  assert.deepEqual(memberMedia.uploads,{h24:1,d7:6,d30:12,daily:youtube.uploads.daily,scanned:12,truncated:false});
+  assert.deepEqual(memberMedia.uploads,{h24:1,d7:6,d30:12,averageViews:{h24:1200,d7:1175,d30:1145},daily:youtube.uploads.daily,scanned:12,truncated:false});
   assert.equal(adminMedia.channel.url,'https://www.youtube.com/channel/UC_OFFICIAL');
 });
 

@@ -1,12 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { renderAdminStable } from '../src/views/stage1.js';
+import { renderAdminStable,renderMemberBadgeManager } from '../src/views/stage1.js';
 import { APP_RELEASE } from '../src/core/release.js';
 
 const admin={authenticated:true,user:{role:'admin'}};
 const auth={
   async adminSummary(){return {ok:true,users:{total:11,admins:1},contents:{columns:2}};},
   async exportMembers(){return [];},
+  async adminPoliticians(){return {ok:true,items:[{profile:{id:'assembly-001',name:'고민정',party:'더불어민주당',jurisdiction:'서울 광진구을'},record:{pastRisks:[{tag:'#과거발언',title:'근거 기사',url:'https://news.example',date:'2024-01-01'}],newsExclusions:[]}}],completeness:{total:542,complete:1,missing:{photo:100,pastRisks:500,youtube:508}}};},
+  async adminAudit(){return {ok:true,entries:[{action:'PERSON_REFRESH',actor:'admin',personId:'assembly-001',details:{changedFields:['news','youtube']},at:'2026-09-06T12:00:00Z'}]};},
   async intelligenceStatus(){return {ok:true,sources:{naverSearchAds:{configured:true},youtubeDataApi:{configured:true}},youtube:{credentials:{configured:true,missing:[]},registered:1,total:542,quota:{day:'2026-09-06',used:7,limit:100},job:{status:'RUNNING',completed:5,total:541},channels:[{personId:'p1',personName:'대표 정치인',channelId:'UC_ONE',channelTitle:'대표 정치인 공식채널',channelUrl:'https://www.youtube.com/channel/UC_ONE',sourceMode:'AUTO',updatedAt:'2026-09-06T00:00:00Z'}]},collection:{status:'COMPLETED',completed:542,total:542,failed:0},publication:null,latestDraft:'draft-1',publicSnapshot:'public-0',validation:{ok:true,errors:[]},versions:[{analysisVersion:'draft-1',status:'draft',reviewStatus:'pending',generatedAt:1},{analysisVersion:'public-0',status:'published',reviewStatus:'approved',generatedAt:0}]};},
   async intelligencePreview(){return {ok:true,version:{analysisVersion:'draft-1',status:'draft'},validation:{ok:true,errors:[]},reviewTargets:[{id:'p1',name:'대표 정치인'},{id:'p2',name:'두번째 정치인'}],reviewSample:{personId:'p1',news:[{title:'대표 정책 발표'}],eventClusters:[{eventId:'e1',eventTitle:'대표 정책 발표',eventType:'정책·입법'}],politicianType:{primaryType:'정책·성과형',secondaryTypes:['정책의제 선점형'],currentPhase:'정책 성과 축적'},diagnoses:Array.from({length:10},(_,i)=>({id:String(i+1).padStart(2,'0'),headline:`진단 ${i+1}`})),prescriptions:Array.from({length:10},(_,i)=>({id:String(i+1).padStart(2,'0'),strategicJudgment:`처방 ${i+1}`}))}};},
 };
@@ -29,7 +31,7 @@ test('admin control center exposes ten processing stages and draft review before
   assert.match(html,/name="pastRisks"/);
   assert.match(html,/draft-1.*draft|draft.*draft-1/s);
   assert.match(html,/public-0.*published|published.*public-0/s);
-  assert.match(html,/JCS_0_0_31_25/);
+  assert.match(html,/JCS_0_0_31_26/);
   assert.match(html,/관리자 화면 버전/);
   assert.match(html,/YOUTUBE CHANNEL DATA/);
   assert.match(html,/등록 1 \/ 542/);
@@ -39,6 +41,27 @@ test('admin control center exposes ten processing stages and draft review before
   assert.match(html,/data-youtube-channel-form="p1"/);
   assert.match(html,/data-youtube-rediscover="p1"/);
   assert.match(html,/data-youtube-delete="p1"/);
+});
+
+test('admin console exposes approved operational tabs and complete member/politician controls',async()=>{
+  const withMember={...auth,async exportMembers(){return [{id:'member1',name:'회원',nickname:'회원닉',email:'member@example.com',role:'member',status:'active',earnedBadges:[],eligibleBadges:[],grantedBadges:[]}];}};
+  const html=await renderAdminStable(admin,withMember,'고민정');
+  const memberManager=renderMemberBadgeManager({id:'member1',name:'회원',nickname:'회원닉',email:'member@example.com',role:'member',status:'active',earnedBadges:[],eligibleBadges:[],grantedBadges:[]});
+  for(const tab of ['operations','members','politicians','pipeline'])assert.match(html,new RegExp(`data-admin-tab="${tab}"`));
+  assert.match(html,/data-member-badge-mount/);
+  assert.match(memberManager,/data-member-profile-form="member1"/);
+  assert.match(memberManager,/data-member-password-reset="member1"/);
+  assert.doesNotMatch(`${html}${memberManager}`,/passwordHash/);
+  assert.match(html,/data-politician-photo-form="assembly-001"/);
+  assert.match(html,/data-politician-photo-preview/);
+  assert.match(html,/data-politician-photo-input/);
+  assert.match(html,/data-politician-risk-form="assembly-001"/);
+  assert.match(html,/data-politician-exclusion-form="assembly-001"/);
+  assert.match(html,/data-person-refresh="assembly-001"/);
+  assert.match(html,/data-person-approve="assembly-001"/);
+  assert.match(html,/data-person-publish="assembly-001"/);
+  assert.match(html,/PERSON_REFRESH/);
+  assert.match(html,/changedFields: news · youtube/);
 });
 
 test('past risk signals have a separate administrator editor that can target every collected politician',async()=>{
@@ -56,8 +79,8 @@ test('admin warns when browser bundle and server release versions differ',async(
   assert.match(html,/강력 새로고침 필요/);
 });
 
-test('YouTube integration, prescription nav and header font scale report release 31.25',()=>{
-  assert.equal(APP_RELEASE,'JCS_0_0_31_25');
+test('admin operations, bounded news and YouTube metrics report release 31.26',()=>{
+  assert.equal(APP_RELEASE,'JCS_0_0_31_26');
 });
 
 test('approved reviewed draft enables publication',async()=>{

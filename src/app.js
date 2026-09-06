@@ -1,19 +1,19 @@
-import { HOME_FIXTURE } from './fixtures/home.js';
-import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.25';
-import { renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.23';
-import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.25';
-import { createAuthService } from './core/auth.js';
+import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.26';
+import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.26';
+import { renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.26';
+import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.26';
+import { createAuthService } from './core/auth.js?v=0.0.31.26';
 import { createContentService } from './core/content.js';
 import { createPoliticianService } from './core/politicians.js';
-import { createNavigation } from './core/navigation.js?v=0.0.31';
-import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js';
+import { createNavigation } from './core/navigation.js?v=0.0.31.26';
+import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.26';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31';
-import * as views from './views/stage1.js?v=0.0.31.25';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.25';
-import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.23';
-import { renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31';
+import * as views from './views/stage1.js?v=0.0.31.26';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.26';
+import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.26';
+import { renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.26';
 import { renderPresidentPage } from './views/president.js?v=0.0.31';
-import { renderSearchPage } from './views/search-page.js?v=0.0.31';
+import { renderSearchPage } from './views/search-page.js?v=0.0.31.26';
 import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.31';
 
 const app=document.getElementById('app');
@@ -146,7 +146,7 @@ async function render({preserveScroll=false}={}){
   else if(p[0]==='join') body=views.renderJoin();
   else if(p[0]==='mypage'&&p[1]==='activity') body=views.renderMyActivity(session,badgeStatus||{},r.includes('?')?`?${r.split('?')[1]}`:'');
   else if(p[0]==='mypage') body=views.renderMyPage(session,badgeStatus||{});
-  else if(p[0]==='admin') body=await views.renderAdminStable(session,auth);
+  else if(p[0]==='admin') body=await views.renderAdminStable(session,auth,new URLSearchParams(r.split('?')[1]||'').get('q')||'');
   else if(p[0]==='migration') body=views.renderMigration();
   else if(unstable.has(p[0])) body=`<section class="module"><span class="eyebrow">NEXT PHASE</span><h2>${p[0]}</h2><p class="module-desc">이 영역은 이번 버전에서 제외했습니다. NOW·정치인 데이터·분석 엔진은 연결하지 않습니다.</p></section>`;
   else body=`<section class="module"><h2>페이지를 찾을 수 없습니다</h2></section>`;
@@ -167,11 +167,25 @@ navigation=createNavigation({window,readSnapshot:()=>app.innerHTML,restoreSnapsh
 navigation.start();
 window.addEventListener('jcs:layout-route',event=>navigation.navigate(event.detail?.route||'/'));
 window.addEventListener('jcs:layout-search',event=>navigation.navigate(`/search?q=${encodeURIComponent(String(event.detail?.query||'').trim())}`));
-document.addEventListener('change',event=>{const select=event.target.closest('[data-intelligence-past-risk-form] select[name="personId"]');if(!select)return;const textarea=select.closest('form')?.querySelector('textarea[name="pastRisks"]');if(textarea)textarea.value='';});
+document.addEventListener('change',event=>{const select=event.target.closest('[data-intelligence-past-risk-form] select[name="personId"]');if(select){const textarea=select.closest('form')?.querySelector('textarea[name="pastRisks"]');if(textarea)textarea.value='';return;}const input=event.target.closest('[data-politician-photo-input]');if(!input)return;const file=input.files?.[0],preview=input.closest('form')?.querySelector('[data-politician-photo-preview]');if(!file||!preview)return;if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>1048576){preview.innerHTML='<span>JPG·PNG·WEBP 파일을 1MB 이하로 선택해 주세요.</span>';input.value='';return;}if(preview.dataset.objectUrl)URL.revokeObjectURL(preview.dataset.objectUrl);const objectUrl=URL.createObjectURL(file),img=document.createElement('img');img.src=objectUrl;img.alt='업로드 전 프로필 사진 미리보기';preview.dataset.objectUrl=objectUrl;preview.replaceChildren(img);});
 
 document.addEventListener('submit',async event=>{
   const youtubeChannel=event.target.closest('[data-youtube-channel-form]');
-  if(youtubeChannel){event.preventDefault();const button=youtubeChannel.querySelector('button'),data=new FormData(youtubeChannel);if(button)button.disabled=true;const result=await auth.youtubeChannelSave({personId:youtubeChannel.dataset.youtubeChannelForm,reference:String(data.get('reference')||'')});if(!result?.ok){alert(result?.error||'공식 채널을 저장하지 못했습니다.');if(button)button.disabled=false;return;}await render({preserveScroll:true});return;}
+  if(youtubeChannel){event.preventDefault();const button=youtubeChannel.querySelector('button'),data=new FormData(youtubeChannel),personId=youtubeChannel.dataset.youtubeChannelForm||String(data.get('personId')||'');if(button)button.disabled=true;const result=await auth.youtubeChannelSave({personId,reference:String(data.get('reference')||'')});if(!result?.ok){alert(result?.error||'공식 채널을 저장하지 못했습니다.');if(button)button.disabled=false;return;}await render({preserveScroll:true});return;}
+  const memberProfile=event.target.closest('[data-member-profile-form]');
+  if(memberProfile){event.preventDefault();const data=Object.fromEntries(new FormData(memberProfile)),state=memberProfile.querySelector('[data-member-profile-state]'),result=await auth.updateMemberProfile({id:memberProfile.dataset.memberProfileForm,...data});if(state)state.textContent=result?.ok?'회원 정보를 저장했습니다. 기존 로그인 상태도 안전하게 갱신했습니다.':(result?.error||'회원 정보를 저장하지 못했습니다.');return;}
+  const memberPassword=event.target.closest('[data-member-password-reset]');
+  if(memberPassword){event.preventDefault();const data=new FormData(memberPassword),state=memberPassword.querySelector('[data-member-password-state]');if(!confirm('임시 비밀번호로 초기화하고 이 회원의 기존 로그인을 모두 종료할까요?'))return;const result=await auth.resetMemberPassword(memberPassword.dataset.memberPasswordReset,String(data.get('temporaryPassword')||''));if(state)state.textContent=result?.ok?'초기화했습니다. 임시 비밀번호를 회원에게 별도로 전달하세요.':(result?.error||'초기화하지 못했습니다.');if(result?.ok)memberPassword.reset();return;}
+  const politicianSearch=event.target.closest('[data-admin-politician-search]');
+  if(politicianSearch){event.preventDefault();const q=String(new FormData(politicianSearch).get('q')||'').trim();navigation.navigate(`/admin${q?`?q=${encodeURIComponent(q)}`:''}`);return;}
+  const politicianRisk=event.target.closest('[data-politician-risk-form]');
+  if(politicianRisk){event.preventDefault();const raw=String(new FormData(politicianRisk).get('pastRisks')||''),pastRisks=raw.split(/\r?\n/).filter(Boolean).map(line=>line.split('|').map(value=>value.trim())).map(([tag,title,url,date])=>({tag,title,url,date})),state=politicianRisk.querySelector('[data-politician-state]'),result=await auth.savePoliticianPastRisks(politicianRisk.dataset.politicianRiskForm,pastRisks);if(state)state.textContent=result?.ok?'다음 수집에도 유지되도록 영구 저장했습니다.':(result?.error||'저장하지 못했습니다.');return;}
+  const politicianExclusion=event.target.closest('[data-politician-exclusion-form]');
+  if(politicianExclusion){event.preventDefault();const newsExclusions=String(new FormData(politicianExclusion).get('newsExclusions')||'').split(/\r?\n/).map(value=>value.trim()).filter(Boolean),state=politicianExclusion.querySelector('[data-politician-state]'),result=await auth.savePoliticianNewsExclusions(politicianExclusion.dataset.politicianExclusionForm,newsExclusions);if(state)state.textContent=result?.ok?'뉴스 오탐 제외 목록을 저장했습니다.':(result?.error||'저장하지 못했습니다.');return;}
+  const politicianPhoto=event.target.closest('[data-politician-photo-form]');
+  if(politicianPhoto){event.preventDefault();const data=new FormData(politicianPhoto),file=data.get('photo'),state=politicianPhoto.querySelector('[data-politician-state]');if(!(file instanceof File)||file.size>1048576||!['image/jpeg','image/png','image/webp'].includes(file.type)){if(state)state.textContent='JPG·PNG·WEBP 파일을 1MB 이하로 선택해 주세요.';return;}if(politicianPhoto.dataset.currentPhoto==='true'&&!confirm('현재 프로필 사진을 선택한 사진으로 교체할까요?'))return;const bytes=new Uint8Array(await file.arrayBuffer());let binary='';for(let start=0;start<bytes.length;start+=32768)binary+=String.fromCharCode(...bytes.subarray(start,start+32768));const result=await auth.uploadPoliticianPhoto({personId:politicianPhoto.dataset.politicianPhotoForm,contentType:file.type,dataBase64:btoa(binary),focus:String(data.get('focus')||'50% 22%')});if(state)state.textContent=result?.ok?'사진을 업로드하고 전체 상세페이지에 적용했습니다.':(result?.error||'사진을 업로드하지 못했습니다.');if(result?.ok)politicianPhoto.dataset.currentPhoto='true';return;}
+  const requiredPassword=event.target.closest('[data-required-password-form]');
+  if(requiredPassword){event.preventDefault();const password=String(new FormData(requiredPassword).get('password')||''),state=requiredPassword.querySelector('[data-form-state]'),result=await auth.completePasswordChange(password);if(state)state.textContent=result?.ok?'새 비밀번호로 변경했습니다.':(result?.error||'변경하지 못했습니다.');if(result?.ok)await render();return;}
   const intelligenceDraft=event.target.closest('[data-intelligence-draft-form]');
   if(intelligenceDraft){event.preventDefault();const data=new FormData(intelligenceDraft),state=intelligenceDraft.querySelector('[data-intelligence-draft-state]'),result=await auth.intelligenceDraftUpdate({personId:intelligenceDraft.dataset.personId,diagnoses:[{id:'01',headline:String(data.get('diagnosisHeadline')||'')}],prescriptions:[{id:'01',strategicJudgment:String(data.get('prescriptionJudgment')||'')}]});if(state)state.textContent=result?.ok?'수정본을 저장했습니다. 다시 검수 승인해 주세요.':(result?.error||'수정본을 저장하지 못했습니다.');if(result?.ok)await render({preserveScroll:true});return;}
   const pastRiskForm=event.target.closest('[data-intelligence-past-risk-form]');
@@ -202,6 +216,10 @@ document.addEventListener('submit',async event=>{
 });
 
 document.addEventListener('click',async event=>{
+  const adminTab=event.target.closest('[data-admin-tab]');
+  if(adminTab){event.preventDefault();const key=adminTab.dataset.adminTab;for(const button of document.querySelectorAll('[data-admin-tab]'))button.classList.toggle('is-active',button===adminTab);for(const panel of document.querySelectorAll('[data-admin-panel]')){const active=panel.dataset.adminPanel===key;panel.hidden=!active;panel.classList.toggle('is-active',active);}return;}
+  const personAction=event.target.closest('[data-person-refresh],[data-person-approve],[data-person-publish]');
+  if(personAction){event.preventDefault();const personId=personAction.dataset.personRefresh||personAction.dataset.personApprove||personAction.dataset.personPublish,operation=personAction.hasAttribute('data-person-refresh')?'refresh':personAction.hasAttribute('data-person-approve')?'approve':'publish';if(operation==='publish'&&!confirm('검수 승인된 이 정치인 자료만 공개할까요?'))return;personAction.disabled=true;const result=operation==='refresh'?await auth.refreshPolitician(personId):operation==='approve'?await auth.approvePoliticianRefresh(personId):await auth.publishPoliticianRefresh(personId);alert(result?.ok?({refresh:'한 명 수집 초안을 만들었습니다.',approve:'한 명 초안을 승인했습니다.',publish:'한 명 승인본을 공개했습니다.'}[operation]):(result?.error||'처리하지 못했습니다.'));personAction.disabled=false;return;}
   const youtubeDiscovery=event.target.closest('[data-youtube-discovery]');
   if(youtubeDiscovery){event.preventDefault();void runYouTubeDiscovery(false);return;}
   const youtubeRediscover=event.target.closest('[data-youtube-rediscover]');

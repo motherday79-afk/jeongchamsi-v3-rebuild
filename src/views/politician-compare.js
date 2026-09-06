@@ -7,7 +7,7 @@ function queryRoute(ids,run=false){
 }
 
 function profilePhoto(item,className){
-  const src=String(item?.photo?.localPath||'');
+  const src=String(item?.photo?.url||item?.photo?.localPath||'');
   const initial=esc(String(item?.name||'?').slice(0,1));
   if(!src)return `<span class="${className} is-empty" data-politician-avatar aria-hidden="true"><span class="politician-photo-initial">${initial}</span></span>`;
   return `<span class="${className} has-photo" data-politician-avatar style="--photo-position:${esc(item.photo.focus||'50% 28%')}"><span class="politician-photo-initial" aria-hidden="true">${initial}</span><img data-politician-photo src="${esc(src)}" alt="" width="240" height="240" loading="lazy" decoding="async"></span>`;
