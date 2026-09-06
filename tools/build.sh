@@ -47,6 +47,7 @@ Path('verification/build-config.json').write_text(json.dumps({**cfg,'versionCode
 PY
 "$BT/aapt2" compile --dir res -o build/resources.zip
 "$BT/aapt2" link -o build/resources.apk -I "$ANDROID_JAR" \
+  --min-sdk-version 26 --target-sdk-version 35 \
   --manifest build/AndroidManifest.xml -A assets build/resources.zip
 mapfile -t SOURCES < <(find src stubs build/generated -name '*.java' -type f | sort)
 # Use the JDK 8 API surface for java.* (including LambdaMetafactory) and Android SDK as classpath.
@@ -105,7 +106,8 @@ perms=set(re.findall(r"uses-permission[^:]*: name='([^']+)'",text))
 if perms!={'android.permission.INTERNET'}:
     raise SystemExit('Unexpected APK permissions: '+repr(perms))
 if "sdkVersion:'26'" not in text or "targetSdkVersion:'35'" not in text:
-    raise SystemExit('SDK verification failed')
+    print(text)
+    raise SystemExit('SDK verification failed: packaged APK does not report minSdk=26 and targetSdk=35')
 PY
 cp verification/runtime-classes.json dist/RUNTIME_VERIFICATION.json
 (cd dist && sha256sum jeongchamsi-minimal.apk > SHA256SUMS.txt)
