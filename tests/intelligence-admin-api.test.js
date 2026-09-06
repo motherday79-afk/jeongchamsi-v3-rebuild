@@ -15,6 +15,11 @@ function serviceDouble(){
     async approveDraft(input){calls.push(`approve:${input.reviewedBy}`);return {version:{status:'approved'}};},
     async startPublish(){calls.push('publish-start');return {job:{status:'RUNNING'}};},
     async runPublishStep(){calls.push('publish-step');return {job:{status:'COMPLETED'}};},
+    async startYouTubeDiscovery(){calls.push('youtube-start');return {job:{status:'RUNNING'}};},
+    async runYouTubeDiscoveryStep(){calls.push('youtube-step');return {job:{status:'RUNNING'}};},
+    async saveYouTubeChannel(input){calls.push(`youtube-save:${input.personId}`);return {mapping:{personId:input.personId}};},
+    async rediscoverYouTubeChannel(input){calls.push(`youtube-rediscover:${input.personId}`);return {mapping:{personId:input.personId}};},
+    async deleteYouTubeChannel(input){calls.push(`youtube-delete:${input.personId}`);return {removed:true};},
   };
   return {service,calls};
 }
@@ -31,6 +36,11 @@ test('admin intelligence routes map collection, review, approval and publication
     ['admin/intelligence/approve','POST','approve:admin'],
     ['admin/intelligence/publish/start','POST','publish-start'],
     ['admin/intelligence/publish/step','POST','publish-step'],
+    ['admin/intelligence/youtube/discovery/start','POST','youtube-start'],
+    ['admin/intelligence/youtube/discovery/step','POST','youtube-step'],
+    ['admin/intelligence/youtube/channel','PATCH','youtube-save:p1'],
+    ['admin/intelligence/youtube/channel/rediscover','POST','youtube-rediscover:p1'],
+    ['admin/intelligence/youtube/channel','DELETE','youtube-delete:p1'],
   ];
   for(const [route,method,expected] of routes){
     const result=await dispatchAdminIntelligence(route,method,service,{personId:'p1',reviewedBy:'admin'});

@@ -78,3 +78,27 @@ test('one source failure is recorded without discarding another allowed source',
   assert.equal(raw.officialProfile.name,'김민석');
   assert.doesNotMatch(JSON.stringify(raw),/access-license|secret-key|customer-1/);
 });
+
+test('registered YouTube channel is collected as an independent public source',async()=>{
+  const raw=await collectPoliticianRaw(
+    {id:'assembly-001',name:'김민석',party:'더불어민주당',jurisdiction:'서울 영등포구을'},
+    {snapshotId:'s1',youtubeChannel:{channelId:'UC_OFFICIAL'}},
+    {env:{...credentials,YOUTUBE_DATA_API_KEY:'youtube-secret'},retryDelays:[],fetchImpl:async url=>String(url).includes('api.searchad.naver.com')?{ok:true,status:200,json:async()=>({keywordList:[{relKeyword:'김민석',monthlyPcQcCnt:1,monthlyMobileQcCnt:2}]})}:{ok:true,status:200,text:async()=>'<rss><channel></channel></rss>'},fetchYouTubeChannelData:async mapping=>({provider:'YOUTUBE_DATA_API',channel:{id:mapping.channelId,title:'김민석 채널',url:'https://youtube.test/channel'},videos:[],uploads:{h24:0,d7:0,d30:0,daily:[]},source:{type:'YOUTUBE_DATA_API',label:'YouTube 공개 채널·영상'}})}
+  );
+  assert.equal(raw.youtube.channel.id,'UC_OFFICIAL');
+  assert.ok(raw.sources.some(source=>source.type==='YOUTUBE_DATA_API'));
+  assert.doesNotMatch(JSON.stringify(raw),/youtube-secret/);
+});
+
+test('YouTube failure is recorded without discarding search and news sources',async()=>{
+  const rss='<rss><channel><item><title>정치 뉴스</title><link>https://news.google.com/a</link><pubDate>Wed, 02 Sep 2026 01:00:00 GMT</pubDate><source>테스트뉴스</source></item></channel></rss>';
+  const raw=await collectPoliticianRaw(
+    {id:'assembly-001',name:'김민석'},
+    {snapshotId:'s1',youtubeChannel:{channelId:'UC_BROKEN'}},
+    {env:{...credentials,YOUTUBE_DATA_API_KEY:'youtube-secret'},retryDelays:[],fetchImpl:async url=>String(url).includes('api.searchad.naver.com')?{ok:true,status:200,json:async()=>({keywordList:[{relKeyword:'김민석',monthlyPcQcCnt:1,monthlyMobileQcCnt:2}]})}:{ok:true,status:200,text:async()=>rss},fetchYouTubeChannelData:async()=>{throw Object.assign(new Error('YOUTUBE_API_503'),{code:'YOUTUBE_API_503',status:503});}}
+  );
+  assert.equal(raw.news.items.length,1);
+  assert.equal(raw.searchAds.volume.total,3);
+  assert.equal(raw.youtube,null);
+  assert.ok(raw.sourceErrors.some(error=>error.source==='YOUTUBE_DATA_API'&&error.code==='YOUTUBE_API_503'));
+});

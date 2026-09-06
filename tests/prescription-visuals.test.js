@@ -85,6 +85,7 @@ test('prescription report completely omits optional elements that have no suppor
 
 test('prescription stylesheet scopes a blue visual family to prescriptions without recoloring diagnosis numbers',async()=>{
   const css=await readFile(new URL('../css/diagnosis-approved.css',import.meta.url),'utf8');
+  const active=css.slice(css.indexOf('/* JCS 0.0.31.24'));
   assert.match(css,/--jcs-rx-blue:/);
   assert.match(css,/\.jcs-rx-chapter \.jcs-no/);
   for(const layout of ['message-pyramid','target-matrix','local-playbook','support-flow','response-matrix','crisis-timeline','propagation-flow','resource-board','action-conversion','integrated-execution'])assert.match(css,new RegExp(`\\[data-prescription-layout="${layout}"\\]`));
@@ -96,4 +97,7 @@ test('prescription stylesheet scopes a blue visual family to prescriptions witho
   assert.match(css,/\.jcs-rx-board\{[^}]*grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
   assert.match(css,/\.jcs-prescription-shell\{[^}]*width:100%[^}]*max-width:1180px/);
   assert.match(css,/\.jcs-prescription-disclosure\{[^}]*width:100%/);
+  assert.match(active,/\.jcs-rx-nav\{[^}]*grid-template-columns:repeat\(10,1fr\)[^}]*padding:0/);
+  assert.match(active,/\.jcs-rx-nav a\{[^}]*display:grid[^}]*place-items:center/);
+  assert.match(active,/\.jcs-rx-nav\{grid-template-columns:repeat\(5,1fr\);padding:0\}/);
 });

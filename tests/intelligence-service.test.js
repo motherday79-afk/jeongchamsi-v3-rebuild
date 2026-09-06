@@ -4,6 +4,7 @@ import { createIntelligenceService } from '../lib/intelligence-service.js';
 import { INTELLIGENCE_KEYS } from '../lib/intelligence-keys.js';
 import { buildIntelligenceDraft } from '../lib/intelligence-analysis.js';
 import { buildOperationalRankings } from '../lib/operational-ranking.js';
+import { TARGET_KEYS } from '../lib/migration-service.js';
 
 function fakeRedis(options={}){
   const map=new Map(),calls=[];
@@ -58,6 +59,15 @@ test('a 542-person collection completes in exactly 22 steps of at most 25 people
   assert.equal(Math.max(...sizes),25);
   assert.equal(sizes.at(-1),17);
   assert.equal((await service.status()).collection.status,'COMPLETED');
+});
+
+test('collection passes registered YouTube channel mappings to each politician collector',async()=>{
+  const redis=fakeRedis(),rows=profiles(2),seen=[];
+  redis.map.set(TARGET_KEYS.content('youtubeChannels'),JSON.stringify({version:'JCS_YOUTUBE_CHANNELS_V1',channels:{'assembly-001':{personId:'assembly-001',channelId:'UC_ONE',sourceMode:'AUTO'}},quota:{day:'',used:0}}));
+  const service=createService(redis,rows,{collectRaw:async(person,context)=>{seen.push([person.id,context.youtubeChannel?.channelId||null]);return {personId:person.id,snapshotId:context.snapshotId,officialProfile:person,sourceErrors:[]};}});
+  await service.startCollection();
+  await service.runCollectionStep();
+  assert.deepEqual(seen,[['assembly-001','UC_ONE'],['assembly-002',null]]);
 });
 
 test('version metadata never stores thousands of article URLs in one Redis value',async()=>{

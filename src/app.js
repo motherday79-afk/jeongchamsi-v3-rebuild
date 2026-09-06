@@ -1,15 +1,15 @@
 import { HOME_FIXTURE } from './fixtures/home.js';
-import { siteHeader, drawer, footer, fontSizeControl, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.24';
+import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.25';
 import { renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.23';
-import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.24';
+import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.25';
 import { createAuthService } from './core/auth.js';
 import { createContentService } from './core/content.js';
 import { createPoliticianService } from './core/politicians.js';
 import { createNavigation } from './core/navigation.js?v=0.0.31';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31';
-import * as views from './views/stage1.js?v=0.0.31.23';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.24';
+import * as views from './views/stage1.js?v=0.0.31.25';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.25';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.23';
 import { renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31';
 import { renderPresidentPage } from './views/president.js?v=0.0.31';
@@ -22,6 +22,7 @@ const auth=createAuthService();
 const content=createContentService();
 const politicians=createPoliticianService();
 let intelligenceRunnerActive=false;
+let youtubeRunnerActive=false;
 let renderSequence=0;
 const intelligenceAutoResumeGuard=createIntelligenceAutoResumeGuard();
 
@@ -47,7 +48,7 @@ function tunePoliticianNarratives(){
 async function shell(body,session,renderId){
   const memberCount=await auth.memberCount().catch(()=>0);
   if(renderId!==renderSequence)return false;
-  app.innerHTML=`<div class="site-shell">${siteHeader(memberCount,session)}${fontSizeControl()}<div class="page-wrap">${body}</div>${footer()}${drawer(session)}</div>`;
+  app.innerHTML=`<div class="site-shell">${siteHeader(memberCount,session)}<div class="page-wrap">${body}</div>${footer()}${drawer(session)}</div>`;
   setupLayoutInteractions(document,{politicianSearch:(query,limit)=>politicians.search(query,limit)});
   return true;
 }
@@ -73,6 +74,27 @@ async function runAdminIntelligence(kind,resume=false){
 function resumeAdminIntelligence(){
   const running=document.querySelector('[data-intelligence-job][data-job-status="RUNNING"]:not([data-job-blocked="true"])');
   if(running&&intelligenceAutoResumeGuard.claim(running.dataset.intelligenceJob))void runAdminIntelligence(running.dataset.intelligenceJob,true);
+  const youtube=document.querySelector('[data-youtube-console][data-youtube-job-status="RUNNING"]');
+  if(youtube&&!youtubeRunnerActive)void runYouTubeDiscovery(true);
+}
+
+function updateYouTubeProgress(job,message=''){
+  const root=document.querySelector('[data-youtube-console]'),state=root?.querySelector('[data-youtube-job-message]');if(!root||!job)return;
+  root.dataset.youtubeJobStatus=job.status||'RUNNING';
+  if(state)state.textContent=message||`${Number(job.completed||0).toLocaleString('ko-KR')} / ${Number(job.total||0).toLocaleString('ko-KR')}명 확인 · 등록 ${Number(job.registered||0).toLocaleString('ko-KR')} · 미발견 ${Number(job.notFound||0).toLocaleString('ko-KR')}`;
+}
+
+async function runYouTubeDiscovery(resume=false){
+  if(youtubeRunnerActive)return;youtubeRunnerActive=true;const button=document.querySelector('[data-youtube-discovery]');if(button)button.disabled=true;
+  try{
+    let result=resume?{ok:true}:await auth.youtubeDiscoveryStart();if(!result?.ok)throw new Error(result?.error||'YOUTUBE_DISCOVERY_START_FAILED');
+    let job=result.job||{status:'RUNNING'};
+    while(job.status==='RUNNING'){
+      result=await auth.youtubeDiscoveryStep();if(!result?.ok)throw new Error(result?.error||'YOUTUBE_DISCOVERY_STEP_FAILED');job=result.job||job;updateYouTubeProgress(job);
+    }
+    updateYouTubeProgress(job,job.status==='COMPLETED'?'공식 채널 자동 등록을 완료했습니다.':job.status==='PAUSED_QUOTA'?'오늘 자동 검색 한도에 도달했습니다. 다음 할당량 날짜에 이어서 실행하세요.':`자동 등록 상태 · ${job.status}`);
+  }catch(error){const state=document.querySelector('[data-youtube-job-message]');if(state)state.textContent=`자동 등록 중단 · ${error.message}`;}
+  finally{youtubeRunnerActive=false;await render({preserveScroll:true});}
 }
 
 function setupMemberBadgeManagers(){
@@ -148,6 +170,8 @@ window.addEventListener('jcs:layout-search',event=>navigation.navigate(`/search?
 document.addEventListener('change',event=>{const select=event.target.closest('[data-intelligence-past-risk-form] select[name="personId"]');if(!select)return;const textarea=select.closest('form')?.querySelector('textarea[name="pastRisks"]');if(textarea)textarea.value='';});
 
 document.addEventListener('submit',async event=>{
+  const youtubeChannel=event.target.closest('[data-youtube-channel-form]');
+  if(youtubeChannel){event.preventDefault();const button=youtubeChannel.querySelector('button'),data=new FormData(youtubeChannel);if(button)button.disabled=true;const result=await auth.youtubeChannelSave({personId:youtubeChannel.dataset.youtubeChannelForm,reference:String(data.get('reference')||'')});if(!result?.ok){alert(result?.error||'공식 채널을 저장하지 못했습니다.');if(button)button.disabled=false;return;}await render({preserveScroll:true});return;}
   const intelligenceDraft=event.target.closest('[data-intelligence-draft-form]');
   if(intelligenceDraft){event.preventDefault();const data=new FormData(intelligenceDraft),state=intelligenceDraft.querySelector('[data-intelligence-draft-state]'),result=await auth.intelligenceDraftUpdate({personId:intelligenceDraft.dataset.personId,diagnoses:[{id:'01',headline:String(data.get('diagnosisHeadline')||'')}],prescriptions:[{id:'01',strategicJudgment:String(data.get('prescriptionJudgment')||'')}]});if(state)state.textContent=result?.ok?'수정본을 저장했습니다. 다시 검수 승인해 주세요.':(result?.error||'수정본을 저장하지 못했습니다.');if(result?.ok)await render({preserveScroll:true});return;}
   const pastRiskForm=event.target.closest('[data-intelligence-past-risk-form]');
@@ -178,6 +202,12 @@ document.addEventListener('submit',async event=>{
 });
 
 document.addEventListener('click',async event=>{
+  const youtubeDiscovery=event.target.closest('[data-youtube-discovery]');
+  if(youtubeDiscovery){event.preventDefault();void runYouTubeDiscovery(false);return;}
+  const youtubeRediscover=event.target.closest('[data-youtube-rediscover]');
+  if(youtubeRediscover){event.preventDefault();youtubeRediscover.disabled=true;const result=await auth.youtubeChannelRediscover(youtubeRediscover.dataset.youtubeRediscover);if(!result?.ok)alert(result?.error||'공식 채널을 다시 찾지 못했습니다.');await render({preserveScroll:true});return;}
+  const youtubeDelete=event.target.closest('[data-youtube-delete]');
+  if(youtubeDelete){event.preventDefault();if(!confirm('이 정치인의 유튜브 공식 채널 연결을 삭제할까요?'))return;youtubeDelete.disabled=true;const result=await auth.youtubeChannelDelete(youtubeDelete.dataset.youtubeDelete);if(!result?.ok)alert(result?.error||'공식 채널 연결을 삭제하지 못했습니다.');await render({preserveScroll:true});return;}
   const retryFailures=event.target.closest('[data-intelligence-retry-failures]');
   if(retryFailures){event.preventDefault();retryFailures.disabled=true;const result=await auth.intelligenceRetryFailures();if(!result?.ok){alert(result?.error||'실패 항목 재시도를 시작하지 못했습니다.');retryFailures.disabled=false;return;}void runAdminIntelligence('collect',true);return;}
   const copyErrors=event.target.closest('[data-intelligence-copy-errors]');

@@ -71,6 +71,24 @@ test('approved public and member visuals do not widen their information permissi
   assert.doesNotMatch(`${publicHtml}${memberHtml}`,/FROM DIAGNOSIS TO PRESCRIPTION|data-prescription-topic=|data-prescription-disclosure|data-prescription-payload/);
 });
 
+test('official YouTube channel renders only channel, videos, views and upload flow for every access tier',async()=>{
+  const youtube={provider:'YOUTUBE_DATA_API',collectedAt:'2026-09-06T12:00:00.000Z',channel:{id:'UC_DIAGNOSIS',title:'김진단 공식채널',url:'https://www.youtube.com/channel/UC_DIAGNOSIS'},videos:Array.from({length:10},(_,index)=>({id:`v${index}`,title:`공식 영상 ${index+1}`,url:`https://www.youtube.com/watch?v=v${index}`,publishedAt:`2026-09-${String(6-Math.min(index,5)).padStart(2,'0')}T00:00:00.000Z`,viewCount:12345-index*100})),uploads:{h24:1,d7:4,d30:8,daily:Array.from({length:30},(_,index)=>({date:`2026-08-${String(index+1).padStart(2,'0')}`,count:index%5===0?2:0})),scanned:10,truncated:false}};
+  const youtubeReport=buildIntelligenceDraft(person,{snapshotId:'2026-09-03',collectedAt:'2026-09-06T12:00:00.000Z',searchAds:{volume:{pc:240,mobile:620}},news:{items:legacyReport.news},youtube,sourceErrors:[]},{peers:[]},'JCS_INTELLIGENCE_V3');
+  for(const [tier,limit] of [['public',3],['member',5],['admin',10]]){
+    const service={async get(){return {ok:true,item:person,intelligence:projectIntelligence(youtubeReport,tier,'detail')};}};
+    const html=await renderPoliticianDetail(person.id,service,tier==='public'?null:{authenticated:true,user:{role:tier}});
+    assert.match(html,/data-jcs-youtube/);
+    assert.match(html,/김진단 공식채널/);
+    assert.match(html,/24시간 1|24H 1/);
+    assert.match(html,/최근 7일 4|7D 4/);
+    assert.match(html,/최근 30일 8|30D 8/);
+    assert.match(html,/12,345회/);
+    assert.equal((html.match(/data-jcs-youtube-video=/g)||[]).length,limit);
+    assert.equal((html.match(/data-jcs-youtube-day=/g)||[]).length,30);
+    assert.doesNotMatch(html,/구독자|좋아요|댓글|API 연결 대기|채널 연결 전/);
+  }
+});
+
 test('administrator detail renders all ten approved native intelligence chapters',async()=>{
   const html=await renderPoliticianDetail(person.id,serviceFor('admin'),{authenticated:true,user:{role:'admin'}});
   assert.match(html,/JCS ADMIN POLITICAL INTELLIGENCE/);

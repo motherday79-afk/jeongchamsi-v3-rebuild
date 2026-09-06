@@ -1,0 +1,48 @@
+JCS_0_0_31_25_YOUTUBE_CHANNEL_INTEGRATION_NAV_HOTFIX
+
+PRODUCTION
+index.html
+api/gateway.js
+css/app.css
+css/diagnosis-approved.css
+lib/intelligence-access.js
+lib/intelligence-analysis.js
+lib/intelligence-collectors.js
+lib/intelligence-diagnostics.js
+lib/intelligence-service.js
+lib/intelligence-storage.js
+lib/youtube-channel-service.js
+lib/youtube-data.js
+src/app.js
+src/core/auth.js
+src/core/release.js
+src/layout/site-shell.js
+src/ui/font-scale.js
+src/ui/interactions.js
+src/views/politicians.js
+src/views/prescription-visuals.js
+src/views/stage1.js
+
+TESTS
+tests/font-scale.test.js
+tests/intelligence-admin-api.test.js
+tests/intelligence-admin-view.test.js
+tests/intelligence-collectors.test.js
+tests/intelligence-service.test.js
+tests/intelligence-youtube.test.js
+tests/layout.test.js
+tests/politician-diagnostics-view.test.js
+tests/prescription-visuals.test.js
+tests/youtube-channel-service.test.js
+tests/youtube-data.test.js
+
+DOCUMENTATION
+JCS_0_0_31_25_YOUTUBE_CHANNEL_INTEGRATION_NAV_HOTFIX_PATCH.md
+JCS_0_0_31_25_YOUTUBE_CHANNEL_INTEGRATION_NAV_HOTFIX_MANIFEST.txt
+
+EXCLUDED
+- API keys and environment variable values
+- Redis data and published snapshots
+- politician photos and unchanged image assets
+- previous patch ZIP files
+- unrelated source files

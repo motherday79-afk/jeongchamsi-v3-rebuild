@@ -201,14 +201,22 @@ export async function dispatchAdminIntelligence(route,method,service,input={}){
     'admin/intelligence/approve':{method:'POST',run:()=>service.approveDraft(input)},
     'admin/intelligence/publish/start':{method:'POST',run:()=>service.startPublish()},
     'admin/intelligence/publish/step':{method:'POST',run:()=>service.runPublishStep()},
+    'admin/intelligence/youtube/discovery/start':{method:'POST',run:()=>service.startYouTubeDiscovery()},
+    'admin/intelligence/youtube/discovery/step':{method:'POST',run:()=>service.runYouTubeDiscoveryStep()},
+    'admin/intelligence/youtube/channel':{method:'PATCH',run:()=>service.saveYouTubeChannel(input)},
+    'admin/intelligence/youtube/channel/rediscover':{method:'POST',run:()=>service.rediscoverYouTubeChannel(input)},
   };
+  if(route==='admin/intelligence/youtube/channel'&&method==='DELETE'){
+    try{return {status:200,body:{ok:true,...await service.deleteYouTubeChannel(input)}};}
+    catch(error){const code=String(error?.code||error?.message||'INTELLIGENCE_OPERATION_FAILED');return {status:['POLITICIAN_PROFILE_MISSING','YOUTUBE_CHANNEL_NOT_FOUND'].includes(code)?404:500,body:{ok:false,error:code}};}
+  }
   const action=actions[route];
   if(!action)return {status:404,body:{ok:false,error:'NOT_FOUND'}};
   if(method!==action.method)return {status:405,body:{ok:false,error:'METHOD_NOT_ALLOWED'}};
   try{return {status:200,body:{ok:true,...await action.run()}};}
   catch(error){
     const code=String(error?.code||error?.message||'INTELLIGENCE_OPERATION_FAILED');
-    const status=['COLLECTION_NOT_READY','COLLECTION_VALIDATION_REQUIRED','DRAFT_APPROVAL_REQUIRED','NAVER_CREDENTIALS_MISSING'].includes(code)?409:['DRAFT_NOT_FOUND','DRAFT_NOT_EDITABLE','DRAFT_VALIDATION_FAILED'].includes(code)?400:500;
+    const status=['COLLECTION_NOT_READY','COLLECTION_VALIDATION_REQUIRED','DRAFT_APPROVAL_REQUIRED','NAVER_CREDENTIALS_MISSING','YOUTUBE_CREDENTIALS_MISSING','YOUTUBE_SEARCH_QUOTA_REACHED'].includes(code)?409:['DRAFT_NOT_FOUND','DRAFT_NOT_EDITABLE','DRAFT_VALIDATION_FAILED','YOUTUBE_CHANNEL_REFERENCE_INVALID','YOUTUBE_DISCOVERY_NOT_STARTED'].includes(code)?400:['POLITICIAN_PROFILE_MISSING','YOUTUBE_CHANNEL_NOT_FOUND'].includes(code)?404:500;
     if(status===500)console.error('[admin-intelligence]',{route,code,message:String(error?.message||''),cause:String(error?.cause?.code||error?.cause?.message||'')});
     return {status,body:{ok:false,error:code}};
   }

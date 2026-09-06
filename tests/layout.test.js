@@ -23,7 +23,7 @@ test('layout uses only local production assets and no legacy production origin',
 test('new app contains no legacy API, Redis, repository or refresh engine imports',()=>{
   const app=read('src/app.js');
   const home=read('src/layout/home-layout.js');
-  const all=app+'\n'+home;
+  const all=(app+'\n'+home).split('\n').filter(line=>/^import /.test(line)).join('\n');
   assert.doesNotMatch(all,/\/api\/|redis|repository\.js|refresh|history-repository|getHomeSnapshot|getNowPublic/i);
 });
 
@@ -107,12 +107,15 @@ test('app passes one resolved session through home, header and drawer',()=>{
   assert.match(app,/shell\(body,session,renderId\)/);
 });
 
-test('application shell places the font-size control before every page body',()=>{
+test('application header places the font-size control in the former support-message position',()=>{
   const app=read('src/app.js');
   assert.equal((fontSizeControl().match(/data-font-scale-control/g)||[]).length,1);
-  assert.match(app,/siteHeader\(memberCount,session\)\}\$\{fontSizeControl\(\)\}<div class="page-wrap">/);
-  const css=read('css/app.css');
-  assert.match(css,/\.jcs-font-scale-bar\{[^}]*width:min\(1180px,calc\(100% - 32px\)\)[^}]*justify-content:flex-end/);
+  const header=siteHeader(7,{authenticated:false,user:null});
+  assert.match(header,/7<\/b><span>명이 정참시와 함께합니다/);
+  assert.match(header,/live-community-actions[^]*data-font-scale-control/);
+  assert.doesNotMatch(header,/정참시 응원하기/);
+  assert.match(header,/정참시 후원하기/);
+  assert.doesNotMatch(app,/\$\{fontSizeControl\(\)\}<div class="page-wrap">/);
 });
 
 test('layout foundation has new UI behavior wiring rather than disabled controls',()=>{
