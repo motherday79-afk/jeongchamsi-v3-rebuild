@@ -50,7 +50,7 @@ PY
 "$BT/aapt2" link -o build/resources.apk -I "$ANDROID_JAR" \
   --manifest build/AndroidManifest.xml -A assets build/resources.zip
 mapfile -t SOURCES < <(find src stubs build/generated -name '*.java' -type f | sort)
-javac -encoding UTF-8 -source 8 -target 8 -bootclasspath "$ANDROID_JAR" \
+javac -encoding UTF-8 --release 8 -classpath "$ANDROID_JAR" \
   -d build/classes "${SOURCES[@]}"
 # NEVER package the compile-only stub. Merge the original implementation instead.
 rm build/classes/com/jeongchamsi/preview/IntroView.class
