@@ -100,6 +100,8 @@ test('administrator comparison caps selection at four and renders all ten topics
   for(let index=101;index<=104;index++)assert.match(html,new RegExp(`/assets/politicians/assembly-${index}\\.jpg`));
   for(const kind of ['brand','demographic','local','support','competitor','risk','media','campaign','action','summary'])assert.equal((html.match(new RegExp(`data-diagnosis-display="${kind}"`,'g'))||[]).length,4);
   for(const label of ['정참시 전략 판단','실행 처방','실행 우선순위'])assert.match(html,new RegExp(label));
+  for(const label of ['정치 활동·미디어 전환 처방','JCS 종합 실행 처방'])assert.match(html,new RegExp(label));
+  assert.doesNotMatch(html,/정책·공약 반응 전략 처방|중장기 정치 성장 전략 처방/);
   assert.equal((html.match(/data-prescription-topic=/g)||[]).length,10);
   assert.match(html,/진단 근거/);
   assert.equal((html.match(/data-competitor-response=/g)||[]).length,3);

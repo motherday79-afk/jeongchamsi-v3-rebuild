@@ -1,3 +1,5 @@
+import { renderPrescriptionReport } from '../views/prescription-visuals.js?v=0.0.31.23';
+
 export function setupDrawer(root=document){
   const drawer=root.querySelector('[data-drawer]');
   const backdrop=root.querySelector('.drawer-backdrop');
@@ -67,10 +69,20 @@ function toggleMediaList(origin){
   const panel=toggle.closest?.('.jcs-media-period-panel')||toggle.closest?.('.jcs-open-section'),list=panel?.querySelector?.('.jcs-media-list');if(!list)return false;
   const expanded=toggle.getAttribute('aria-expanded')==='true';toggle.setAttribute('aria-expanded',String(!expanded));list.hidden=expanded;toggle.innerHTML=expanded?'전체 목록 보기 <span>＋</span>':'전체 목록 접기 <span>−</span>';return true;
 }
+export function togglePrescriptionDisclosure(origin){
+  const button=origin?.closest?.('[data-prescription-disclosure]');if(!button)return false;
+  const shell=button.closest?.('[data-prescription-shell]'),payload=shell?.querySelector?.('[data-prescription-payload]'),mount=shell?.querySelector?.('[data-prescription-mount]');if(!payload||!mount)return false;
+  const expanded=button.getAttribute('aria-expanded')==='true';
+  if(!expanded&&mount.dataset.prescriptionRendered!=='true'){
+    try{const markup=renderPrescriptionReport(JSON.parse(payload.textContent||'{}'));if(!markup)return false;mount.innerHTML=markup;mount.dataset.prescriptionRendered='true';}
+    catch{return false;}
+  }
+  const open=!expanded;button.setAttribute('aria-expanded',String(open));button.textContent=open?'처방 전체 접기 −':'10개 처방 전체보기 ＋';mount.hidden=!open;return true;
+}
 export function setupDiagnosisInteractions(root=document){
   if(root&&typeof root.addEventListener==='function'){
     if(diagnosisInteractionRoots.has(root))return;
-    diagnosisInteractionRoots.add(root);root.addEventListener('click',event=>{if(activateDiagnosisPeriod(event.target,root))return;toggleMediaList(event.target);});return;
+    diagnosisInteractionRoots.add(root);root.addEventListener('click',event=>{if(togglePrescriptionDisclosure(event.target))return;if(activateDiagnosisPeriod(event.target,root))return;toggleMediaList(event.target);});return;
   }
   root.querySelectorAll('.jcs-periods').forEach(group=>{
     if(group.dataset.jcsPeriodsReady==='true')return;

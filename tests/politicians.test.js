@@ -94,7 +94,7 @@ test('administrator consulting callout follows the strategic conclusion inside t
   intelligence.snapshot='jcs-operating';
   const projected=projectIntelligence(intelligence,'admin','detail');
   const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence:projected})},{user:{role:'admin'}});
-  const conclusion=html.indexOf('정참시 전략 판단'),consulting=html.indexOf('JCS STRATEGIC CONSULTING');
+  const conclusion=html.indexOf('진단이 처방의 근거가 됩니다.'),consulting=html.indexOf('JCS STRATEGIC CONSULTING');
   assert.ok(conclusion>=0&&consulting>conclusion);
   assert.match(html,/분석 다음은 실행입니다/);
   assert.match(html,/data-layout-route="\/partners">정참시와 함께하기/);
@@ -144,7 +144,8 @@ test('admin Kim Min-seok detail renders all ten evidence and prescription module
   for(const marker of ['JCS ADMIN POLITICAL INTELLIGENCE','정치인 브랜드 진단','세대·성별 지지구조 분석','핵심 지지층 결집도 분석','이슈·위기 위험도 진단','선거·캠페인 경쟁력 진단','JCS 종합해석','JCS STRATEGIC CONSULTING'])assert.match(text,new RegExp(marker));
   assert.equal((html.match(/data-diagnostic-topic=/g)||[]).length,10);
   assert.match(html,/BRAND INDICATORS/);
-  assert.match(html,/실행 처방/);
+  assert.match(html,/10개 처방 전체보기/);
+  assert.match(html,/data-prescription-payload/);
   assert.doesNotMatch(html,/\[object Object\]/);
   assert.doesNotMatch(html,/modeled.*fallback|"raw"/i);
 });

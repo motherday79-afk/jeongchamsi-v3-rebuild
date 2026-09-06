@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { setupDiagnosisInteractions } from '../src/ui/interactions.js';
+import { setupDiagnosisInteractions, togglePrescriptionDisclosure } from '../src/ui/interactions.js';
 
 function button(period,pressed=false){
   const listeners={};
@@ -101,4 +101,26 @@ test('delegated period control updates only its nearest comparison cell scope',(
   listeners.click({target});
   assert.deepEqual(localPanels.map(item=>item.hidden),[false,true,true]);
   assert.deepEqual(otherPanels.map(item=>item.hidden),[true,true,false]);
+});
+
+test('prescription disclosure lazily renders once, then only toggles visibility',()=>{
+  const mount={hidden:true,dataset:{},innerHTML:''};
+  const payload={textContent:JSON.stringify({prescriptions:[{id:'01',title:'정치인 브랜드 전략 처방',strategicJudgment:'핵심 메시지를 고정합니다.'}],diagnoses:[],prescriptionPriorities:{}})};
+  const shell={querySelector(selector){if(selector==='[data-prescription-payload]')return payload;if(selector==='[data-prescription-mount]')return mount;return null;}};
+  const button={attrs:{'aria-expanded':'false'},textContent:'10개 처방 전체보기 ＋',closest:selector=>selector==='[data-prescription-shell]'?shell:null,getAttribute(name){return this.attrs[name];},setAttribute(name,value){this.attrs[name]=String(value);}};
+  const origin={closest:selector=>selector==='[data-prescription-disclosure]'?button:null};
+
+  assert.equal(togglePrescriptionDisclosure(origin),true);
+  assert.equal(button.attrs['aria-expanded'],'true');
+  assert.equal(button.textContent,'처방 전체 접기 −');
+  assert.equal(mount.hidden,false);
+  assert.equal(mount.dataset.prescriptionRendered,'true');
+  assert.match(mount.innerHTML,/data-prescription-topic="01"/);
+
+  const firstMarkup=mount.innerHTML;
+  assert.equal(togglePrescriptionDisclosure(origin),true);
+  assert.equal(button.attrs['aria-expanded'],'false');
+  assert.equal(mount.hidden,true);
+  assert.equal(togglePrescriptionDisclosure(origin),true);
+  assert.equal(mount.innerHTML,firstMarkup);
 });

@@ -22,8 +22,9 @@ test('a published politician uses live ranks and all ten projected administrator
   assert.match(html,/JCS 종합해석/);
   assert.equal((html.match(/data-diagnosis-layout="\d{2}"/g)||[]).length,10);
   assert.match(html,/BRAND INDICATORS/);
-  assert.match(html,/실행 처방/);
-  assert.equal((html.match(/data-prescription-topic=/g)||[]).length,10);
+  assert.match(html,/10개 처방 전체보기/);
+  assert.match(html,/data-prescription-payload/);
+  assert.equal((html.match(/data-prescription-topic=/g)||[]).length,0);
   assert.doesNotMatch(html,/"raw"|data-generated-value/);
   assert.doesNotMatch(html,/더불어민주당 대표 선출/);
 });

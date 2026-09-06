@@ -19,7 +19,7 @@ const context={peers:[basePerson,{...basePerson,id:'assembly-032',name:'이경�
 const diagnosisFields=['id','title','headline','currentPosition','coreEvent','politicalMeaning','changeReason','pastPresentConnection','supportingData','attentionQuality','score','percentile','trend','benchmark','visualization','display','interpretation','evidence','opportunity','risk','sourceTypes','updatedAt','algorithmVersion','basis'];
 const prescriptionFields=['id','linkedDiagnosisIds','diagnosisBasis','title','objective','strategicJudgment','actions','target','messageDirection','channels','timing','priority','expectedImpact','monitoringIndicators','visualization','updatedAt','algorithmVersion'];
 const diagnosisVisuals=['positioning-matrix','cohort-diverging','issue-fit-bars','support-stack','competitor-heatmap','risk-matrix','narrative-timeline','campaign-matrix','action-conversion','growth-gap'];
-const prescriptionVisuals=['message-pyramid','target-matrix','local-playbook','support-flow','response-matrix','crisis-timeline','propagation-flow','resource-allocation','policy-quadrant','growth-timeline'];
+const prescriptionVisuals=['message-pyramid','target-matrix','local-playbook','support-flow','response-matrix','crisis-timeline','propagation-flow','resource-allocation','action-conversion-playbook','integrated-execution-board'];
 const forbidden=/데이터 부족|분석 준비 중|분석 불가|판단 불가|비교 불가|알 수 없음|추가 데이터 필요|N\/A|TODO|TBD|추후 제공/;
 const narrativeOnly=report=>({
   ...report,
@@ -43,6 +43,18 @@ test('prescriptions are diagnosis-linked and priorities resolve to 3 immediate 3
   assert.deepEqual(draft.prescriptions.find(item=>item.id==='05').linkedDiagnosisIds,['05','06','08']);
   assert.deepEqual(Object.fromEntries(Object.entries(draft.prescriptionPriorities).map(([key,value])=>[key,value.length])),{immediate:3,days30:3,days90:2,longTerm:2});
   assert.equal(new Set(Object.values(draft.prescriptionPriorities).flat()).size,10);
+});
+
+test('prescriptions 09 and 10 follow the approved action conversion and integrated execution diagnoses',()=>{
+  const draft=buildIntelligenceDraft(basePerson,raw,context,'JCS_INTELLIGENCE_V2');
+  const action=draft.prescriptions.find(item=>item.id==='09'),integrated=draft.prescriptions.find(item=>item.id==='10');
+  assert.equal(action.title,'정치 활동·미디어 전환 처방');
+  assert.equal(action.visualization.type,'action-conversion-playbook');
+  assert.match(`${action.strategicJudgment} ${action.expectedImpact} ${action.monitoringIndicators.join(' ')}`,/정치 활동|미디어|기사|보도/);
+  assert.equal(integrated.title,'JCS 종합 실행 처방');
+  assert.equal(integrated.visualization.type,'integrated-execution-board');
+  assert.match(`${integrated.strategicJudgment} ${integrated.expectedImpact} ${integrated.monitoringIndicators.join(' ')}`,/우선|실행|진단|처방/);
+  assert.doesNotMatch(JSON.stringify([action,integrated]),/정책·공약 반응 전략 처방|중장기 정치 성장 전략 처방|대표 정책 소유권|다음 정치 단계/);
 });
 
 test('diagnosis narrative is news and structure led while search remains a supporting signal',()=>{
