@@ -82,6 +82,9 @@ test('administrator detail renders all ten approved native intelligence chapters
   assert.match(html,/data-prescription-disclosure[^>]*aria-expanded="false"/);
   assert.match(html,/data-prescription-payload/);
   assert.match(html,/data-prescription-mount[^>]*hidden/);
+  assert.match(html,/PART 02 · JCS STRATEGY PRESCRIPTION/);
+  assert.match(html,/정치 전략 처방/);
+  assert.match(html,/aria-controls="jcs-prescription-body"/);
   assert.equal((html.match(/JCS ST 해석 · 뉴스 헤드라인, 공식 이력, 선거·지역·정당 구조와 검색 반응을 종합한 정참시 자체 분석입니다\./g)||[]).length,1);
   assert.ok(html.indexOf('PART 01')<html.indexOf('PART 02'));
   assert.equal((html.match(/대표 뉴스는 핵심 이슈 주제에서 벗어난 관련 기사 집계를 의미합니다\./g)||[]).length,1);

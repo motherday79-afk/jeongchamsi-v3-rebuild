@@ -1,4 +1,5 @@
-import { renderPrescriptionReport } from '../views/prescription-visuals.js?v=0.0.31.23';
+import { renderPrescriptionReport } from '../views/prescription-visuals.js?v=0.0.31.24';
+import { refreshFontScale, setupFontScaleControl } from './font-scale.js?v=0.0.31.24';
 
 export function setupDrawer(root=document){
   const drawer=root.querySelector('[data-drawer]');
@@ -74,7 +75,7 @@ export function togglePrescriptionDisclosure(origin){
   const shell=button.closest?.('[data-prescription-shell]'),payload=shell?.querySelector?.('[data-prescription-payload]'),mount=shell?.querySelector?.('[data-prescription-mount]');if(!payload||!mount)return false;
   const expanded=button.getAttribute('aria-expanded')==='true';
   if(!expanded&&mount.dataset.prescriptionRendered!=='true'){
-    try{const markup=renderPrescriptionReport(JSON.parse(payload.textContent||'{}'));if(!markup)return false;mount.innerHTML=markup;mount.dataset.prescriptionRendered='true';}
+    try{const markup=renderPrescriptionReport(JSON.parse(payload.textContent||'{}'));if(!markup)return false;mount.innerHTML=markup;mount.dataset.prescriptionRendered='true';const documentRoot=shell?.ownerDocument||globalThis.document;if(documentRoot)refreshFontScale(documentRoot);}
     catch{return false;}
   }
   const open=!expanded;button.setAttribute('aria-expanded',String(open));button.textContent=open?'처방 전체 접기 −':'10개 처방 전체보기 ＋';mount.hidden=!open;return true;
@@ -125,4 +126,4 @@ export function setupPoliticianAutocomplete(root=document,search=null){
     results.addEventListener('click',event=>{const button=event.target.closest('[data-politician-suggestion]');if(button)select(rows.find(item=>String(item.id)===button.dataset.politicianSuggestion));});
   }
 }
-export function setupLayoutInteractions(root=document,options={}){setupDrawer(root);setupLauncherExpansion(root);setupNowCarousel(root);setupLayoutNavigation(root);setupCompareSearch(root);setupPoliticianPhotoFallback(root);setupPoliticianAutocomplete(root,options.politicianSearch);setupDiagnosisInteractions(root);}
+export function setupLayoutInteractions(root=document,options={}){setupDrawer(root);setupLauncherExpansion(root);setupNowCarousel(root);setupLayoutNavigation(root);setupCompareSearch(root);setupPoliticianPhotoFallback(root);setupPoliticianAutocomplete(root,options.politicianSearch);setupDiagnosisInteractions(root);setupFontScaleControl(root);}

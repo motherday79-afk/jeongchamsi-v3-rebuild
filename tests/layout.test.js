@@ -5,7 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { HOME_FIXTURE } from '../src/fixtures/home.js';
 import { renderHomeLayout } from '../src/layout/home-layout.js';
-import { siteHeader, drawer } from '../src/layout/site-shell.js';
+import { siteHeader, drawer, fontSizeControl } from '../src/layout/site-shell.js';
 import { SERVICE_CATALOG, launcherServices } from '../src/ui/service-icons.js';
 import { renderAcademy, renderBoard, renderBoardDetail, renderItsme } from '../src/views/stage1.js';
 import { POLITICIAN_SEED } from '../lib/politician-seed.generated.js';
@@ -105,6 +105,14 @@ test('app passes one resolved session through home, header and drawer',()=>{
   assert.match(app,/siteHeader\(memberCount,session\)/);
   assert.match(app,/academy,[^}]*session/);
   assert.match(app,/shell\(body,session,renderId\)/);
+});
+
+test('application shell places the font-size control before every page body',()=>{
+  const app=read('src/app.js');
+  assert.equal((fontSizeControl().match(/data-font-scale-control/g)||[]).length,1);
+  assert.match(app,/siteHeader\(memberCount,session\)\}\$\{fontSizeControl\(\)\}<div class="page-wrap">/);
+  const css=read('css/app.css');
+  assert.match(css,/\.jcs-font-scale-bar\{[^}]*width:min\(1180px,calc\(100% - 32px\)\)[^}]*justify-content:flex-end/);
 });
 
 test('layout foundation has new UI behavior wiring rather than disabled controls',()=>{

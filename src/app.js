@@ -1,7 +1,7 @@
 import { HOME_FIXTURE } from './fixtures/home.js';
-import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js';
+import { siteHeader, drawer, footer, fontSizeControl, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.24';
 import { renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.23';
-import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.23';
+import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.24';
 import { createAuthService } from './core/auth.js';
 import { createContentService } from './core/content.js';
 import { createPoliticianService } from './core/politicians.js';
@@ -9,7 +9,7 @@ import { createNavigation } from './core/navigation.js?v=0.0.31';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31';
 import * as views from './views/stage1.js?v=0.0.31.23';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.23';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.24';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.23';
 import { renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31';
 import { renderPresidentPage } from './views/president.js?v=0.0.31';
@@ -47,7 +47,7 @@ function tunePoliticianNarratives(){
 async function shell(body,session,renderId){
   const memberCount=await auth.memberCount().catch(()=>0);
   if(renderId!==renderSequence)return false;
-  app.innerHTML=`<div class="site-shell">${siteHeader(memberCount,session)}<div class="page-wrap">${body}</div>${footer()}${drawer(session)}</div>`;
+  app.innerHTML=`<div class="site-shell">${siteHeader(memberCount,session)}${fontSizeControl()}<div class="page-wrap">${body}</div>${footer()}${drawer(session)}</div>`;
   setupLayoutInteractions(document,{politicianSearch:(query,limit)=>politicians.search(query,limit)});
   return true;
 }

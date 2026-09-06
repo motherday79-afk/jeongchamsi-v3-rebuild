@@ -65,6 +65,16 @@ button{cursor:pointer}
 a{text-decoration:none;color:inherit}
 img{display:block;max-width:100%}
 
+/* PAGE FONT SIZE — persistent default + five enlargement levels. */
+.jcs-font-scale-bar{width:min(1180px,calc(100% - 32px));margin:12px auto -10px;display:flex;justify-content:flex-end;position:relative;z-index:20}
+.jcs-font-scale-control{display:inline-flex;align-items:center;gap:5px;padding:5px;border:1px solid #dce3e0;border-radius:10px;background:#fff;box-shadow:0 4px 14px rgba(19,39,33,.05)}
+.jcs-font-scale-control>span{padding:0 5px;color:#61706b;font-size:12px;font-weight:800;white-space:nowrap}
+.jcs-font-scale-control button{display:grid;place-items:center;width:34px;height:34px;padding:0;border:1px solid #dce3e0;border-radius:8px;background:#f8faf9;color:#18352d;font-size:19px;font-weight:800;line-height:1}
+.jcs-font-scale-control button:hover:not(:disabled),.jcs-font-scale-control button:focus-visible{border-color:#8ab7aa;background:#eef7f4;outline:2px solid rgba(11,139,115,.13);outline-offset:1px}
+.jcs-font-scale-control button:disabled{color:#aeb8b4;cursor:default}
+.jcs-font-scale-control output{min-width:42px;color:#41514b;font-size:11px;font-weight:800;text-align:center}
+@media(max-width:680px){.jcs-font-scale-bar{width:calc(100% - 18px);margin:8px auto -2px}.jcs-font-scale-control>span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}.jcs-font-scale-control button{width:36px;height:36px}.jcs-font-scale-control output{min-width:38px}}
+
 /* INITIAL APP PAINT */
 .app-initial-loading{min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 38%,#fff 0,#f2f8f6 42%,#eaf2ef 100%)}
 .app-initial-loading-card{display:grid;justify-items:center;gap:8px;color:var(--green);text-align:center}
