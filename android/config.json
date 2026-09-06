@@ -1,0 +1,8 @@
+{
+  "applicationId": "com.jeongchamsi.minimal",
+  "homeUrl": "https://jeongchamsi-v3-rebuild.vercel.app/",
+  "versionName": "1.0.1-minimal",
+  "minSdk": 26,
+  "targetSdk": 35,
+  "buildTools": "35.0.0"
+}
