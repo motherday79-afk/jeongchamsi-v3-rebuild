@@ -68,6 +68,14 @@ test('comparison period controls are real and scoped to each politician cell',as
   assert.equal((guest.match(/class="jcs-media-toggle"/g)||[]).length,6);
 });
 
+test('competitor period panels switch article totals, sentiment values and representative headlines together',async()=>{
+  const member=await renderPoliticianCompare(serviceFor('member'),'/compare?ids=assembly-101,assembly-102&run=1',{authenticated:true,user:{role:'member'}});
+  assert.equal((member.match(/data-jcs-competitor-frame-period="24H"/g)||[]).length,2);
+  assert.equal((member.match(/data-jcs-competitor-frame-period="7D"/g)||[]).length,2);
+  assert.equal((member.match(/data-jcs-competitor-frame-period="30D"/g)||[]).length,2);
+  assert.equal((member.match(/class="jcs-cmp-period-headlines"/g)||[]).length,6);
+});
+
 test('comparison brand keeps the five approved indicators visually distinct',async()=>{
   const html=await renderPoliticianCompare(serviceFor('public'),'/compare?ids=assembly-101,assembly-102&run=1',null);
   for(const tool of ['ring','segments','axis','radar','trend'])assert.equal((html.match(new RegExp(`data-brand-tool="${tool}"`,'g'))||[]).length,2);

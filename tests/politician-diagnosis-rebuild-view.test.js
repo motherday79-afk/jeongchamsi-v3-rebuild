@@ -114,8 +114,7 @@ test('media panels expose full outlet names instead of ellipsized fragments',asy
   const html=await adminHtml(),css=await readFile(new URL('../css/diagnosis-approved.css',import.meta.url),'utf8');
   assert.match(html,/jcs-media-list-grid/);
   assert.match(html,/>연합뉴스</);
-  const legendCss=css.slice(css.lastIndexOf('#jcs-intelligence-nine .jcs-media-name'));
-  assert.doesNotMatch(legendCss,/text-overflow:ellipsis/);
+  assert.match(css,/#jcs-intelligence-nine \.jcs-media-name\{overflow:visible;text-overflow:clip;white-space:normal;overflow-wrap:anywhere\}/);
 });
 
 test('competitor renderer uses row agenda and election data rather than hard-coded empty cells',async()=>{
@@ -191,15 +190,16 @@ test('competitor period controls expose real period values for every comparison 
   assert.equal((competitor.match(/class="jcs-competitor(?: me)?"/g)||[]).length,4);
   assert.equal((competitor.match(/data-jcs-period="(?:24H|7D|30D)"/g)||[]).length,3);
   assert.equal((competitor.match(/data-jcs-period-value="(?:24H|7D|30D)"/g)||[]).length,12);
-  assert.match(competitor,/data-jcs-period-label>30일 뉴스</);
+  assert.match(competitor,/>30D 뉴스</);
 });
 
 test('media disclosure has a real controlled list and summary shows local fit status',async()=>{
   const html=await adminHtml();
-  assert.equal((html.match(/data-jcs-period-panel="(?:24H|7D|30D)"/g)||[]).length,3);
-  assert.equal((html.match(/class="jcs-media-toggle"/g)||[]).length,3);
-  assert.match(html,/aria-controls="jcs-media-all-24h"/);
-  assert.match(html,/class="jcs-media-list" id="jcs-media-all-30d"/);
+  const media=html.slice(html.indexOf('data-diagnosis-layout="07"'),html.indexOf('data-diagnosis-layout="08"'));
+  assert.equal((media.match(/data-jcs-period-panel="(?:24H|7D|30D)"/g)||[]).length,3);
+  assert.equal((media.match(/class="jcs-media-toggle"/g)||[]).length,3);
+  assert.match(media,/aria-controls="jcs-media-all-24h"/);
+  assert.match(media,/class="jcs-media-list" id="jcs-media-all-30d"/);
   const summary=html.slice(html.indexOf('data-diagnosis-layout="10"'),html.indexOf('<\/div><\/section><section class="jcs-report-transition"'));
   assert.match(summary,/data-local-fit-status="(?:우세|중립|열세)"/);
   assert.match(summary,/메시지 적합 \d+/);

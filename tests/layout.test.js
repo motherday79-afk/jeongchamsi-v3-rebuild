@@ -137,16 +137,16 @@ test('broken politician photos fall back to the fixed initial avatar',async()=>{
   assert.equal(classes.has('is-empty'),true);
 });
 
-test('home NOW rank renders 30 assembly members as three manual pages with photos',()=>{
-  const rank=POLITICIAN_SEED.profiles.assembly.slice(0,30).map((item,index)=>({...item,photo:POLITICIAN_SEED.photos[item.id],rank:index+1,score:Number((99.9-index*.7).toFixed(1))}));
+test('home NOW rank renders the published top 100 as ten manual pages with photos',()=>{
+  const rank=POLITICIAN_SEED.profiles.assembly.slice(0,100).map((item,index)=>({...item,photo:POLITICIAN_SEED.photos[item.id],rank:index+1,score:Number(Math.max(0,99.9-index*.7).toFixed(1))}));
   const html=renderHomeLayout({...HOME_FIXTURE,itsmePosts:[],columns:[],community:[],polls:{items:[]},generation:{},nationalEvaluation:{},academy:{items:[]},rank,session:{authenticated:false}});
-  assert.equal((html.match(/data-now-rank-page=/g)||[]).length,3);
-  assert.equal((html.match(/class="rank-top-card/g)||[]).length,30);
+  assert.equal((html.match(/data-now-rank-page=/g)||[]).length,10);
+  assert.equal((html.match(/class="rank-top-card/g)||[]).length,100);
   assert.match(html,/aria-label="1위 김민석 상세"/);
   assert.match(html,/data-now-rank-prev/);
   assert.match(html,/data-now-rank-next/);
   assert.match(html,/rank-top-avatar has-photo/);
-  assert.match(html,/전체 정치인 NOW 운영 순위 · 좌우 버튼으로 10명씩 보기/);
+  assert.match(html,/전체 정치인 NOW 운영 순위 1–100위 · 좌우 버튼으로 10명씩 보기/);
   assert.match(html,/NOW 99\.9/);
   assert.match(html,/data-politician-avatar/);
   assert.match(html,/data-politician-photo/);

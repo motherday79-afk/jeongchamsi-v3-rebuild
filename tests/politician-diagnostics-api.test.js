@@ -50,3 +50,33 @@ test('the browser source tree does not ship the former administrator pilot paylo
   const source=await readFile(new URL('../src/data/kim-minseok-pilot.js',import.meta.url),'utf8');
   for(const forbidden of ['cohorts:','support:','resilience:','risks:','opportunities:','competitors:','strategies:','raw:'])assert.doesNotMatch(source,new RegExp(forbidden));
 });
+
+async function listRequest(url,command,intelligence){
+  let body='',status=0;const req={method:'GET',headers:{},query:{}},res={setHeader(){},end(value){body=String(value);},set statusCode(value){status=value;},get statusCode(){return status;}};
+  await handlePoliticians(req,res,command,new URL(url),intelligence);
+  return {status,json:JSON.parse(body)};
+}
+
+test('overall ranking API returns the published top one hundred',async()=>{
+  const rows=Array.from({length:120},(_,index)=>({id:`assembly-${String(index+1).padStart(3,'0')}`,type:'assembly',name:`정치인${index+1}`}));
+  const rankings={snapshot:'rank-100',overall:rows.map((row,index)=>({...row,rank:index+1,categoryRank:index+1,score:100-index*.5}))};
+  const rankCommand=async args=>args[1]===TARGET_KEYS.politicians('assembly')?JSON.stringify({items:rows}):args[1]===TARGET_KEYS.politicianPhotos?JSON.stringify({items:{}}):JSON.stringify({items:[]});
+  const result=await listRequest('https://example.test/api/v3/politicians?ranking=overall',rankCommand,{async getPublicRankings(){return rankings;}});
+  assert.equal(result.status,200);
+  assert.equal(result.json.items.length,100);
+  assert.equal(result.json.items.at(-1).rank,100);
+});
+
+test('category directory API sorts ranked politicians before pagination',async()=>{
+  const rows=[
+    {id:'assembly-001',type:'assembly',name:'DB첫번째',slot:1},
+    {id:'assembly-002',type:'assembly',name:'분야1위',slot:2},
+    {id:'assembly-003',type:'assembly',name:'분야2위',slot:3},
+    {id:'assembly-004',type:'assembly',name:'미집계',slot:4}
+  ];
+  const rankings={byId:{'assembly-001':{rank:20,categoryRank:3,score:61},'assembly-002':{rank:2,categoryRank:1,score:92},'assembly-003':{rank:8,categoryRank:2,score:75}}};
+  const rankCommand=async args=>args[1]===TARGET_KEYS.politicians('assembly')?JSON.stringify({items:rows}):args[1]===TARGET_KEYS.politicianPhotos?JSON.stringify({items:{}}):JSON.stringify({items:[]});
+  const result=await listRequest('https://example.test/api/v3/politicians?type=assembly&offset=0&limit=2',rankCommand,{async getPublicRankings(){return rankings;}});
+  assert.deepEqual(result.json.items.map(row=>row.id),['assembly-002','assembly-003']);
+  assert.deepEqual(result.json.items.map(row=>row.now.categoryRank),[1,2]);
+});

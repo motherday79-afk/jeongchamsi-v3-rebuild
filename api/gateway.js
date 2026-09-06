@@ -74,7 +74,7 @@ export async function handlePoliticians(req,res,command,url,intelligence){
   if(ranking==='overall'){
     const published=await intelligence.getPublicRankings();if(!published)return json(res,200,{ok:true,published:false,items:[]});
     const profiles=(await Promise.all(POLITICIAN_TYPES.map(type=>readPoliticianType(command,type)))).flat(),byId=new Map(profiles.map(person=>[person.id,person]));
-    const items=(published.overall||[]).slice(0,30).map(row=>({...byId.get(row.id),...row,photo:photos[row.id]||null,rankMode:'published'}));
+    const items=(published.overall||[]).slice(0,100).map(row=>({...byId.get(row.id),...row,photo:photos[row.id]||null,rankMode:'published'}));
     return json(res,200,{ok:true,published:true,snapshot:published.snapshot,items});
   }
   if(query){
@@ -85,7 +85,12 @@ export async function handlePoliticians(req,res,command,url,intelligence){
   }
   const type=cleanPoliticianType(url.searchParams.get('type')||req.query?.type)||'assembly';
   const offset=Math.max(0,Number(url.searchParams.get('offset')||req.query?.offset||0)||0),limit=Math.min(100,Math.max(1,Number(url.searchParams.get('limit')||req.query?.limit||30)||30));
-  const [all,published]=await Promise.all([readPoliticianType(command,type),intelligence.getPublicRankings()]),rankById=published?.byId||{},items=all.slice(offset,offset+limit).map(item=>({...item,photo:photos[item.id]||null,now:rankById[item.id]||null}));
+  const [all,published]=await Promise.all([readPoliticianType(command,type),intelligence.getPublicRankings()]),rankById=published?.byId||{},sorted=[...all].sort((left,right)=>{
+    const leftRank=Number(rankById[left.id]?.categoryRank),rightRank=Number(rankById[right.id]?.categoryRank),leftRanked=Number.isFinite(leftRank)&&leftRank>0,rightRanked=Number.isFinite(rightRank)&&rightRank>0;
+    if(leftRanked!==rightRanked)return leftRanked?-1:1;
+    if(leftRanked&&rightRanked&&leftRank!==rightRank)return leftRank-rightRank;
+    return Number(left.slot||0)-Number(right.slot||0)||String(left.id).localeCompare(String(right.id));
+  }),items=sorted.slice(offset,offset+limit).map(item=>({...item,photo:photos[item.id]||null,now:rankById[item.id]||null}));
   return json(res,200,{ok:true,type,counts:POLITICIAN_COUNTS,total:all.length,offset,limit,hasMore:offset+items.length<all.length,items});
 }
 

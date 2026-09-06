@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { createIntelligenceService } from '../lib/intelligence-service.js';
 import { INTELLIGENCE_KEYS } from '../lib/intelligence-keys.js';
 import { buildIntelligenceDraft } from '../lib/intelligence-analysis.js';
+import { buildOperationalRankings } from '../lib/operational-ranking.js';
 
 function fakeRedis(options={}){
   const map=new Map(),calls=[];
@@ -290,6 +291,15 @@ test('successful publication writes rankings before switching the public pointer
   const rankWrite=redis.calls.findIndex(args=>args[0]==='SET'&&args[1]===INTELLIGENCE_KEYS.rankings(collection.job.snapshotId));
   const pointerWrite=redis.calls.findIndex(args=>args[0]==='SET'&&args[1]===INTELLIGENCE_KEYS.publicPointer&&args[2]===collection.job.snapshotId);
   assert.ok(rankWrite>=0&&pointerWrite>rankWrite);
+});
+
+test('published operating rankings retain the top one hundred for the home carousel',()=>{
+  const rows=profiles(120),profileMap=new Map(rows.map(row=>[row.id,row]));
+  const drafts=rows.map((row,index)=>({id:row.id,raw:{officialProfile:row,searchAds:{volume:{pc:index+1,mobile:(index+1)*10}},news:{items:[{title:`${row.name} 정책`,source:`매체${index+1}`,publishedAt:`2026-09-${String(index%28+1).padStart(2,'0')}T00:00:00.000Z`}]}}}));
+  const rankings=buildOperationalRankings(drafts,profileMap,'top-100',1_788_400_000_000);
+  assert.equal(rankings.overall.length,100);
+  assert.equal(rankings.overall[0].rank,1);
+  assert.equal(rankings.overall.at(-1).rank,100);
 });
 
 test('a transient storage failure is retried without advancing or losing the publication batch',async()=>{

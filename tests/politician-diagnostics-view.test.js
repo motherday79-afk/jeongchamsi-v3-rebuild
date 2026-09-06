@@ -75,7 +75,7 @@ test('administrator detail renders all ten approved native intelligence chapters
   const html=await renderPoliticianDetail(person.id,serviceFor('admin'),{authenticated:true,user:{role:'admin'}});
   assert.match(html,/JCS ADMIN POLITICAL INTELLIGENCE/);
   assert.deepEqual([...html.matchAll(/data-diagnostic-topic="(\d{2})"/g)].map(match=>match[1]),['01','02','03','04','05','06','07','08','09','10']);
-  for(const label of ['NOW SIGNAL','BRAND INDICATORS','서칭엔진 검색추이','PAST RISK SIGNALS','BRAND TOTAL SIGN','JCS 연령·성별 지지구조 해석','기반 순위','지역 유권자 구조','현재 메시지 도달 경로','코어','유동','이탈','이슈 확산 속도','매체 집중도','정치 기반 흐름','정치 행보 구성','JCS TOTAL','실행 처방','실행 우선순위','예상 변화 및 추적 지표'])assert.match(html,new RegExp(label));
+  for(const label of ['NOW SIGNAL','BRAND INDICATORS','서칭엔진 검색추이','PAST RISK SIGNALS','BRAND TOTAL SIGN','JCS 연령·성별 지지구조 해석','기반 순위','지역 유권자 구조','지역구 메시지 확산 단계','코어','유동','이탈','이슈 확산 속도','매체 집중도','정치 기반 흐름','정치 행보 구성','JCS TOTAL','실행 처방','실행 우선순위','예상 변화 및 추적 지표'])assert.match(html,new RegExp(label));
   const diagnosisPart=html.slice(html.indexOf('<section id="jcs-intelligence-nine"'),html.indexOf('</section>',html.indexOf('<article class="jcs-chapter" id="jcs-d10"'))+10);
   for(const removed of ['정치적 의미','현재 위치','정참시 해석','기회 요인','위험 요인','변화 원인','과거와 현재','비교 기준','서브데이터'])assert.doesNotMatch(diagnosisPart,new RegExp(`>${removed}<`));
   assert.equal((html.match(/data-prescription-topic=/g)||[]).length,10);

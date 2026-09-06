@@ -49,6 +49,14 @@ test('NOW category layout renders the published operating score and independent 
   assert.match(html,/김민석/);
 });
 
+test('approved local diagnosis names the four-step visualization as a district message spread stage',async()=>{
+  const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
+  const intelligence=projectIntelligence(reportForSample(sample),'member','detail');
+  const html=await renderPoliticianDetail(sample.id,{get:async()=>({ok:true,item:sample,intelligence})},{authenticated:true,user:{role:'member'}});
+  assert.match(html,/지역구 메시지 확산 단계/);
+  assert.doesNotMatch(html,/현재 메시지 도달 경로/);
+});
+
 test('published detail uses one two-column NOW card without operational descriptions',async()=>{
   const sample={...POLITICIAN_SEED.profiles.assembly[0],photo:POLITICIAN_SEED.photos['assembly-001']};
   const intelligence=structuredClone(reportForSample(sample));

@@ -1,16 +1,16 @@
 import { HOME_FIXTURE } from './fixtures/home.js';
 import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js';
-import { renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31';
-import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.20';
+import { renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.21';
+import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.21';
 import { createAuthService } from './core/auth.js';
 import { createContentService } from './core/content.js';
 import { createPoliticianService } from './core/politicians.js';
 import { createNavigation } from './core/navigation.js?v=0.0.31';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31';
-import * as views from './views/stage1.js?v=0.0.31.20';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.20';
-import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.20';
+import * as views from './views/stage1.js?v=0.0.31.21';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.21';
+import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.21';
 import { renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31';
 import { renderPresidentPage } from './views/president.js?v=0.0.31';
 import { renderSearchPage } from './views/search-page.js?v=0.0.31';
@@ -98,7 +98,7 @@ async function render({preserveScroll=false}={}){
       content.readDomain('academy').catch(()=>({items:[],slots:[]})),
       politicians.rankings().catch(()=>({ok:false,items:[]}))
     ]);
-    const rank=rankResult?.ok?(Array.isArray(rankResult.items)?rankResult.items:[]).slice(0,30):[];
+    const rank=rankResult?.ok?(Array.isArray(rankResult.items)?rankResult.items:[]).slice(0,100):[];
     const generationIds=(Array.isArray(generation?.candidates)?generation.candidates:[]).slice(0,15),evaluationIds=Object.values(nationalEvaluation?.slots||{}).map(slot=>slot?.subjectId).filter(Boolean),resolvedPeople=await Promise.all([...new Set([...generationIds,...evaluationIds])].map(id=>politicians.get(id).catch(()=>({ok:false}))));
     const peopleById=Object.fromEntries(resolvedPeople.filter(result=>result?.ok&&result.item).map(result=>[result.item.id,result.item])),generationView={...generation,candidateLabels:Object.fromEntries(generationIds.map(id=>[id,peopleById[id]?.name||id]))},nationalEvaluationView={...nationalEvaluation,slots:Object.fromEntries(Object.entries(nationalEvaluation?.slots||{}).map(([key,slot])=>[key,{...slot,subjectName:peopleById[slot?.subjectId]?.name||slot?.subjectName,party:peopleById[slot?.subjectId]?.party||slot?.party,jurisdiction:peopleById[slot?.subjectId]?.jurisdiction||slot?.jurisdiction,photo:peopleById[slot?.subjectId]?.photo||slot?.photo}]))};
     const home={...HOME_FIXTURE,memberCount,columns,community,itsmePosts,polls,generation:generationView,nationalEvaluation:nationalEvaluationView,academy,rank,recentPoliticians:loadRecentPoliticians(),session,badgeStatus};

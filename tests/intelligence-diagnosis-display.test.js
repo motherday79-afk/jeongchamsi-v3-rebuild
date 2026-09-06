@@ -282,6 +282,33 @@ test('competitor rows use period news counts and frame counts without duplicatin
   assert.equal(Object.hasOwn(people[0],'sourceSpread'),false);
 });
 
+test('competitor sentiment and representative headlines are recalculated for 24H 7D and 30D',()=>{
+  const report=projectIntelligence(buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
+  const subject=report.diagnoses.find(row=>row.id==='05').display.people[0];
+  assert.deepEqual(subject.framePeriods.map(row=>row.label),['24H','7D','30D']);
+  assert.deepEqual(subject.framePeriods.map(row=>[row.positive,row.neutral,row.negative]),[[1,1,0],[1,1,0],[1,1,1]]);
+  assert.match(subject.framePeriods[0].items.map(row=>row.title).join(' '),/정책 발표|예산 확보/);
+  assert.doesNotMatch(subject.framePeriods[0].items.map(row=>row.title).join(' '),/과거 발언 논란/);
+  assert.match(subject.framePeriods[2].items.map(row=>row.title).join(' '),/과거 발언 논란/);
+});
+
+test('policy connection uses a transparent four-part evidence score instead of raw topic share alone',()=>{
+  const report=projectIntelligence(buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
+  const brand=report.diagnoses.find(row=>row.id==='01').display;
+  const policy=brand.policyConnection;
+  assert.deepEqual(Object.keys(policy.components),['direct','action','local','recency']);
+  assert.equal(policy.value,Object.values(policy.components).reduce((sum,value)=>sum+value,0));
+  assert.equal(brand.indicators.find(row=>row.label==='정책 연결도').value+50,policy.value);
+  assert.ok(policy.value>25);
+});
+
+test('issue persistence classifies its observed daily shape',()=>{
+  const report=projectIntelligence(buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
+  const persistence=report.diagnoses.find(row=>row.id==='06').display.persistence;
+  assert.match(persistence.shape,/단기|지속|재점화|상승|데이터 부족/);
+  assert.equal(persistence.daily.length,30);
+});
+
 test('competitor contract preserves distinct observed period counts for every comparison row',()=>{
   const peers=context.peers.map((row,index)=>({...row,
     newsPeriods:[{label:'24H',value:index+1},{label:'7D',value:(index+1)*10},{label:'30D',value:(index+1)*100}],
