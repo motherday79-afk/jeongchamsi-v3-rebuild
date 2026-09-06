@@ -12,7 +12,7 @@ import zlib
 from pathlib import Path
 
 INTRO = 'Lcom/jeongchamsi/preview/IntroView;'
-SOURCE_SHA256 = '4f942ccef3f46bcd6f9cad0ae77cfcf0fb99074dde452c6ef0c95497d96ded92'
+SOURCE_SHA256 = '84bb1e423a1ad018e9c74a84923be912d22b43ff27fbcc8e959bc2b5ade1d2cf'
 
 class Dex:
     def __init__(self, data: bytes):
@@ -134,7 +134,7 @@ def verify_final(path: Path) -> dict:
     for needle in bad_strings:
         if any(needle in value for value in dex.strings):
             raise ValueError('Unexpected leftover in final DEX: ' + needle)
-    if len(dex.methods(INTRO)) != 11:
+    if len(dex.methods(INTRO)) != 20:
         raise ValueError('Original intro method count changed')
     return dict(class_count=len(names), classes=names, original_intro_present=True,
                 no_push_or_firebase=True, compile_only_stub_absent=True)
@@ -150,7 +150,7 @@ def main() -> None:
         source = args.source.read_bytes(); selected = select_intro(source)
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_bytes(selected)
-        print('Original IntroView selected; all 11 method instruction sequences unchanged.')
+        print('Approved IntroView selected; all 20 method instruction sequences unchanged.')
     else:
         report = verify_final(args.dex)
         args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2)+'\n')

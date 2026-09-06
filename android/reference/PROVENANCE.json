@@ -1,13 +1,13 @@
 {
-  "source_zip": "jeongchamsi-android-preview-apk.zip",
+  "source_zip": "app-debug.zip",
   "source_apk": "app-debug.apk",
-  "source_apk_sha256": "666fc04b2a8cf4dc3f39309b76c7cef15c60644734b6a6295ed29195e7d2a8b7",
+  "source_apk_sha256": "956e3d90390770bf2c0dc6a7635a63532a44839d92d883ecc3459c2a758bb76d",
   "source_dex": "classes3.dex",
-  "source_dex_sha256": "4f942ccef3f46bcd6f9cad0ae77cfcf0fb99074dde452c6ef0c95497d96ded92",
+  "source_dex_sha256": "84bb1e423a1ad018e9c74a84923be912d22b43ff27fbcc8e959bc2b5ade1d2cf",
   "preserved_class": "com.jeongchamsi.preview.IntroView",
-  "preserved_method_count": 11,
+  "preserved_method_count": 20,
   "local_tests": {
-    "python_test_methods": 15,
+    "python_test_methods": 16,
     "back_policy_assertions": 12,
     "back_layer_assertions": 8
   },

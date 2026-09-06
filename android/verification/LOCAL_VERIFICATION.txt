@@ -4,6 +4,7 @@ test_compile_contract (test_intro.IntroPreservationTest.test_compile_contract) .
 test_exact_source (test_intro.IntroPreservationTest.test_exact_source) ... ok
 test_only_intro_defined (test_intro.IntroPreservationTest.test_only_intro_defined) ... ok
 test_real_animation_not_stub (test_intro.IntroPreservationTest.test_real_animation_not_stub) ... ok
+test_selector_reports_approved_method_count (test_intro.IntroPreservationTest.test_selector_reports_approved_method_count) ... ok
 test_tamper_rejected (test_intro.IntroPreservationTest.test_tamper_rejected) ... ok
 test_back_gestures_and_buttons (test_project.ProjectScopeTest.test_back_gestures_and_buttons) ... ok
 test_distinct_install_identity (test_project.ProjectScopeTest.test_distinct_install_identity) ... ok
@@ -15,13 +16,19 @@ test_stub_removed_before_d8 (test_project.ProjectScopeTest.test_stub_removed_bef
 test_xml_is_well_formed (test_project.ProjectScopeTest.test_xml_is_well_formed) ... ok
 
 ----------------------------------------------------------------------
-Ran 15 tests in 0.004s
+Ran 16 tests
 
 OK
 BackPolicy: 12 assertions passed
 Back-layer: 8 assertions passed
 Local checks passed. This is NOT an Android SDK compilation or a device test.
 
-Workflow YAML shape check: passed
-APK build: NOT RUN (no local Android SDK; remote workflow write denied HTTP 403)
-Phone installation and live-site behavior: NOT TESTED
+Approved intro source: user-provided app-debug.zip / app-debug.apk / classes3.dex.
+Approved intro SHA-256: 84bb1e423a1ad018e9c74a84923be912d22b43ff27fbcc8e959bc2b5ade1d2cf.
+Approved IntroView: 20 method instruction sequences preserved unchanged.
+
+ES module compatibility reproduction: RED before fix reproduced require-is-not-defined under package.json type=module.
+ES module compatibility after fix: PASS (Back-layer: 8 assertions passed).
+Standalone/CommonJS compatibility after fix: PASS (Back-layer: 8 assertions passed).
+APK build: NOT RUN locally (Android SDK not available in this runtime).
+Phone installation and live-site behavior: NOT TESTED.
