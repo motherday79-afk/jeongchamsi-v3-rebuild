@@ -68,6 +68,13 @@ test('comparison period controls are real and scoped to each politician cell',as
   assert.equal((guest.match(/class="jcs-media-toggle"/g)||[]).length,6);
 });
 
+test('comparison media outlet lists also start collapsed',async()=>{
+  const html=await renderPoliticianCompare(serviceFor('public'),'/compare?ids=assembly-101,assembly-102&run=1',null);
+  assert.equal((html.match(/class="jcs-media-toggle"[^>]*aria-expanded="false"/g)||[]).length,6);
+  assert.equal((html.match(/class="jcs-cmp-bars jcs-media-list"[^>]*hidden/g)||[]).length,6);
+  assert.equal((html.match(/전체 목록 보기 <span>＋<\/span>/g)||[]).length,6);
+});
+
 test('competitor period panels switch article totals, sentiment values and representative headlines together',async()=>{
   const member=await renderPoliticianCompare(serviceFor('member'),'/compare?ids=assembly-101,assembly-102&run=1',{authenticated:true,user:{role:'member'}});
   assert.equal((member.match(/data-jcs-competitor-frame-period="24H"/g)||[]).length,2);

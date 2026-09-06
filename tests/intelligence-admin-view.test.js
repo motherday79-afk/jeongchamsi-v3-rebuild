@@ -29,7 +29,7 @@ test('admin control center exposes ten processing stages and draft review before
   assert.match(html,/name="pastRisks"/);
   assert.match(html,/draft-1.*draft|draft.*draft-1/s);
   assert.match(html,/public-0.*published|published.*public-0/s);
-  assert.match(html,/JCS_0_0_31_21/);
+  assert.match(html,/JCS_0_0_31_22/);
   assert.match(html,/관리자 화면 버전/);
 });
 
@@ -48,8 +48,8 @@ test('admin warns when browser bundle and server release versions differ',async(
   assert.match(html,/강력 새로고침 필요/);
 });
 
-test('NOW 100 and responsive diagnosis package reports release 31.21',()=>{
-  assert.equal(APP_RELEASE,'JCS_0_0_31_21');
+test('competitor media and persistence hotfix reports release 31.22',()=>{
+  assert.equal(APP_RELEASE,'JCS_0_0_31_22');
 });
 
 test('approved reviewed draft enables publication',async()=>{

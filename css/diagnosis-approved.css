@@ -623,3 +623,16 @@
 .jcs-persistence-shape span{color:var(--jcs-sub);font-size:10px}
 .jcs-persistence-shape b{color:var(--jcs-navy);font-size:13px}
 .jcs-persistence svg{display:block;width:100%;height:auto}
+
+/* JCS 0.0.31.22 — stable competitor context, collapsed media lists, and observed issue rhythm */
+.jcs-competitor-period{min-height:158px;align-content:start}
+.jcs-competitor-empty-period{display:grid;gap:7px;min-height:104px;align-content:center;padding:14px;border:1px dashed var(--jcs-line);border-radius:10px;background:color-mix(in srgb,var(--jcs-soft) 58%,transparent)}
+.jcs-competitor-empty-period b{color:var(--jcs-ink);font-size:12px}
+.jcs-competitor-empty-period span{color:var(--jcs-sub);font-size:11px;line-height:1.5}
+.jcs-persistence-grid{stroke:color-mix(in srgb,var(--jcs-line) 72%,transparent);stroke-width:1}
+.jcs-persistence-week{stroke:color-mix(in srgb,var(--jcs-line) 45%,transparent);stroke-width:1;stroke-dasharray:3 5}
+.jcs-persistence-bar{fill:color-mix(in srgb,var(--jcs-teal) 32%,var(--jcs-paper));rx:2}
+.jcs-persistence-area{fill:color-mix(in srgb,var(--jcs-teal) 12%,transparent)}
+.jcs-persistence-trend{fill:none;stroke:var(--jcs-navy);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.jcs-persistence-peak{fill:var(--jcs-gold);stroke:var(--jcs-paper);stroke-width:2}
+.jcs-persistence-caption{fill:var(--jcs-sub);font-size:10px}

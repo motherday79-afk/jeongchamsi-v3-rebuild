@@ -149,7 +149,7 @@ test('persistence and media markup uses the approved curve and full outlet list'
   assert.match(html,/비메이저/);
   assert.match(html,/jcs-treemap/);
   assert.match(html,/jcs-media-list-grid/);
-  assert.match(html,/전체 목록 접기/);
+  assert.match(html,/전체 목록 보기/);
 });
 
 test('campaign and policy renderers remove repeated and connection-pending placeholders',async()=>{
@@ -193,6 +193,15 @@ test('competitor period controls expose real period values for every comparison 
   assert.match(competitor,/>30D 뉴스</);
 });
 
+test('a competitor with no selected-period coverage keeps its comparison context visible',async()=>{
+  const compatContext={...context,peers:context.peers.map((row,index)=>index?row:{...row,newsPeriods:[{label:'24H',value:0},{label:'7D',value:4},{label:'30D',value:12}],frames:{positive:2,neutral:8,negative:2}})};
+  const intelligence=projectIntelligence(buildIntelligenceDraft(person,raw,compatContext,'JCS_INTELLIGENCE_V3'),'admin','detail');
+  const html=await renderPoliticianDetail(person.id,{get:async()=>({ok:true,item:person,intelligence})},{user:{role:'admin'}});
+  const competitor=html.slice(html.indexOf('data-diagnosis-layout="05"'),html.indexOf('data-diagnosis-layout="06"'));
+  assert.match(competitor,/data-jcs-competitor-frame-period="24H"[^>]*>[\s\S]*?24H 신규 보도 없음[\s\S]*?30D 누적 12건 · 긍정 2 · 중립 8 · 부정 2/);
+  assert.match(competitor,/이경쟁[\s\S]*?PC·모바일 검색[\s\S]*?주요 의제[\s\S]*?선거·경쟁 신호/);
+});
+
 test('media disclosure has a real controlled list and summary shows local fit status',async()=>{
   const html=await adminHtml();
   const media=html.slice(html.indexOf('data-diagnosis-layout="07"'),html.indexOf('data-diagnosis-layout="08"'));
@@ -203,6 +212,23 @@ test('media disclosure has a real controlled list and summary shows local fit st
   const summary=html.slice(html.indexOf('data-diagnosis-layout="10"'),html.indexOf('<\/div><\/section><section class="jcs-report-transition"'));
   assert.match(summary,/data-local-fit-status="(?:우세|중립|열세)"/);
   assert.match(summary,/메시지 적합 \d+/);
+});
+
+test('every media outlet list starts collapsed and opens only on request',async()=>{
+  const html=await adminHtml();
+  const media=html.slice(html.indexOf('data-diagnosis-layout="07"'),html.indexOf('data-diagnosis-layout="08"'));
+  assert.equal((media.match(/class="jcs-media-toggle"[^>]*aria-expanded="false"/g)||[]).length,3);
+  assert.equal((media.match(/class="jcs-media-list"[^>]*hidden/g)||[]).length,3);
+  assert.equal((media.match(/전체 목록 보기 <span>＋<\/span>/g)||[]).length,3);
+});
+
+test('issue persistence overlays thirty actual daily bars with a three-day trend line',async()=>{
+  const html=await adminHtml();
+  const risk=html.slice(html.indexOf('data-diagnosis-layout="06"'),html.indexOf('data-diagnosis-layout="07"'));
+  assert.equal((risk.match(/class="jcs-persistence-bar"/g)||[]).length,30);
+  assert.match(risk,/data-persistence-raw-count="\d+"/);
+  for(const label of ['30일 전','21일 전','14일 전','7일 전','오늘'])assert.match(risk,new RegExp(`>${label}<`));
+  assert.match(risk,/data-persistence-trend-path/);
 });
 
 test('administrator identity and actions live in the approved report header without the legacy hero',async()=>{

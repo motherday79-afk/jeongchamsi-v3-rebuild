@@ -210,6 +210,20 @@ test('issue persistence uses all thirty calendar positions and actual daily arti
   assert.equal(persistence.maxDaily,2);
 });
 
+test('issue persistence counts the complete retained thirty-day news ledger instead of one event sample',()=>{
+  const ledger={...raw,news:{items:[
+    {title:'김진단 청년 주거 정책 발표',source:'A',url:'https://example.com/l1',publishedAt:'2026-08-09T00:00:00.000Z'},
+    {title:'김진단 지역 교통 예산 확보',source:'B',url:'https://example.com/l2',publishedAt:'2026-08-16T00:00:00.000Z'},
+    {title:'김진단 민생경제 법안 발의',source:'C',url:'https://example.com/l3',publishedAt:'2026-08-24T00:00:00.000Z'},
+    {title:'김진단 당내 지도부 회의 참석',source:'D',url:'https://example.com/l4',publishedAt:'2026-08-31T00:00:00.000Z'},
+    {title:'김진단 지역 현장 간담회 개최',source:'E',url:'https://example.com/l5',publishedAt:'2026-09-04T00:00:00.000Z'}
+  ]}};
+  const report=projectIntelligence(buildIntelligenceDraft(person,ledger,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
+  const persistence=report.diagnoses.find(row=>row.id==='06').display.persistence;
+  assert.equal(persistence.daily.reduce((sum,row)=>sum+row.count,0),5);
+  assert.equal(persistence.daily.filter(row=>row.count>0).length,5);
+});
+
 test('media spread groups every distinct outlet by observed publication frequency',()=>{
   const mediaRaw={...raw,news:{items:[
     ...Array.from({length:3},(_,i)=>({title:`김진단 정책 A ${i}`,source:'반복매체',url:`https://example.com/r${i}`,publishedAt:'2026-09-04T00:00:00.000Z'})),
