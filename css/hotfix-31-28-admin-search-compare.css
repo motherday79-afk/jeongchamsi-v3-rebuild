@@ -1,0 +1,25 @@
+/* JCS_0_0_31_28 · admin workflow, direct photo, shared prescription and autocomplete */
+.jcs-person-photo-column,.jcs-legacy-photo-column{position:relative;align-self:start;min-width:0}
+.jcs-person-photo-column{display:grid;justify-items:center;gap:7px}
+.jcs-detail-photo-admin{position:relative;width:100%;z-index:20}
+.jcs-detail-photo-admin>summary{display:block;padding:5px 7px;border:1px solid #cbd9d5;border-radius:7px;background:#fff;color:#173f36;font-size:10px;font-weight:900;text-align:center;cursor:pointer;list-style:none}
+.jcs-detail-photo-admin>summary::-webkit-details-marker{display:none}
+.jcs-detail-photo-admin>form{position:absolute;top:calc(100% + 6px);left:0;display:grid;gap:8px;width:280px;padding:12px;border:1px solid #cbd9d5;border-radius:12px;background:#fff;box-shadow:0 18px 40px rgba(18,52,44,.18)}
+.jcs-detail-photo-preview{display:grid;place-items:center;min-height:94px;overflow:hidden;border-radius:9px;background:#eef4f2;color:#61756e;font-size:11px;text-align:center}
+.jcs-detail-photo-preview img{display:block;width:94px;height:94px;object-fit:cover;object-position:var(--photo-position,50% 22%);border-radius:50%}
+.jcs-detail-photo-admin :is(input,button){min-width:0;width:100%;min-height:36px;padding:7px 9px;border:1px solid #cad8d4;border-radius:8px;background:#fff;font:inherit}
+.jcs-detail-photo-admin button{background:#173f36;color:#fff;font-weight:900;cursor:pointer}
+.jcs-detail-photo-admin small,.jcs-detail-photo-admin [data-politician-state]{color:#61756e;font-size:10px;line-height:1.45}
+.jcs-approved-compare>.jcs-prescription-shell{width:100%;max-width:none;margin-top:0}
+.admin-politician-search{position:relative;overflow:visible}
+.admin-politician-search>.politician-autocomplete-results{top:calc(100% + 5px);right:74px;z-index:500}
+.admin-person-refresh [data-person-action-state]{grid-column:1/-1;min-height:18px;color:#173f36;font-size:11px;font-weight:800;line-height:1.5}
+@media(max-width:760px){
+  .jcs-detail-photo-admin>form{width:min(280px,76vw)}
+  .admin-politician-search>.politician-autocomplete-results{right:0;top:47px}
+}
+@media(max-width:430px){
+  #jcs-intelligence-nine .jcs-person-photo-column{grid-column:1}
+  .jcs-detail-photo-admin>form{left:-4px;width:min(278px,82vw)}
+  .jcs-legacy-photo-column .jcs-detail-photo-admin>form{left:0}
+}

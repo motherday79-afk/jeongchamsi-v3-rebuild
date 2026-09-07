@@ -118,6 +118,15 @@ test('application header places the font-size control in the former support-mess
   assert.doesNotMatch(app,/\$\{fontSizeControl\(\)\}<div class="page-wrap">/);
 });
 
+test('main header politician autocomplete routes a selected result directly to its detail page',async()=>{
+  const header=siteHeader(7,{authenticated:false,user:null});
+  assert.match(header,/data-politician-select-mode="route"/);
+  const interactions=await import('../src/ui/interactions.js');
+  assert.equal(typeof interactions.politicianSuggestionSelection,'function');
+  assert.deepEqual(interactions.politicianSuggestionSelection('route',{id:'assembly-001',name:'김민석'}),{route:'/person/assembly-001'});
+  assert.deepEqual(interactions.politicianSuggestionSelection('admin',{id:'assembly-001',name:'김민석'}),{route:'/admin?tab=politicians&q=%EA%B9%80%EB%AF%BC%EC%84%9D&person=assembly-001'});
+});
+
 test('layout foundation has new UI behavior wiring rather than disabled controls',()=>{
   const ui=read('src/ui/interactions.js');
   assert.match(ui,/setupDrawer/);

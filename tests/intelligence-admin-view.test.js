@@ -31,7 +31,7 @@ test('admin control center exposes ten processing stages and draft review before
   assert.match(html,/name="pastRisks"/);
   assert.match(html,/draft-1.*draft|draft.*draft-1/s);
   assert.match(html,/public-0.*published|published.*public-0/s);
-  assert.match(html,/JCS_0_0_31_27/);
+  assert.match(html,/JCS_0_0_31_28/);
   assert.match(html,/관리자 화면 버전/);
   assert.match(html,/YOUTUBE CHANNEL DATA/);
   assert.match(html,/등록 1 \/ 542/);
@@ -64,6 +64,17 @@ test('admin console exposes approved operational tabs and complete member/politi
   assert.match(html,/changedFields: news · youtube/);
 });
 
+test('admin render preserves the selected tab, search, and expanded politician editor',async()=>{
+  const html=await renderAdminStable(admin,auth,{tab:'politicians',q:'고민정',person:'assembly-001'});
+  assert.match(html,/data-admin-tab="politicians"[^>]*class="is-active"|class="is-active"[^>]*data-admin-tab="politicians"/);
+  assert.match(html,/class="admin-tab-panel is-active"[^>]*data-admin-panel="politicians"/);
+  assert.doesNotMatch(html,/data-admin-panel="politicians"[^>]*hidden/);
+  assert.match(html,/data-admin-politician="assembly-001"[^>]*open/);
+  assert.match(html,/data-politician-autocomplete/);
+  assert.match(html,/data-politician-select-mode="admin"/);
+  assert.match(html,/data-person-action-state/);
+});
+
 test('past risk signals have a separate administrator editor that can target every collected politician',async()=>{
   const html=await renderAdminStable(admin,auth);
   assert.match(html,/data-intelligence-past-risk-form/);
@@ -79,8 +90,8 @@ test('admin warns when browser bundle and server release versions differ',async(
   assert.match(html,/강력 새로고침 필요/);
 });
 
-test('admin operations, bounded news and YouTube metrics report release 31.27',()=>{
-  assert.equal(APP_RELEASE,'JCS_0_0_31_27');
+test('admin operations, bounded news and YouTube metrics report release 31.28',()=>{
+  assert.equal(APP_RELEASE,'JCS_0_0_31_28');
 });
 
 test('approved reviewed draft enables publication',async()=>{

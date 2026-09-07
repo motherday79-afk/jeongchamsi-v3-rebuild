@@ -115,6 +115,19 @@ test('administrator detail renders all ten approved native intelligence chapters
   assert.equal((html.match(/data-diagnosis-layout="\d{2}"/g)||[]).length,10);
 });
 
+test('only an administrator can upload a politician photo directly from the detail identity header',async()=>{
+  const adminHtml=await renderPoliticianDetail(person.id,serviceFor('admin'),{authenticated:true,user:{role:'admin'}});
+  assert.match(adminHtml,/data-detail-photo-admin/);
+  assert.match(adminHtml,/data-politician-photo-form="assembly-091"/);
+  assert.match(adminHtml,/data-photo-rerender="true"/);
+  assert.match(adminHtml,/data-politician-photo-input/);
+  assert.match(adminHtml,/data-politician-photo-preview/);
+  for(const [tier,session] of [['public',null],['member',{authenticated:true,user:{role:'member'}}]]){
+    const html=await renderPoliticianDetail(person.id,serviceFor(tier),session);
+    assert.doesNotMatch(html,/data-detail-photo-admin|data-photo-rerender/);
+  }
+});
+
 test('diagnostics preserve profile photo and record sections for every role',async()=>{
   for(const [tier,session] of [['public',null],['member',{user:{role:'member'}}],['admin',{user:{role:'admin'}}]]){
     const html=await renderPoliticianDetail(person.id,serviceFor(tier),session);

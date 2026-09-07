@@ -121,3 +121,10 @@ export function renderPrescriptionReport(report={}){
   const context={...report,prescriptions};
   return `<section class="jcs-rx-report" data-prescription-report><nav class="jcs-rx-nav" aria-label="처방 항목 바로가기">${prescriptions.map(item=>`<a href="#jcs-rx-${esc(item.id)}">${esc(item.id)}</a>`).join('')}</nav><div class="jcs-rx-body">${prescriptions.map(item=>chapter(item,context)).join('')}</div></section>`;
 }
+
+function safePayload(value){return JSON.stringify(value).replace(/[<>&\u2028\u2029]/g,char=>({'<':'\\u003c','>':'\\u003e','&':'\\u0026','\u2028':'\\u2028','\u2029':'\\u2029'}[char]));}
+export function renderPrescriptionDisclosure(report={},options={}){
+  const prescriptions=list(report.prescriptions),diagnoses=list(options.diagnoses||report.diagnoses),scope=text(options.scope)||'detail',mountId=text(options.mountId)||`jcs-prescription-body${scope==='detail'?'':`-${scope}`}`;
+  const payload=safePayload({prescriptions,diagnoses,prescriptionPriorities:report.prescriptionPriorities||{}}),subject=text(options.subject),heading=subject?`${subject} 기준 정치 전략 처방`:'정치 전략 처방';
+  return `<section class="jcs-prescription-shell" data-prescription-shell data-prescription-scope="${esc(scope)}"><header class="jcs-prescription-intro"><span>PART 02 · JCS STRATEGY PRESCRIPTION</span><h2>${esc(heading)}</h2><p>진단 결과를 실행 가능한 전략과 우선순위로 전환합니다.</p><button type="button" class="jcs-prescription-disclosure" data-prescription-disclosure aria-expanded="false" aria-controls="${esc(mountId)}">10개 처방 전체보기 ＋</button></header><script type="application/json" data-prescription-payload>${payload}</script><div class="jcs-prescription-mount" id="${esc(mountId)}" data-prescription-mount hidden></div></section>`;
+}

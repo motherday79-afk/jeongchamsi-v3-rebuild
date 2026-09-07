@@ -64,3 +64,11 @@ test('navigation does not crash on a malformed percent-encoded hash',async()=>{
   assert.doesNotThrow(()=>navigation.start());
   assert.equal(navigation.route(),'/search?q=%E0%A4%A');
 });
+
+test('admin routes preserve workflow state while tabs and searches change',async()=>{
+  const navigation=await import('../src/core/navigation.js');
+  assert.equal(typeof navigation.adminRouteState,'function');
+  assert.equal(typeof navigation.adminRouteWith,'function');
+  assert.deepEqual(navigation.adminRouteState('/admin?tab=politicians&q=%EA%B3%A0%EB%AF%BC%EC%A0%95&person=assembly-001'),{tab:'politicians',q:'고민정',person:'assembly-001'});
+  assert.equal(navigation.adminRouteWith('/admin?tab=politicians&q=%EA%B3%A0%EB%AF%BC%EC%A0%95&person=assembly-001',{tab:'pipeline'}),'/admin?tab=pipeline&q=%EA%B3%A0%EB%AF%BC%EC%A0%95&person=assembly-001');
+});

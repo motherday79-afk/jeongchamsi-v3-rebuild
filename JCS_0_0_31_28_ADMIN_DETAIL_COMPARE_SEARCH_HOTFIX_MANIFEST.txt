@@ -1,0 +1,37 @@
+JCS_0_0_31_28_ADMIN_DETAIL_COMPARE_SEARCH_HOTFIX_FINAL
+
+BASE
+- Existing JCS 0.0.31.27 workspace (no GitHub checkout/reset/init)
+
+FEATURES
+- Admin-only direct politician photo upload from detail page
+- Shared detail/compare visual prescription 01-10 renderer
+- Persistent admin tab/query/person workflow state
+- One-character admin politician autocomplete
+- One-character main header autocomplete with direct detail routing
+- Preserved 31.27 Galaxy mobile NOW rank hotfix
+
+CHANGED / ADDED
+- index.html
+- css/hotfix-31-27-mobile-now-rank.css
+- css/hotfix-31-28-admin-search-compare.css
+- src/app.js
+- src/core/navigation.js
+- src/core/release.js
+- src/layout/site-shell.js
+- src/ui/interactions.js
+- src/views/politician-compare.js
+- src/views/politicians.js
+- src/views/prescription-visuals.js
+- src/views/stage1.js
+- tests/intelligence-admin-view.test.js
+- tests/layout.test.js
+- tests/mobile-now-rank.test.js
+- tests/navigation.test.js
+- tests/politician-compare-prescription.test.js
+- tests/politician-diagnostics-view.test.js
+
+VERIFICATION
+- 86 relevant integration/regression tests passed
+- JavaScript syntax checks passed
+- Archive integrity checked
