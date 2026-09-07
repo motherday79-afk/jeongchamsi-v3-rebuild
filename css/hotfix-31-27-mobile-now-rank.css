@@ -1,0 +1,81 @@
+/* JCS 0.0.31.27 — Galaxy / Samsung Internet NOW RANK layout hotfix.
+   Loaded last to neutralize the earlier <=560px and <=340px selector conflict. */
+
+@media (max-width:560px){
+  #now .rank-top-grid-10{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+  }
+
+  #now .rank-top-grid-10 .rank-top-card,
+  #now .rank-top-grid-10 .rank-top-card:first-child{
+    grid-column:auto;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    min-width:0;
+    min-height:168px;
+    height:auto;
+    padding:13px 8px 14px;
+    gap:0;
+    text-align:center;
+    overflow:hidden;
+  }
+
+  #now .rank-top-grid-10 .rank-top-card .rank-top-avatar,
+  #now .rank-top-grid-10 .rank-top-card:first-child .rank-top-avatar{
+    flex:none;
+    width:58px;
+    height:58px;
+    margin:9px auto 8px;
+  }
+
+  #now .rank-top-grid-10 .rank-top-copy{
+    display:block;
+    width:100%;
+    min-width:0;
+    max-width:100%;
+    overflow:hidden;
+  }
+
+  #now .rank-top-grid-10 .rank-top-copy>b,
+  #now .rank-top-grid-10 .rank-top-copy>span,
+  #now .rank-top-grid-10 .rank-top-copy>strong{
+    display:block;
+    width:100%;
+    min-width:0;
+    max-width:100%;
+    white-space:nowrap;
+    word-break:keep-all;
+    overflow-wrap:normal;
+    writing-mode:horizontal-tb;
+    text-orientation:mixed;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+}
+
+@media (max-width:340px){
+  #now .rank-top-grid-10{
+    grid-template-columns:minmax(0,1fr);
+  }
+
+  #now .rank-top-grid-10 .rank-top-card,
+  #now .rank-top-grid-10 .rank-top-card:first-child{
+    grid-column:1;
+    display:grid;
+    grid-template-columns:64px minmax(0,1fr);
+    align-items:center;
+    min-height:112px;
+    padding:13px 14px;
+    gap:11px;
+    text-align:left;
+  }
+
+  #now .rank-top-grid-10 .rank-top-card .rank-top-avatar,
+  #now .rank-top-grid-10 .rank-top-card:first-child .rank-top-avatar{
+    width:60px;
+    height:60px;
+    margin:0;
+  }
+}

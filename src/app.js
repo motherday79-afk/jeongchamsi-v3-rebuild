@@ -8,7 +8,7 @@ import { createPoliticianService } from './core/politicians.js';
 import { createNavigation } from './core/navigation.js?v=0.0.31.26';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.26';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31';
-import * as views from './views/stage1.js?v=0.0.31.26';
+import * as views from './views/stage1.js?v=0.0.31.27';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.26';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.26';
 import { renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.26';
