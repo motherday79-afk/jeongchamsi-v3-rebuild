@@ -14,6 +14,8 @@ function createRemoteContentService(){
     async create(domain,input={}){const x=await request(`content?domain=${encodeURIComponent(domain)}`,{method:'POST',body:JSON.stringify({input})});return x.ok?x.item:{error:x.error,status:x.status};},
     async createParticipation(domain,input={}){return request('admin/participation',{method:'POST',body:JSON.stringify({operation:'create',domain,input})});},
     async featureParticipation(domain,itemId){return request('admin/participation',{method:'POST',body:JSON.stringify({operation:'feature',domain,itemId})});},
+    async homeBanner(){const result=await request('home/banner');return result?.ok?result.banner:null;},
+    async saveHomeBanner(input={}){return request('admin/home-banner',{method:'POST',body:JSON.stringify(input)});},
     async vote(scope,option){return request('action',{method:'POST',body:JSON.stringify({action:'vote',payload:{scope,option}})});},
     async voteResult(scope){if(scope.startsWith('poll:')){const id=scope.slice(5),data=await readDomain('polls'),poll=itemsFrom('polls',data).find(x=>String(x.id)===id);return Object.fromEntries((poll?.options||[]).map(o=>[String(o.id),Number(o.votes||0)]));}return {};},
     async like(domain,postId){return request('action',{method:'POST',body:JSON.stringify({action:'post-like',payload:{domain,postId}})});},

@@ -1,0 +1,32 @@
+JCS 0.0.31.30
+
+Core
+- api/gateway.js
+- lib/home-banner-service.js
+- lib/migration-service.js
+- lib/rebuild-store.js
+- lib/badge-service.js
+- lib/operational-ranking.js
+- lib/participation-admin.js
+
+Diagnosis 03 official population
+- lib/official-public-data.js
+- lib/intelligence-diagnostics.js
+- lib/intelligence-access.js
+- src/views/politicians.js
+
+Frontend
+- index.html
+- css/hotfix-31-30-main-participation.css
+- src/app.js
+- src/core/content.js
+- src/core/release.js
+- src/layout/home-layout.js
+- src/views/stage1.js
+- src/views/participation-pages.js
+
+Tests
+- tests/0-0-31-30-main-hotfix.test.js
+- tests/home-banner-service.test.js
+- tests/official-public-data.test.js
+- tests/intelligence-diagnosis-display.test.js

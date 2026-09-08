@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createBadgeService } from '../lib/badge-service.js';
-import { dispatchBadgeRequest, sanitizeContentInput, isActiveAcademySlot, findPublishedPost, recordContentView } from '../api/gateway.js';
+import { dispatchBadgeRequest, sanitizeContentInput, isActiveAcademySlot, findPublishedPost, recordContentView, attachRepresentativeBadges } from '../api/gateway.js';
 
 function memoryCommand(seed={}){
   const values=new Map(Object.entries(seed));
@@ -102,7 +102,22 @@ test('one admin badge service reuses shared content domains across member evalua
   await service.statusForUser({id:'first',role:'member'});
   await service.statusForUser({id:'second',role:'member'});
   const contentReads=calls.filter(args=>args[0]==='GET'&&String(args[1]).startsWith('jcsr2:content:'));
-  assert.equal(contentReads.length,4);
+  assert.equal(contentReads.length,5);
+});
+
+test('content responses attach each authors current representative badge without rewriting stored posts',async()=>{
+  const stored={items:[
+    {id:'post-1',ownerId:'member',author:'정참시민',representativeBadge:'old-value'},
+    {id:'post-2',ownerId:'other',author:'다른회원'}
+  ]};
+  const {command}=memoryCommand({
+    'jcsr2:useractivity:v1:member':JSON.stringify({representativeBadge:'first-penguin'}),
+    'jcsr2:useractivity:v1:other':JSON.stringify({representativeBadge:'not-a-real-badge'})
+  });
+  const enriched=await attachRepresentativeBadges(command,stored);
+  assert.equal(enriched.items[0].representativeBadge,'first-penguin');
+  assert.equal(enriched.items[1].representativeBadge,'');
+  assert.equal(stored.items[0].representativeBadge,'old-value');
 });
 
 test('visit de-duplication uses the same Korean calendar day as badge metrics',async()=>{

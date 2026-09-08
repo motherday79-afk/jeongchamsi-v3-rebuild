@@ -1,0 +1,37 @@
+/* 0.0.31.30 · main hierarchy, participation and sidebar operations */
+.product-launcher-compact .launcher-copy,.product-launcher-compact .launcher-copy span,
+.itsme-home-module .itsme-card>b,.poll-module .poll-question h3,.poll-module .poll-options button>span,
+.generation-president .generation-intro h3,.generation-president .generation-age,.generation-president .generation-result>b,.generation-president .generation-result small,.column-card-copy>b,.community-title,
+.side-news .side-row>i,.rising-politician-name{font-weight:400!important}
+
+.rank-top-copy>strong[data-now-score]{display:block!important;color:#087d68!important;font-weight:800!important;white-space:nowrap!important;line-height:1.2!important}
+.community-stats{white-space:nowrap!important;font-weight:400!important}
+.side-news .side-row{cursor:pointer}
+.side-news .side-row>i{font-style:normal}
+.rising-politician-name{display:block}
+
+.side-home-banner{position:relative;overflow:hidden;padding:0!important}
+.side-home-banner a{display:block}
+.side-home-banner img{display:block;width:100%;aspect-ratio:16/5;object-fit:cover}
+.side-home-banner>button{position:absolute;right:10px;bottom:10px;border:1px solid rgba(255,255,255,.7);border-radius:999px;background:rgba(15,31,43,.82);color:#fff;padding:6px 10px;font-size:12px;cursor:pointer}
+.side-home-banner-empty{padding:18px!important}
+.side-home-banner-empty p{margin:5px 0 13px;color:var(--muted,#66736f);font-size:12px}
+.side-home-banner-empty>button{position:static;background:#123f38;border-color:#123f38}
+.side-participation-account .participation-account-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--line,#e4e9e7)}
+.participation-account-row span{display:grid;gap:3px;min-width:0}
+.participation-account-row small{font-size:10px;letter-spacing:.1em;color:#087d68}
+.participation-account-row b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.participation-account-row button{border:1px solid var(--line,#dce4e1);background:#fff;border-radius:8px;padding:7px 9px;white-space:nowrap;cursor:pointer}
+
+.home-banner-dialog{border:0;border-radius:18px;width:min(460px,calc(100vw - 32px));padding:0;box-shadow:0 24px 80px rgba(10,30,38,.28)}
+.home-banner-dialog::backdrop{background:rgba(10,25,31,.55)}
+.home-banner-dialog form{display:grid;gap:13px;padding:22px}
+.home-banner-dialog h2{margin:0;font-size:20px}
+.home-banner-dialog p{margin:0;color:var(--muted,#66736f);font-size:13px}
+.home-banner-dialog label{display:grid;gap:6px;font-size:12px}
+.home-banner-dialog input{min-width:0;border:1px solid var(--line,#dce4e1);border-radius:9px;padding:10px}
+.home-banner-actions{display:flex;justify-content:flex-end;gap:8px}
+
+@media(max-width:1024px){
+  .mobile-utility .participation-account-row{padding:12px 14px;margin:0}
+}

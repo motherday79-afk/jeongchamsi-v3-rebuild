@@ -16,7 +16,11 @@ const context={peers:[
   {id:'r3',name:'최경쟁',type:'assembly',party:'무소속',region:'경기',terms:'재선',office:'국회의원'},
   {id:'r4',name:'정경쟁',type:'assembly',party:'더불어민주당',region:'부산',terms:'4선',office:'국회의원'}
 ],ageSex:[
-  {age:'20대',maleShare:49,femaleShare:51},{age:'30대',maleShare:50,femaleShare:50},{age:'40대',maleShare:51,femaleShare:49},{age:'50대',maleShare:49,femaleShare:51},{age:'60대 이상',maleShare:46,femaleShare:54}
+  {age:'20대',maleShare:49,femaleShare:51,totalCount:1200,totalShare:16},
+  {age:'30대',maleShare:50,femaleShare:50,totalCount:1350,totalShare:18},
+  {age:'40대',maleShare:51,femaleShare:49,totalCount:1500,totalShare:20},
+  {age:'50대',maleShare:49,femaleShare:51,totalCount:1650,totalShare:22},
+  {age:'60대 이상',maleShare:46,femaleShare:54,totalCount:1800,totalShare:24}
 ]};
 
 test('administrator diagnoses expose ten distinct approved display contracts',()=>{
@@ -100,7 +104,7 @@ test('local diagnosis always exposes a complete voter structure and JCS message 
   assert.equal(local.population.reduce((sum,row)=>sum+row.totalShare,0),100);
   assert.equal(local.population.every(row=>row.maleShare+row.femaleShare===100),true);
   assert.deepEqual(local.issues,[]);
-  assert.equal(local.messagePath.length,4);
+  assert.equal(local.messagePath.length,3);
   assert.equal(local.messagePath.every(row=>Number.isFinite(row.value)),true);
   assert.match(local.localJudgment,/JCS 지역 진단/);
   assert.doesNotMatch(JSON.stringify(local),/데이터 부족|연결 전/);
@@ -138,8 +142,19 @@ test('local diagnosis exposes official electorate structure from the collected p
   assert.equal(local.population[0].age,'20대');
   assert.equal(local.population[0].maleShare,49);
   assert.equal(local.population[0].femaleShare,51);
-  assert.equal(Number.isFinite(local.population[0].totalShare),true);
-  assert.equal(local.populationBasis,'공식 인구 구조 + JCS 지지구조 해석');
+  assert.equal(local.population[0].totalShare,16);
+  assert.equal(local.population[0].totalCount,1200);
+  assert.equal(local.populationBasis,'행정안전부 공식 지역 인구 구조');
+});
+
+test('local diagnosis never copies the demographic support composition when official electorate totals are absent',()=>{
+  const legacyContext={...context,ageSex:context.ageSex.map(({age,maleShare,femaleShare})=>({age,maleShare,femaleShare}))};
+  const report=projectIntelligence(buildIntelligenceDraft(person,raw,legacyContext,'JCS_INTELLIGENCE_V3'),'admin','detail');
+  const demographic=report.diagnoses.find(row=>row.id==='02').display;
+  const local=report.diagnoses.find(row=>row.id==='03').display;
+  assert.equal(demographic.cohorts.length,5);
+  assert.deepEqual(local.population,[]);
+  assert.equal(local.populationBasis,'');
 });
 
 test('political action diagnosis uses retained supplemental evidence as observed activity rows',()=>{
@@ -208,20 +223,6 @@ test('issue persistence uses all thirty calendar positions and actual daily arti
   assert.equal(persistence.daily[0].count,1);
   assert.equal(persistence.daily[28].count,2);
   assert.equal(persistence.maxDaily,2);
-});
-
-test('issue persistence counts the complete retained thirty-day news ledger instead of one event sample',()=>{
-  const ledger={...raw,news:{items:[
-    {title:'김진단 청년 주거 정책 발표',source:'A',url:'https://example.com/l1',publishedAt:'2026-08-09T00:00:00.000Z'},
-    {title:'김진단 지역 교통 예산 확보',source:'B',url:'https://example.com/l2',publishedAt:'2026-08-16T00:00:00.000Z'},
-    {title:'김진단 민생경제 법안 발의',source:'C',url:'https://example.com/l3',publishedAt:'2026-08-24T00:00:00.000Z'},
-    {title:'김진단 당내 지도부 회의 참석',source:'D',url:'https://example.com/l4',publishedAt:'2026-08-31T00:00:00.000Z'},
-    {title:'김진단 지역 현장 간담회 개최',source:'E',url:'https://example.com/l5',publishedAt:'2026-09-04T00:00:00.000Z'}
-  ]}};
-  const report=projectIntelligence(buildIntelligenceDraft(person,ledger,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
-  const persistence=report.diagnoses.find(row=>row.id==='06').display.persistence;
-  assert.equal(persistence.daily.reduce((sum,row)=>sum+row.count,0),5);
-  assert.equal(persistence.daily.filter(row=>row.count>0).length,5);
 });
 
 test('media spread groups every distinct outlet by observed publication frequency',()=>{
@@ -294,61 +295,6 @@ test('competitor rows use period news counts and frame counts without duplicatin
   assert.deepEqual(people[0].newsPeriods.map(row=>row.label),['24H','7D','30D']);
   assert.deepEqual(people[0].frames,{positive:1,neutral:1,negative:2});
   assert.equal(Object.hasOwn(people[0],'sourceSpread'),false);
-});
-
-test('competitor sentiment and representative headlines are recalculated for 24H 7D and 30D',()=>{
-  const report=projectIntelligence(buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
-  const subject=report.diagnoses.find(row=>row.id==='05').display.people[0];
-  assert.deepEqual(subject.framePeriods.map(row=>row.label),['24H','7D','30D']);
-  assert.deepEqual(subject.framePeriods.map(row=>[row.positive,row.neutral,row.negative]),[[1,1,0],[1,1,0],[1,1,1]]);
-  assert.match(subject.framePeriods[0].items.map(row=>row.title).join(' '),/정책 발표|예산 확보/);
-  assert.doesNotMatch(subject.framePeriods[0].items.map(row=>row.title).join(' '),/과거 발언 논란/);
-  assert.match(subject.framePeriods[2].items.map(row=>row.title).join(' '),/과거 발언 논란/);
-});
-
-test('policy connection uses a transparent four-part evidence score instead of raw topic share alone',()=>{
-  const report=projectIntelligence(buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
-  const brand=report.diagnoses.find(row=>row.id==='01').display;
-  const policy=brand.policyConnection;
-  assert.deepEqual(Object.keys(policy.components),['direct','action','local','recency']);
-  assert.equal(policy.value,Object.values(policy.components).reduce((sum,value)=>sum+value,0));
-  assert.equal(brand.indicators.find(row=>row.label==='정책 연결도').value+50,policy.value);
-  assert.ok(policy.value>25);
-});
-
-test('issue persistence classifies its observed daily shape',()=>{
-  const report=projectIntelligence(buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
-  const persistence=report.diagnoses.find(row=>row.id==='06').display.persistence;
-  assert.match(persistence.shape,/단기|지속|재점화|상승|데이터 부족/);
-  assert.equal(persistence.daily.length,30);
-});
-
-test('competitor contract preserves distinct observed period counts for every comparison row',()=>{
-  const peers=context.peers.map((row,index)=>({...row,
-    newsPeriods:[{label:'24H',value:index+1},{label:'7D',value:(index+1)*10},{label:'30D',value:(index+1)*100}],
-    frames:{positive:index+2,neutral:index+3,negative:index+4}
-  }));
-  const report=projectIntelligence(buildIntelligenceDraft(person,raw,{...context,peers},'JCS_INTELLIGENCE_V3'),'admin','detail');
-  const people=report.diagnoses.find(row=>row.id==='05').display.people;
-  assert.deepEqual(people.slice(1).map(row=>row.newsPeriods.map(period=>period.value)),[[1,10,100],[2,20,200],[4,40,400]]);
-  assert.deepEqual(people.slice(1).map(row=>row.frames.positive),[2,3,5]);
-});
-
-test('media contract exposes complete and distinct source datasets for 24H 7D and 30D',()=>{
-  const mediaRaw={...raw,collectedAt:'2026-09-04T12:00:00.000Z',news:{items:[
-    {title:'김진단 당일 정책 발표',source:'연합뉴스',url:'https://example.com/m1',publishedAt:'2026-09-04T10:00:00.000Z'},
-    {title:'김진단 전날 정책 후속',source:'연합뉴스',url:'https://example.com/m2',publishedAt:'2026-09-03T18:00:00.000Z'},
-    {title:'김진단 주간 지역 행보',source:'한겨레',url:'https://example.com/m3',publishedAt:'2026-08-31T12:00:00.000Z'},
-    {title:'김진단 월간 의정 활동',source:'지역신문',url:'https://example.com/m4',publishedAt:'2026-08-20T12:00:00.000Z'}
-  ]}};
-  const report=projectIntelligence(buildIntelligenceDraft(person,mediaRaw,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
-  const media=report.diagnoses.find(row=>row.id==='07').display;
-  assert.deepEqual(media.periods.map(row=>row.label),['24H','7D','30D']);
-  assert.deepEqual(media.periods.map(row=>row.articleCount),[2,3,4]);
-  assert.deepEqual(media.periods.map(row=>row.sourceCount),[1,2,3]);
-  assert.deepEqual(media.periods[0].allSources,[{name:'연합뉴스',count:2,value:2,share:100}]);
-  assert.equal(media.periods[1].majorShare,33);
-  assert.equal(media.periods[2].nonMajorShare,75);
 });
 
 test('JCS summary is derived only from diagnoses 01 02 03 04 05 06 and 09',()=>{

@@ -15,6 +15,11 @@ test('MOIS public table becomes five independent male/female cohort shares',()=>
   assert.deepEqual(selected.map(item=>item.age),['20대','30대','40대','50대','60대 이상']);
   assert.equal(selected[0].maleShare,60);
   assert.equal(selected[0].femaleShare,40);
+  assert.equal(selected[0].maleCount,180);
+  assert.equal(selected[0].femaleCount,120);
+  assert.equal(selected[0].totalCount,300);
+  assert.equal(Number(selected.reduce((sum,item)=>sum+item.totalShare,0).toFixed(2)),100);
+  assert.ok(selected[4].totalShare>selected[0].totalShare);
   assert.notEqual(selected[0].maleShare,selected[4].maleShare);
   assert.equal(parsed.source.provider,'MOIS_RESIDENT_POPULATION');
 });
