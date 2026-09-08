@@ -1,3 +1,4 @@
+import { put } from '@vercel/blob';
 import { legacyRedisCommand, rebuildRedisCommand } from '../lib/redis-rest.js';
 import { collectLegacySnapshot, writeRebuildSnapshot, writePoliticianSeed, validatePoliticianSeed, TARGET_KEYS } from '../lib/migration-service.js';
 import { LEGACY_DOMAINS } from '../lib/migration-core.js';
@@ -9,9 +10,9 @@ import { accessTierForUser, projectIntelligence } from '../lib/intelligence-acce
 import { buildIntelligenceDraft } from '../lib/intelligence-analysis.js';
 import { createBadgeService } from '../lib/badge-service.js';
 import { VALID_BADGE_KEYS } from '../lib/badge-engine.js';
-import { createParticipationPost, featureParticipationPost } from '../lib/participation-admin.js';
+import { createParticipationPost, featureParticipationPost, editParticipationPost } from '../lib/participation-admin.js';
 import { createAdminPoliticianService } from '../lib/admin-politician-service.js';
-import { createPoliticianPhotoService, politicianPhotoStorageStatus } from '../lib/politician-photo-service.js';
+import { createPoliticianPhotoService, politicianPhotoStorageStatus, validatePoliticianPhoto } from '../lib/politician-photo-service.js';
 import { createHomeBannerService, homeBannerStorageStatus } from '../lib/home-banner-service.js';
 import { createFavoriteService } from '../lib/favorite-service.js';
 import { createInquiryService } from '../lib/inquiry-service.js';
@@ -170,13 +171,39 @@ async function handleUser(req,res,route,command){
   return false;
 }
 
-async function handleContent(req,res,command,url){
+export const canManagePost=(user,post)=>!!user&&!!post&&(user.role==='admin'||(!!post.ownerId&&String(user.id)===String(post.ownerId)));
+export function applyPostEdit(post,input={}){
+  const patch=sanitizeContentInput(input);
+  for(const key of ['body','summary','category','coverImage'])if(Object.hasOwn(input,key)&&!String(input[key]||'').trim())patch[key]='';
+  return {...post,...patch,updatedAt:new Date().toISOString()};
+}
+
+export async function handleContent(req,res,command,url){
   const domain=cleanDomain(url.searchParams.get('domain')||req.query?.domain);if(!domain)return json(res,400,{ok:false,error:'INVALID_DOMAIN'});
   if(req.method==='GET'){const data=(await readDomainWithViews(command,domain,null))||({items:[]});return json(res,200,{ok:true,domain,data:await attachRepresentativeBadges(command,data)});}
+
+  if(['PATCH','DELETE'].includes(req.method)){
+    const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});
+    if(!['columns','community','itsme','news'].includes(domain))return json(res,403,{ok:false,error:'WRITE_NOT_ALLOWED'});
+    const body=bodyOf(req),data=await readDomain(command,domain,{items:[]}),items=contentItems(data),index=items.findIndex(row=>String(row.id)===String(body.id||''));
+    if(index<0)return json(res,404,{ok:false,error:'POST_NOT_FOUND'});
+    if(!canManagePost(user,items[index]))return json(res,403,{ok:false,error:'POST_EDIT_FORBIDDEN'});
+    if(req.method==='DELETE')items.splice(index,1);
+    else {if(!String(body.input?.title||'').trim())return json(res,400,{ok:false,error:'TITLE_REQUIRED'});items[index]=applyPostEdit(items[index],body.input);}
+    data.items=items;await writeDomain(command,domain,data);return json(res,200,{ok:true,item:req.method==='PATCH'?items[index]:null});
+  }
   if(req.method==='POST'){
     const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});
     if(!['columns','community','itsme','news'].includes(domain))return json(res,403,{ok:false,error:'WRITE_NOT_ALLOWED'});
-    if(['columns','news'].includes(domain)&&!['admin','partner'].includes(user.role))return json(res,403,{ok:false,error:'EDITOR_WRITE_FORBIDDEN'});
+    if(['columns','news'].includes(domain)&&!['admin','partner'].includes(user.role)&&!(bodyOf(req).operation==='upload-image'&&bodyOf(req).id))return json(res,403,{ok:false,error:'EDITOR_WRITE_FORBIDDEN'});
+    if(bodyOf(req).operation==='upload-image'){
+      try{const body=bodyOf(req);if(!['columns','news'].includes(domain))return json(res,403,{ok:false,error:'IMAGE_NOT_ALLOWED'});
+      if(body.id){const data=await readDomain(command,domain,{items:[]}),post=contentItems(data).find(row=>String(row.id)===String(body.id));if(!canManagePost(user,post))return json(res,403,{ok:false,error:'POST_EDIT_FORBIDDEN'});}
+      const valid=validatePoliticianPhoto({contentType:body.contentType,bytes:Buffer.from(String(body.base64||''),'base64')});
+      if(!politicianPhotoStorageStatus().configured)return json(res,503,{ok:false,error:'PHOTO_STORAGE_NOT_CONFIGURED'});
+      const blob=await put(`boards/${domain}/${Date.now()}.${valid.extension}`,valid.bytes,{access:'public',contentType:valid.contentType,addRandomSuffix:true});return json(res,201,{ok:true,url:blob.url});
+      }catch(error){return json(res,400,{ok:false,error:String(error.message||'IMAGE_UPLOAD_FAILED')});}
+    }
     const input=sanitizeContentInput(bodyOf(req).input||bodyOf(req)),data=(await readDomain(command,domain,{items:[]}))||{items:[]};
     const item={...input,id:`${domain}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,7)}`,ownerId:user.id,author:String(user.nickname||user.id).slice(0,40),published:true,likes:0,views:0,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
     data.items=[item,...contentItems(data)].slice(0,500);await writeDomain(command,domain,data);const decorated=await attachRepresentativeBadges(command,{items:[item]});return json(res,201,{ok:true,item:decorated.items[0]});
@@ -275,7 +302,7 @@ async function handleAdmin(req,res,route,command){
     const body=bodyOf(req),domain=String(body.domain||'');if(!['polls','generation','nationalEvaluation'].includes(domain))return json(res,400,{ok:false,error:'INVALID_PARTICIPATION_DOMAIN'});
     const current=(await readDomain(command,domain,domain==='polls'?{items:[]}:{slots:{},results:{},history:[],items:[]}))||{};
     try{
-      const result=body.operation==='feature'?featureParticipationPost(domain,current,body.itemId):createParticipationPost(domain,current,body.input||{},user);
+      const result=['edit','delete'].includes(body.operation)?editParticipationPost(domain,current,body.itemId,body.input||{},body.operation==='delete'):body.operation==='feature'?featureParticipationPost(domain,current,body.itemId):createParticipationPost(domain,current,body.input||{},user);
       await writeDomain(command,domain,result.data);return json(res,200,{ok:true,item:result.item,data:result.data});
     }catch(error){return json(res,400,{ok:false,error:error.message||'PARTICIPATION_SAVE_FAILED'});}
   }
@@ -352,6 +379,7 @@ export default async function handler(req,res){
     if(route==='inquiries'){
       const service=createInquiryService({command}),user=await currentUser(req,command);
       if(req.method==='GET')return json(res,200,await service.list(user,{offset:url.searchParams.get('offset'),limit:url.searchParams.get('limit')}));
+      if(['PATCH','DELETE'].includes(req.method)){const body=bodyOf(req),result=await service.edit(body.id,user,body.input||{},req.method==='DELETE');return json(res,result.ok?200:result.error==='LOGIN_REQUIRED'?401:result.error==='INQUIRY_FORBIDDEN'?403:400,result);}
       if(req.method==='POST'){const result=await service.create(user,bodyOf(req));return json(res,result.ok?201:result.error==='LOGIN_REQUIRED'?401:400,result);}
       return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
     }
@@ -383,7 +411,7 @@ export default async function handler(req,res){
     if(route==='action')return handleAction(req,res,command);
     if(route==='stats'){const users=await listUsers(command);return json(res,200,{ok:true,members:users.length});}
     if(route.startsWith('admin/')){const handled=await handleAdmin(req,res,route,command);if(handled!==false)return handled;}
-    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_31_37'});
+    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_31_38'});
     return json(res,404,{ok:false,error:'NOT_FOUND'});
   }catch(error){return json(res,error.code==='STORAGE_MISSING'?503:500,{ok:false,error:error.code||error.message||'SERVER_ERROR'});}
 }

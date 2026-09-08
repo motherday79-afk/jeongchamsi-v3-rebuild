@@ -1,20 +1,20 @@
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.26';
 import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.36';
-import { renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.37';
-import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.37';
+import { renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.38';
+import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.38';
 import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.36';
-import { createContentService } from './core/content.js?v=0.0.31.36';
+import { createContentService } from './core/content.js?v=0.0.31.38';
 import { createPoliticianService } from './core/politicians.js';
 import { createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.28';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.26';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31';
-import * as views from './views/stage1.js?v=0.0.31.37';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.37';
-import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.28';
-import { generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.37';
+import * as views from './views/stage1.js?v=0.0.31.38';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.38';
+import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.38';
+import { generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.38';
 import { renderPresidentPage } from './views/president.js?v=0.0.31';
 import { renderSearchPage } from './views/search-page.js?v=0.0.31.26';
-import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.31.37';
+import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.31.38';
 import { regionDistrictOptions } from './data/korean-regions.js?v=0.0.31.35';
 
 const app=document.getElementById('app');
@@ -193,12 +193,21 @@ document.addEventListener('submit',async event=>{
   if(intelligenceDraft){event.preventDefault();const data=new FormData(intelligenceDraft),state=intelligenceDraft.querySelector('[data-intelligence-draft-state]'),result=await auth.intelligenceDraftUpdate({personId:intelligenceDraft.dataset.personId,diagnoses:[{id:'01',headline:String(data.get('diagnosisHeadline')||'')}],prescriptions:[{id:'01',strategicJudgment:String(data.get('prescriptionJudgment')||'')}]});if(state)state.textContent=result?.ok?'수정본을 저장했습니다. 자동 검증 통과 시 바로 게시할 수 있습니다.':(result?.error||'수정본을 저장하지 못했습니다.');if(result?.ok)await render({preserveScroll:true});return;}
   const pastRiskForm=event.target.closest('[data-intelligence-past-risk-form]');
   if(pastRiskForm){event.preventDefault();const data=new FormData(pastRiskForm),state=pastRiskForm.querySelector('[data-intelligence-draft-state]'),pastRisks=String(data.get('pastRisks')||'').split(/\r?\n/).map(line=>line.split('|').map(value=>value.trim())).filter(parts=>parts[0]&&parts[1]&&/^https?:\/\//.test(parts[2])).slice(0,5).map(([tag,title,url,date])=>({tag:tag.startsWith('#')?tag:`#${tag}`,title,url,date:date||''})),result=await auth.intelligenceDraftUpdate({personId:String(data.get('personId')||''),diagnoses:[{id:'01',pastRisks}]});if(state)state.textContent=result?.ok?'PAST RISK SIGNALS를 저장했습니다. 자동 검증 통과 시 바로 게시할 수 있습니다.':(result?.error||'PAST RISK SIGNALS를 저장하지 못했습니다.');if(result?.ok)await render({preserveScroll:true});return;}
+  const participationEdit=event.target.closest('[data-participation-edit]');
+  if(participationEdit){event.preventDefault();const operation=event.submitter?.value||'edit';if(operation==='delete'&&!window.confirm('이 게시물을 삭제하시겠습니까?'))return;const fd=new FormData(participationEdit),input=Object.fromEntries(fd);input.optionLabels=fd.getAll('optionLabels');const result=await content.editParticipation(participationEdit.dataset.participationEdit,participationEdit.dataset.postId,input,operation);if(result.ok)await render({preserveScroll:true});else participationEdit.querySelector('[data-form-state]').textContent=result.error||'저장하지 못했습니다.';return;}
   const participationAdmin=event.target.closest('[data-participation-admin-form]');
   if(participationAdmin){event.preventDefault();const formData=new FormData(participationAdmin),data=Object.fromEntries(formData);data.applyToMain=data.applyToMain==='true';if(participationAdmin.dataset.participationAdminForm==='generation')data.candidateIds=formData.getAll('candidateIds').map(String).filter(Boolean);const result=await content.createParticipation(participationAdmin.dataset.participationAdminForm,data),state=participationAdmin.querySelector('[data-form-state]');if(state)state.textContent=result?.ok?'저장하고 적용했습니다.':(result?.error||'저장하지 못했습니다.');if(result?.ok)await render();return;}
   const generationSearch=event.target.closest('[data-generation-search]');
   if(generationSearch){event.preventDefault();const data=new FormData(generationSearch),age=String(data.get('age')||'20대'),query=String(data.get('q')||'').trim();navigation.navigate(`/generation-president?age=${encodeURIComponent(age)}${query?`&q=${encodeURIComponent(query)}`:''}`);return;}
   const form=event.target.closest('[data-stage-form]'); if(!form)return;
   event.preventDefault(); const data=Object.fromEntries(new FormData(form)); const type=form.dataset.stageForm; let result=null;
+  if(['board','post-edit'].includes(type)&&data.coverFile?.size){
+    const state=form.querySelector('[data-form-state]');if(data.coverFile.size>1048576){if(state)state.textContent='사진은 최대 1MB까지 등록할 수 있습니다.';return;}
+    const upload=await content.uploadImage(form.dataset.domain,data.coverFile,form.dataset.postId||'');if(!upload.ok){if(state)state.textContent=upload.error||'사진 업로드 실패';return;}data.coverImage=upload.url;
+  }
+  delete data.coverFile;
+  if(type==='post-edit'){const item=await content.update(form.dataset.domain,form.dataset.postId,data);result=item?.error?{ok:false,error:item.error}:{ok:true};if(result.ok)await render({preserveScroll:true});}
+  if(type==='post-delete'){if(!window.confirm('이 게시물을 삭제하시겠습니까?'))return;result=await content.remove(form.dataset.domain,form.dataset.postId);if(result.ok)result.route=`/${form.dataset.domain==='columns'?'column':form.dataset.domain}`;}
   if(type==='login') result=await auth.login(data);
   if(type==='join') result=await auth.register(data);
   if(type==='board'){const item=await content.create(form.dataset.domain,data),routeName=form.dataset.domain==='columns'?'column':form.dataset.domain==='news'?'news':'community';result=item?.error?{ok:false,error:item.error}:{ok:true,route:`/${routeName}/${item.id}`};}
