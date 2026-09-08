@@ -1,4 +1,4 @@
-import { SERVICE_CATALOG, launcherServices, moduleActionIconSvg, serviceIconSvg } from '../ui/service-icons.js?v=0.0.31.44';
+import { SERVICE_CATALOG, launcherServices, moduleActionIconSvg, serviceIconSvg } from '../ui/service-icons.js?v=0.0.31.45';
 import { badgeByKey, badgeCrestSvg } from '../data/badge-catalog.js';
 
 const partyClass=(party='')=>party.includes('더불어')?'party-democratic':party.includes('국민의힘')?'party-peoplepower':party.includes('개혁신당')?'party-reform':party.includes('조국혁신당')?'party-innovation':party.includes('진보당')?'party-progressive':party.includes('기본소득당')?'party-basicincome':party.includes('사회민주당')?'party-socialdemocratic':party.includes('공석')?'party-vacant':'party-independent';

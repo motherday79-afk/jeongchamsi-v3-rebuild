@@ -107,23 +107,10 @@
 .side-badge-showcase .badge-showcase-main>div{grid-column:2 / 4;min-width:0}
 .side-badge-showcase .badge-showcase-main>.badge-showcase-slot,.side-badge-showcase .badge-showcase-slot{width:100%;height:var(--showcase-height);min-height:var(--showcase-height);box-sizing:border-box}
 .side-badge-showcase .badge-showcase-slot .badge-crest{width:var(--showcase-crest-width);height:var(--showcase-crest-height)}
-/* 31.44: compact issue timing cards, with source links and a separate major-outlet view. */
-#jcs-intelligence-nine .jcs-media-observation-note{font-size:11px;line-height:1.6;color:var(--jcs-sub);margin:8px 0}
-#jcs-intelligence-nine .jcs-media-observations{display:grid;gap:10px}
-#jcs-intelligence-nine .jcs-media-issue{border:1px solid var(--jcs-line);border-radius:10px;overflow:hidden}
-#jcs-intelligence-nine .jcs-media-issue>summary{padding:13px 15px;cursor:pointer;font-size:13px}
-#jcs-intelligence-nine .jcs-media-issue>summary>b{line-height:1.6;overflow-wrap:anywhere}
-#jcs-intelligence-nine .jcs-media-issue>summary>span{display:block;font-size:11px;color:var(--jcs-teal);margin-top:5px}
-#jcs-intelligence-nine .jcs-media-issue-body{padding:0 15px 14px}
-#jcs-intelligence-nine .jcs-media-issue-stats{display:flex;flex-wrap:wrap;gap:8px 24px;font-size:11px;padding:10px 0;border-top:1px solid var(--jcs-line)}
-#jcs-intelligence-nine .jcs-media-issue-stats b{margin-left:6px}
-#jcs-intelligence-nine .jcs-media-timeline{list-style:none;padding:0;margin:6px 0 12px}
-#jcs-intelligence-nine .jcs-media-timeline li{padding:10px 0;border-bottom:1px solid var(--jcs-line)}
-#jcs-intelligence-nine .jcs-media-timeline li>div{display:flex;flex-wrap:wrap;justify-content:space-between;gap:5px 10px;font-size:12px}
-#jcs-intelligence-nine .jcs-media-timeline small{font-size:10px;color:var(--jcs-sub)}
-#jcs-intelligence-nine .jcs-media-timeline li>a,#jcs-intelligence-nine .jcs-media-timeline li>span{display:block;font-size:11px;line-height:1.5;margin-top:5px;overflow-wrap:anywhere}
-#jcs-intelligence-nine .jcs-media-major-arrival>summary{font-size:12px;cursor:pointer;color:var(--jcs-teal)}
-#jcs-intelligence-nine .jcs-media-major-arrival>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
-#jcs-intelligence-nine .jcs-media-major-arrival article{display:grid;gap:4px;padding:10px;background:var(--jcs-soft);font-size:11px;min-width:0;overflow-wrap:anywhere}
-#jcs-intelligence-nine .jcs-media-major-arrival article small{color:var(--jcs-sub);font-size:10px}
-@media(max-width:560px){#jcs-intelligence-nine .jcs-media-major-arrival>div{grid-template-columns:1fr}}
+/* 31.45: first outlet and spread belong in the existing summary strip. */
+#jcs-intelligence-nine .jcs-media-summary-compact{grid-template-columns:repeat(4,minmax(0,1fr)) minmax(96px,1fr) minmax(190px,2fr);gap:0;align-items:start}
+#jcs-intelligence-nine .jcs-media-summary-compact>div{min-width:0;padding:4px 12px}
+#jcs-intelligence-nine .jcs-media-summary-compact .jcs-media-first b,
+#jcs-intelligence-nine .jcs-media-summary-compact .jcs-media-spread b{display:block;font-size:13px;line-height:1.6;word-break:keep-all;overflow-wrap:anywhere}
+@media(max-width:1024px){#jcs-intelligence-nine .jcs-media-summary-compact{grid-template-columns:repeat(4,minmax(0,1fr));row-gap:12px}#jcs-intelligence-nine .jcs-media-summary-compact .jcs-media-spread{grid-column:span 3}}
+@media(max-width:560px){#jcs-intelligence-nine .jcs-media-summary-compact{grid-template-columns:repeat(2,minmax(0,1fr))}#jcs-intelligence-nine .jcs-media-summary-compact .jcs-media-spread{grid-column:auto}}
