@@ -16,20 +16,18 @@ export function nowRankRangeLabel(page,pageSize,total){const count=Math.max(0,Nu
 export function setupNowCarousel(root=document){
   const box=root.querySelector('[data-now-rank-carousel]');if(!box)return;
   for(const set of box.querySelectorAll('[data-now-rank-set]')){
-    const pages=[...set.querySelectorAll('[data-now-rank-page]')];if(!pages.length)continue;let startIndex=0,touchStart=null,lastMobile=null;
-    const desktopSize=Number(set.dataset.pageSize)||10,mobileSize=Number(set.dataset.mobilePageSize)||2,total=Number(set.dataset.total)||pages.reduce((sum,row)=>sum+row.children.length,0),isMobile=()=>globalThis.matchMedia?.('(max-width:560px)')?.matches===true;
-    const paint=()=>{const mobile=isMobile(),size=mobile?mobileSize:desktopSize;if(lastMobile!==null&&lastMobile!==mobile)startIndex=Math.floor(startIndex/size)*size;lastMobile=mobile;const logicalPage=Math.floor(startIndex/size),containerIndex=Math.floor(startIndex/desktopSize),inside=startIndex%desktopSize;pages.forEach((page,index)=>{page.hidden=index!==containerIndex;[...page.children].forEach((card,cardIndex)=>{card.hidden=mobile&&index===containerIndex&&(cardIndex<inside||cardIndex>=inside+size);});});set.dataset.page=String(logicalPage);const desktopStatus=set.querySelector('[data-now-rank-status="desktop"]'),mobileStatus=set.querySelector('[data-now-rank-status="mobile"]');if(desktopStatus)desktopStatus.textContent=nowRankRangeLabel(Math.floor(startIndex/desktopSize),desktopSize,total);if(mobileStatus)mobileStatus.textContent=nowRankRangeLabel(Math.floor(startIndex/mobileSize),mobileSize,total);};
-    const move=direction=>{const size=isMobile()?mobileSize:desktopSize,maxStart=Math.max(0,Math.ceil(total/size)-1)*size;startIndex=direction>0?(startIndex>=maxStart?0:startIndex+size):(startIndex<=0?maxStart:startIndex-size);paint();};
+    const pages=[...set.querySelectorAll('[data-now-rank-page]')];if(!pages.length)continue;let startIndex=0;
+    const desktopSize=Number(set.dataset.pageSize)||10,total=Number(set.dataset.total)||pages.reduce((sum,row)=>sum+row.children.length,0),isMobile=()=>globalThis.matchMedia?.('(max-width:560px)')?.matches===true;
+    const paint=()=>{const mobile=isMobile();if(mobile){pages.forEach(page=>{page.hidden=false;[...page.children].forEach(card=>{card.hidden=false;});});set.dataset.page='0';return;}const containerIndex=Math.floor(startIndex/desktopSize);pages.forEach((page,index)=>{page.hidden=index!==containerIndex;[...page.children].forEach(card=>{card.hidden=false;});});set.dataset.page=String(containerIndex);const desktopStatus=set.querySelector('[data-now-rank-status="desktop"]');if(desktopStatus)desktopStatus.textContent=nowRankRangeLabel(containerIndex,desktopSize,total);};
+    const move=direction=>{if(isMobile())return;const maxStart=Math.max(0,Math.ceil(total/desktopSize)-1)*desktopSize;startIndex=direction>0?(startIndex>=maxStart?0:startIndex+desktopSize):(startIndex<=0?maxStart:startIndex-desktopSize);paint();};
     set.querySelector('[data-now-rank-prev]')?.addEventListener('click',()=>move(-1));
     set.querySelector('[data-now-rank-next]')?.addEventListener('click',()=>move(1));
-    set.addEventListener('touchstart',event=>{touchStart=event.touches?.[0]?.clientX??null;},{passive:true});
-    set.addEventListener('touchend',event=>{const end=event.changedTouches?.[0]?.clientX;if(touchStart===null||!Number.isFinite(end))return;const delta=end-touchStart;touchStart=null;if(Math.abs(delta)>=36)move(delta<0?1:-1);},{passive:true});
     globalThis.addEventListener?.('resize',paint);paint();
   }
 }
 export function setupLauncherExpansion(root=document){
   const toggle=root.querySelector('[data-launcher-toggle]'),panel=root.querySelector('[data-launcher-panel]');if(!toggle||!panel)return;
-  const setOpen=open=>{panel.hidden=!open;toggle.setAttribute('aria-expanded',String(open));const cue=toggle.querySelector('span');if(cue)cue.textContent=open?'−':'＋';};
+  const setOpen=open=>{panel.hidden=!open;toggle.setAttribute('aria-expanded',String(open));toggle.setAttribute('aria-label',open?'전체 서비스 접기':'전체 서비스 펼치기');const cue=toggle.querySelector('span');if(cue)cue.textContent=open?'−':'···';};
   toggle.addEventListener('click',()=>setOpen(toggle.getAttribute('aria-expanded')!=='true'));
   root.addEventListener('keydown',event=>{if(event.key==='Escape'&&!panel.hidden){setOpen(false);toggle.focus();}});
 }

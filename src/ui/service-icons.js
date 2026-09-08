@@ -33,3 +33,16 @@ const ICON_PATHS=Object.freeze({
 });
 export function serviceIconSvg(key=""){return `<svg viewBox="0 0 24 24" aria-hidden="true">${ICON_PATHS[key]||ICON_PATHS.guide}</svg>`;}
 export function launcherServices(){return SERVICE_CATALOG.filter(x=>x.launcher);}
+
+const MODULE_ACTION_PATHS=Object.freeze({
+  write:`<path d="M5 19h4l10-10-4-4L5 15v4Z"/><path d="m13.5 6.5 4 4"/>`,
+  poll:ICON_PATHS.poll,
+  evaluation:ICON_PATHS.evaluation,
+  generation:ICON_PATHS.generation,
+  compare:`<path d="m5 4 15 15M19 4 4 19"/><path d="m4 4 4 1-3 3M20 4l-4 1 3 3M4 20l4-1-3-3M20 20l-4-1 3-3"/>`,
+  now:`<circle cx="7" cy="9" r="2.4"/><circle cx="17" cy="9" r="2.4"/><circle cx="12" cy="7" r="2.7"/><path d="M2.8 19c.4-3.2 1.8-4.8 4.2-4.8 1.3 0 2.3.4 3 1.2M21.2 19c-.4-3.2-1.8-4.8-4.2-4.8-1.3 0-2.3.4-3 1.2M6.8 19c.5-4 2.2-6 5.2-6s4.7 2 5.2 6"/>`,
+  column:`<path d="M5 4h10v16H5z"/><path d="m14 15 5.5-5.5 1.5 1.5-5.5 5.5-2 .5.5-2Z"/><path d="M8 8h4M8 12h3"/>`,
+  community:ICON_PATHS.community,
+  academy:ICON_PATHS.academy
+});
+export function moduleActionIconSvg(key=""){return `<svg viewBox="0 0 24 24" aria-hidden="true">${MODULE_ACTION_PATHS[key]||ICON_PATHS.guide}</svg>`;}

@@ -1,14 +1,14 @@
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.26';
-import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.31';
-import { renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.35';
-import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.35';
-import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.33';
-import { createContentService } from './core/content.js';
+import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.36';
+import { renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.36';
+import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.36';
+import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.36';
+import { createContentService } from './core/content.js?v=0.0.31.36';
 import { createPoliticianService } from './core/politicians.js';
 import { createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.28';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.26';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31';
-import * as views from './views/stage1.js?v=0.0.31.35';
+import * as views from './views/stage1.js?v=0.0.31.36';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.35';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.28';
 import { generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.35';
@@ -56,9 +56,9 @@ function tunePoliticianNarratives(){
 }
 
 async function shell(body,session,renderId){
-  const memberCount=await auth.memberCount().catch(()=>0);
+  const [memberCount,footerInfo]=await Promise.all([auth.memberCount().catch(()=>0),content.footerInfo().catch(()=>({}))]);
   if(renderId!==renderSequence)return false;
-  app.innerHTML=`<div class="site-shell">${siteHeader(memberCount,session)}<div class="page-wrap">${body}</div>${footer()}${drawer(session)}</div>`;
+  app.innerHTML=`<div class="site-shell">${siteHeader(memberCount,session)}<div class="page-wrap">${body}</div>${footer(footerInfo)}${drawer(session)}</div>`;
   setupLayoutInteractions(document,{politicianSearch:(query,limit)=>politicians.search(query,limit)});
   return true;
 }
@@ -119,7 +119,7 @@ async function render({preserveScroll=false}={}){
     body=`<div class="product-home-wrap">${renderHomeLayout(home)}</div>`;
   } else if(p[0]==='about') body=views.renderAbout();
   else if(p[0]==='support') body=views.renderSupport();
-  else if(['guide','privacy','policy'].includes(p[0])) body=views.renderLegal(p[0]);
+  else if(['privacy','policy'].includes(p[0])) body=views.renderLegal(p[0]);
   else if(p[0]==='column') body=p[1]==='write'?views.renderBoardWrite('columns'):p[1]?await views.renderBoardDetail('columns',p[1],content,session,dashboard):await views.renderBoard('columns',content,session);
   else if(p[0]==='community') body=p[1]==='write'?views.renderBoardWrite('community'):p[1]?await views.renderBoardDetail('community',p[1],content,session,dashboard):await views.renderBoard('community',content,session);
   else if(p[0]==='news') body=p[1]==='write'?views.renderBoardWrite('news'):p[1]?await views.renderBoardDetail('news',p[1],content,session,dashboard):await views.renderBoard('news',content,session);
@@ -169,6 +169,8 @@ document.addEventListener('change',event=>{const province=event.target.closest('
 document.addEventListener('toggle',async event=>{const details=event.target;if(!(details instanceof HTMLDetailsElement)||!details.matches('[data-admin-audit-disclosure]')||!details.open||details.dataset.loaded==='true')return;const mount=details.querySelector('[data-admin-audit-mount]');details.dataset.loaded='loading';if(mount)mount.innerHTML='<p>관리자 작업 기록을 불러오는 중입니다…</p>';const result=await auth.adminAudit().catch(()=>({ok:false,error:'AUDIT_LOAD_FAILED'}));if(!details.isConnected)return;if(result?.ok){if(mount)mount.innerHTML=views.renderAdminAuditPanel(result);details.dataset.loaded='true';}else{if(mount)mount.innerHTML='<p>작업 기록을 불러오지 못했습니다. 접었다가 다시 펼쳐 주세요.</p>';delete details.dataset.loaded;}},true);
 
 document.addEventListener('submit',async event=>{
+  const footerInfoForm=event.target.closest('[data-footer-info-form]');
+  if(footerInfoForm){event.preventDefault();const state=footerInfoForm.querySelector('[data-form-state]'),result=await auth.saveFooterInfo(Object.fromEntries(new FormData(footerInfoForm)));if(state)state.textContent=result?.ok?'풋터 정보를 저장하고 공개 화면에 반영했습니다.':(result?.error||'풋터 정보를 저장하지 못했습니다.');if(result?.ok)await render({preserveScroll:true});return;}
   const bannerForm=event.target.closest('[data-home-banner-form]');
   if(bannerForm){event.preventDefault();const data=new FormData(bannerForm),file=data.get('image'),state=bannerForm.querySelector('[data-form-state]');if(!(file instanceof File)||file.size>2097152||!['image/jpeg','image/png','image/webp'].includes(file.type)){if(state)state.textContent='JPG·PNG·WEBP 파일을 2MB 이하로 선택해 주세요.';return;}const bytes=new Uint8Array(await file.arrayBuffer());let binary='';for(let start=0;start<bytes.length;start+=32768)binary+=String.fromCharCode(...bytes.subarray(start,start+32768));const result=await content.saveHomeBanner({contentType:file.type,dataBase64:btoa(binary),targetUrl:String(data.get('targetUrl')||''),alt:String(data.get('alt')||'정참시 배너')});const messages={BANNER_STORAGE_NOT_CONFIGURED:'배너 저장소가 연결되지 않았습니다. Vercel Blob을 연결하고 재배포한 뒤 다시 시도해 주세요.',BANNER_TOO_LARGE:'배너 이미지는 2MB 이하만 업로드할 수 있습니다.',BANNER_TYPE_INVALID:'JPG·PNG·WEBP 이미지만 업로드할 수 있습니다.',BANNER_SIGNATURE_INVALID:'손상되었거나 지원하지 않는 이미지 파일입니다.',BANNER_TARGET_URL_INVALID:'클릭 이동 주소는 https://로 시작해야 합니다.'};if(state)state.textContent=result?.ok?'메인 배너를 저장했습니다.':(messages[result?.error]||'배너를 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.');if(result?.ok){bannerForm.closest('dialog')?.close();await render({preserveScroll:true});}return;}
   const youtubeChannel=event.target.closest('[data-youtube-channel-form]');
