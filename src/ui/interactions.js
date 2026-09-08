@@ -17,7 +17,7 @@ export function setupNowCarousel(root=document){
   const box=root.querySelector('[data-now-rank-carousel]');if(!box)return;
   for(const set of box.querySelectorAll('[data-now-rank-set]')){
     const pages=[...set.querySelectorAll('[data-now-rank-page]')];if(!pages.length)continue;let startIndex=0;
-    const desktopSize=Number(set.dataset.pageSize)||10,total=Number(set.dataset.total)||pages.reduce((sum,row)=>sum+row.children.length,0),isMobile=()=>globalThis.matchMedia?.('(max-width:560px)')?.matches===true;
+    const desktopSize=Number(set.dataset.pageSize)||10,total=Number(set.dataset.total)||pages.reduce((sum,row)=>sum+row.children.length,0),isMobile=()=>globalThis.matchMedia?.('(max-width:1024px), (hover:none) and (pointer:coarse)')?.matches===true;
     const paint=()=>{const mobile=isMobile();if(mobile){pages.forEach(page=>{page.hidden=false;[...page.children].forEach(card=>{card.hidden=false;});});set.dataset.page='0';return;}const containerIndex=Math.floor(startIndex/desktopSize);pages.forEach((page,index)=>{page.hidden=index!==containerIndex;[...page.children].forEach(card=>{card.hidden=false;});});set.dataset.page=String(containerIndex);const desktopStatus=set.querySelector('[data-now-rank-status="desktop"]');if(desktopStatus)desktopStatus.textContent=nowRankRangeLabel(containerIndex,desktopSize,total);};
     const move=direction=>{if(isMobile())return;const maxStart=Math.max(0,Math.ceil(total/desktopSize)-1)*desktopSize;startIndex=direction>0?(startIndex>=maxStart?0:startIndex+desktopSize):(startIndex<=0?maxStart:startIndex-desktopSize);paint();};
     set.querySelector('[data-now-rank-prev]')?.addEventListener('click',()=>move(-1));
@@ -25,11 +25,31 @@ export function setupNowCarousel(root=document){
     globalThis.addEventListener?.('resize',paint);paint();
   }
 }
+export function serviceDockVisibleCount(width,total){
+  const slots=Math.max(1,Math.floor((Math.max(0,Number(width)||0)-4+8)/84));
+  return slots>=total?total:Math.max(0,slots-1);
+}
 export function setupLauncherExpansion(root=document){
   const toggle=root.querySelector('[data-launcher-toggle]'),panel=root.querySelector('[data-launcher-panel]');if(!toggle||!panel)return;
+  const main=toggle.parentElement,extra=panel.querySelector('.service-dock-row-all');
+  const primary=[...main.querySelectorAll('.service-dock-item')],additional=[...extra.querySelectorAll('.service-dock-item')],items=[...primary,...additional];
   const setOpen=open=>{panel.hidden=!open;toggle.setAttribute('aria-expanded',String(open));toggle.setAttribute('aria-label',open?'전체 서비스 접기':'전체 서비스 펼치기');const cue=toggle.querySelector('span');if(cue)cue.textContent=open?'−':'···';};
+  const fit=()=>{
+    const mobile=globalThis.matchMedia?.('(max-width:1024px), (hover:none) and (pointer:coarse)')?.matches===true;
+    const count=mobile?primary.length:serviceDockVisibleCount(main.clientWidth,items.length);
+    const focused=main.ownerDocument?.activeElement;
+    items.forEach((item,index)=>{if(index<count)main.insertBefore(item,toggle);else extra.append(item);});
+    toggle.hidden=count===items.length;
+    if(toggle.hidden)setOpen(false);
+    // Keep a focused shortcut visible when a resize sends it into the overflow panel.
+    if(focused&&items.includes(focused)&&extra.contains(focused))setOpen(true);
+  };
   toggle.addEventListener('click',()=>setOpen(toggle.getAttribute('aria-expanded')!=='true'));
   root.addEventListener('keydown',event=>{if(event.key==='Escape'&&!panel.hidden){setOpen(false);toggle.focus();}});
+  let observer;
+  if(globalThis.ResizeObserver){observer=new ResizeObserver(()=>{if(!main.isConnected){observer.disconnect();return;}fit();});observer.observe(main);}
+  else globalThis.addEventListener?.('resize',fit);
+  fit();
 }
 export function setupLayoutNavigation(root=document){
   root.querySelectorAll('a[data-layout-route]').forEach(link=>{const route=link.dataset.layoutRoute;if(route)link.setAttribute('href',route);});

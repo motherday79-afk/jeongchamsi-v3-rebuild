@@ -3,8 +3,6 @@
 .itsme-home-module .itsme-card>b,.poll-module .poll-question h3,.poll-module .poll-options button>span,
 .generation-president .generation-intro h3,.generation-president .generation-age,.generation-president .generation-result>b,.generation-president .generation-result small,.column-card-copy>b,.community-title,
 .side-news .side-row>i,.rising-politician-name{font-weight:400!important}
-
-.rank-top-copy>strong[data-now-score]{display:block!important;color:#087d68!important;font-weight:800!important;white-space:nowrap!important;line-height:1.2!important}
 .community-stats{white-space:nowrap!important;font-weight:400!important}
 .side-news .side-row{cursor:pointer}
 .side-news .side-row>i{font-style:normal}
@@ -17,8 +15,8 @@
 .side-home-banner-empty{padding:18px!important}
 .side-home-banner-empty p{margin:5px 0 13px;color:var(--muted,#66736f);font-size:12px}
 .side-home-banner-empty>button{position:static;background:#123f38;border-color:#123f38}
-.side-participation-account .participation-account-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--line,#e4e9e7)}
-.participation-account-row span{display:grid;gap:3px;min-width:0}
+.participation-account-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--line,#e4e9e7)}
+.participation-account-row>span{display:flex;align-items:center;gap:8px;min-width:0;flex:1}.participation-account-row small{flex:none;white-space:nowrap}.participation-account-row button{flex:none;font-size:11px;min-height:36px}
 .participation-account-row small{font-size:10px;letter-spacing:.1em;color:#087d68}
 .participation-account-row b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .participation-account-row button{border:1px solid var(--line,#dce4e1);background:#fff;border-radius:8px;padding:7px 9px;white-space:nowrap;cursor:pointer}
@@ -33,5 +31,5 @@
 .home-banner-actions{display:flex;justify-content:flex-end;gap:8px}
 
 @media(max-width:1024px){
-  .mobile-utility .participation-account-row{padding:12px 14px;margin:0}
+  .mobile-utility .participation-account-row{padding:0 0 12px;margin:0 0 12px;gap:7px}.mobile-utility .participation-account-row small{font-size:9px;letter-spacing:0}.mobile-utility .participation-account-row b{font-size:12px}.mobile-utility .participation-account-row button{padding:6px 8px}
 }

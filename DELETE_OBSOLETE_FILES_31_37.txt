@@ -1,0 +1,8 @@
+JCS 0.0.31.37 적용 시 운영 저장소에 남아 있는 아래 파일을 삭제합니다.
+
+css/hotfix-31-11.css
+css/hotfix-31-27-mobile-now-rank.css
+css/hotfix-31-34-main-detail-recovery.css
+
+31.37은 메인 내비게이션과 모바일 NOW Rank를 새 단일 렌더러로 교체했습니다.
+위 파일을 남기면 승인 전 디자인이나 과거 모바일 카드 배치가 다시 충돌할 수 있습니다.

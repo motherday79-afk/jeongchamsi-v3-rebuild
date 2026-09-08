@@ -118,15 +118,6 @@ img{display:block;max-width:100%}
 .president-strip{display:grid;grid-template-columns:82px minmax(0,1fr) auto;gap:16px;align-items:center;background:linear-gradient(120deg,#fff,#f1faf7)}
 .president-photo{width:82px;height:82px;border-radius:50%;background:#e2ece8}
 .president-text p{margin:7px 0 0;color:var(--text-2);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:500}
-
-/* NOW RANK */
-.rank-top-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}
-.rank-top-card{position:relative;min-width:0;padding:14px 10px;text-align:center;border:1px solid #e5ebe8;border-radius:var(--r-md);background:#fff}
-.rank-top-card:first-child{background:linear-gradient(180deg,#f3fbf8,#fff);border-color:#cfe7df}
-.rank-top-no{position:absolute;top:8px;left:9px;color:var(--green);font-size:13px;font-weight:950}
-.rank-top-avatar{width:70px;height:70px;margin:7px auto 10px;border-radius:50%;background:#e1ebe7}
-.rank-top-copy b{display:block;font-size:var(--fs-card);line-height:var(--lh-tight)}
-.rank-top-copy span{display:block;margin-top:5px;color:var(--text-2);font-size:var(--fs-sub);line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rank-divider{display:flex;align-items:center;gap:10px;margin:16px 0 6px}
 .rank-divider span{color:var(--text-3);font-size:12px;font-weight:900}
 .rank-divider i{flex:1;height:1px;background:#e9eeec}
@@ -569,50 +560,6 @@ img{display:block;max-width:100%}
     justify-self:end;
   }
 
-  /* NOW:
-     1st = full width, 2-5 = 2x2 on normal phones */
-  .rank-top-grid{
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:8px;
-  }
-
-  .rank-top-card{
-    min-width:0;
-    min-height:142px;
-  }
-
-  .rank-top-card:first-child{
-    grid-column:1/-1;
-    min-height:116px;
-    display:grid;
-    grid-template-columns:74px minmax(0,1fr);
-    align-items:center;
-    gap:13px;
-    padding:14px 16px;
-    text-align:left;
-  }
-
-  .rank-top-card:first-child .rank-top-avatar{
-    width:72px;
-    height:72px;
-    margin:0;
-  }
-
-  .rank-top-card:first-child .rank-top-copy b{
-    font-size:17px;
-  }
-
-  .rank-top-avatar{
-    width:58px;
-    height:58px;
-  }
-
-  .rank-top-copy span{
-    font-size:13px;
-    white-space:normal;
-    overflow-wrap:anywhere;
-  }
-
   .rank-list-row{
     grid-template-columns:26px 38px minmax(0,1fr);
     min-height:62px;
@@ -798,36 +745,6 @@ img{display:block;max-width:100%}
     grid-template-columns:1fr;
   }
 
-  .rank-top-grid{
-    grid-template-columns:1fr;
-  }
-
-  .rank-top-card:first-child{
-    grid-column:1;
-    grid-template-columns:64px minmax(0,1fr);
-    padding:13px;
-  }
-
-  .rank-top-card:first-child .rank-top-avatar{
-    width:62px;
-    height:62px;
-  }
-
-  .rank-top-card{
-    min-height:118px;
-    display:grid;
-    grid-template-columns:60px minmax(0,1fr);
-    align-items:center;
-    gap:10px;
-    text-align:left;
-  }
-
-  .rank-top-card .rank-top-avatar{
-    width:58px;
-    height:58px;
-    margin:0;
-  }
-
   .itsme-grid,
   .generation-grid{
     grid-template-columns:1fr;
@@ -873,17 +790,6 @@ img{display:block;max-width:100%}
 .generation-result .generation-bar{margin-top:0}
 .generation-result small{display:block;margin-top:8px;font-size:11px;line-height:1.35;color:var(--text-2)}
 .generation-empty .generation-result small{margin-top:8px}
-
-
-/* 2026-08-30 NOW RANK TOP30 CAROUSEL */
-.now-rank-carousel{position:relative;padding:0 30px}
-.now-rank-pages{position:relative}
-.now-rank-page[hidden]{display:none!important}
-.now-rank-arrow{position:absolute;top:50%;z-index:4;width:32px;height:54px;margin-top:-27px;border:1px solid #dfe5e2;border-radius:11px;background:rgba(255,255,255,.96);color:#45514c;font-size:28px;line-height:1;box-shadow:0 6px 18px rgba(22,46,38,.08);cursor:pointer}
-.now-rank-arrow:hover{border-color:#bfcac6;background:#f9fbfa}
-.now-rank-arrow.is-prev{left:-8px}.now-rank-arrow.is-next{right:-8px}
-#now .now-rank-carousel .rank-top-grid-10 .rank-top-card{min-height:142px;padding:13px 9px}
-#now .now-rank-carousel .rank-top-avatar{width:61px;height:61px;margin:9px auto 8px}
 /* JCS 0.0.27 · in-flow service launcher */
 .product-launcher-expanded{margin-top:18px;padding-top:18px;border-top:1px solid rgba(255,255,255,.18)}
 .product-launcher-expanded[hidden]{display:none}

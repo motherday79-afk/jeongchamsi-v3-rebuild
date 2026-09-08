@@ -71,9 +71,6 @@ body{background:#f4f6f7;color:var(--ps-ink)}
 
 /* Main modules — color is a navigation aid, not decoration */
 .eyebrow{color:#087f74}
-#now .rank-top-card:first-child{background:var(--jc-blue);border-color:var(--jc-blue)}
-#now .rank-top-card:first-child .rank-top-no,#now .rank-top-card:first-child .rank-top-copy span{color:#dfe8ff}
-#now .rank-top-no{color:var(--jc-blue)}
 
 #poll{background:var(--jc-red-soft);border-color:#f1d7da}
 #poll .poll-status{color:#c63d49}
@@ -151,30 +148,6 @@ a,.more-btn{--jc-link:#087f74}
 .footer b{color:#20282d}
 .footer-links a{color:#667178}
 
-/* 2) NOW TOP 1–5: background follows each politician's party family. */
-#now .rank-top-card{background:#fff;border-color:#e5e8eb}
-#now .rank-top-card.party-democratic{background:#edf4ff;border-color:#cfe0fb}
-#now .rank-top-card.party-democratic .rank-top-no{color:#1f64b8}
-#now .rank-top-card.party-peoplepower{background:#fff0f1;border-color:#f4cfd3}
-#now .rank-top-card.party-peoplepower .rank-top-no{color:#d9414a}
-#now .rank-top-card.party-reform{background:#fff6ea;border-color:#f2d6ae}
-#now .rank-top-card.party-reform .rank-top-no{color:#d97d24}
-#now .rank-top-card.party-reform{background:#fff3e7;border-color:#f2dcc4}
-#now .rank-top-card.party-reform .rank-top-no{color:#d97d24}
-#now .rank-top-card.party-innovation{background:#eef1fb;border-color:#d8def3}
-#now .rank-top-card.party-innovation .rank-top-no{color:#344fa5}
-#now .rank-top-card.party-progressive{background:#fff0f2;border-color:#f2d0d5}
-#now .rank-top-card.party-progressive .rank-top-no{color:#c93648}
-#now .rank-top-card.party-basicincome{background:#eaf8f6;border-color:#d1eeea}
-#now .rank-top-card.party-basicincome .rank-top-no{color:#138a80}
-#now .rank-top-card.party-socialdemocratic{background:#eef6eb;border-color:#dcebd7}
-#now .rank-top-card.party-socialdemocratic .rank-top-no{color:#568447}
-#now .rank-top-card.party-vacant{background:#f7f7f7;border-color:#e4e4e4}
-#now .rank-top-card.party-vacant .rank-top-no{color:#8a8f93}
-#now .rank-top-card.party-independent{background:#f3f4f5;border-color:#e0e3e5}
-#now .rank-top-card.party-independent .rank-top-no{color:#70787d}
-#now .rank-top-card .rank-top-copy span{color:#667178}
-
 /* 3) Explore cards: IT'S ME and Generation President return to clean white surfaces. */
 .product-launcher .launcher-itsme,
 .product-launcher .launcher-generation,
@@ -248,23 +221,6 @@ a,.more-btn{--jc-link:#087f74}
   }
 }
 
-
-/* JEONGCHAMSI alpha6.0.36.4 — HOME DENSITY + COPY + READABILITY HOTFIX
-   Layout system stays intact; main NOW preview becomes 1–10 in two rows on desktop. */
-#now .rank-top-grid-10{grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
-#now .rank-top-grid-10 .rank-top-card{
-  min-height:150px;
-  color:#172026;
-}
-#now .rank-top-grid-10 .rank-top-card .rank-top-no,
-#now .rank-top-grid-10 .rank-top-card .rank-top-copy b,
-#now .rank-top-grid-10 .rank-top-card .rank-top-copy span{
-  color:#172026;
-}
-#now .rank-top-grid-10 .rank-top-card .rank-top-copy span{font-size:12px;line-height:1.45}
-#now .rank-top-grid-10 .rank-top-card .rank-top-no{font-size:12px}
-#now .rank-top-grid-10 .rank-top-card .rank-top-copy b{font-size:16px}
-
 /* Remove the reintroduced tiny-text feel on the home surface. */
 .product-home-wrap .eyebrow{font-size:11px}
 .product-home-wrap .more-btn{font-size:13px;font-weight:800}
@@ -286,17 +242,8 @@ a,.more-btn{--jc-link:#087f74}
 .product-home-wrap .side-rising .side-row i{font-size:12px}
 
 @media(max-width:820px){
-  #now .rank-top-grid-10{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:560px){
-  #now .rank-top-grid-10{grid-template-columns:repeat(2,minmax(0,1fr))}
-  #now .rank-top-grid-10 .rank-top-card:first-child{
-    grid-column:auto;
-    display:block;
-    min-height:150px;
-    text-align:center;
-  }
-  #now .rank-top-grid-10 .rank-top-card:first-child .rank-top-avatar{margin:10px auto 9px}
   .product-home-wrap .module-desc{font-size:13px}
   .product-home-wrap .launcher-copy small{font-size:11px}
   .product-home-wrap .hero-rank-person small{font-size:11px}
@@ -766,31 +713,6 @@ a,.more-btn{--jc-link:#087f74}
 #compare .compare-metrics div:nth-child(3) em{background:var(--jc-orange)}
 #compare .compare-metrics div:nth-child(4) em{background:var(--jc-green)}
 #compare .compare-summary b{color:#182126}
-
-/* NOW RANK — all cards neutral; party identity is one compact flag only.
-   The one-character mark distinguishes parties that share a similar hue. */
-#now .rank-top-grid-10 .rank-top-card,
-#now .rank-top-grid-10 .rank-top-card:first-child,
-#now .rank-top-grid-10 .rank-top-card.party-democratic,
-#now .rank-top-grid-10 .rank-top-card.party-peoplepower,
-#now .rank-top-grid-10 .rank-top-card.party-reform,
-#now .rank-top-grid-10 .rank-top-card.party-innovation,
-#now .rank-top-grid-10 .rank-top-card.party-progressive,
-#now .rank-top-grid-10 .rank-top-card.party-basicincome,
-#now .rank-top-grid-10 .rank-top-card.party-socialdemocratic,
-#now .rank-top-grid-10 .rank-top-card.party-vacant,
-#now .rank-top-grid-10 .rank-top-card.party-independent{
-  background:#fff;
-  border-color:#e2e6e9;
-  color:#172026;
-}
-#now .rank-top-grid-10 .rank-top-card .rank-top-no,
-#now .rank-top-grid-10 .rank-top-card:first-child .rank-top-no,
-#now .rank-top-grid-10 .rank-top-card .rank-top-copy b,
-#now .rank-top-grid-10 .rank-top-card .rank-top-copy span,
-#now .rank-top-grid-10 .rank-top-card:first-child .rank-top-copy span{
-  color:#172026;
-}
 #now .rank-party-flag{
   position:absolute;
   top:-1px;
@@ -817,10 +739,6 @@ a,.more-btn{--jc-link:#087f74}
 #now .party-socialdemocratic .rank-party-flag{background:#568447}
 #now .party-vacant .rank-party-flag{background:#8a8f93}
 #now .party-independent .rank-party-flag{background:#747d82}
-#now .rank-top-card[role="button"]:hover{
-  background:#fbfcfd;
-  border-color:#d5dadd;
-}
 
 
 /* alpha6.0.36.16 — representative badge showcase */

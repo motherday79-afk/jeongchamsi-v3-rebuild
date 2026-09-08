@@ -108,10 +108,6 @@
   #compare .compare-summary{align-items:flex-start;flex-direction:column}
   #academy .academy-layout{grid-template-columns:minmax(0,1fr);gap:10px}
   #academy .academy-intro,#academy .academy-schedule{min-width:0;padding:16px}
-  #now .rank-top-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-  #now .rank-top-grid-10 .rank-top-card{min-width:0;min-height:126px}
-  #now .rank-top-card:first-child{grid-column:1/-1;min-height:102px;display:grid;grid-template-columns:70px minmax(0,1fr);align-items:center;gap:12px;text-align:left}
-  #now .rank-top-card:first-child .rank-top-avatar{margin:0}
   #column .column-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
   #community .community-row{grid-template-columns:24px minmax(0,1fr);gap:8px}
   #community .community-stats{grid-column:2;text-align:left}
@@ -241,8 +237,6 @@
 @media (max-width:320px){
   .product-wordmark{display:none}
   .product-launcher-compact .product-launcher-grid{grid-template-columns:minmax(0,1fr)}
-  #now .rank-top-grid{grid-template-columns:minmax(0,1fr)}
-  #now .rank-top-card:first-child{grid-column:1}
   #generation-president .generation-grid{grid-template-columns:minmax(0,1fr)}
   .person-grid{grid-template-columns:minmax(0,1fr)}
   .module-header{grid-template-columns:minmax(0,1fr)}
@@ -260,5 +254,5 @@
 
 
 /* NOW RANK TOP30 CAROUSEL — mobile */
-@media(max-width:1024px){.now-rank-carousel{padding:0 24px}.now-rank-arrow{width:28px;height:48px;margin-top:-24px;font-size:24px}.now-rank-arrow.is-prev{left:-7px}.now-rank-arrow.is-next{right:-7px}}
-@media(max-width:560px){.now-rank-carousel{padding:0 20px}.now-rank-arrow{width:25px;height:44px;margin-top:-22px}.now-rank-arrow.is-prev{left:-6px}.now-rank-arrow.is-next{right:-6px}}
+@media(max-width:1024px){}
+@media(max-width:560px){}
