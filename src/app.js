@@ -1,14 +1,14 @@
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.26';
-import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.28';
-import { renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.26';
+import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.29';
+import { renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.29';
 import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.28';
-import { createAuthService } from './core/auth.js?v=0.0.31.26';
+import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.29';
 import { createContentService } from './core/content.js';
 import { createPoliticianService } from './core/politicians.js';
 import { createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.28';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.26';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31';
-import * as views from './views/stage1.js?v=0.0.31.28';
+import * as views from './views/stage1.js?v=0.0.31.29';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.28';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.28';
 import { renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.26';
@@ -183,7 +183,7 @@ document.addEventListener('submit',async event=>{
   const politicianExclusion=event.target.closest('[data-politician-exclusion-form]');
   if(politicianExclusion){event.preventDefault();const newsExclusions=String(new FormData(politicianExclusion).get('newsExclusions')||'').split(/\r?\n/).map(value=>value.trim()).filter(Boolean),state=politicianExclusion.querySelector('[data-politician-state]'),result=await auth.savePoliticianNewsExclusions(politicianExclusion.dataset.politicianExclusionForm,newsExclusions);if(state)state.textContent=result?.ok?'뉴스 오탐 제외 목록을 저장했습니다.':(result?.error||'저장하지 못했습니다.');return;}
   const politicianPhoto=event.target.closest('[data-politician-photo-form]');
-  if(politicianPhoto){event.preventDefault();const data=new FormData(politicianPhoto),file=data.get('photo'),state=politicianPhoto.querySelector('[data-politician-state]');if(!(file instanceof File)||file.size>1048576||!['image/jpeg','image/png','image/webp'].includes(file.type)){if(state)state.textContent='JPG·PNG·WEBP 파일을 1MB 이하로 선택해 주세요.';return;}if(politicianPhoto.dataset.currentPhoto==='true'&&!confirm('현재 프로필 사진을 선택한 사진으로 교체할까요?'))return;const bytes=new Uint8Array(await file.arrayBuffer());let binary='';for(let start=0;start<bytes.length;start+=32768)binary+=String.fromCharCode(...bytes.subarray(start,start+32768));const result=await auth.uploadPoliticianPhoto({personId:politicianPhoto.dataset.politicianPhotoForm,contentType:file.type,dataBase64:btoa(binary),focus:String(data.get('focus')||'50% 22%')});if(state)state.textContent=result?.ok?'사진을 업로드하고 전체 상세페이지에 적용했습니다.':(result?.error||'사진을 업로드하지 못했습니다.');if(result?.ok){politicianPhoto.dataset.currentPhoto='true';if(politicianPhoto.dataset.photoRerender==='true')await render({preserveScroll:true});}return;}
+  if(politicianPhoto){event.preventDefault();const data=new FormData(politicianPhoto),file=data.get('photo'),state=politicianPhoto.querySelector('[data-politician-state]');if(!(file instanceof File)||file.size>1048576||!['image/jpeg','image/png','image/webp'].includes(file.type)){if(state)state.textContent='JPG·PNG·WEBP 파일을 1MB 이하로 선택해 주세요.';return;}if(politicianPhoto.dataset.currentPhoto==='true'&&!confirm('현재 프로필 사진을 선택한 사진으로 교체할까요?'))return;const bytes=new Uint8Array(await file.arrayBuffer());let binary='';for(let start=0;start<bytes.length;start+=32768)binary+=String.fromCharCode(...bytes.subarray(start,start+32768));const result=await auth.uploadPoliticianPhoto({personId:politicianPhoto.dataset.politicianPhotoForm,contentType:file.type,dataBase64:btoa(binary),focus:String(data.get('focus')||'50% 22%')});if(state)state.textContent=photoUploadMessage(result);if(result?.ok){politicianPhoto.dataset.currentPhoto='true';if(politicianPhoto.dataset.photoRerender==='true')await render({preserveScroll:true});}return;}
   const requiredPassword=event.target.closest('[data-required-password-form]');
   if(requiredPassword){event.preventDefault();const password=String(new FormData(requiredPassword).get('password')||''),state=requiredPassword.querySelector('[data-form-state]'),result=await auth.completePasswordChange(password);if(state)state.textContent=result?.ok?'새 비밀번호로 변경했습니다.':(result?.error||'변경하지 못했습니다.');if(result?.ok)await render();return;}
   const intelligenceDraft=event.target.closest('[data-intelligence-draft-form]');

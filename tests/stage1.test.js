@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { createMemoryStore } from '../src/core/store.js';
 import { createAuthService } from '../src/core/auth.js';
 import { createContentService } from '../src/core/content.js';
+import { renderBoard, renderBoardDetail } from '../src/views/stage1.js';
 
 test('member register/login preserves stable member id', async()=>{
   const store=createMemoryStore(); const auth=createAuthService(store);
@@ -40,6 +41,16 @@ test('request and partner applications persist', async()=>{
   await content.create('partnerApplications',{name:'파트너',contact:'010'});
   assert.equal((await content.list('politicianRequests')).length,1);
   assert.equal((await content.list('partnerApplications')).length,1);
+});
+
+test('board lists details and comments render the authors representative badge beside the nickname',async()=>{
+  const item={id:'post-badge',title:'대표배지 글',body:'본문',author:'정참시민',ownerId:'member',representativeBadge:'first-penguin',published:true};
+  const comment={id:'comment-badge',author:'댓글회원',ownerId:'member-2',representativeBadge:'opinion-leader',text:'댓글',published:true};
+  const content={async list(){return [item]},async get(){return item},async commentsFor(){return [comment]}};
+  const list=await renderBoard('community',content,{authenticated:true});
+  const detail=await renderBoardDetail('community','post-badge',content,{authenticated:true});
+  assert.match(list,/정참시민<\/span><span class="author-representative-badge"[^>]*>[^]*data-badge-key="first-penguin"/);
+  assert.match(detail,/댓글회원<\/span><span class="author-representative-badge"[^>]*>[^]*data-badge-key="opinion-leader"/);
 });
 import { normalizeLegacyMembers } from '../src/core/member-migration.js';
 import { updateUserRole } from '../lib/rebuild-store.js';

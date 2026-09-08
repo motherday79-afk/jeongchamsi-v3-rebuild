@@ -107,15 +107,30 @@ test('app passes one resolved session through home, header and drawer',()=>{
   assert.match(app,/shell\(body,session,renderId\)/);
 });
 
-test('application header places the font-size control in the former support-message position',()=>{
+test('application header shows only the unboxed font label and minus plus controls in the former support position',()=>{
   const app=read('src/app.js');
   assert.equal((fontSizeControl().match(/data-font-scale-control/g)||[]).length,1);
+  assert.match(fontSizeControl(),/>글자 크기</);
+  assert.match(fontSizeControl(),/data-font-scale-decrease/);
+  assert.match(fontSizeControl(),/data-font-scale-increase/);
+  assert.doesNotMatch(fontSizeControl(),/<output|>기본</);
   const header=siteHeader(7,{authenticated:false,user:null});
   assert.match(header,/7<\/b><span>명이 정참시와 함께합니다/);
   assert.match(header,/live-community-actions[^]*data-font-scale-control/);
   assert.doesNotMatch(header,/정참시 응원하기/);
-  assert.match(header,/정참시 후원하기/);
+  assert.doesNotMatch(header,/후원하기|live-community-support/);
   assert.doesNotMatch(app,/\$\{fontSizeControl\(\)\}<div class="page-wrap">/);
+});
+
+test('home board previews place the current representative badge immediately after the nickname',()=>{
+  const html=renderHomeLayout({
+    ...HOME_FIXTURE,
+    itsmePosts:[],polls:{items:[]},generation:{},nationalEvaluation:{},academy:{items:[]},rank:[],session:{authenticated:false},
+    columns:[{id:'col-badge',title:'배지가 있는 칼럼',author:'작성자',ownerId:'member-1',representativeBadge:'first-penguin',published:true}],
+    community:[{id:'com-badge',title:'배지가 있는 글',author:'정참시민',ownerId:'member-1',representativeBadge:'first-penguin',published:true}]
+  });
+  assert.match(html,/작성자<\/span><span class="author-representative-badge"[^>]*>[^]*data-badge-key="first-penguin"/);
+  assert.match(html,/정참시민<\/span><span class="author-representative-badge"[^>]*>[^]*data-badge-key="first-penguin"/);
 });
 
 test('main header politician autocomplete routes a selected result directly to its detail page',async()=>{

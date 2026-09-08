@@ -3,6 +3,12 @@ const publicUser=u=>u?({id:u.id,nickname:u.nickname||u.id,role:u.role||'member',
 async function digest(value){const bytes=new TextEncoder().encode(String(value));const hash=await globalThis.crypto.subtle.digest('SHA-256',bytes);return [...new Uint8Array(hash)].map(x=>x.toString(16).padStart(2,'0')).join('');}
 async function request(path,options={}){const res=await fetch(`/api/v3/${path}`,{credentials:'same-origin',headers:{'Content-Type':'application/json',...(options.headers||{})},...options});const data=await res.json().catch(()=>({ok:false,error:'INVALID_RESPONSE'}));if(!res.ok&&data?.ok!==false)data.ok=false;return {status:res.status,...data};}
 
+export function photoUploadMessage(result={}){
+  if(result?.ok)return '사진을 업로드하고 전체 상세페이지에 적용했습니다.';
+  const messages={PHOTO_STORAGE_NOT_CONFIGURED:'사진 저장소가 연결되지 않았습니다. Vercel Blob을 연결한 뒤 다시 배포해 주세요.',PHOTO_TOO_LARGE:'사진은 1MB 이하만 업로드할 수 있습니다.',PHOTO_TYPE_INVALID:'JPG·PNG·WEBP 사진만 업로드할 수 있습니다.',PHOTO_SIGNATURE_INVALID:'손상되었거나 지원하지 않는 이미지 파일입니다.',POLITICIAN_PROFILE_MISSING:'정치인 정보를 찾을 수 없습니다.'};
+  return messages[String(result?.error||'')]||'사진을 업로드하지 못했습니다. 잠시 후 다시 시도해 주세요.';
+}
+
 function createRemoteAuthService(){
   return {
     async register(input={}){return request('user/register',{method:'POST',body:JSON.stringify(input)});},

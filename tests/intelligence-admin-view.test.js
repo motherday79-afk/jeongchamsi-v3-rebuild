@@ -90,8 +90,8 @@ test('admin warns when browser bundle and server release versions differ',async(
   assert.match(html,/강력 새로고침 필요/);
 });
 
-test('admin operations, bounded news and YouTube metrics report release 31.28',()=>{
-  assert.equal(APP_RELEASE,'JCS_0_0_31_28');
+test('admin operations, bounded news and YouTube metrics report release 31.29',()=>{
+  assert.equal(APP_RELEASE,'JCS_0_0_31_29');
 });
 
 test('approved reviewed draft enables publication',async()=>{

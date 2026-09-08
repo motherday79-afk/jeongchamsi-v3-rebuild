@@ -1,0 +1,40 @@
+JCS_0_0_31_29_PHOTO_FONT_BADGE_HOTFIX_FINAL
+
+BASE
+- Existing JCS 0.0.31.28 workspace
+- No GitHub checkout, reset or initialization
+
+FEATURES
+- Actionable Vercel Blob configuration error for politician photo upload
+- Unboxed `글자 크기 − ＋` control with existing five-step behavior
+- Removed support link from the font-control position
+- Current representative badge beside author nickname across post surfaces
+- Translation intentionally deferred
+- Homepage typography redesign intentionally not applied pending visual approval
+
+CHANGED / ADDED
+- api/gateway.js
+- css/hotfix-31-29-photo-font-badge.css
+- index.html
+- src/app.js
+- src/core/auth.js
+- src/core/release.js
+- src/layout/home-layout.js
+- src/layout/site-shell.js
+- src/views/stage1.js
+- tests/author-representative-badge.test.js
+- tests/intelligence-admin-view.test.js
+- tests/layout.test.js
+- tests/politician-photo-service.test.js
+- tests/stage1.test.js
+- JCS_0_0_31_29_PHOTO_FONT_BADGE_HOTFIX_PATCH.md
+- JCS_0_0_31_29_PHOTO_FONT_BADGE_HOTFIX_MANIFEST.txt
+
+VERIFICATION
+- 55 focused integration/regression tests passed, 0 failed
+- 7 changed JavaScript files passed syntax checks
+- Full composite suite: 390 passed, 11 pre-existing design-contract failures
+- Archive integrity checked before delivery
+
+DEPLOYMENT REQUIREMENT
+- Connect a Vercel Blob Store to the production Vercel project and redeploy for actual photo persistence.

@@ -1,0 +1,14 @@
+/* 0.0.31.29 — photo error guidance, unboxed font controls, author representative badge */
+.live-community-actions{gap:0}
+.jcs-font-scale-control{display:inline-flex;align-items:center;gap:4px;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
+.jcs-font-scale-control>span{padding:0;margin-right:5px;color:#61706b;font-size:12px;font-weight:700;white-space:nowrap}
+.jcs-font-scale-control button{display:grid;place-items:center;width:34px;height:34px;padding:0;border:0;border-radius:0;background:transparent;color:#18352d;font-size:19px;font-weight:800;line-height:1;cursor:pointer}
+.jcs-font-scale-control button:hover:not(:disabled){border:0;background:transparent;color:#07866f}
+.jcs-font-scale-control button:focus-visible{border:0;background:transparent;outline:2px solid rgba(11,139,115,.2);outline-offset:1px}
+.jcs-font-scale-control button:disabled{color:#aeb8b4;cursor:default}
+.jcs-font-scale-control output{display:none}
+.author-representative-badge .badge-crest{display:inline-flex;width:18px;height:21px;flex:0 0 18px}
+.author-representative-badge .badge-crest svg{display:block;width:18px;height:21px}
+.community-row .author-representative-badge .badge-crest,.column-card .author-representative-badge .badge-crest{width:16px;height:19px;flex-basis:16px}
+.community-row .author-representative-badge .badge-crest svg,.column-card .author-representative-badge .badge-crest svg{width:16px;height:19px}
+@media(max-width:680px){.jcs-font-scale-control>span{position:static;width:auto;height:auto;overflow:visible;clip:auto}.jcs-font-scale-control button{width:34px;height:34px}}

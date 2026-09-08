@@ -8,6 +8,7 @@ import { createIntelligenceService } from '../lib/intelligence-service.js';
 import { accessTierForUser, projectIntelligence } from '../lib/intelligence-access.js';
 import { buildIntelligenceDraft } from '../lib/intelligence-analysis.js';
 import { createBadgeService } from '../lib/badge-service.js';
+import { VALID_BADGE_KEYS } from '../lib/badge-engine.js';
 import { createParticipationPost, featureParticipationPost } from '../lib/participation-admin.js';
 import { createAdminPoliticianService } from '../lib/admin-politician-service.js';
 import { createPoliticianPhotoService } from '../lib/politician-photo-service.js';
@@ -25,6 +26,15 @@ const clearSession=res=>res.setHeader('Set-Cookie',`${COOKIE}=; Path=/; HttpOnly
 async function currentUser(req,command){const token=cookieMap(req)[COOKIE],s=readSessionToken(token,sessionSecret());if(!s?.userId)return null;const user=await getUser(command,s.userId);if(!user||Number(s.sessionVersion)!==(Number(user.sessionVersion)||0))return null;return publicUser(user);}
 function ageGroup(birthYear){const y=Number(birthYear||0),current=new Date().getFullYear();if(!Number.isInteger(y)||y<1900||y>current)return '';const age=current-y;if(age<20)return '10대';if(age<30)return '20대';if(age<40)return '30대';if(age<50)return '40대';if(age<60)return '50대';return '60대+';}
 function contentItems(data){return Array.isArray(data?.items)?data.items:[];}
+export async function attachRepresentativeBadges(command,data={items:[]}){
+  const source=data&&typeof data==='object'?data:{items:[]},items=contentItems(source),owners=[...new Set(items.map(item=>String(item?.ownerId||'')).filter(Boolean))];
+  const badges=new Map(await Promise.all(owners.map(async ownerId=>{const activity=await readActivity(command,ownerId),key=String(activity?.representativeBadge||'');return [ownerId,VALID_BADGE_KEYS.has(key)?key:''];})));
+  return {...source,items:items.map(item=>({...item,representativeBadge:badges.get(String(item?.ownerId||''))||''}))};
+}
+export function politicianPhotoErrorCode(error){
+  const code=String(error?.message||error||'PHOTO_UPLOAD_FAILED');
+  return /No blob credentials|BLOB_READ_WRITE_TOKEN|VERCEL_OIDC_TOKEN|BLOB_STORE_ID/i.test(code)?'PHOTO_STORAGE_NOT_CONFIGURED':code;
+}
 function cleanDomain(domain){return LEGACY_DOMAINS.includes(String(domain||''))?String(domain):'';}
 const allPoliticianProfiles=command=>Promise.all(POLITICIAN_TYPES.map(type=>readPoliticianType(command,type))).then(groups=>groups.flat().filter(person=>person?.id&&person.isVacant!==true));
 export function sanitizeContentInput(input={}){const safe={};for(const [key,limit] of Object.entries({title:200,body:20000,summary:500,category:80,coverImage:1000})){const value=String(input?.[key]||'').trim().slice(0,limit);if(value)safe[key]=value;}return safe;}
@@ -148,14 +158,14 @@ async function handleUser(req,res,route,command){
 
 async function handleContent(req,res,command,url){
   const domain=cleanDomain(url.searchParams.get('domain')||req.query?.domain);if(!domain)return json(res,400,{ok:false,error:'INVALID_DOMAIN'});
-  if(req.method==='GET')return json(res,200,{ok:true,domain,data:(await readDomainWithViews(command,domain,null))||({items:[]})});
+  if(req.method==='GET'){const data=(await readDomainWithViews(command,domain,null))||({items:[]});return json(res,200,{ok:true,domain,data:await attachRepresentativeBadges(command,data)});}
   if(req.method==='POST'){
     const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});
     if(!['columns','community','itsme'].includes(domain))return json(res,403,{ok:false,error:'WRITE_NOT_ALLOWED'});
     if(domain==='columns'&&!['admin','partner'].includes(user.role))return json(res,403,{ok:false,error:'COLUMN_WRITE_FORBIDDEN'});
     const input=sanitizeContentInput(bodyOf(req).input||bodyOf(req)),data=(await readDomain(command,domain,{items:[]}))||{items:[]};
     const item={...input,id:`${domain}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,7)}`,ownerId:user.id,author:String(user.nickname||user.id).slice(0,40),published:true,likes:0,views:0,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
-    data.items=[item,...contentItems(data)].slice(0,500);await writeDomain(command,domain,data);return json(res,201,{ok:true,item});
+    data.items=[item,...contentItems(data)].slice(0,500);await writeDomain(command,domain,data);const decorated=await attachRepresentativeBadges(command,{items:[item]});return json(res,201,{ok:true,item:decorated.items[0]});
   }
   return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
 }
@@ -177,7 +187,7 @@ async function handleAction(req,res,command){
   }
   if(action==='comment-add'){
     const domain=String(payload.domain||''),postId=String(payload.postId||''),text=String(payload.text||'').trim().slice(0,1000);if(!['columns','community','itsme'].includes(domain)||!postId||!text)return json(res,400,{ok:false,error:'INVALID_COMMENT'});if(!await findPublishedPost(command,domain,postId))return json(res,404,{ok:false,error:'POST_NOT_FOUND'});
-    const comments=await readDomain(command,'comments',{items:[]});const comment={id:`comment-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,6)}`,domain,postId,ownerId:user.id,author:String(user.nickname||user.id).slice(0,40),text,createdAt:new Date().toISOString(),published:true};comments.items=[comment,...contentItems(comments)].slice(0,3000);await writeDomain(command,'comments',comments);return json(res,200,{ok:true,comment});
+    const comments=await readDomain(command,'comments',{items:[]});const comment={id:`comment-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,6)}`,domain,postId,ownerId:user.id,author:String(user.nickname||user.id).slice(0,40),text,createdAt:new Date().toISOString(),published:true};comments.items=[comment,...contentItems(comments)].slice(0,3000);await writeDomain(command,'comments',comments);const decorated=await attachRepresentativeBadges(command,{items:[comment]});return json(res,200,{ok:true,comment:decorated.items[0]});
   }
   if(action==='post-view'){const result=await recordContentView(command,user,String(payload.domain||''),String(payload.postId||''));return json(res,result.ok?200:result.error==='POST_NOT_FOUND'?404:400,result);}
   if(action==='vote'){
@@ -283,7 +293,7 @@ async function handleAdmin(req,res,route,command){
   if(route==='admin/politicians/photo'&&req.method==='POST'){
     const body=bodyOf(req),encoded=String(body.dataBase64||'');if(encoded.length>1_500_000)return json(res,413,{ok:false,error:'PHOTO_TOO_LARGE'});
     try{const service=createPoliticianPhotoService({command,profilesProvider:()=>allPoliticianProfiles(command)}),result=await service.save({personId:body.personId,contentType:body.contentType,bytes:Buffer.from(encoded,'base64'),focus:body.focus},user.id);await adminPoliticians.log(user.id,'POLITICIAN_PHOTO_UPDATE',body.personId,{size:result.photo.size,contentType:result.photo.contentType,previousUrl:result.previous?.url||'',previousPathname:result.previous?.pathname||'',currentUrl:result.photo.url,currentPathname:result.photo.pathname});return json(res,200,{ok:true,...result});}
-    catch(error){const code=String(error.message||'PHOTO_UPLOAD_FAILED');return json(res,code==='POLITICIAN_PROFILE_MISSING'?404:code==='PHOTO_TOO_LARGE'?413:400,{ok:false,error:code});}
+    catch(error){const code=politicianPhotoErrorCode(error);return json(res,code==='POLITICIAN_PROFILE_MISSING'?404:code==='PHOTO_TOO_LARGE'?413:code==='PHOTO_STORAGE_NOT_CONFIGURED'?503:400,{ok:false,error:code});}
   }
   if(route==='admin/audit'&&req.method==='GET')return json(res,200,{ok:true,...await adminPoliticians.audit()});
   if(route==='admin/badges'&&req.method==='GET'){
