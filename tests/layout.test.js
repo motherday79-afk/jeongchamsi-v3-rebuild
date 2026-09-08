@@ -182,7 +182,7 @@ test('home NOW rank renders the published top 100 as ten manual pages with photo
   assert.match(html,/data-now-rank-next/);
   assert.match(html,/rank-top-avatar has-photo/);
   assert.match(html,/전체 정치인 NOW 운영 순위 1–100위 · 좌우 버튼으로 10명씩 보기/);
-  assert.match(html,/NOW 99\.9/);
+  assert.doesNotMatch(html,/NOW 99\.9|data-now-score/);
   assert.match(html,/data-politician-avatar/);
   assert.match(html,/data-politician-photo/);
   assert.match(html,/politician-photo-initial/);
@@ -316,7 +316,7 @@ test('home academy restores legacy schedule rows and application cue',()=>{
 test('home poll and national evaluation match the legacy panel structures',()=>{
   const html=renderHomeLayout({...HOME_FIXTURE,itsmePosts:[],columns:[],community:[],generation:{},academy:{slots:[]},polls:{items:[{id:'p-1',question:'정부 평가',published:true,options:[{id:'a',label:'잘함',votes:1},{id:'b',label:'보통',votes:2},{id:'c',label:'못함',votes:1},{id:'d',label:'기타',votes:0}]}]},nationalEvaluation:{slots:{assembly:{slot:'assembly',evaluationId:'e-1',subjectId:'assembly-182',enabled:true,closedAt:''},local:{slot:'local',evaluationId:'e-2',subjectId:'basic-038',enabled:true,closedAt:''}},demoResults:{'e-1':{positive:4,neutral:1,negative:1},'e-2':{positive:5,neutral:1,negative:0}}}});
   assert.match(html,/poll-vote-panel/);
-  assert.match(html,/poll-confirm-row/);
+  assert.doesNotMatch(html,/poll-confirm-row|전체 선택지 보기/);
   assert.doesNotMatch(html,/>기타<\/span>/);
   assert.match(html,/national-eval-dual/);
   assert.match(html,/SLOT A/);

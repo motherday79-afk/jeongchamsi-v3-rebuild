@@ -7,10 +7,10 @@ import { renderBoard, renderBoardWrite } from '../src/views/stage1.js';
 
 const homeBase={...HOME_FIXTURE,memberCount:7,columns:[{id:'c1',title:'칼럼 제목',published:true}],community:[{id:'m1',title:'커뮤니티 제목',views:1234,likes:99,published:true}],itsmePosts:[{id:'i1',title:'제안 제목',published:true}],polls:{items:[{id:'p1',question:'정부 평가',featured:true,published:true,options:[{id:'a',label:'잘한다',votes:2},{id:'b',label:'보통이다',votes:1}]}]},generation:{candidates:[],results:{}},nationalEvaluation:{},academy:{items:[]},recentPoliticians:[],keywords:[],rank:[{id:'r1',rank:1,name:'정순위',party:'무소속',jurisdiction:'서울',score:98.5}],newsPosts:[{id:'n1',title:'정참시 뉴스 제목',published:true}],homeBanner:{url:'https://example.com/banner.jpg',targetUrl:'https://example.com/campaign',alt:'캠페인'},badgeStatus:{},session:{authenticated:true,user:{nickname:'관리자',role:'admin'}}};
 
-test('home hotfix keeps score, uses real NEWS links, removes likes, and orders banner before merged MY card',()=>{
+test('home hotfix hides NOW scores, uses real NEWS links, removes likes, and orders banner before merged MY card',()=>{
   const html=renderHomeLayout(homeBase);
-  assert.match(html,/data-now-score="98\.5"/);
-  assert.match(html,/NOW 98\.5/);
+  assert.doesNotMatch(html,/data-now-score/);
+  assert.doesNotMatch(html,/NOW 98\.5/);
   assert.match(html,/data-layout-route="\/news\/n1"/);
   assert.doesNotMatch(html,/좋아요 99/);
   assert.match(html,/조회 1,234/);

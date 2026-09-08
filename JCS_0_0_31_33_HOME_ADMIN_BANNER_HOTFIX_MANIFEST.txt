@@ -1,0 +1,29 @@
+JCS_0_0_31_33_HOME_ADMIN_BANNER_HOTFIX_FINAL.zip
+Base: JCS_0_0_31_32
+Release: JCS_0_0_31_33
+
+api/gateway.js
+css/hotfix-31-33-home-admin-storage.css
+index.html
+lib/home-banner-service.js
+lib/intelligence-service.js
+lib/intelligence-validation.js
+src/app.js
+src/core/auth.js
+src/core/release.js
+src/layout/home-layout.js
+src/views/stage1.js
+tests/0-0-31-30-main-hotfix.test.js
+tests/0-0-31-33-home-admin-banner.test.js
+tests/home-banner-service.test.js
+tests/intelligence-admin-view.test.js
+tests/intelligence-analysis.test.js
+tests/intelligence-person-refresh.test.js
+tests/intelligence-service.test.js
+tests/layout.test.js
+tests/politicians.test.js
+JCS_0_0_31_33_HOME_ADMIN_BANNER_HOTFIX_HANDOFF.md
+JCS_0_0_31_33_HOME_ADMIN_BANNER_HOTFIX_MANIFEST.txt
+JCS_0_0_31_33_PATCH_UPLOAD_INSTRUCTIONS.md
+
+Excluded: images, node_modules, credentials, environment files, prior ZIP archives

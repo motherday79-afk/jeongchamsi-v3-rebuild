@@ -1,0 +1,72 @@
+/* 0.0.31.33 · compact home modules, manual publishing, banner storage status */
+#itsme.itsme-home-module,
+#poll.poll-module,
+#national-eval.national-eval,
+#generation-president.generation-president,
+#community.module{padding:22px 24px}
+
+#itsme .module-header,
+#poll .module-header,
+#national-eval .module-header,
+#generation-president .module-header,
+#community .module-header{margin-bottom:12px}
+
+#itsme.itsme-home-module .itsme-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#itsme.itsme-home-module .itsme-card,
+#itsme.itsme-home-module .itsme-card:nth-child(n){min-height:70px;padding:12px 14px}
+#itsme.itsme-home-module .itsme-card b{margin-top:8px;line-height:1.35}
+
+#poll .poll-main{grid-template-columns:minmax(180px,34%) minmax(0,1fr);gap:16px;align-items:center}
+#poll .poll-question h3{margin:0;font-size:20px}
+#poll .poll-vote-panel{padding:10px 12px}
+#poll .poll-options{gap:6px}
+#poll .poll-options button{min-height:58px;padding:9px 11px}
+
+#national-eval .module-desc{margin-top:3px}
+#national-eval .national-eval-dual{gap:9px}
+#national-eval .national-eval-home-card{grid-template-columns:minmax(0,1fr) 92px;padding:11px 13px;gap:7px 10px}
+#national-eval .national-eval-home-type{display:none}
+#national-eval .national-eval-home-card .eval-person{display:flex;align-items:center;gap:9px}
+#national-eval .national-eval-home-card .eval-avatar{width:46px;height:46px;flex:0 0 46px}
+#national-eval .national-eval-home-card .eval-score{padding-left:10px}
+#national-eval .national-eval-home-card .eval-score strong{font-size:20px}
+
+#generation-president{background:#fff!important;border-color:#e1e6e4!important;color:var(--ps-ink,#172126)!important}
+#generation-president .eyebrow{color:#315fbc!important}
+#generation-president .generation-header-actions{display:flex;align-items:center;gap:8px}
+#generation-president .generation-participation-cta{min-height:34px;padding:7px 10px;border:1px solid #d6deed;background:#f7f9fd;color:#315fbc}
+#generation-president .generation-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px}
+#generation-president .generation-card,
+#generation-president .generation-card.focus{min-height:92px;padding:9px;background:#fff!important;border-color:#dfe5ed!important;color:var(--ps-ink,#172126)!important}
+#generation-president .generation-age{padding:4px 7px;background:#eff3fb!important;color:#315fbc!important}
+#generation-president .generation-result{margin-top:7px;padding:7px 8px}
+#generation-president .generation-result b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#generation-president .generation-result small{margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#generation-president .generation-bar{margin-top:5px}
+
+#community .community-list{display:grid}
+#community .community-row{min-height:44px;padding:7px 4px}
+#community .community-copy{display:flex;align-items:center;gap:10px;min-width:0}
+#community .community-title{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#community .community-copy em{flex:0 0 auto;margin:0;white-space:nowrap}
+
+[data-banner-storage-status]{padding:8px 10px;border-radius:9px;background:#f5f7f6;color:#61706b!important}
+[data-banner-storage-status][data-state="ready"]{background:#edf8f4;color:#08745e!important}
+[data-banner-storage-status][data-state="missing"]{background:#fff2f3;color:#b43d49!important}
+
+@media(max-width:760px){
+  #itsme.itsme-home-module,#poll.poll-module,#national-eval.national-eval,#generation-president.generation-president,#community.module{padding:17px 15px}
+  #itsme.itsme-home-module .itsme-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #itsme.itsme-home-module .itsme-card,#itsme.itsme-home-module .itsme-card:nth-child(n){min-height:64px;padding:10px 11px}
+  #poll .poll-main{grid-template-columns:1fr;gap:9px}
+  #poll .poll-question h3{font-size:17px}
+  #poll .poll-options button{min-height:54px}
+  #national-eval .national-eval-dual{grid-template-columns:1fr}
+  #national-eval .national-eval-home-card{grid-template-columns:minmax(0,1fr) 86px}
+  #generation-president .module-header{align-items:flex-start}
+  #generation-president .generation-header-actions{align-items:flex-end;flex-direction:column;gap:4px}
+  #generation-president .generation-grid{display:flex;gap:7px;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:4px}
+  #generation-president .generation-card,#generation-president .generation-card.focus{min-width:138px;min-height:88px;scroll-snap-align:start}
+  #community .community-copy{display:grid;gap:2px}
+  #community .community-copy em{overflow:hidden;text-overflow:ellipsis}
+}

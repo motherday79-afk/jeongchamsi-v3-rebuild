@@ -281,5 +281,5 @@ test('release metadata and browser cache keys identify JCS 0.0.31',async()=>{
   assert.doesNotMatch(index+app,/v=0\.0\.(?:12|13|14|15|16|17|18|19|20|21|22|23|24|25|26)(?:\D|$)/);
   assert.match(index,/pages\.css\?v=0\.0\.31/);
   assert.match(app,/politicians\.js\?v=0\.0\.31/);
-  assert.match(gateway,/version:'JCS_0_0_31_32'/);
+  assert.match(gateway,/version:'JCS_0_0_31_33'/);
 });

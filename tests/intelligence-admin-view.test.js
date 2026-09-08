@@ -13,11 +13,11 @@ const auth={
   async intelligencePreview(){return {ok:true,version:{analysisVersion:'draft-1',status:'draft'},validation:{ok:true,errors:[]},reviewTargets:[{id:'p1',name:'대표 정치인'},{id:'p2',name:'두번째 정치인'}],reviewSample:{personId:'p1',news:[{title:'대표 정책 발표'}],eventClusters:[{eventId:'e1',eventTitle:'대표 정책 발표',eventType:'정책·입법'}],politicianType:{primaryType:'정책·성과형',secondaryTypes:['정책의제 선점형'],currentPhase:'정책 성과 축적'},diagnoses:Array.from({length:10},(_,i)=>({id:String(i+1).padStart(2,'0'),headline:`진단 ${i+1}`})),prescriptions:Array.from({length:10},(_,i)=>({id:String(i+1).padStart(2,'0'),strategicJudgment:`처방 ${i+1}`}))}};},
 };
 
-test('admin control center exposes ten processing stages and draft review before approval',async()=>{
+test('admin control center exposes ten processing stages and publishes validated drafts without manual approval',async()=>{
   const html=await renderAdminStable(admin,auth);
   assert.match(html,/data-intelligence-action="collect"/);
   assert.doesNotMatch(html,/data-intelligence-action="collect" disabled/);
-  assert.match(html,/data-intelligence-action="publish" disabled/);
+  assert.doesNotMatch(html,/data-intelligence-action="publish" disabled/);
   assert.match(html,/542 \/ 542/);
   assert.match(html,/NAVER SEARCH ADS/);
   assert.match(html,/연결됨/);
@@ -26,21 +26,15 @@ test('admin control center exposes ten processing stages and draft review before
   assert.match(html,/정책·성과형/);
   assert.match(html,/대표 정책 발표/);
   assert.match(html,/진단 10개 · 처방 10개/);
-  assert.match(html,/data-intelligence-approve/);
+  assert.doesNotMatch(html,/data-intelligence-approve/);
   assert.match(html,/PAST RISK SIGNALS/);
   assert.match(html,/name="pastRisks"/);
   assert.match(html,/draft-1.*draft|draft.*draft-1/s);
   assert.match(html,/public-0.*published|published.*public-0/s);
   assert.match(html,new RegExp(APP_RELEASE));
   assert.match(html,/관리자 화면 버전/);
-  assert.match(html,/YOUTUBE CHANNEL DATA/);
-  assert.match(html,/등록 1 \/ 542/);
-  assert.match(html,/오늘 검색 7 \/ 100/);
-  assert.match(html,/data-youtube-discovery/);
-  assert.match(html,/대표 정치인 공식채널/);
-  assert.match(html,/data-youtube-channel-form="p1"/);
-  assert.match(html,/data-youtube-rediscover="p1"/);
-  assert.match(html,/data-youtube-delete="p1"/);
+  assert.doesNotMatch(html,/YOUTUBE CHANNEL DATA/);
+  assert.doesNotMatch(html,/data-youtube-discovery|오늘 검색 7 \/ 100|다시 검색/);
 });
 
 test('admin console exposes approved operational tabs and complete member/politician controls',async()=>{
@@ -58,7 +52,7 @@ test('admin console exposes approved operational tabs and complete member/politi
   assert.match(html,/data-politician-risk-form="assembly-001"/);
   assert.match(html,/data-politician-exclusion-form="assembly-001"/);
   assert.match(html,/data-person-refresh="assembly-001"/);
-  assert.match(html,/data-person-approve="assembly-001"/);
+  assert.doesNotMatch(html,/data-person-approve="assembly-001"/);
   assert.match(html,/data-person-publish="assembly-001"/);
   assert.match(html,/PERSON_REFRESH/);
   assert.match(html,/changedFields: news · youtube/);
@@ -90,8 +84,8 @@ test('admin warns when browser bundle and server release versions differ',async(
   assert.match(html,/강력 새로고침 필요/);
 });
 
-test('admin operations, favorites and inquiries report release 31.32',()=>{
-  assert.equal(APP_RELEASE,'JCS_0_0_31_32');
+test('admin operations, favorites and inquiries report release 31.33',()=>{
+  assert.equal(APP_RELEASE,'JCS_0_0_31_33');
 });
 
 test('approved reviewed draft enables publication',async()=>{

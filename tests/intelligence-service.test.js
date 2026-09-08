@@ -402,12 +402,9 @@ test('repeated collection and publication keeps only the latest Redis snapshot',
   assert.equal(redis.map.get('jcs:rebuild:v2:users'),'preserve-users');
 });
 
-test('production review flow requires an approved validated draft before publication',async()=>{
+test('validated production drafts publish without a separate manual approval gate',async()=>{
   const redis=fakeRedis(),rows=profiles(2),service=createService(redis,rows,{requireReviewApproval:true});
   const started=await service.startCollection();await service.runCollectionStep();
-  await assert.rejects(()=>service.startPublish(),/DRAFT_APPROVAL_REQUIRED/);
-  const approved=await service.approveDraft({reviewedBy:'admin'});
-  assert.equal(approved.version.status,'approved');
   await service.startPublish();await service.runPublishStep();
   const status=await service.status();
   assert.equal(status.publicSnapshot,started.job.snapshotId);

@@ -75,6 +75,13 @@ test('a cloned age by gender vector is rejected before publication',()=>{
   assert.ok(validation.errors.includes('COHORT_VECTOR_CLONED'));
 });
 
+test('a legitimate low-variance cohort vector is not rejected as cloned',()=>{
+  const draft=structuredClone(buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V1'));
+  draft.cohorts=draft.cohorts.map((row,index)=>({...row,male:index<3?48:49,female:index<2?52:51}));
+  const validation=validateIntelligenceDraft(draft);
+  assert.equal(validation.errors.includes('COHORT_VECTOR_CLONED'),false);
+});
+
 test('every approved public and private chapter is populated from the draft contract',()=>{
   const draft=buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V1');
   for(const key of ['signal','core','audience','activity','media','transition','diagnosis','cohorts','support','resilience','mediaScores','issues','risks','opportunities','competitors','strategies','conclusion','activities','achievements','policies','news','sources','related'])assert.ok(draft[key],key);
