@@ -15,6 +15,7 @@ import { createPoliticianPhotoService, politicianPhotoStorageStatus } from '../l
 import { createHomeBannerService, homeBannerStorageStatus } from '../lib/home-banner-service.js';
 import { createFavoriteService } from '../lib/favorite-service.js';
 import { createInquiryService } from '../lib/inquiry-service.js';
+import { createApplicationService } from '../lib/application-service.js';
 
 const COOKIE='jcsr2_session';
 const MAX_AGE=60*60*24*30;
@@ -318,7 +319,7 @@ async function handleAdmin(req,res,route,command){
     try{const service=createPoliticianPhotoService({command,profilesProvider:()=>allPoliticianProfiles(command)}),result=await service.save({personId:body.personId,contentType:body.contentType,bytes:Buffer.from(encoded,'base64'),focus:body.focus},user.id);await adminPoliticians.log(user.id,'POLITICIAN_PHOTO_UPDATE',body.personId,{size:result.photo.size,contentType:result.photo.contentType,previousUrl:result.previous?.url||'',previousPathname:result.previous?.pathname||'',currentUrl:result.photo.url,currentPathname:result.photo.pathname});return json(res,200,{ok:true,...result});}
     catch(error){const code=politicianPhotoErrorCode(error);return json(res,code==='POLITICIAN_PROFILE_MISSING'?404:code==='PHOTO_TOO_LARGE'?413:code==='PHOTO_STORAGE_NOT_CONFIGURED'?503:400,{ok:false,error:code});}
   }
-  if(route==='admin/home-banner'&&req.method==='GET')return json(res,200,{ok:true,storage:homeBannerStorageStatus(process.env),limits:{maxBytes:2_097_152,maxMegabytes:2,formats:['JPG','PNG','WEBP'],recommended:{width:640,height:350}}});
+  if(route==='admin/home-banner'&&req.method==='GET')return json(res,200,{ok:true,storage:homeBannerStorageStatus(process.env),limits:{maxBytes:2_097_152,maxMegabytes:2,formats:['JPG','PNG','WEBP'],recommended:{width:640,height:450}}});
   if(route==='admin/home-banner'&&req.method==='POST'){
     const body=bodyOf(req),encoded=String(body.dataBase64||'');if(encoded.length>2_900_000)return json(res,413,{ok:false,error:'BANNER_TOO_LARGE'});
     try{const banner=await createHomeBannerService({command}).save({contentType:body.contentType,bytes:Buffer.from(encoded,'base64'),targetUrl:body.targetUrl,alt:body.alt},user.id);return json(res,200,{ok:true,banner});}
@@ -354,6 +355,19 @@ export default async function handler(req,res){
     if(route==='inquiries/reply'&&req.method==='POST'){
       const input=bodyOf(req),result=await createInquiryService({command}).reply(input.id,await currentUser(req,command),input.body);
       return json(res,result.ok?200:result.error==='ADMIN_REQUIRED'?403:result.error==='INQUIRY_NOT_FOUND'?404:400,result);
+    }
+    if(route==='politician-requests'){
+      const service=createApplicationService({command}),user=await currentUser(req,command);
+      if(req.method==='GET'){const result=await service.listPoliticianRequests(user);return json(res,result.ok?200:result.error==='LOGIN_REQUIRED'?401:400,result);}
+      if(req.method==='POST'){const result=await service.createPoliticianRequest(user,bodyOf(req));return json(res,result.ok?201:result.error==='LOGIN_REQUIRED'?401:400,result);}
+      if(req.method==='PATCH'){const body=bodyOf(req),result=await service.updatePoliticianRequest(user,body.id,body.status);return json(res,result.ok?200:result.error==='ADMIN_REQUIRED'?403:result.error==='REQUEST_NOT_FOUND'?404:400,result);}
+      return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
+    }
+    if(route==='partner-applications'){
+      const service=createApplicationService({command}),user=await currentUser(req,command);
+      if(req.method==='POST'){const result=await service.createPartnerApplication(user,bodyOf(req));return json(res,result.ok?201:400,result);}
+      if(req.method==='GET'){const result=await service.listPartnerApplications(user);return json(res,result.ok?200:403,result);}
+      return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
     }
     if(route==='content')return handleContent(req,res,command,url);
     if(route==='home/banner'&&req.method==='GET')return json(res,200,{ok:true,banner:await createHomeBannerService({command}).get()});

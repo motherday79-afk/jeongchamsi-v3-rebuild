@@ -1,0 +1,6 @@
+JCS 0.0.31.35 적용 시 아래 두 파일은 삭제합니다.
+
+css/hotfix-31-11.css
+css/hotfix-31-34-main-detail-recovery.css
+
+두 파일은 승인 전 디자인과 붉은 장식 충돌을 다시 만들 수 있으므로 최신 배포에 포함하지 않습니다.

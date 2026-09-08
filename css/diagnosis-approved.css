@@ -40,7 +40,7 @@
       border: 1px solid var(--jcs-line);
     }
     #jcs-intelligence-nine .jcs-report-head {
-      padding: clamp(22px, 4vw, 44px);
+      padding: clamp(20px, 3vw, 36px);
       border-bottom: 1px solid var(--jcs-line);
     }
     #jcs-intelligence-nine .jcs-part {
@@ -66,8 +66,8 @@
       grid-template-columns: 58px minmax(0, 1fr) auto;
       gap: 14px;
       align-items: center;
-      margin-top: 28px;
-      padding-top: 22px;
+      margin-top: 22px;
+      padding-top: 18px;
       border-top: 1px solid var(--jcs-line);
     }
     #jcs-intelligence-nine .jcs-avatar {
@@ -105,7 +105,7 @@
     #jcs-intelligence-nine .jcs-nav button:last-child { border-right: 0; }
     #jcs-intelligence-nine .jcs-nav button:hover { color: var(--jcs-gold); }
     #jcs-intelligence-nine .jcs-chapter {
-      padding: clamp(26px, 5vw, 54px) clamp(18px, 4vw, 44px);
+      padding: clamp(22px, 4vw, 42px) clamp(18px, 4vw, 44px);
       border-bottom: 1px solid var(--jcs-line);
       scroll-margin-top: 12px;
     }
@@ -115,7 +115,7 @@
       grid-template-columns: auto minmax(0, 1fr) auto;
       gap: 14px;
       align-items: start;
-      padding-bottom: 22px;
+      padding-bottom: 18px;
       border-bottom: 1px solid var(--jcs-line);
     }
     #jcs-intelligence-nine .jcs-no {
@@ -152,7 +152,7 @@
       display: grid;
       grid-template-columns: 4px minmax(0, 1fr);
       gap: 16px;
-      padding: 24px 0;
+      padding: 20px 0;
       border-bottom: 1px solid var(--jcs-line);
     }
     #jcs-intelligence-nine .jcs-signal::before {
@@ -167,7 +167,7 @@
     }
     #jcs-intelligence-nine .jcs-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(24px, 4vw, 42px); }
     #jcs-intelligence-nine .jcs-grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
-    #jcs-intelligence-nine .jcs-open-section { padding: 26px 0; border-bottom: 1px solid var(--jcs-line); }
+    #jcs-intelligence-nine .jcs-open-section { padding: 22px 0; border-bottom: 1px solid var(--jcs-line); }
     #jcs-intelligence-nine .jcs-open-section:last-child { border-bottom: 0; padding-bottom: 0; }
     #jcs-intelligence-nine .jcs-rule-grid > * { border-right: 1px solid var(--jcs-line); padding-right: 22px; }
     #jcs-intelligence-nine .jcs-rule-grid > *:last-child { border-right: 0; padding-right: 0; }
@@ -252,11 +252,6 @@
     #jcs-intelligence-nine .jcs-gender-balance span { padding:14px 4px; font-size:12px; color:var(--jcs-paper); }
     #jcs-intelligence-nine .jcs-gender-balance .gm { background:linear-gradient(90deg,var(--jcs-navy),var(--jcs-teal)); }
     #jcs-intelligence-nine .jcs-gender-balance .gf { background:linear-gradient(90deg,var(--jcs-rose),color-mix(in srgb,var(--jcs-rose) 55%,var(--jcs-paper))); }
-    #jcs-intelligence-nine .jcs-message-path { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; align-items:center; }
-    #jcs-intelligence-nine .jcs-message-node { text-align:center; position:relative; }
-    #jcs-intelligence-nine .jcs-message-node:not(:last-child)::after { content:"→"; position:absolute; right:-10px; top:17px; color:var(--jcs-sub); }
-    #jcs-intelligence-nine .jcs-message-node b { display:grid; place-items:center; width:48px; height:48px; border-radius:50%; margin:0 auto 8px; background:linear-gradient(145deg,var(--jcs-navy),var(--jcs-teal)); color:var(--jcs-paper); font-size:12px; font-weight:500; }
-    #jcs-intelligence-nine .jcs-message-node span { font-size:11px; color:var(--jcs-sub); }
     #jcs-intelligence-nine .jcs-gap-matrix { display:grid; grid-template-columns:1fr 1fr; border-top:1px solid var(--jcs-line); border-left:1px solid var(--jcs-line); }
     #jcs-intelligence-nine .jcs-gap-cell { min-height:92px; padding:14px; border-right:1px solid var(--jcs-line); border-bottom:1px solid var(--jcs-line); }
     #jcs-intelligence-nine .jcs-gap-cell b { display:block; font-size:12px; margin-bottom:5px; }
@@ -265,18 +260,6 @@
     /* 04 */
     #jcs-intelligence-nine .jcs-support { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(16px,4vw,42px); align-items:end; }
     #jcs-intelligence-nine .jcs-support-item { text-align:center; }
-    #jcs-intelligence-nine .jcs-support-art { height:220px; display:grid; place-items:center; position:relative; }
-    #jcs-intelligence-nine .jcs-support-svg { width:min(100%,220px); height:auto; overflow:visible; }
-    #jcs-intelligence-nine .jcs-support-svg text { fill:var(--jcs-paper); font-size:28px; font-weight:500; text-anchor:middle; dominant-baseline:middle; }
-    #jcs-intelligence-nine .jcs-support-svg .jcs-dark-value { fill:var(--jcs-ink); }
-    #jcs-intelligence-nine .jcs-core-orb { width:128px; height:128px; border-radius:50%; background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--jcs-teal) 68%,var(--jcs-paper)),var(--jcs-navy) 70%); box-shadow:0 22px 44px color-mix(in srgb,var(--jcs-navy) 22%,transparent); display:grid; place-items:center; color:var(--jcs-paper); font-size:28px; font-weight:500; }
-    #jcs-intelligence-nine .jcs-fluid-orbit { width:136px; height:136px; border-radius:50%; border:14px solid color-mix(in srgb,var(--jcs-teal) 48%,var(--jcs-soft)); position:relative; display:grid; place-items:center; font-size:26px; }
-    #jcs-intelligence-nine .jcs-fluid-orbit::after { content:""; width:24px; height:24px; border-radius:50%; background:linear-gradient(145deg,var(--jcs-gold),var(--jcs-orange)); position:absolute; top:-14px; right:8px; box-shadow:0 0 0 8px color-mix(in srgb,var(--jcs-gold) 15%,transparent); }
-    #jcs-intelligence-nine .jcs-exit-orb { width:120px; height:120px; border-radius:50%; background:linear-gradient(145deg,var(--jcs-rose),color-mix(in srgb,var(--jcs-red) 78%,var(--jcs-navy))); display:grid; place-items:center; color:var(--jcs-paper); font-size:26px; position:relative; box-shadow:0 22px 44px color-mix(in srgb,var(--jcs-rose) 20%,transparent); }
-    #jcs-intelligence-nine .jcs-exit-orb::before,
-    #jcs-intelligence-nine .jcs-exit-orb::after { content:""; position:absolute; border-radius:50%; background:linear-gradient(145deg,var(--jcs-rose),var(--jcs-red)); }
-    #jcs-intelligence-nine .jcs-exit-orb::before { width:30px; height:30px; right:-31px; top:8px; }
-    #jcs-intelligence-nine .jcs-exit-orb::after { width:16px; height:16px; right:-49px; top:-4px; opacity:.62; }
     #jcs-intelligence-nine .jcs-support-name { font-size:15px; font-weight:500; }
 
     /* 05 */

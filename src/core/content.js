@@ -25,6 +25,11 @@ function createRemoteContentService(){
     async getInquiry(itemId){return request(`inquiries/detail?id=${encodeURIComponent(itemId)}`);},
     async createInquiry(input={}){return request('inquiries',{method:'POST',body:JSON.stringify(input)});},
     async replyInquiry(itemId,body){return request('inquiries/reply',{method:'POST',body:JSON.stringify({id:itemId,body})});},
+    async listPoliticianRequests(){return request('politician-requests');},
+    async createPoliticianRequest(input={}){return request('politician-requests',{method:'POST',body:JSON.stringify(input)});},
+    async updatePoliticianRequest(id,status){return request('politician-requests',{method:'PATCH',body:JSON.stringify({id,status})});},
+    async createPartnerApplication(input={}){return request('partner-applications',{method:'POST',body:JSON.stringify(input)});},
+    async listPartnerApplications(){return request('partner-applications');},
     async comment(domain,postId,text){return request('action',{method:'POST',body:JSON.stringify({action:'comment-add',payload:{domain,postId,text}})});},
     async commentsFor(domain,postId){const data=await readDomain('comments');return itemsFrom('comments',data).filter(x=>x.published!==false&&String(x.domain)===String(domain)&&String(x.postId)===String(postId));},
     async academyApply(slotId=''){return request('action',{method:'POST',body:JSON.stringify({action:'academy-apply',payload:{slotId}})});}
@@ -48,7 +53,12 @@ function createLocalContentService(store){
     async listInquiries(){return {ok:true,items:[]};},
     async getInquiry(){return {ok:false,error:'INQUIRY_NOT_FOUND'};},
     async createInquiry(){return {ok:false,error:'REMOTE_ONLY'};},
-    async replyInquiry(){return {ok:false,error:'REMOTE_ONLY'};}
+    async replyInquiry(){return {ok:false,error:'REMOTE_ONLY'};},
+    async listPoliticianRequests(){return {ok:true,items:[]};},
+    async createPoliticianRequest(){return {ok:false,error:'REMOTE_ONLY'};},
+    async updatePoliticianRequest(){return {ok:false,error:'REMOTE_ONLY'};},
+    async createPartnerApplication(){return {ok:false,error:'REMOTE_ONLY'};},
+    async listPartnerApplications(){return {ok:false,error:'REMOTE_ONLY',items:[]};}
   };
 }
 export function createContentService(store=null){return store?createLocalContentService(store):createRemoteContentService();}
