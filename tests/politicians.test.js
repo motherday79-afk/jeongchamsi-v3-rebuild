@@ -125,7 +125,8 @@ test('public politician detail uses the approved three-chapter diagnostic system
   assert.match(html,/id="jcs-intelligence-nine"[^>]*data-approved-access="public"/);
   assert.equal((html.match(/class="jcs-chapter"/g)||[]).length,3);
   assert.equal((html.match(/data-approved-role-visual="public"/g)||[]).length,3);
-  assert.match(html,/class="jcs-line-chart"/);
+  assert.equal((html.match(/class="jcs-consistency-bar /g)||[]).length,10);
+  assert.match(html,/data-expansion-percent="\d+"/);
 });
 
 test('public politician diagnostics omit member and administrator modules',async()=>{
@@ -280,5 +281,5 @@ test('release metadata and browser cache keys identify JCS 0.0.31',async()=>{
   assert.doesNotMatch(index+app,/v=0\.0\.(?:12|13|14|15|16|17|18|19|20|21|22|23|24|25|26)(?:\D|$)/);
   assert.match(index,/pages\.css\?v=0\.0\.31/);
   assert.match(app,/politicians\.js\?v=0\.0\.31/);
-  assert.match(gateway,/version:'JCS_0_0_31_31'/);
+  assert.match(gateway,/version:'JCS_0_0_31_32'/);
 });

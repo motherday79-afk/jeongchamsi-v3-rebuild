@@ -45,6 +45,7 @@ function createRemoteAuthService(){
     async savePoliticianPastRisks(personId,pastRisks){return request('admin/politicians',{method:'PATCH',body:JSON.stringify({operation:'past-risks',personId,pastRisks})});},
     async savePoliticianNewsExclusions(personId,newsExclusions){return request('admin/politicians',{method:'PATCH',body:JSON.stringify({operation:'news-exclusions',personId,newsExclusions})});},
     async uploadPoliticianPhoto(input={}){return request('admin/politicians/photo',{method:'POST',body:JSON.stringify(input)});},
+    async politicianPhotoStorageStatus(){return request('admin/politicians/photo');},
     async adminAudit(){return request('admin/audit');},
     async refreshPolitician(personId){return request('admin/intelligence/person/refresh',{method:'POST',body:JSON.stringify({personId})});},
     async approvePoliticianRefresh(personId){return request('admin/intelligence/person/approve',{method:'POST',body:JSON.stringify({personId})});},

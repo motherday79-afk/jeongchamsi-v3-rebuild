@@ -90,8 +90,8 @@ test('admin warns when browser bundle and server release versions differ',async(
   assert.match(html,/강력 새로고침 필요/);
 });
 
-test('admin operations, favorites and inquiries report release 31.31',()=>{
-  assert.equal(APP_RELEASE,'JCS_0_0_31_31');
+test('admin operations, favorites and inquiries report release 31.32',()=>{
+  assert.equal(APP_RELEASE,'JCS_0_0_31_32');
 });
 
 test('approved reviewed draft enables publication',async()=>{

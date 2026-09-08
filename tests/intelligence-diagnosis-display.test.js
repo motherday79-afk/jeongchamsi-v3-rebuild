@@ -30,15 +30,16 @@ test('administrator diagnoses expose ten distinct approved display contracts',()
   assert.equal(diagnoses[9].title,'JCS 종합해석');
 });
 
-test('demographic age totals sum to one hundred and each age splits male and female to one hundred',()=>{
+test('demographic stays compositional while support uses independent JCS indices',()=>{
   const report=projectIntelligence(buildIntelligenceDraft(person,raw,context,'JCS_INTELLIGENCE_V3'),'admin','detail');
   const demographic=report.diagnoses.find(row=>row.id==='02').display;
   const support=report.diagnoses.find(row=>row.id==='04').display;
   assert.equal(demographic.cohorts.reduce((sum,row)=>sum+row.total,0),100);
   assert.equal(demographic.cohorts.every(row=>row.male+row.female===100),true);
-  assert.equal(support.composition.reduce((sum,row)=>sum+row.value,0),100);
+  assert.notEqual(support.composition.reduce((sum,row)=>sum+row.value,0),100);
+  assert.equal(support.scale,'independent-index');
   assert.deepEqual(support.composition.map(row=>row.key),['core','floating','exit']);
-  assert.deepEqual(support.composition.map(row=>row.label),['코어','유동','이탈']);
+  assert.deepEqual(support.composition.map(row=>row.label),['코어 결집','유동층 이동','이탈 위험']);
 });
 
 test('competitor comparison is capped at three and keeps verified profile history without inventing vote values',()=>{
@@ -104,7 +105,7 @@ test('local diagnosis always exposes a complete voter structure and JCS message 
   assert.equal(local.population.reduce((sum,row)=>sum+row.totalShare,0),100);
   assert.equal(local.population.every(row=>row.maleShare+row.femaleShare===100),true);
   assert.deepEqual(local.issues,[]);
-  assert.equal(local.messagePath.length,3);
+  assert.equal(local.messagePath.length,4);
   assert.equal(local.messagePath.every(row=>Number.isFinite(row.value)),true);
   assert.match(local.localJudgment,/JCS 지역 진단/);
   assert.doesNotMatch(JSON.stringify(local),/데이터 부족|연결 전/);

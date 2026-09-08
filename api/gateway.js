@@ -11,7 +11,7 @@ import { createBadgeService } from '../lib/badge-service.js';
 import { VALID_BADGE_KEYS } from '../lib/badge-engine.js';
 import { createParticipationPost, featureParticipationPost } from '../lib/participation-admin.js';
 import { createAdminPoliticianService } from '../lib/admin-politician-service.js';
-import { createPoliticianPhotoService } from '../lib/politician-photo-service.js';
+import { createPoliticianPhotoService, politicianPhotoStorageStatus } from '../lib/politician-photo-service.js';
 import { createHomeBannerService } from '../lib/home-banner-service.js';
 import { createFavoriteService } from '../lib/favorite-service.js';
 import { createInquiryService } from '../lib/inquiry-service.js';
@@ -312,6 +312,7 @@ async function handleAdmin(req,res,route,command){
     try{const result=body.operation==='past-risks'?await adminPoliticians.savePastRisks(body.personId,body.pastRisks,user.id):body.operation==='news-exclusions'?await adminPoliticians.saveNewsExclusions(body.personId,body.newsExclusions,user.id):null;return result?json(res,200,{ok:true,...result}):json(res,400,{ok:false,error:'INVALID_OPERATION'});}
     catch(error){return json(res,String(error.message)==='POLITICIAN_PROFILE_MISSING'?404:400,{ok:false,error:String(error.message||'POLITICIAN_SAVE_FAILED')});}
   }
+  if(route==='admin/politicians/photo'&&req.method==='GET')return json(res,200,{ok:true,storage:politicianPhotoStorageStatus(process.env)});
   if(route==='admin/politicians/photo'&&req.method==='POST'){
     const body=bodyOf(req),encoded=String(body.dataBase64||'');if(encoded.length>1_500_000)return json(res,413,{ok:false,error:'PHOTO_TOO_LARGE'});
     try{const service=createPoliticianPhotoService({command,profilesProvider:()=>allPoliticianProfiles(command)}),result=await service.save({personId:body.personId,contentType:body.contentType,bytes:Buffer.from(encoded,'base64'),focus:body.focus},user.id);await adminPoliticians.log(user.id,'POLITICIAN_PHOTO_UPDATE',body.personId,{size:result.photo.size,contentType:result.photo.contentType,previousUrl:result.previous?.url||'',previousPathname:result.previous?.pathname||'',currentUrl:result.photo.url,currentPathname:result.photo.pathname});return json(res,200,{ok:true,...result});}
@@ -359,7 +360,7 @@ export default async function handler(req,res){
     if(route==='action')return handleAction(req,res,command);
     if(route==='stats'){const users=await listUsers(command);return json(res,200,{ok:true,members:users.length});}
     if(route.startsWith('admin/')){const handled=await handleAdmin(req,res,route,command);if(handled!==false)return handled;}
-    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_31_31'});
+    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_31_32'});
     return json(res,404,{ok:false,error:'NOT_FOUND'});
   }catch(error){return json(res,error.code==='STORAGE_MISSING'?503:500,{ok:false,error:error.code||error.message||'SERVER_ERROR'});}
 }

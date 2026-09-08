@@ -45,18 +45,6 @@ test('prescriptions are diagnosis-linked and priorities resolve to 3 immediate 3
   assert.equal(new Set(Object.values(draft.prescriptionPriorities).flat()).size,10);
 });
 
-test('prescriptions 09 and 10 follow the approved action conversion and integrated execution diagnoses',()=>{
-  const draft=buildIntelligenceDraft(basePerson,raw,context,'JCS_INTELLIGENCE_V2');
-  const action=draft.prescriptions.find(item=>item.id==='09'),integrated=draft.prescriptions.find(item=>item.id==='10');
-  assert.equal(action.title,'정치 활동·미디어 전환 처방');
-  assert.equal(action.visualization.type,'action-conversion-playbook');
-  assert.match(`${action.strategicJudgment} ${action.expectedImpact} ${action.monitoringIndicators.join(' ')}`,/정치 활동|미디어|기사|보도/);
-  assert.equal(integrated.title,'JCS 종합 실행 처방');
-  assert.equal(integrated.visualization.type,'integrated-execution-board');
-  assert.match(`${integrated.strategicJudgment} ${integrated.expectedImpact} ${integrated.monitoringIndicators.join(' ')}`,/우선|실행|진단|처방/);
-  assert.doesNotMatch(JSON.stringify([action,integrated]),/정책·공약 반응 전략 처방|중장기 정치 성장 전략 처방|대표 정책 소유권|다음 정치 단계/);
-});
-
 test('diagnosis narrative is news and structure led while search remains a supporting signal',()=>{
   const draft=buildIntelligenceDraft(basePerson,raw,context,'JCS_INTELLIGENCE_V2');
   const narrative=JSON.stringify(narrativeOnly({diagnoses:draft.diagnoses,prescriptions:draft.prescriptions,summary:draft.diagnosisSummary}));

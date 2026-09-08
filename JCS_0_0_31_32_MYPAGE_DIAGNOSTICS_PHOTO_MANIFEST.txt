@@ -1,0 +1,35 @@
+JCS 0.0.31.32
+
+Production
+- api/gateway.js
+- css/hotfix-31-31-favorites-inquiry-hover.css
+- css/hotfix-31-32-mypage-diagnostics-photo.css
+- index.html
+- lib/favorite-service.js
+- lib/intelligence-access.js
+- lib/intelligence-diagnostics.js
+- lib/official-public-data.js
+- lib/politician-photo-service.js
+- src/app.js
+- src/core/auth.js
+- src/core/release.js
+- src/views/politicians.js
+- src/views/stage1.js
+
+Tests
+- tests/0-0-31-31-ui.test.js
+- tests/0-0-31-32-mypage-diagnostics-photo.test.js
+- tests/intelligence-admin-view.test.js
+- tests/intelligence-diagnosis-display.test.js
+- tests/intelligence-published-view.test.js
+- tests/intelligence-v2.test.js
+- tests/intelligence-v3.test.js
+- tests/politician-diagnosis-rebuild-view.test.js
+- tests/politician-diagnostics-view.test.js
+- tests/politicians.test.js
+
+Delivery
+- JCS_0_0_31_32_MYPAGE_DIAGNOSTICS_PHOTO_HANDOFF.md
+- JCS_0_0_31_32_MYPAGE_DIAGNOSTICS_PHOTO_MANIFEST.txt
+- JCS_0_0_31_32_PATCH_UPLOAD_INSTRUCTIONS.md
+

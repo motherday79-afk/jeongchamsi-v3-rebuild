@@ -29,13 +29,14 @@ test('sidebar account card itself is fixed and only mypage plus four badge slots
   assert.match(css,/--jcs-click-lift/);
 });
 
-test('mypage shows authored posts, earned and eligible badges, favorite posts and politicians',()=>{
+test('mypage shows five collection previews with dedicated full-list routes',()=>{
   const html=renderMyPage(
     {authenticated:true,user:{id:'member-1',nickname:'회원',role:'member'}},
     {earnedBadges:['first-penguin'],eligibleBadges:['opinion-leader'],representativeBadge:'first-penguin'},
     {authoredPosts:[{domain:'community',id:'mine',title:'내 글'}],favoritePosts:[{domain:'news',id:'saved',title:'저장한 뉴스'}],favoritePeople:[{id:'assembly-001',name:'김민석',party:'더불어민주당'}]}
   );
-  for(const label of ['내가 쓴 게시글','획득한 배지','획득 가능한 배지','즐겨찾기한 게시글','즐겨찾기한 정치인'])assert.match(html,new RegExp(label));
+  for(const label of ['내가 쓴 게시글','획득한 배지','즐겨찾기한 게시글','즐겨찾기한 정치인'])assert.match(html,new RegExp(label));
+  for(const route of ['/mypage/posts','/mypage/badges','/mypage/favorites/posts','/mypage/favorites/politicians'])assert.match(html,new RegExp(`data-layout-route="${route.replaceAll('/','\\/')}"`));
   assert.match(html,/data-layout-route="\/person\/assembly-001"/);
   assert.match(html,/data-layout-route="\/news\/saved"/);
 });

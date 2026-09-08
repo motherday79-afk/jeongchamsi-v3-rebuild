@@ -2,14 +2,14 @@ import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.26';
 import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.31';
 import { renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.31';
 import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.28';
-import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.29';
+import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.32';
 import { createContentService } from './core/content.js';
 import { createPoliticianService } from './core/politicians.js';
 import { createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.28';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.26';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31';
-import * as views from './views/stage1.js?v=0.0.31.31';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.31';
+import * as views from './views/stage1.js?v=0.0.31.32';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.32';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.28';
 import { renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.30';
 import { renderPresidentPage } from './views/president.js?v=0.0.31';
@@ -21,6 +21,16 @@ renderInitialLoading(app);
 const auth=createAuthService();
 const content=createContentService();
 const politicians=createPoliticianService();
+
+async function updatePoliticianPhotoStorageStatus(){
+  const status=document.querySelector('[data-photo-storage-status]');
+  if(!status||typeof auth.politicianPhotoStorageStatus!=='function')return;
+  const result=await auth.politicianPhotoStorageStatus().catch(()=>null);
+  if(!status.isConnected)return;
+  const configured=!!result?.storage?.configured;
+  status.dataset.state=configured?'ready':'missing';
+  status.textContent=configured?'사진 저장소 연결됨':'사진 저장소 미연결 · Vercel Blob 연결 후 재배포 필요';
+}
 let intelligenceRunnerActive=false;
 let youtubeRunnerActive=false;
 let renderSequence=0;
@@ -149,7 +159,10 @@ async function render({preserveScroll=false}={}){
   else if(p[0]==='login') body=views.renderLogin();
   else if(p[0]==='join') body=views.renderJoin();
   else if(p[0]==='inquiry') body=p[1]==='write'?views.renderInquiryWrite(session):p[1]?await views.renderInquiryDetail(p[1],content,session):await views.renderInquiryBoard(content,session);
-  else if(p[0]==='mypage'&&p[1]==='activity') body=views.renderMyActivity(session,badgeStatus||{},r.includes('?')?`?${r.split('?')[1]}`:'');
+  else if(p[0]==='mypage'&&['activity','badges'].includes(p[1])) body=views.renderMyActivity(session,badgeStatus||{},r.includes('?')?`?${r.split('?')[1]}`:'');
+  else if(p[0]==='mypage'&&p[1]==='posts') body=views.renderMyPage(session,badgeStatus||{},dashboard,{section:'authored',search:r.includes('?')?`?${r.split('?')[1]}`:''});
+  else if(p[0]==='mypage'&&p[1]==='favorites'&&p[2]==='posts') body=views.renderMyPage(session,badgeStatus||{},dashboard,{section:'favorite-posts',search:r.includes('?')?`?${r.split('?')[1]}`:''});
+  else if(p[0]==='mypage'&&p[1]==='favorites'&&p[2]==='politicians') body=views.renderMyPage(session,badgeStatus||{},dashboard,{section:'favorite-people'});
   else if(p[0]==='mypage') body=views.renderMyPage(session,badgeStatus||{},dashboard);
   else if(p[0]==='admin') body=await views.renderAdminStable(session,auth,adminRouteState(r));
   else if(p[0]==='migration') body=views.renderMigration();
@@ -162,7 +175,7 @@ async function render({preserveScroll=false}={}){
     for(const mount of document.querySelectorAll('[data-badge-showcase-mount]'))mount.innerHTML=renderBadgeShowcase(status);
   });
   setupMemberBadgeManagers();
-  if(p[0]==='person'){recordRecentPolitician(document);tunePoliticianNarratives();}
+  if(p[0]==='person'){recordRecentPolitician(document);tunePoliticianNarratives();if(session.user?.role==='admin')void updatePoliticianPhotoStorageStatus();}
   if(!preserveScroll)window.scrollTo(0,0);
   navigation?.cacheCurrent();
   if(p[0]==='admin')queueMicrotask(resumeAdminIntelligence);
