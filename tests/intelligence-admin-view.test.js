@@ -31,7 +31,7 @@ test('admin control center exposes ten processing stages and draft review before
   assert.match(html,/name="pastRisks"/);
   assert.match(html,/draft-1.*draft|draft.*draft-1/s);
   assert.match(html,/public-0.*published|published.*public-0/s);
-  assert.match(html,/JCS_0_0_31_28/);
+  assert.match(html,new RegExp(APP_RELEASE));
   assert.match(html,/관리자 화면 버전/);
   assert.match(html,/YOUTUBE CHANNEL DATA/);
   assert.match(html,/등록 1 \/ 542/);
@@ -90,8 +90,8 @@ test('admin warns when browser bundle and server release versions differ',async(
   assert.match(html,/강력 새로고침 필요/);
 });
 
-test('admin operations, bounded news and YouTube metrics report release 31.29',()=>{
-  assert.equal(APP_RELEASE,'JCS_0_0_31_29');
+test('admin operations, favorites and inquiries report release 31.31',()=>{
+  assert.equal(APP_RELEASE,'JCS_0_0_31_31');
 });
 
 test('approved reviewed draft enables publication',async()=>{

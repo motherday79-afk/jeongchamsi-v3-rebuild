@@ -19,6 +19,12 @@ function createRemoteContentService(){
     async vote(scope,option){return request('action',{method:'POST',body:JSON.stringify({action:'vote',payload:{scope,option}})});},
     async voteResult(scope){if(scope.startsWith('poll:')){const id=scope.slice(5),data=await readDomain('polls'),poll=itemsFrom('polls',data).find(x=>String(x.id)===id);return Object.fromEntries((poll?.options||[]).map(o=>[String(o.id),Number(o.votes||0)]));}return {};},
     async like(domain,postId){return request('action',{method:'POST',body:JSON.stringify({action:'post-like',payload:{domain,postId}})});},
+    async toggleFavorite(input={}){return request('action',{method:'POST',body:JSON.stringify({action:'favorite-toggle',payload:input})});},
+    async memberDashboard(){return request('user/dashboard');},
+    async listInquiries(){return request('inquiries');},
+    async getInquiry(itemId){return request(`inquiries/detail?id=${encodeURIComponent(itemId)}`);},
+    async createInquiry(input={}){return request('inquiries',{method:'POST',body:JSON.stringify(input)});},
+    async replyInquiry(itemId,body){return request('inquiries/reply',{method:'POST',body:JSON.stringify({id:itemId,body})});},
     async comment(domain,postId,text){return request('action',{method:'POST',body:JSON.stringify({action:'comment-add',payload:{domain,postId,text}})});},
     async commentsFor(domain,postId){const data=await readDomain('comments');return itemsFrom('comments',data).filter(x=>x.published!==false&&String(x.domain)===String(domain)&&String(x.postId)===String(postId));},
     async academyApply(slotId=''){return request('action',{method:'POST',body:JSON.stringify({action:'academy-apply',payload:{slotId}})});}
@@ -36,7 +42,13 @@ function createLocalContentService(store){
     async remove(domain,itemId){const items=await store.get(key(domain),[]);const next=items.filter(x=>x.id!==itemId);await store.set(key(domain),next);return next.length!==items.length;},
     async vote(scope,option,voter){const voterKey=clean(voter)||'guest';const votes=await store.get(`votes:${scope}`,{});votes[voterKey]=clean(option);await store.set(`votes:${scope}`,votes);return {ok:true,result:await this.voteResult(scope)};},
     async voteResult(scope){const votes=await store.get(`votes:${scope}`,{});return Object.values(votes).reduce((acc,opt)=>{acc[opt]=(acc[opt]||0)+1;return acc;},{});},
-    async commentsFor(){return [];}
+    async commentsFor(){return [];},
+    async toggleFavorite(){return {ok:false,error:'REMOTE_ONLY'};},
+    async memberDashboard(){return {ok:true,favoriteKeys:[],authoredPosts:[],favoritePosts:[],favoritePeople:[]};},
+    async listInquiries(){return {ok:true,items:[]};},
+    async getInquiry(){return {ok:false,error:'INQUIRY_NOT_FOUND'};},
+    async createInquiry(){return {ok:false,error:'REMOTE_ONLY'};},
+    async replyInquiry(){return {ok:false,error:'REMOTE_ONLY'};}
   };
 }
 export function createContentService(store=null){return store?createLocalContentService(store):createRemoteContentService();}

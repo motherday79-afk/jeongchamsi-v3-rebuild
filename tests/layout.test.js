@@ -81,7 +81,7 @@ test('authenticated session is reflected in header and home account panels',()=>
   assert.match(header,/정참시민님/);
   assert.match(header,/data-layout-route="\/mypage\/activity"/);
   assert.match(home,/정참시민님/);
-  assert.match(home,/로그인 상태 유지 중/);
+  assert.match(home,/data-layout-route="\/mypage">마이페이지/);
   assert.doesNotMatch(home,/정참시에 로그인하세요/);
 });
 

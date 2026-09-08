@@ -1,6 +1,6 @@
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.26';
-import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.29';
-import { renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.30';
+import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.31';
+import { renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.31';
 import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.28';
 import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.29';
 import { createContentService } from './core/content.js';
@@ -8,8 +8,8 @@ import { createPoliticianService } from './core/politicians.js';
 import { createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.28';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.26';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31';
-import * as views from './views/stage1.js?v=0.0.31.30';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.28';
+import * as views from './views/stage1.js?v=0.0.31.31';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.31';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.28';
 import { renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.30';
 import { renderPresidentPage } from './views/president.js?v=0.0.31';
@@ -107,6 +107,7 @@ async function render({preserveScroll=false}={}){
     ? auth.recordBadgeVisit().then(result=>result?.status||auth.badgeStatus()).catch(()=>null)
     : Promise.resolve(null);
   const badgeStatus=p[0]==='mypage'?await badgeStatusPromise:null;
+  const dashboard=session.authenticated&&['mypage','person','column','community','news','itsme'].includes(p[0])?await content.memberDashboard().catch(()=>({favoriteKeys:[],authoredPosts:[],favoritePosts:[],favoritePeople:[]})):{favoriteKeys:[],authoredPosts:[],favoritePosts:[],favoritePeople:[]};
   let body='';
   if(!p.length){
     const [memberCount,columns,community,itsmePosts,newsPosts,polls,generation,nationalEvaluation,academy,rankResult,homeBanner]=await Promise.all([
@@ -130,10 +131,10 @@ async function render({preserveScroll=false}={}){
   } else if(p[0]==='about') body=views.renderAbout();
   else if(p[0]==='support') body=views.renderSupport();
   else if(['guide','privacy','policy'].includes(p[0])) body=views.renderLegal(p[0]);
-  else if(p[0]==='column') body=p[1]==='write'?views.renderBoardWrite('columns'):p[1]?await views.renderBoardDetail('columns',p[1],content,session):await views.renderBoard('columns',content,session);
-  else if(p[0]==='community') body=p[1]==='write'?views.renderBoardWrite('community'):p[1]?await views.renderBoardDetail('community',p[1],content,session):await views.renderBoard('community',content,session);
-  else if(p[0]==='news') body=p[1]==='write'?views.renderBoardWrite('news'):p[1]?await views.renderBoardDetail('news',p[1],content,session):await views.renderBoard('news',content,session);
-  else if(p[0]==='itsme') body=p[1]==='write'?views.renderItsmeWrite():p[1]?await views.renderItsmeDetail(p[1],content,session):await views.renderItsme(content,r);
+  else if(p[0]==='column') body=p[1]==='write'?views.renderBoardWrite('columns'):p[1]?await views.renderBoardDetail('columns',p[1],content,session,dashboard):await views.renderBoard('columns',content,session);
+  else if(p[0]==='community') body=p[1]==='write'?views.renderBoardWrite('community'):p[1]?await views.renderBoardDetail('community',p[1],content,session,dashboard):await views.renderBoard('community',content,session);
+  else if(p[0]==='news') body=p[1]==='write'?views.renderBoardWrite('news'):p[1]?await views.renderBoardDetail('news',p[1],content,session,dashboard):await views.renderBoard('news',content,session);
+  else if(p[0]==='itsme') body=p[1]==='write'?views.renderItsmeWrite():p[1]?await views.renderItsmeDetail(p[1],content,session,dashboard):await views.renderItsme(content,r);
   else if(p[0]==='poll') body=await renderPollBoard({content,session,route:r});
   else if(p[0]==='generation-president') body=await renderGenerationPresident({content,politicians,session,route:r});
   else if(p[0]==='national-evaluation') body=await renderNationalEvaluationPage({content,politicians,session,route:r});
@@ -141,14 +142,15 @@ async function render({preserveScroll=false}={}){
   else if(p[0]==='search') body=await renderSearchPage({query:new URLSearchParams(r.split('?')[1]||'').get('q')||'',politicians,content});
   else if(p[0]==='academy') body=await views.renderAcademy(content,session);
   else if(p[0]==='now') body=await renderPoliticianDirectory(politicians,r);
-  else if(p[0]==='person') body=await renderPoliticianDetail(p[1]||'',politicians,session);
+  else if(p[0]==='person') body=await renderPoliticianDetail(p[1]||'',politicians,session,dashboard);
   else if(p[0]==='compare') body=await renderPoliticianCompare(politicians,r,session);
   else if(p[0]==='request-politician') body=views.renderPoliticianRequest();
   else if(p[0]==='partners') body=views.renderPartners();
   else if(p[0]==='login') body=views.renderLogin();
   else if(p[0]==='join') body=views.renderJoin();
+  else if(p[0]==='inquiry') body=p[1]==='write'?views.renderInquiryWrite(session):p[1]?await views.renderInquiryDetail(p[1],content,session):await views.renderInquiryBoard(content,session);
   else if(p[0]==='mypage'&&p[1]==='activity') body=views.renderMyActivity(session,badgeStatus||{},r.includes('?')?`?${r.split('?')[1]}`:'');
-  else if(p[0]==='mypage') body=views.renderMyPage(session,badgeStatus||{});
+  else if(p[0]==='mypage') body=views.renderMyPage(session,badgeStatus||{},dashboard);
   else if(p[0]==='admin') body=await views.renderAdminStable(session,auth,adminRouteState(r));
   else if(p[0]==='migration') body=views.renderMigration();
   else if(unstable.has(p[0])) body=`<section class="module"><span class="eyebrow">NEXT PHASE</span><h2>${p[0]}</h2><p class="module-desc">이 영역은 이번 버전에서 제외했습니다. NOW·정치인 데이터·분석 엔진은 연결하지 않습니다.</p></section>`;
@@ -205,6 +207,8 @@ document.addEventListener('submit',async event=>{
   if(type==='join') result=await auth.register(data);
   if(type==='board'){const item=await content.create(form.dataset.domain,data),routeName=form.dataset.domain==='columns'?'column':form.dataset.domain==='news'?'news':'community';result=item?.error?{ok:false,error:item.error}:{ok:true,route:`/${routeName}/${item.id}`};}
   if(type==='itsme'){const item=await content.create('itsme',data);result=item?.error?{ok:false,error:item.error}:{ok:true,route:`/itsme/${item.id}`};}
+  if(type==='inquiry'){result=await content.createInquiry(data);if(result?.ok)result.route=`/inquiry/${result.item.id}`;}
+  if(type==='inquiry-reply'){result=await content.replyInquiry(form.dataset.inquiryId,data.body);if(result?.ok)await render({preserveScroll:true});}
   if(type==='comment'){result=await content.comment(form.dataset.domain,form.dataset.postId,data.text);if(result.ok)await render();}
   if(type==='poll-vote'){result=await content.vote(form.dataset.voteScope,String(data.option||''));}
   if(type==='politician-request'){result={ok:false,error:'다음 단계에서 운영 데이터 저장소에 연결합니다.'};}
@@ -217,12 +221,12 @@ document.addEventListener('submit',async event=>{
   if(result?.route){navigation.navigate(result.route);return;}
   if(result?.ok&&['migration','politician-migration'].includes(type)){await render();return;}
   if(result?.ok&&type==='poll-vote'){await render({preserveScroll:true});return;}
-  if(result?.ok&&type!=='comment')form.reset();
+  if(result?.ok&&!['comment','inquiry-reply'].includes(type))form.reset();
 });
 
 document.addEventListener('click',async event=>{
   const bannerEdit=event.target.closest('[data-home-banner-edit]');
-  if(bannerEdit){event.preventDefault();const dialog=document.createElement('dialog');dialog.className='home-banner-dialog';dialog.innerHTML='<form data-home-banner-form><h2>메인 배너 등록</h2><p>권장 크기 640 × 200px · JPG·PNG·WEBP · 최대 2MB</p><label>배너 이미지<input type="file" name="image" accept="image/jpeg,image/png,image/webp" required></label><label>클릭 이동 URL<input type="url" name="targetUrl" placeholder="https://" required></label><label>대체 텍스트<input name="alt" maxlength="120" placeholder="배너 설명" required></label><span data-form-state></span><div class="home-banner-actions"><button type="button" class="ghost-btn" data-home-banner-close>취소</button><button type="submit" class="primary-btn">저장</button></div></form>';document.body.append(dialog);dialog.addEventListener('close',()=>dialog.remove(),{once:true});dialog.showModal();return;}
+  if(bannerEdit){event.preventDefault();const dialog=document.createElement('dialog');dialog.className='home-banner-dialog';dialog.innerHTML='<form data-home-banner-form><h2>메인 배너 등록</h2><p>권장 크기 640 × 350px · JPG·PNG·WEBP · 최대 2MB</p><label>배너 이미지<input type="file" name="image" accept="image/jpeg,image/png,image/webp" required></label><label>클릭 이동 URL<input type="url" name="targetUrl" placeholder="https://" required></label><label>대체 텍스트<input name="alt" maxlength="120" placeholder="배너 설명" required></label><span data-form-state></span><div class="home-banner-actions"><button type="button" class="ghost-btn" data-home-banner-close>취소</button><button type="submit" class="primary-btn">저장</button></div></form>';document.body.append(dialog);dialog.addEventListener('close',()=>dialog.remove(),{once:true});dialog.showModal();return;}
   const bannerClose=event.target.closest('[data-home-banner-close]');if(bannerClose){event.preventDefault();bannerClose.closest('dialog')?.close();return;}
   const adminTab=event.target.closest('[data-admin-tab]');
   if(adminTab){event.preventDefault();navigation.navigate(adminRouteWith(route(),{tab:adminTab.dataset.adminTab}));return;}
@@ -258,6 +262,8 @@ document.addEventListener('click',async event=>{
   if(vote){event.preventDefault();const result=await content.vote(vote.dataset.stageVote,vote.dataset.option);if(result?.status===401){navigation.navigate('/login');return;}if(!result?.ok){alert(result?.error||'투표하지 못했습니다.');return;}await render({preserveScroll:true});return;}
   const like=event.target.closest('[data-post-like]');
   if(like){event.preventDefault();const result=await content.like(like.dataset.domain,like.dataset.postId);if(result?.status===401){navigation.navigate('/login');return;}if(!result?.ok){alert(result?.error||'처리하지 못했습니다.');return;}await render({preserveScroll:true});return;}
+  const favorite=event.target.closest('[data-stage-action="favorite-toggle"]');
+  if(favorite){event.preventDefault();const result=await content.toggleFavorite({kind:favorite.dataset.favoriteKind,domain:favorite.dataset.favoriteDomain||'',id:favorite.dataset.favoriteId});if(result?.status===401){navigation.navigate('/login');return;}if(!result?.ok){alert(result?.error||'즐겨찾기를 변경하지 못했습니다.');return;}await render({preserveScroll:true});return;}
   const action=event.target.closest('[data-stage-action]')?.dataset.stageAction;
   if(action==='logout'){await auth.logout();navigation.navigate('/');return;}
   if(action==='academy-apply'){const result=await content.academyApply(event.target.closest('[data-slot-id]')?.dataset.slotId||'');if(result?.status===401){navigation.navigate('/login');return;}alert(result?.ok?'수강 신청을 접수했습니다.':(result?.error||'신청하지 못했습니다.'));}

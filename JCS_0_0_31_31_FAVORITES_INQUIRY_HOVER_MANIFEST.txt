@@ -1,0 +1,28 @@
+JCS 0.0.31.31
+
+Production
+- api/gateway.js
+- css/hotfix-31-31-favorites-inquiry-hover.css
+- index.html
+- lib/favorite-service.js
+- lib/inquiry-service.js
+- lib/migration-service.js
+- src/app.js
+- src/core/content.js
+- src/core/release.js
+- src/layout/home-layout.js
+- src/layout/site-shell.js
+- src/views/politicians.js
+- src/views/stage1.js
+
+Tests
+- tests/0-0-31-31-favorites-inquiries.test.js
+- tests/0-0-31-31-ui.test.js
+- tests/intelligence-admin-view.test.js
+- tests/layout.test.js
+- tests/politicians.test.js
+
+Delivery
+- JCS_0_0_31_31_FAVORITES_INQUIRY_HOVER_HANDOFF.md
+- JCS_0_0_31_31_FAVORITES_INQUIRY_HOVER_MANIFEST.txt
+- JCS_0_0_31_31_PATCH_UPLOAD_INSTRUCTIONS.md

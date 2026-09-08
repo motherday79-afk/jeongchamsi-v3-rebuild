@@ -13,6 +13,8 @@ import { createParticipationPost, featureParticipationPost } from '../lib/partic
 import { createAdminPoliticianService } from '../lib/admin-politician-service.js';
 import { createPoliticianPhotoService } from '../lib/politician-photo-service.js';
 import { createHomeBannerService } from '../lib/home-banner-service.js';
+import { createFavoriteService } from '../lib/favorite-service.js';
+import { createInquiryService } from '../lib/inquiry-service.js';
 
 const COOKIE='jcsr2_session';
 const MAX_AGE=60*60*24*30;
@@ -39,6 +41,12 @@ export function politicianPhotoErrorCode(error){
 const CONTENT_DOMAINS=new Set([...LEGACY_DOMAINS,'news']);
 function cleanDomain(domain){return CONTENT_DOMAINS.has(String(domain||''))?String(domain):'';}
 const allPoliticianProfiles=command=>Promise.all(POLITICIAN_TYPES.map(type=>readPoliticianType(command,type))).then(groups=>groups.flat().filter(person=>person?.id&&person.isVacant!==true));
+const favoriteService=command=>createFavoriteService({
+  command,
+  getPerson:async id=>{const [person,photos]=await Promise.all([getPolitician(command,id),readPoliticianPhotos(command)]);return person?{...person,photo:photos[id]||null}:null;},
+  getPost:(domain,id)=>findPublishedPost(command,domain,id),
+  listDomain:async domain=>contentItems(await readDomainWithViews(command,domain,{items:[]}))
+});
 export function sanitizeContentInput(input={}){const safe={};for(const [key,limit] of Object.entries({title:200,body:20000,summary:500,category:80,coverImage:1000})){const value=String(input?.[key]||'').trim().slice(0,limit);if(value)safe[key]=value;}return safe;}
 export function isActiveAcademySlot(data={},slotId=''){const id=String(slotId||'');return !!id&&(Array.isArray(data?.slots)?data.slots:contentItems(data)).some(slot=>String(slot?.id||'')===id&&slot?.published!==false&&!slot?.closedAt);}
 export async function findPublishedPost(command,domain,postId){if(!['columns','community','itsme','news'].includes(String(domain||''))||!postId)return null;const data=await readDomain(command,domain,{items:[]});return contentItems(data).find(post=>String(post.id)===String(postId)&&post.published!==false)||null;}
@@ -152,6 +160,7 @@ async function handleUser(req,res,route,command){
     setSession(res,result.user);return json(res,200,result);
   }
   if(route==='user/activity'&&req.method==='GET'){const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});return json(res,200,{ok:true,activity:await readActivity(command,user.id)});}
+  if(route==='user/dashboard'&&req.method==='GET'){const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});return json(res,200,await favoriteService(command).dashboard(user));}
   if(route==='user/badges'){
     const result=await dispatchBadgeRequest(route,req.method,await currentUser(req,command),bodyOf(req),createBadgeService(command));
     return json(res,result.status,result.body);
@@ -187,6 +196,10 @@ async function handleAction(req,res,command){
     const domain=String(payload.domain||''),postId=String(payload.postId||'');if(!['columns','community','itsme','news'].includes(domain)||!postId)return json(res,400,{ok:false,error:'INVALID_POST'});
     const data=await readDomain(command,domain,{items:[]});const post=contentItems(data).find(x=>String(x.id)===postId);if(!post)return json(res,404,{ok:false,error:'POST_NOT_FOUND'});
     const key=`${domain}:${postId}`,liked=new Set(activity.likedPosts||[]),active=!liked.has(key);active?liked.add(key):liked.delete(key);post.likes=Math.max(0,Number(post.likes||0)+(active?1:-1));activity.likedPosts=[...liked];await writeDomain(command,domain,data);activity=await writeActivity(command,user.id,activity);return json(res,200,{ok:true,active,likes:post.likes,activity});
+  }
+  if(action==='favorite-toggle'){
+    const result=await favoriteService(command).toggle(user,payload);
+    return json(res,result.ok?200:result.error==='FAVORITE_TARGET_NOT_FOUND'?404:400,result);
   }
   if(action==='comment-add'){
     const domain=String(payload.domain||''),postId=String(payload.postId||''),text=String(payload.text||'').trim().slice(0,1000);if(!['columns','community','itsme','news'].includes(domain)||!postId||!text)return json(res,400,{ok:false,error:'INVALID_COMMENT'});if(!await findPublishedPost(command,domain,postId))return json(res,404,{ok:false,error:'POST_NOT_FOUND'});
@@ -326,13 +339,27 @@ export default async function handler(req,res){
     if(route.startsWith('migration/'))return handleMigration(req,res,route);
     const command=rebuildRedisCommand();
     if(route.startsWith('user/')){const handled=await handleUser(req,res,route,command);if(handled!==false)return handled;}
+    if(route==='inquiries'){
+      const service=createInquiryService({command}),user=await currentUser(req,command);
+      if(req.method==='GET')return json(res,200,await service.list(user,{offset:url.searchParams.get('offset'),limit:url.searchParams.get('limit')}));
+      if(req.method==='POST'){const result=await service.create(user,bodyOf(req));return json(res,result.ok?201:result.error==='LOGIN_REQUIRED'?401:400,result);}
+      return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
+    }
+    if(route==='inquiries/detail'&&req.method==='GET'){
+      const result=await createInquiryService({command}).get(url.searchParams.get('id')||req.query?.id,await currentUser(req,command));
+      return json(res,result.ok?200:result.error==='INQUIRY_FORBIDDEN'?403:404,result);
+    }
+    if(route==='inquiries/reply'&&req.method==='POST'){
+      const input=bodyOf(req),result=await createInquiryService({command}).reply(input.id,await currentUser(req,command),input.body);
+      return json(res,result.ok?200:result.error==='ADMIN_REQUIRED'?403:result.error==='INQUIRY_NOT_FOUND'?404:400,result);
+    }
     if(route==='content')return handleContent(req,res,command,url);
     if(route==='home/banner'&&req.method==='GET')return json(res,200,{ok:true,banner:await createHomeBannerService({command}).get()});
     if(route==='politicians')return handlePoliticians(req,res,command,url,createIntelligenceService({command}));
     if(route==='action')return handleAction(req,res,command);
     if(route==='stats'){const users=await listUsers(command);return json(res,200,{ok:true,members:users.length});}
     if(route.startsWith('admin/')){const handled=await handleAdmin(req,res,route,command);if(handled!==false)return handled;}
-    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_31'});
+    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_31_31'});
     return json(res,404,{ok:false,error:'NOT_FOUND'});
   }catch(error){return json(res,error.code==='STORAGE_MISSING'?503:500,{ok:false,error:error.code||error.message||'SERVER_ERROR'});}
 }
