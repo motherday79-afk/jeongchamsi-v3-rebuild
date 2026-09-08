@@ -99,7 +99,7 @@ export async function handlePoliticians(req,res,command,url,intelligence){
     return json(res,200,{ok:true,accessTier:tier,item:{...item,photo:photos[id]||null},intelligence:projected});
   }
   if(ranking==='trending'||url.searchParams.has('keywords')){
-    const published=await intelligence.getPublicRankings();if(!published)return json(res,200,{ok:true,items:[],total:0,ready:false});
+    const published=await intelligence.getPublicRankings({keywords:url.searchParams.has('keywords')});if(!published)return json(res,200,{ok:true,items:[],total:0,ready:false});
     const snapshot=url.searchParams.get('snapshot');if(snapshot&&snapshot!==published.snapshot)return json(res,409,{ok:false,error:'RANKING_UPDATED'});
     const profiles=(await Promise.all(POLITICIAN_TYPES.map(type=>readPoliticianType(command,type)))).flat(),byId=new Map(profiles.map(person=>[person.id,person]));
     if(url.searchParams.has('keywords')){let rules={};try{rules=JSON.parse(await command(['GET',KEYWORD_RULES_KEY])||'{}');}catch{}const items=politicalKeywords(published.keywordArticles||[],rules,published.generatedAt,profiles.map(row=>row.name));return json(res,200,{ok:true,snapshot:published.snapshot,updatedAt:published.generatedAt,items:items.map(row=>({...row,people:row.people.map(id=>({id,name:byId.get(id)?.name||id}))}))});}
@@ -300,7 +300,7 @@ export async function dispatchAdminIntelligence(route,method,service,input={}){
     const code=String(error?.code||error?.message||'INTELLIGENCE_OPERATION_FAILED');
     const status=['COLLECTION_NOT_READY','COLLECTION_VALIDATION_REQUIRED','DRAFT_APPROVAL_REQUIRED','NAVER_CREDENTIALS_MISSING','YOUTUBE_CREDENTIALS_MISSING','YOUTUBE_SEARCH_QUOTA_REACHED','PERSON_REFRESH_APPROVAL_REQUIRED','PERSON_REFRESH_BASE_CHANGED'].includes(code)?409:['DRAFT_NOT_FOUND','DRAFT_NOT_EDITABLE','DRAFT_VALIDATION_FAILED','YOUTUBE_CHANNEL_REFERENCE_INVALID','YOUTUBE_DISCOVERY_NOT_STARTED','PERSON_REFRESH_NOT_READY'].includes(code)?400:['POLITICIAN_PROFILE_MISSING','YOUTUBE_CHANNEL_NOT_FOUND'].includes(code)?404:500;
     if(status===500)console.error('[admin-intelligence]',{route,code,message:String(error?.message||''),cause:String(error?.cause?.code||error?.cause?.message||'')});
-    return {status,body:{ok:false,error:code}};
+    return {status,body:{ok:false,error:code,...(status===500?{stage:error.stage|| (route.includes('/publish/')?'게시 처리':''),diagnostic:error.diagnostic||''}:{})}};
   }
 }
 
@@ -425,7 +425,7 @@ export default async function handler(req,res){
     if(route==='action')return handleAction(req,res,command);
     if(route==='stats'){const users=await listUsers(command);return json(res,200,{ok:true,members:users.length});}
     if(route.startsWith('admin/')){const handled=await handleAdmin(req,res,route,command);if(handled!==false)return handled;}
-    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_31_40'});
+    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_31_41'});
     return json(res,404,{ok:false,error:'NOT_FOUND'});
   }catch(error){return json(res,error.message==='MEMBERS_CHANGED_RETRY'?409:error.code==='STORAGE_MISSING'?503:500,{ok:false,error:error.code||error.message||'SERVER_ERROR'});}
 }

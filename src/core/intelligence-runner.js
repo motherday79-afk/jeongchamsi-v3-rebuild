@@ -13,16 +13,16 @@ export function createIntelligenceAutoResumeGuard(){
 
 async function runStepWithRetry(step,options){
   const delays=Array.isArray(options.retryDelays)&&options.retryDelays.length?options.retryDelays:[0,1000,2500];
-  let lastError='INTELLIGENCE_STEP_FAILED';
+  let lastError='INTELLIGENCE_STEP_FAILED',lastDetail='';
   for(let attempt=0;attempt<delays.length;attempt+=1){
     if(attempt>0)await (options.sleep||sleep)(delays[attempt]);
     if(options.shouldContinue?.()===false)throw new Error('INTELLIGENCE_VIEW_PAUSED');
     let result;try{result=await step();}catch(error){if(!(error instanceof TypeError)&&!TRANSIENT_STORAGE_ERRORS.has(error?.code))throw error;result={ok:false,error:'STORAGE_NETWORK'};}
     if(result?.ok)return result;
-    lastError=String(result?.error||'INTELLIGENCE_STEP_FAILED');
-    if(!TRANSIENT_STORAGE_ERRORS.has(lastError)&&!(Number(result?.status)>=500))break;
+    lastError=String(result?.error||'INTELLIGENCE_STEP_FAILED');lastDetail=[result?.stage,result?.diagnostic].filter(Boolean).join(' · ');
+    if(['STORAGE_CAPACITY','STORAGE_RATE_LIMIT','STORAGE_BANDWIDTH_LIMIT','STORAGE_AUTH'].includes(lastError)||(!TRANSIENT_STORAGE_ERRORS.has(lastError)&&!(Number(result?.status)>=500)))break;
   }
-  throw new Error(lastError);
+  throw new Error([lastDetail,lastError].filter(Boolean).join(' · '));
 }
 
 export async function runIntelligenceAction(auth,kind,options={}){
@@ -30,7 +30,7 @@ export async function runIntelligenceAction(auth,kind,options={}){
   const start=()=>kind==='collect'?auth.intelligenceCollectStart():auth.intelligencePublishStart();
   const step=()=>kind==='collect'?auth.intelligenceCollectStep():auth.intelligencePublishStep();
   let job=null;
-  if(!options.resume){const started=await start();if(!started?.ok)throw new Error(started?.error||'INTELLIGENCE_START_FAILED');job=started.job;options.onProgress?.(job);}
+  if(!options.resume){const started=await start();if(!started?.ok)throw new Error([started?.stage,started?.diagnostic,started?.error||'INTELLIGENCE_START_FAILED'].filter(Boolean).join(' · '));job=started.job;options.onProgress?.(job);}
   for(let count=0;count<100;count++){
     if(job&&TERMINAL.has(job.status))return job;
     if(options.shouldContinue?.()===false)throw new Error('INTELLIGENCE_VIEW_PAUSED');
