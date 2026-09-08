@@ -99,3 +99,11 @@
 .trending-grid{grid-template-columns:repeat(5,minmax(0,1fr));margin:20px 0}.rising-change{font-size:10px;color:#b64043}.my-referral{display:flex;flex-wrap:wrap;align-items:center;gap:12px}.my-referral strong{font-size:24px;color:#165c51}.my-referral small{width:100%}
 @media(max-width:1024px){.trending-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:560px){.trending-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* 31.43: representative and showcase slots share dimensions in every account panel. */
+.side-badge-showcase{--showcase-gap:7px;--showcase-height:72px;--showcase-crest-width:40px;--showcase-crest-height:46px}
+.side-participation-account .side-badge-showcase{--showcase-gap:5px;--showcase-height:61px;--showcase-crest-width:32px;--showcase-crest-height:37px}
+.side-badge-showcase .badge-showcase-main,.side-badge-showcase .badge-showcase-trio{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--showcase-gap)}
+.side-badge-showcase .badge-showcase-main>div{grid-column:2 / 4;min-width:0}
+.side-badge-showcase .badge-showcase-main>.badge-showcase-slot,.side-badge-showcase .badge-showcase-slot{width:100%;height:var(--showcase-height);min-height:var(--showcase-height);box-sizing:border-box}
+.side-badge-showcase .badge-showcase-slot .badge-crest{width:var(--showcase-crest-width);height:var(--showcase-crest-height)}
