@@ -1,0 +1,41 @@
+JCS_0_0_31_34_MAIN_DETAIL_RECOVERY_FINAL.zip
+Base: JCS_0_0_31_33
+Release: JCS_0_0_31_34
+
+css/hotfix-31-34-main-detail-recovery.css
+index.html
+lib/intelligence-analysis.js
+lib/intelligence-diagnostics.js
+lib/intelligence-storage.js
+src/app.js
+src/core/release.js
+src/layout/home-layout.js
+src/ui/font-scale.js
+src/ui/interactions.js
+src/views/politicians.js
+src/views/stage1.js
+tests/0-0-31-34-main-detail-recovery.test.js
+tests/intelligence-admin-view.test.js
+JCS_0_0_31_34_MAIN_DETAIL_RECOVERY_HANDOFF.md
+JCS_0_0_31_34_MAIN_DETAIL_RECOVERY_MANIFEST.txt
+JCS_0_0_31_34_PATCH_UPLOAD_INSTRUCTIONS.md
+
+Excluded: images, node_modules, credentials, environment files, prior ZIP archives
+
+SHA-256 (payload files, excluding this manifest)
+19410c0a44bb0c19bf116554a951d3c91b577154d8971f450bc0a559ee3d4f3f  css/hotfix-31-34-main-detail-recovery.css
+57fcac70cbdfc171b4b985ae3507fe286008dcfa555e5f46a54fe069895b422c  index.html
+ad18f391fd5dc6bddd4a395fd3a547cb362ac35290ce558554c961d5cf0bc80c  lib/intelligence-analysis.js
+20e4261947302c5a7e2b35b3c113d7e13e8c2c6bc323f66c364361c8158004c8  lib/intelligence-diagnostics.js
+f9915540465d650a62cccc647120a6d0d84ab8e5851808b9ba59ea0806bda628  lib/intelligence-storage.js
+396a24a9ac5ff01ee3165f9c65581927bb8419c617badf2c2fa12cf648062a6c  src/app.js
+f804c33444e21b3326a6e2266552a81368c9daaff584ac903dc70cc0019dfe2b  src/core/release.js
+850aad572004fa7ac695889cbe898d83bfc34e561274d4bf81e71dd18024326b  src/layout/home-layout.js
+8fd9d3df58049a05fce10f22b8f953f53568fe0d7fb3df23fb6e76f2e7f8ca94  src/ui/font-scale.js
+b6edc6e15d543e149bab9beea969b6b4e5875d299883d585a539a9805572eb5f  src/ui/interactions.js
+a8f19f18e139c2b3f1a0e7ffbe3f92c38fb34da98f752ea07bb30ed8cfe5ba9d  src/views/politicians.js
+22dbb9cd5a7b489ffc1079806c32b7d898527e3580e60bd313eef54e7cfdbb9d  src/views/stage1.js
+684f5b2cf60d3a0e6b0a1b7c00eaa41d253b98ef7e407a64703753e675020e5c  tests/0-0-31-34-main-detail-recovery.test.js
+789760fa084257c04b02ca2a1673162ebdff59026301690b8c5f3f2c59e1c496  tests/intelligence-admin-view.test.js
+f12d00f1b3e3dd353e392fdb9885a8af66123e35ce708b44d0d7f4873816ac28  JCS_0_0_31_34_MAIN_DETAIL_RECOVERY_HANDOFF.md
+ca7b374b3f1d357fc7118e4a3acbce2f217ac17005e0a10c183a52aa68142205  JCS_0_0_31_34_PATCH_UPLOAD_INSTRUCTIONS.md

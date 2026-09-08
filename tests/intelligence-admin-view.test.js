@@ -84,8 +84,8 @@ test('admin warns when browser bundle and server release versions differ',async(
   assert.match(html,/강력 새로고침 필요/);
 });
 
-test('admin operations, favorites and inquiries report release 31.33',()=>{
-  assert.equal(APP_RELEASE,'JCS_0_0_31_33');
+test('admin operations, favorites and inquiries report release 31.34',()=>{
+  assert.equal(APP_RELEASE,'JCS_0_0_31_34');
 });
 
 test('approved reviewed draft enables publication',async()=>{

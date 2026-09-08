@@ -1,5 +1,5 @@
 import { renderPrescriptionReport } from '../views/prescription-visuals.js?v=0.0.31.28';
-import { refreshFontScale, setupFontScaleControl } from './font-scale.js?v=0.0.31.26';
+import { refreshFontScale, setupFontScaleControl } from './font-scale.js?v=0.0.31.34';
 
 export function setupDrawer(root=document){
   const drawer=root.querySelector('[data-drawer]');
@@ -12,12 +12,20 @@ export function setupDrawer(root=document){
   root.querySelectorAll('[data-drawer-close]').forEach(el=>el.addEventListener('click',close));
   root.addEventListener('keydown',event=>{if(event.key==='Escape'&&!drawer.hidden)close();});
 }
+export function nowRankRangeLabel(page,pageSize,total){const count=Math.max(0,Number(total)||0),size=Math.max(1,Number(pageSize)||1),start=Math.min(count,Math.max(0,Number(page)||0)*size)+1,end=Math.min(count,start+size-1);return count?`${start}–${end} / ${count}`:'0 / 0';}
 export function setupNowCarousel(root=document){
   const box=root.querySelector('[data-now-rank-carousel]');if(!box)return;
-  const pages=[...box.querySelectorAll('[data-now-rank-page]')];let page=0;
-  const show=n=>{page=(n+pages.length)%pages.length;pages.forEach((x,i)=>x.hidden=i!==page);box.dataset.page=String(page);const status=box.querySelector('[data-now-rank-status]');if(status)status.textContent=`${page+1} / ${pages.length}`;};
-  box.querySelector('[data-now-rank-prev]')?.addEventListener('click',()=>show(page-1));
-  box.querySelector('[data-now-rank-next]')?.addEventListener('click',()=>show(page+1));
+  for(const set of box.querySelectorAll('[data-now-rank-set]')){
+    const pages=[...set.querySelectorAll('[data-now-rank-page]')];if(!pages.length)continue;let startIndex=0,touchStart=null,lastMobile=null;
+    const desktopSize=Number(set.dataset.pageSize)||10,mobileSize=Number(set.dataset.mobilePageSize)||2,total=Number(set.dataset.total)||pages.reduce((sum,row)=>sum+row.children.length,0),isMobile=()=>globalThis.matchMedia?.('(max-width:560px)')?.matches===true;
+    const paint=()=>{const mobile=isMobile(),size=mobile?mobileSize:desktopSize;if(lastMobile!==null&&lastMobile!==mobile)startIndex=Math.floor(startIndex/size)*size;lastMobile=mobile;const logicalPage=Math.floor(startIndex/size),containerIndex=Math.floor(startIndex/desktopSize),inside=startIndex%desktopSize;pages.forEach((page,index)=>{page.hidden=index!==containerIndex;[...page.children].forEach((card,cardIndex)=>{card.hidden=mobile&&index===containerIndex&&(cardIndex<inside||cardIndex>=inside+size);});});set.dataset.page=String(logicalPage);const desktopStatus=set.querySelector('[data-now-rank-status="desktop"]'),mobileStatus=set.querySelector('[data-now-rank-status="mobile"]');if(desktopStatus)desktopStatus.textContent=nowRankRangeLabel(Math.floor(startIndex/desktopSize),desktopSize,total);if(mobileStatus)mobileStatus.textContent=nowRankRangeLabel(Math.floor(startIndex/mobileSize),mobileSize,total);};
+    const move=direction=>{const size=isMobile()?mobileSize:desktopSize,maxStart=Math.max(0,Math.ceil(total/size)-1)*size;startIndex=direction>0?(startIndex>=maxStart?0:startIndex+size):(startIndex<=0?maxStart:startIndex-size);paint();};
+    set.querySelector('[data-now-rank-prev]')?.addEventListener('click',()=>move(-1));
+    set.querySelector('[data-now-rank-next]')?.addEventListener('click',()=>move(1));
+    set.addEventListener('touchstart',event=>{touchStart=event.touches?.[0]?.clientX??null;},{passive:true});
+    set.addEventListener('touchend',event=>{const end=event.changedTouches?.[0]?.clientX;if(touchStart===null||!Number.isFinite(end))return;const delta=end-touchStart;touchStart=null;if(Math.abs(delta)>=36)move(delta<0?1:-1);},{passive:true});
+    globalThis.addEventListener?.('resize',paint);paint();
+  }
 }
 export function setupLauncherExpansion(root=document){
   const toggle=root.querySelector('[data-launcher-toggle]'),panel=root.querySelector('[data-launcher-panel]');if(!toggle||!panel)return;

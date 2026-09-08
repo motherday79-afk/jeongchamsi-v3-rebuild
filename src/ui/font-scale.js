@@ -1,8 +1,8 @@
-export const FONT_SCALE_RATIOS=Object.freeze([1,1.06,1.12,1.18,1.24,1.3]);
+export const FONT_SCALE_RATIOS=Object.freeze([1,1.06,1.12,1.18,1.24,1.3,1.36,1.42]);
 export const FONT_SCALE_STORAGE_KEY='jcs-font-scale-level';
 const scalableSelector='h1,h2,h3,h4,h5,h6,p,span,b,strong,small,em,a,button,label,input,select,textarea,th,td,dt,dd,li,output,svg text';
 
-const level=value=>Math.max(0,Math.min(5,Number.isFinite(Number(value))?Math.round(Number(value)):0));
+const level=value=>Math.max(0,Math.min(FONT_SCALE_RATIOS.length-1,Number.isFinite(Number(value))?Math.round(Number(value)):0));
 export function changeFontScaleLevel(current,delta){return level(level(current)+(Number(delta)||0));}
 export function readFontScaleLevel(storage=globalThis.localStorage){try{return level(Number(storage?.getItem?.(FONT_SCALE_STORAGE_KEY)));}catch{return 0;}}
 
@@ -26,7 +26,7 @@ export function setupFontScaleControl(root=document,storage=globalThis.localStor
   const control=root.querySelector?.('[data-font-scale-control]');if(!control)return false;
   const minus=control.querySelector?.('[data-font-scale-decrease]'),plus=control.querySelector?.('[data-font-scale-increase]'),output=control.querySelector?.('[data-font-scale-level]');
   let current=readFontScaleLevel(storage);
-  const paint=()=>{applyFontScale(root,current,getStyle);control.dataset.fontScale=String(current);if(output)output.textContent=current?`${current}단계`:'기본';if(minus)minus.disabled=current===0;if(plus)plus.disabled=current===5;};
+  const paint=()=>{applyFontScale(root,current,getStyle);control.dataset.fontScale=String(current);if(output)output.textContent=current?`${current}단계`:'기본';if(minus)minus.disabled=current===0;if(plus)plus.disabled=current===FONT_SCALE_RATIOS.length-1;};
   const change=delta=>{current=changeFontScaleLevel(current,delta);storeLevel(storage,current);paint();};
   minus?.addEventListener?.('click',()=>change(-1));plus?.addEventListener?.('click',()=>change(1));paint();return true;
 }
