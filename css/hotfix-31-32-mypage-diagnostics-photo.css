@@ -57,3 +57,14 @@
 #jcs-intelligence-nine .jcs-search-device span{font-size:11px;letter-spacing:.04em}
 @media(max-width:1024px){#jcs-intelligence-nine .jcs-brand-tools-32{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){#jcs-intelligence-nine .jcs-brand-tools-32{grid-template-columns:minmax(0,1fr)}}
+
+/* 31.40: local agendas use observed article counts, with exact led counts. */
+#jcs-intelligence-nine .jcs-local-agenda-row{padding:12px 0;border-bottom:1px solid var(--jcs-line)}
+#jcs-intelligence-nine .jcs-local-agenda-row header{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+#jcs-intelligence-nine .jcs-local-agenda-row header span{font-size:11px;color:var(--jcs-sub)}
+#jcs-intelligence-nine .jcs-local-agenda-track{height:14px;background:var(--jcs-soft);margin:9px 0}
+#jcs-intelligence-nine .jcs-local-agenda-track>div{height:100%;background:#c0d6d0}
+#jcs-intelligence-nine .jcs-local-agenda-track i{display:block;height:100%;background:var(--jcs-teal)}
+#jcs-intelligence-nine .jcs-local-agenda-row>a{display:block;font-size:11px;line-height:1.5;color:var(--jcs-sub);overflow-wrap:anywhere}
+#jcs-intelligence-nine .jcs-agenda-legend{display:flex;gap:14px;font-size:11px;color:var(--jcs-sub)}
+#jcs-intelligence-nine .jcs-agenda-legend b{color:var(--jcs-teal)}

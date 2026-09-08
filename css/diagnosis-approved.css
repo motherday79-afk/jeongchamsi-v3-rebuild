@@ -203,9 +203,9 @@
 
     /* 02 */
     #jcs-intelligence-nine .jcs-age-chart { display: grid; grid-template-columns: repeat(5, minmax(42px, 1fr)); gap: clamp(8px, 2vw, 20px); align-items: end; height: 260px; padding-top: 20px; border-bottom: 1px solid var(--jcs-line); }
-    #jcs-intelligence-nine .jcs-age-col { height: calc(var(--age) * 7px); min-height: 58px; display: grid; grid-template-columns: var(--male) 1fr; align-items: end; background: var(--jcs-soft); position: relative; }
-    #jcs-intelligence-nine .jcs-age-col .male { height:100%; background: linear-gradient(180deg, var(--jcs-teal), var(--jcs-navy)); display:grid; place-items:end center; padding-bottom:8px; color: var(--jcs-paper); font-size:11px; }
-    #jcs-intelligence-nine .jcs-age-col .female { height:100%; background: linear-gradient(180deg, color-mix(in srgb, var(--jcs-rose) 72%, var(--jcs-paper)), var(--jcs-rose)); display:grid; place-items:end center; padding-bottom:8px; color: var(--jcs-paper); font-size:11px; }
+    #jcs-intelligence-nine .jcs-age-col { height: calc(var(--age) * 7px); min-height: 58px; display: grid; grid-template-columns: 1fr; grid-template-rows: var(--male) minmax(0,1fr); align-items: stretch; background: var(--jcs-soft); position: relative; }
+    #jcs-intelligence-nine .jcs-age-col .male { height:100%; background: linear-gradient(180deg, var(--jcs-teal), var(--jcs-navy)); display:grid; place-items:center; padding:0; min-height:0; color: var(--jcs-paper); font-size:11px; }
+    #jcs-intelligence-nine .jcs-age-col .female { height:100%; background: linear-gradient(180deg, color-mix(in srgb, var(--jcs-rose) 72%, var(--jcs-paper)), var(--jcs-rose)); display:grid; place-items:center; padding:0; min-height:0; color: var(--jcs-paper); font-size:11px; }
     #jcs-intelligence-nine .jcs-age-total { position:absolute; top:-24px; left:50%; transform:translateX(-50%); font-size:12px; }
     #jcs-intelligence-nine .jcs-age-name { position:absolute; bottom:-27px; left:50%; transform:translateX(-50%); color:var(--jcs-sub); font-size:11px; white-space:nowrap; }
     #jcs-intelligence-nine .jcs-gender-legend { display:flex; gap:14px; justify-content:flex-end; font-size:11px; color:var(--jcs-sub); }

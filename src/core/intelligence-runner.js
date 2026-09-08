@@ -17,10 +17,10 @@ async function runStepWithRetry(step,options){
   for(let attempt=0;attempt<delays.length;attempt+=1){
     if(attempt>0)await (options.sleep||sleep)(delays[attempt]);
     if(options.shouldContinue?.()===false)throw new Error('INTELLIGENCE_VIEW_PAUSED');
-    const result=await step();
+    let result;try{result=await step();}catch(error){if(!(error instanceof TypeError)&&!TRANSIENT_STORAGE_ERRORS.has(error?.code))throw error;result={ok:false,error:'STORAGE_NETWORK'};}
     if(result?.ok)return result;
     lastError=String(result?.error||'INTELLIGENCE_STEP_FAILED');
-    if(!TRANSIENT_STORAGE_ERRORS.has(lastError))break;
+    if(!TRANSIENT_STORAGE_ERRORS.has(lastError)&&!(Number(result?.status)>=500))break;
   }
   throw new Error(lastError);
 }

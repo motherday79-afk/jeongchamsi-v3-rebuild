@@ -1,21 +1,21 @@
-import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.39';
-import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.39';
-import { renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.39';
-import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.39';
-import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.39';
-import { createContentService } from './core/content.js?v=0.0.31.39';
-import { createPoliticianService } from './core/politicians.js?v=0.0.31.39';
-import { createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.39';
-import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.39';
-import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.39';
-import * as views from './views/stage1.js?v=0.0.31.39';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.39';
-import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.39';
-import { generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.39';
-import { renderPresidentPage } from './views/president.js?v=0.0.31.39';
-import { renderSearchPage } from './views/search-page.js?v=0.0.31.39';
-import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.31.39';
-import { regionDistrictOptions, regionSubdistrictOptions } from './data/korean-regions.js?v=0.0.31.39';
+import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.40';
+import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.40';
+import { renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.40';
+import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.40';
+import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.40';
+import { createContentService } from './core/content.js?v=0.0.31.40';
+import { createPoliticianService } from './core/politicians.js?v=0.0.31.40';
+import { createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.40';
+import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.40';
+import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.40';
+import * as views from './views/stage1.js?v=0.0.31.40';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.40';
+import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.40';
+import { generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.40';
+import { renderPresidentPage } from './views/president.js?v=0.0.31.40';
+import { renderSearchPage } from './views/search-page.js?v=0.0.31.40';
+import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.31.40';
+import { regionDistrictOptions, regionSubdistrictOptions } from './data/korean-regions.js?v=0.0.31.40';
 
 const formErrors={INVALID_REFERRER:'추천인코드를 확인해 주세요. 사용 가능한 회원의 코드를 입력해야 합니다.',INVALID_REFERRER_CODE:'추천인코드는 숫자로 입력해 주세요.',INVALID_REGION:'시·군·구와 해당 구를 올바르게 선택해 주세요.',REGISTRATION_BUSY:'가입 요청이 많습니다. 잠시 후 다시 시도해 주세요.',MEMBERS_CHANGED_RETRY:'회원 정보가 갱신됐습니다. 새로고침 후 다시 저장해 주세요.'};
 const app=document.getElementById('app');
@@ -79,7 +79,7 @@ async function runAdminIntelligence(kind,resume=false){
   if(intelligenceRunnerActive)return;intelligenceRunnerActive=true;intelligenceAutoResumeGuard.mark(kind);
   const button=document.querySelector(`[data-intelligence-action="${kind}"]`);if(button)button.disabled=true;
   try{
-    const job=await runIntelligenceAction(auth,kind,{resume,shouldContinue:pipelineActive,onProgress:value=>{if(pipelineActive())updateIntelligenceProgress(kind,value);}});
+    const job=await runIntelligenceAction(auth,kind,{resume,onProgress:value=>{if(pipelineActive())updateIntelligenceProgress(kind,value);}});
     updateIntelligenceProgress(kind,job,job.status==='COMPLETED'?'모든 분할 작업이 완료되었습니다.':`완료 상태: ${job.status}`);
   }catch(error){if(error.message==='INTELLIGENCE_VIEW_PAUSED'){intelligenceAutoResumeGuard.release(kind);return;}const card=document.querySelector(`[data-intelligence-job="${kind}"]`),state=card?.querySelector('[data-job-message]');if(state)state.textContent=`처리 중단 · ${error.message} · 다시 누르면 저장된 위치부터 재개됩니다.`;}
   finally{intelligenceRunnerActive=false;if(pipelineActive())await render({preserveScroll:true});}
