@@ -6,6 +6,7 @@ export function createIntelligenceAutoResumeGuard(){
   const attempted=new Set();
   return {
     claim(kind){const key=String(kind||'');if(!key||attempted.has(key))return false;attempted.add(key);return true;},
+    release(kind){attempted.delete(String(kind||''));},
     mark(kind){const key=String(kind||'');if(key)attempted.add(key);},
   };
 }
@@ -15,6 +16,7 @@ async function runStepWithRetry(step,options){
   let lastError='INTELLIGENCE_STEP_FAILED';
   for(let attempt=0;attempt<delays.length;attempt+=1){
     if(attempt>0)await (options.sleep||sleep)(delays[attempt]);
+    if(options.shouldContinue?.()===false)throw new Error('INTELLIGENCE_VIEW_PAUSED');
     const result=await step();
     if(result?.ok)return result;
     lastError=String(result?.error||'INTELLIGENCE_STEP_FAILED');
@@ -31,6 +33,7 @@ export async function runIntelligenceAction(auth,kind,options={}){
   if(!options.resume){const started=await start();if(!started?.ok)throw new Error(started?.error||'INTELLIGENCE_START_FAILED');job=started.job;options.onProgress?.(job);}
   for(let count=0;count<100;count++){
     if(job&&TERMINAL.has(job.status))return job;
+    if(options.shouldContinue?.()===false)throw new Error('INTELLIGENCE_VIEW_PAUSED');
     const result=await runStepWithRetry(step,options);job=result.job;options.onProgress?.(job);
     if(kind==='publish'&&result?.finalized?.ok===false)throw new Error('PUBLICATION_FINALIZE_FAILED');
     if(job&&TERMINAL.has(job.status))return job;

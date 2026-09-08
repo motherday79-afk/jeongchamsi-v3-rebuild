@@ -2,7 +2,7 @@ export const KOREAN_REGIONS=Object.freeze({
   '서울특별시':['종로구','중구','용산구','성동구','광진구','동대문구','중랑구','성북구','강북구','도봉구','노원구','은평구','서대문구','마포구','양천구','강서구','구로구','금천구','영등포구','동작구','관악구','서초구','강남구','송파구','강동구'],
   '부산광역시':['중구','서구','동구','영도구','부산진구','동래구','남구','북구','해운대구','사하구','금정구','강서구','연제구','수영구','사상구','기장군'],
   '대구광역시':['중구','동구','서구','남구','북구','수성구','달서구','달성군','군위군'],
-  '인천광역시':['중구','동구','미추홀구','연수구','남동구','부평구','계양구','서구','강화군','옹진군'],
+  '인천광역시':['제물포구','영종구','미추홀구','연수구','남동구','부평구','계양구','서해구','검단구','강화군','옹진군'],
   '광주광역시':['동구','서구','남구','북구','광산구'],
   '대전광역시':['동구','중구','서구','유성구','대덕구'],
   '울산광역시':['중구','남구','동구','북구','울주군'],
@@ -20,3 +20,10 @@ export const KOREAN_REGIONS=Object.freeze({
 
 export const regionProvinceOptions=()=>Object.keys(KOREAN_REGIONS);
 export const regionDistrictOptions=province=>KOREAN_REGIONS[String(province||'')]||[];
+
+export const CITY_DISTRICTS=Object.freeze({
+ '경기도':{'수원시':['장안구','권선구','팔달구','영통구'],'용인시':['처인구','기흥구','수지구'],'고양시':['덕양구','일산동구','일산서구'],'성남시':['수정구','중원구','분당구'],'부천시':['원미구','소사구','오정구'],'안산시':['상록구','단원구'],'안양시':['만안구','동안구'],'화성시':['만세구','효행구','병점구','동탄구']},
+ '충청북도':{'청주시':['상당구','서원구','흥덕구','청원구']},'충청남도':{'천안시':['동남구','서북구']},'전북특별자치도':{'전주시':['완산구','덕진구']},'경상북도':{'포항시':['남구','북구']},'경상남도':{'창원시':['의창구','성산구','마산합포구','마산회원구','진해구']}
+});
+export const regionSubdistrictOptions=(province,city)=>CITY_DISTRICTS[String(province||'')]?.[String(city||'')]||[];
+export function validRegion(province,city,district=''){const cities=regionDistrictOptions(province),districts=regionSubdistrictOptions(province,city);return cities.includes(city)&&(districts.length?districts.includes(district):!district);}

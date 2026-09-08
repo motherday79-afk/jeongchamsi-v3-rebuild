@@ -2,12 +2,22 @@ const clean=v=>String(v??'').trim();
 const publicUser=u=>u?({id:u.id,nickname:u.nickname||u.id,role:u.role||'member',status:u.status||'active',email:u.email||'',createdAt:u.createdAt||'',profile:u.profile||{},name:u.name||'',phone:u.phone||'',birthYear:u.birthYear||'',regionProvince:u.regionProvince||'',regionCity:u.regionCity||'',regionDistrict:u.regionDistrict||'',region:u.region||'',preferredParty:u.preferredParty||'',mustChangePassword:!!u.mustChangePassword,sessionVersion:Number(u.sessionVersion)||0}):null;
 const registrationPhone=value=>{const digits=String(value??'').replace(/\D/g,''),tail=digits.startsWith('010')?digits.slice(3):digits;return /^\d{8}$/.test(tail)?`010-${tail.slice(0,4)}-${tail.slice(4)}`:'';};
 async function digest(value){const bytes=new TextEncoder().encode(String(value));const hash=await globalThis.crypto.subtle.digest('SHA-256',bytes);return [...new Uint8Array(hash)].map(x=>x.toString(16).padStart(2,'0')).join('');}
-async function request(path,options={}){const res=await fetch(`/api/v3/${path}`,{credentials:'same-origin',headers:{'Content-Type':'application/json',...(options.headers||{})},...options});const data=await res.json().catch(()=>({ok:false,error:'INVALID_RESPONSE'}));if(!res.ok&&data?.ok!==false)data.ok=false;return {status:res.status,...data};}
+async function uncachedRequest(path,options={}){const res=await fetch(`/api/v3/${path}`,{credentials:'same-origin',headers:{'Content-Type':'application/json',...(options.headers||{})},...options});const data=await res.json().catch(()=>({ok:false,error:'INVALID_RESPONSE'}));if(!res.ok&&data?.ok!==false)data.ok=false;return {status:res.status,...data};}
 
 export function photoUploadMessage(result={}){
   if(result?.ok)return '사진을 업로드하고 전체 상세페이지에 적용했습니다.';
   const messages={PHOTO_STORAGE_NOT_CONFIGURED:'사진 저장소가 연결되지 않았습니다. Vercel Blob을 연결한 뒤 다시 배포해 주세요.',PHOTO_TOO_LARGE:'사진은 1MB 이하만 업로드할 수 있습니다.',PHOTO_TYPE_INVALID:'JPG·PNG·WEBP 사진만 업로드할 수 있습니다.',PHOTO_SIGNATURE_INVALID:'손상되었거나 지원하지 않는 이미지 파일입니다.',POLITICIAN_PROFILE_MISSING:'정치인 정보를 찾을 수 없습니다.'};
   return messages[String(result?.error||'')]||'사진을 업로드하지 못했습니다. 잠시 후 다시 시도해 주세요.';
+}
+
+const requestCache=new Map();let cacheEpoch=0;
+async function request(path,options={}){
+ const read=!options.method||options.method==='GET',cacheable=read&&(path.startsWith('admin/')||path==='user/session'||(path.includes('count')||path==='stats'));
+ if(!read){requestCache.clear();cacheEpoch++;try{return await uncachedRequest(path,options);}finally{requestCache.clear();cacheEpoch++;}}
+ if(!cacheable)return uncachedRequest(path,options);
+ const now=Date.now(),cached=requestCache.get(path);if(cached&&cached.until>now)return cached.promise;
+ const epoch=cacheEpoch,promise=uncachedRequest(path,options).then(result=>{if((result.status>=400||result.ok===false)&&epoch===cacheEpoch)requestCache.delete(path);return result;}).catch(error=>{if(epoch===cacheEpoch)requestCache.delete(path);throw error;});
+ requestCache.set(path,{promise,until:now+(path==='user/session'?5000:path.includes('intelligence')?5000:30000)});return promise;
 }
 
 function createRemoteAuthService(){
@@ -49,6 +59,8 @@ function createRemoteAuthService(){
     async politicianPhotoStorageStatus(){return request('admin/politicians/photo');},
     async homeBannerStorageStatus(){return request('admin/home-banner');},
     async adminAudit(){return request('admin/audit');},
+    async keywordRules(){return request('admin/keyword-rules');},
+    async saveKeywordRules(input){return request('admin/keyword-rules',{method:'PATCH',body:JSON.stringify(input)});},
     async footerInfo(){return request('admin/footer-info');},
     async saveFooterInfo(input={}){return request('admin/footer-info',{method:'PATCH',body:JSON.stringify(input)});},
     async refreshPolitician(personId){return request('admin/intelligence/person/refresh',{method:'POST',body:JSON.stringify({personId})});},

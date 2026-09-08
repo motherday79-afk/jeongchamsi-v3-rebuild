@@ -1,9 +1,10 @@
+import { politicalKeywords } from '../lib/operational-ranking.js';
 import { put } from '@vercel/blob';
 import { legacyRedisCommand, rebuildRedisCommand } from '../lib/redis-rest.js';
 import { collectLegacySnapshot, writeRebuildSnapshot, writePoliticianSeed, validatePoliticianSeed, TARGET_KEYS } from '../lib/migration-service.js';
 import { LEGACY_DOMAINS } from '../lib/migration-core.js';
 import { issueSessionToken, readSessionToken } from '../lib/session.js';
-import { readUsers, listUsers, getUser, registerUser, authenticateUser, updateProfile, updateUserRole, updateUserByAdmin, resetUserPassword, completeRequiredPasswordChange, publicUser, readDomain, readDomainWithViews, writeDomain, readActivity, writeActivity } from '../lib/rebuild-store.js';
+import { readUsers, listUsers, getUser, registerUser, authenticateUser, updateProfile, updateUserRole, updateUserByAdmin, resetUserPassword, completeRequiredPasswordChange, publicUser, referralProfile, readDomain, readDomainWithViews, writeDomain, readActivity, writeActivity } from '../lib/rebuild-store.js';
 import { POLITICIAN_COUNTS, POLITICIAN_TYPES, cleanPoliticianType, readPoliticianType, readPoliticianPhotos, getPolitician, searchPoliticianProfiles } from '../lib/politician-store.js';
 import { createIntelligenceService } from '../lib/intelligence-service.js';
 import { accessTierForUser, projectIntelligence } from '../lib/intelligence-access.js';
@@ -17,7 +18,7 @@ import { createHomeBannerService, homeBannerStorageStatus } from '../lib/home-ba
 import { createFavoriteService } from '../lib/favorite-service.js';
 import { createInquiryService } from '../lib/inquiry-service.js';
 import { createApplicationService } from '../lib/application-service.js';
-import { createSiteSettingsService } from '../lib/site-settings-service.js';
+import { createSiteSettingsService, KEYWORD_RULES_KEY, sanitizeKeywordRules } from '../lib/site-settings-service.js';
 
 const COOKIE='jcsr2_session';
 const MAX_AGE=60*60*24*30;
@@ -97,6 +98,14 @@ export async function handlePoliticians(req,res,command,url,intelligence){
     }
     return json(res,200,{ok:true,accessTier:tier,item:{...item,photo:photos[id]||null},intelligence:projected});
   }
+  if(ranking==='trending'||url.searchParams.has('keywords')){
+    const published=await intelligence.getPublicRankings();if(!published)return json(res,200,{ok:true,items:[],total:0,ready:false});
+    const snapshot=url.searchParams.get('snapshot');if(snapshot&&snapshot!==published.snapshot)return json(res,409,{ok:false,error:'RANKING_UPDATED'});
+    const profiles=(await Promise.all(POLITICIAN_TYPES.map(type=>readPoliticianType(command,type)))).flat(),byId=new Map(profiles.map(person=>[person.id,person]));
+    if(url.searchParams.has('keywords')){let rules={};try{rules=JSON.parse(await command(['GET',KEYWORD_RULES_KEY])||'{}');}catch{}const items=politicalKeywords(published.keywordArticles||[],rules,published.generatedAt,profiles.map(row=>row.name));return json(res,200,{ok:true,snapshot:published.snapshot,updatedAt:published.generatedAt,items:items.map(row=>({...row,people:row.people.map(id=>({id,name:byId.get(id)?.name||id}))}))});}
+    const rows=published.rising?.items||[],offset=Math.min(100,Math.max(0,Number(url.searchParams.get('offset'))||0)),items=rows.slice(offset,Math.min(100,offset+30)).map(row=>({...byId.get(row.id),...row,photo:photos[row.id]||null}));
+    return json(res,200,{ok:true,items,total:Math.min(100,rows.length),offset,nextOffset:offset+items.length,ready:published.rising?.ready===true,snapshot:published.snapshot,previousAt:published.rising?.previousAt||'',updatedAt:published.generatedAt});
+  }
   if(ranking==='overall'){
     const published=await intelligence.getPublicRankings();if(!published)return json(res,200,{ok:true,published:false,items:[]});
     const profiles=(await Promise.all(POLITICIAN_TYPES.map(type=>readPoliticianType(command,type)))).flat(),byId=new Map(profiles.map(person=>[person.id,person]));
@@ -154,7 +163,7 @@ async function handleUser(req,res,route,command){
     const body=bodyOf(req);const user=await authenticateUser(command,body.id,body.password);if(!user)return json(res,401,{ok:false,error:'INVALID_LOGIN'});setSession(res,user);return json(res,200,{ok:true,user});
   }
   if(route==='user/logout'&&req.method==='POST'){clearSession(res);return json(res,200,{ok:true});}
-  if(route==='user/session'&&req.method==='GET'){const user=await currentUser(req,command);return json(res,200,{authenticated:!!user,user:user||null});}
+  if(route==='user/session'&&req.method==='GET'){const user=await referralProfile(command,await currentUser(req,command));return json(res,200,{authenticated:!!user,user:user||null});}
   if(route==='user/profile'&&req.method==='POST'){const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});return json(res,200,await updateProfile(command,user.id,bodyOf(req)));}
   if(route==='user/password'&&req.method==='POST'){
     const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});
@@ -298,6 +307,11 @@ export async function dispatchAdminIntelligence(route,method,service,input={}){
 async function handleAdmin(req,res,route,command){
   const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});if(user.role!=='admin')return json(res,403,{ok:false,error:'ADMIN_REQUIRED'});
   const adminPoliticians=createAdminPoliticianService({command,profilesProvider:()=>allPoliticianProfiles(command)});
+  if(route==='admin/keyword-rules'){
+    if(req.method==='GET'){let rules={};try{rules=JSON.parse(await command(['GET',KEYWORD_RULES_KEY])||'{}');}catch{}return json(res,200,{ok:true,rules:sanitizeKeywordRules(rules)});}
+    if(req.method==='PATCH'){const rules=sanitizeKeywordRules(bodyOf(req));await command(['SET',KEYWORD_RULES_KEY,JSON.stringify(rules)]);return json(res,200,{ok:true,rules});}
+    return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
+  }
   if(route==='admin/participation'&&req.method==='POST'){
     const body=bodyOf(req),domain=String(body.domain||'');if(!['polls','generation','nationalEvaluation'].includes(domain))return json(res,400,{ok:false,error:'INVALID_PARTICIPATION_DOMAIN'});
     const current=(await readDomain(command,domain,domain==='polls'?{items:[]}:{slots:{},results:{},history:[],items:[]}))||{};
@@ -411,7 +425,7 @@ export default async function handler(req,res){
     if(route==='action')return handleAction(req,res,command);
     if(route==='stats'){const users=await listUsers(command);return json(res,200,{ok:true,members:users.length});}
     if(route.startsWith('admin/')){const handled=await handleAdmin(req,res,route,command);if(handled!==false)return handled;}
-    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_31_38'});
+    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_31_39'});
     return json(res,404,{ok:false,error:'NOT_FOUND'});
-  }catch(error){return json(res,error.code==='STORAGE_MISSING'?503:500,{ok:false,error:error.code||error.message||'SERVER_ERROR'});}
+  }catch(error){return json(res,error.message==='MEMBERS_CHANGED_RETRY'?409:error.code==='STORAGE_MISSING'?503:500,{ok:false,error:error.code||error.message||'SERVER_ERROR'});}
 }

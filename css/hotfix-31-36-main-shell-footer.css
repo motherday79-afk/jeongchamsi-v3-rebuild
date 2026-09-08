@@ -38,7 +38,7 @@
 .footer.footer-expanded{display:grid;grid-template-columns:auto 1fr;align-items:start;gap:16px 28px;max-width:1180px;margin:0 auto;padding:28px 16px 36px}
 .footer-brand{display:flex;align-items:baseline;gap:9px}.footer-brand>b{color:#0a7868}.footer-brand>span{color:#7b8783;font-size:11px}
 .footer-links{display:flex;justify-content:flex-end;gap:18px}.footer-links a{color:#4e5d58;font-size:12px;text-decoration:none}
-.footer-business-grid{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px 22px;padding-top:15px;border-top:1px solid #dfe6e3}
+.footer-business-grid{grid-column:1/-1;display:grid;gap:7px;padding-top:15px;border-top:1px solid #dfe6e3}
 .footer-business-item{display:inline-flex;align-items:baseline;gap:7px;color:#687570;font-size:11px;line-height:1.5}.footer-business-item b{color:#44534e;font-weight:650}.footer-business-item a{color:inherit;text-underline-offset:3px}
 .footer-disclaimer{grid-column:1/-1;margin:0;color:#7d8985;font-size:10px;line-height:1.55}
 .legal-policy{display:grid;gap:18px}.legal-policy>p{margin:0 0 4px}.legal-policy section{padding-top:16px;border-top:1px solid #e4e9e7}.legal-policy h3{margin:0 0 7px;font-size:15px}.legal-policy section p{margin:0;color:#576660;line-height:1.75}
@@ -93,3 +93,9 @@
 .service-dock-tone-navy .service-dock-icon{color:#335cae;background:#f5f7fd}
 .service-dock-tone-green .service-dock-icon{color:#4d893c;background:#f5faf2}
 .service-dock-tone-gold .service-dock-icon{color:#a77d23;background:#fcf8ed}
+
+.footer-business-row{display:flex;flex-wrap:wrap;gap:6px 18px}.admin-tabs{overflow-x:auto;white-space:nowrap}.admin-tabs button{flex:none}
+
+.trending-grid{grid-template-columns:repeat(5,minmax(0,1fr));margin:20px 0}.rising-change{font-size:10px;color:#b64043}.my-referral{display:flex;flex-wrap:wrap;align-items:center;gap:12px}.my-referral strong{font-size:24px;color:#165c51}.my-referral small{width:100%}
+@media(max-width:1024px){.trending-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:560px){.trending-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
