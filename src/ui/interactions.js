@@ -1,5 +1,5 @@
-import { renderPrescriptionReport } from '../views/prescription-visuals.js?v=0.0.31.50';
-import { refreshFontScale, setupFontScaleControl } from './font-scale.js?v=0.0.31.50';
+import { renderPrescriptionReport } from '../views/prescription-visuals.js?v=0.0.31.51';
+import { refreshFontScale, setupFontScaleControl } from './font-scale.js?v=0.0.31.51';
 
 export function setupDrawer(root=document){
   const drawer=root.querySelector('[data-drawer]');
