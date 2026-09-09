@@ -1,4 +1,4 @@
-import { SERVICE_CATALOG, serviceIconSvg } from '../ui/service-icons.js?v=0.0.31.51';
+import { SERVICE_CATALOG, serviceIconSvg } from '../ui/service-icons.js?v=0.0.31.52';
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 
 export function renderInitialLoading(target){
