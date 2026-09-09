@@ -369,11 +369,11 @@ async function handleAdmin(req,res,route,command){
     try{const service=createPoliticianPhotoService({command,profilesProvider:()=>allPoliticianProfiles(command)}),result=await service.save({personId:body.personId,contentType:body.contentType,bytes:Buffer.from(encoded,'base64'),focus:body.focus},user.id);await adminPoliticians.log(user.id,'POLITICIAN_PHOTO_UPDATE',body.personId,{size:result.photo.size,contentType:result.photo.contentType,previousUrl:result.previous?.url||'',previousPathname:result.previous?.pathname||'',currentUrl:result.photo.url,currentPathname:result.photo.pathname});return json(res,200,{ok:true,...result});}
     catch(error){const code=politicianPhotoErrorCode(error);return json(res,code==='POLITICIAN_PROFILE_MISSING'?404:code==='PHOTO_TOO_LARGE'?413:code==='PHOTO_STORAGE_NOT_CONFIGURED'?503:400,{ok:false,error:code});}
   }
-  if(route==='admin/home-banner'&&req.method==='GET')return json(res,200,{ok:true,storage:homeBannerStorageStatus(process.env),limits:{maxBytes:2_097_152,maxMegabytes:2,formats:['JPG','PNG','WEBP'],recommended:{width:640,height:450},mobileRecommended:{width:720,height:540},heroRecommended:{width:1180,height:300},pairMaxBytes:3_145_728,requiredDevices:['pc','mobile']}});
+  if(route==='admin/home-banner'&&req.method==='GET')return json(res,200,{ok:true,storage:homeBannerStorageStatus(process.env),limits:{maxBytes:2_097_152,maxMegabytes:2,formats:['JPG','PNG','WEBP'],recommended:{width:640,height:450},mobileRecommended:{width:720,height:540},heroRecommended:{width:1180,height:150},tabletRecommended:{width:1200,height:400},sidebarDevices:['pc','mobile','tablet'],pairMaxBytes:3_145_728,requiredDevices:['pc','mobile']}});
   if(route==='admin/home-banner'&&req.method==='POST'){
-    const body=bodyOf(req),pc=body.pc||{},mobile=body.mobile||{},pcEncoded=String(pc.dataBase64||''),mobileEncoded=String(mobile.dataBase64||'');
-    if(pcEncoded.length+mobileEncoded.length>4_194_304)return json(res,413,{ok:false,error:'BANNER_PAIR_TOO_LARGE'});
-    try{const banner=await createHomeBannerService({command}).save({placement:body.placement||'sidebar',pc:body.pc?{contentType:pc.contentType,bytes:Buffer.from(pcEncoded,'base64')}:null,mobile:body.mobile?{contentType:mobile.contentType,bytes:Buffer.from(mobileEncoded,'base64')}:null,targetUrl:body.targetUrl,alt:body.alt},user.id);return json(res,200,{ok:true,banner});}
+    const body=bodyOf(req),pc=body.pc||{},mobile=body.mobile||{},tablet=body.tablet||{},tabletEncoded=String(tablet.dataBase64||''),pcEncoded=String(pc.dataBase64||''),mobileEncoded=String(mobile.dataBase64||'');
+    if(pcEncoded.length+mobileEncoded.length+tabletEncoded.length>4_194_304)return json(res,413,{ok:false,error:'BANNER_PAIR_TOO_LARGE'});
+    try{const banner=await createHomeBannerService({command}).save({placement:body.placement||'sidebar',pc:body.pc?{contentType:pc.contentType,bytes:Buffer.from(pcEncoded,'base64')}:null,mobile:body.mobile?{contentType:mobile.contentType,bytes:Buffer.from(mobileEncoded,'base64')}:null,tablet:body.tablet?{contentType:tablet.contentType,bytes:Buffer.from(tabletEncoded,'base64')}:null,targetUrl:body.targetUrl,alt:body.alt},user.id);return json(res,200,{ok:true,banner});}
     catch(error){const code=String(error?.message||'BANNER_UPLOAD_FAILED'),storage=code==='BANNER_STORAGE_NOT_CONFIGURED'||/No blob credentials|BLOB_READ_WRITE_TOKEN|VERCEL_OIDC_TOKEN|BLOB_STORE_ID/i.test(code);return json(res,code==='BANNER_TOO_LARGE'?413:storage?503:400,{ok:false,error:storage?'BANNER_STORAGE_NOT_CONFIGURED':code});}
   }
   if(route==='admin/footer-info'&&req.method==='GET')return json(res,200,{ok:true,info:await createSiteSettingsService({command}).get()});
@@ -434,7 +434,7 @@ export default async function handler(req,res){
     if(route==='action')return handleAction(req,res,command);
     if(route==='stats'){const users=await listUsers(command);return json(res,200,{ok:true,members:users.length});}
     if(route.startsWith('admin/')){const handled=await handleAdmin(req,res,route,command);if(handled!==false)return handled;}
-    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_31_53'});
+    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_31_54'});
     return json(res,404,{ok:false,error:'NOT_FOUND'});
   }catch(error){return json(res,error.message==='MEMBERS_CHANGED_RETRY'?409:error.code==='STORAGE_MISSING'?503:500,{ok:false,error:error.code||error.message||'SERVER_ERROR'});}
 }
