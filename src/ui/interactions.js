@@ -1,5 +1,5 @@
-import { renderPrescriptionReport } from '../views/prescription-visuals.js?v=0.0.31.49';
-import { refreshFontScale, setupFontScaleControl } from './font-scale.js?v=0.0.31.49';
+import { renderPrescriptionReport } from '../views/prescription-visuals.js?v=0.0.31.50';
+import { refreshFontScale, setupFontScaleControl } from './font-scale.js?v=0.0.31.50';
 
 export function setupDrawer(root=document){
   const drawer=root.querySelector('[data-drawer]');
@@ -32,14 +32,15 @@ export function serviceDockVisibleCount(width,total){
 export function setupLauncherExpansion(root=document){
   const toggle=root.querySelector('[data-launcher-toggle]'),panel=root.querySelector('[data-launcher-panel]');if(!toggle||!panel)return;
   const main=toggle.parentElement,extra=panel.querySelector('.service-dock-row-all');
-  const primary=[...main.querySelectorAll('.service-dock-item')],additional=[...extra.querySelectorAll('.service-dock-item')],items=[...primary,...additional];
+  const primary=[...main.querySelectorAll('.service-dock-item')],additional=[...extra.querySelectorAll('.service-dock-item')],items=[...primary,...additional].filter(item=>!item.hasAttribute('data-dock-more-only')),reserved=additional.filter(item=>item.hasAttribute('data-dock-more-only'));
   const setOpen=open=>{panel.hidden=!open;toggle.setAttribute('aria-expanded',String(open));toggle.setAttribute('aria-label',open?'전체 서비스 접기':'전체 서비스 펼치기');const cue=toggle.querySelector('span');if(cue)cue.textContent=open?'−':'···';};
   const fit=()=>{
     const mobile=globalThis.matchMedia?.('(max-width:1024px), (hover:none) and (pointer:coarse)')?.matches===true;
-    const count=mobile?primary.length:serviceDockVisibleCount(main.clientWidth,items.length);
+    const count=mobile?primary.length:Math.min(items.length,serviceDockVisibleCount(main.clientWidth,items.length+reserved.length));
     const focused=main.ownerDocument?.activeElement;
     items.forEach((item,index)=>{if(index<count)main.insertBefore(item,toggle);else extra.append(item);});
-    toggle.hidden=count===items.length;
+    reserved.forEach(item=>extra.append(item));
+    toggle.hidden=count===items.length&&reserved.length===0;
     if(toggle.hidden)setOpen(false);
     // Keep a focused shortcut visible when a resize sends it into the overflow panel.
     if(focused&&items.includes(focused)&&extra.contains(focused))setOpen(true);
