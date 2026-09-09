@@ -1,21 +1,21 @@
-import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.47';
-import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.47';
-import { renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.47';
-import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.47';
-import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.47';
-import { createContentService } from './core/content.js?v=0.0.31.47';
-import { createPoliticianService } from './core/politicians.js?v=0.0.31.47';
-import { createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.47';
-import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.47';
-import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.47';
-import * as views from './views/stage1.js?v=0.0.31.47';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.47';
-import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.47';
-import { generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.47';
-import { renderPresidentPage } from './views/president.js?v=0.0.31.47';
-import { renderSearchPage } from './views/search-page.js?v=0.0.31.47';
-import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.31.47';
-import { regionDistrictOptions, regionSubdistrictOptions } from './data/korean-regions.js?v=0.0.31.47';
+import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.48';
+import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.48';
+import { renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.48';
+import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.48';
+import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.48';
+import { createContentService } from './core/content.js?v=0.0.31.48';
+import { createPoliticianService } from './core/politicians.js?v=0.0.31.48';
+import { createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.48';
+import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.48';
+import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.48';
+import * as views from './views/stage1.js?v=0.0.31.48';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.48';
+import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.48';
+import { generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.48';
+import { renderPresidentPage } from './views/president.js?v=0.0.31.48';
+import { renderSearchPage } from './views/search-page.js?v=0.0.31.48';
+import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.31.48';
+import { regionDistrictOptions, regionSubdistrictOptions } from './data/korean-regions.js?v=0.0.31.48';
 
 const formErrors={INVALID_REFERRER:'추천인코드를 확인해 주세요. 사용 가능한 회원의 코드를 입력해야 합니다.',INVALID_REFERRER_CODE:'추천인코드는 숫자로 입력해 주세요.',INVALID_REGION:'시·군·구와 해당 구를 올바르게 선택해 주세요.',REGISTRATION_BUSY:'가입 요청이 많습니다. 잠시 후 다시 시도해 주세요.',MEMBERS_CHANGED_RETRY:'회원 정보가 갱신됐습니다. 새로고침 후 다시 저장해 주세요.'};
 const app=document.getElementById('app');
@@ -186,7 +186,19 @@ document.addEventListener('submit',async event=>{
   const footerInfoForm=event.target.closest('[data-footer-info-form]');
   if(footerInfoForm){event.preventDefault();const state=footerInfoForm.querySelector('[data-form-state]'),result=await auth.saveFooterInfo(Object.fromEntries(new FormData(footerInfoForm)));if(state)state.textContent=result?.ok?'풋터 정보를 저장하고 공개 화면에 반영했습니다.':(result?.error||'풋터 정보를 저장하지 못했습니다.');if(result?.ok){shellInfoCache=null;await render({preserveScroll:true});}return;}
   const bannerForm=event.target.closest('[data-home-banner-form]');
-  if(bannerForm){event.preventDefault();const data=new FormData(bannerForm),file=data.get('image'),state=bannerForm.querySelector('[data-form-state]');if(!(file instanceof File)||file.size>2097152||!['image/jpeg','image/png','image/webp'].includes(file.type)){if(state)state.textContent='JPG·PNG·WEBP 파일을 2MB 이하로 선택해 주세요.';return;}const bytes=new Uint8Array(await file.arrayBuffer());let binary='';for(let start=0;start<bytes.length;start+=32768)binary+=String.fromCharCode(...bytes.subarray(start,start+32768));const result=await content.saveHomeBanner({contentType:file.type,dataBase64:btoa(binary),targetUrl:String(data.get('targetUrl')||''),alt:String(data.get('alt')||'정참시 배너')});const messages={BANNER_STORAGE_NOT_CONFIGURED:'배너 저장소가 연결되지 않았습니다. Vercel Blob을 연결하고 재배포한 뒤 다시 시도해 주세요.',BANNER_TOO_LARGE:'배너 이미지는 2MB 이하만 업로드할 수 있습니다.',BANNER_TYPE_INVALID:'JPG·PNG·WEBP 이미지만 업로드할 수 있습니다.',BANNER_SIGNATURE_INVALID:'손상되었거나 지원하지 않는 이미지 파일입니다.',BANNER_TARGET_URL_INVALID:'클릭 이동 주소는 https://로 시작해야 합니다.'};if(state)state.textContent=result?.ok?'메인 배너를 저장했습니다.':(messages[result?.error]||'배너를 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.');if(result?.ok){bannerForm.closest('dialog')?.close();await render({preserveScroll:true});}return;}
+  if(bannerForm){
+    event.preventDefault();const data=new FormData(bannerForm),pc=data.get('pc'),mobile=data.get('mobile'),state=bannerForm.querySelector('[data-form-state]'),submit=bannerForm.querySelector('[type="submit"]');
+    if([pc,mobile].some(file=>!(file instanceof File)||!file.size)){state.textContent='PC와 모바일 이미지를 모두 선택해 주세요.';return;}
+    if([pc,mobile].some(file=>file.size>2097152||!['image/jpeg','image/png','image/webp'].includes(file.type))){state.textContent='JPG·PNG·WEBP, 이미지별 최대 2MB입니다.';return;}
+    if(pc.size+mobile.size>3145728){state.textContent='PC·모바일 이미지의 합계 용량은 3MB 이하로 선택해 주세요.';return;}
+    if(submit.disabled)return;submit.disabled=true;state.textContent='PC·모바일 배너를 저장하고 있습니다…';
+    try{const encode=async file=>{const bytes=new Uint8Array(await file.arrayBuffer());let binary='';for(let start=0;start<bytes.length;start+=32768)binary+=String.fromCharCode(...bytes.subarray(start,start+32768));return {contentType:file.type,dataBase64:btoa(binary)};};
+      const result=await content.saveHomeBanner({placement:String(data.get('placement')||'sidebar'),pc:await encode(pc),mobile:await encode(mobile),targetUrl:String(data.get('targetUrl')||''),alt:String(data.get('alt')||'정참시 배너')});
+      const messages={BANNER_STORAGE_NOT_CONFIGURED:'배너 저장소가 연결되지 않았습니다.',BANNER_BOTH_REQUIRED:'PC와 모바일 이미지를 모두 선택해 주세요.',BANNER_PAIR_TOO_LARGE:'두 이미지의 합계 용량은 3MB 이하입니다.',BANNER_TOO_LARGE:'이미지별 최대 2MB입니다.',BANNER_TYPE_INVALID:'JPG·PNG·WEBP 이미지만 업로드할 수 있습니다.',BANNER_SIGNATURE_INVALID:'손상되었거나 지원하지 않는 이미지입니다.',BANNER_TARGET_URL_INVALID:'클릭 이동 주소는 https://로 시작해야 합니다.'};
+      state.textContent=result?.ok?'PC·모바일 배너를 저장했습니다.':messages[result?.error]||'배너를 저장하지 못했습니다. 다시 시도해 주세요.';
+      if(result?.ok){bannerForm.closest('dialog')?.close();await render({preserveScroll:true});}
+    }catch{state.textContent='배너를 저장하지 못했습니다. 다시 시도해 주세요.';}finally{submit.disabled=false;}return;
+  }
   const youtubeChannel=event.target.closest('[data-youtube-channel-form]');
   if(youtubeChannel){event.preventDefault();const button=youtubeChannel.querySelector('button'),data=new FormData(youtubeChannel),personId=youtubeChannel.dataset.youtubeChannelForm||String(data.get('personId')||'');if(button)button.disabled=true;const result=await auth.youtubeChannelSave({personId,reference:String(data.get('reference')||'')});if(!result?.ok){alert(result?.error||'공식 채널을 저장하지 못했습니다.');if(button)button.disabled=false;return;}await render({preserveScroll:true});return;}
   const memberProfile=event.target.closest('[data-member-profile-form]');
@@ -247,7 +259,7 @@ document.addEventListener('submit',async event=>{
 
 document.addEventListener('click',async event=>{
   const bannerEdit=event.target.closest('[data-home-banner-edit]');
-  if(bannerEdit){event.preventDefault();const dialog=document.createElement('dialog');dialog.className='home-banner-dialog';dialog.innerHTML='<form data-home-banner-form><h2>메인 배너 등록</h2><p>권장 크기 640 × 450px · JPG·PNG·WEBP · 최대 2MB</p><p data-banner-storage-status data-state="checking">배너 저장소 연결 확인 중…</p><label>배너 이미지<input type="file" name="image" accept="image/jpeg,image/png,image/webp" required></label><label>클릭 이동 URL<input type="url" name="targetUrl" placeholder="https://" required></label><label>대체 텍스트<input name="alt" maxlength="120" placeholder="배너 설명" required></label><span data-form-state></span><div class="home-banner-actions"><button type="button" class="ghost-btn" data-home-banner-close>취소</button><button type="submit" class="primary-btn">저장</button></div></form>';document.body.append(dialog);dialog.addEventListener('close',()=>dialog.remove(),{once:true});dialog.showModal();const state=dialog.querySelector('[data-banner-storage-status]'),result=await auth.homeBannerStorageStatus?.().catch(()=>null),configured=!!result?.storage?.configured;if(state){state.dataset.state=configured?'ready':'missing';state.textContent=configured?'배너 저장소 연결됨 · 최대 2MB':'배너 저장소 미연결 · Vercel Blob 연결 및 재배포 필요';}return;}
+  if(bannerEdit){event.preventDefault();const placement=bannerEdit.dataset.homeBannerEdit==='hero'?'hero':'sidebar',dialog=document.createElement('dialog');dialog.className='home-banner-dialog';dialog.innerHTML=`<form data-home-banner-form><h2>${placement==='hero'?'히어로 하단 가로 배너':'메인 사이드 배너'} 등록</h2><input type="hidden" name="placement" value="${placement}"><p>PC·모바일 이미지 모두 필수 · JPG·PNG·WEBP<br>각각 최대 2MB, 두 이미지 합계 최대 3MB</p><p data-banner-storage-status data-state="checking">배너 저장소 연결 확인 중…</p><label>PC 이미지 · ${placement==='hero'?'1180 × 300':'640 × 450'}px<input type="file" name="pc" accept="image/jpeg,image/png,image/webp" required></label><label>모바일 이미지 · 720 × 540px<input type="file" name="mobile" accept="image/jpeg,image/png,image/webp" required></label><label>클릭 이동 URL<input type="url" name="targetUrl" placeholder="https://" required></label><label>대체 텍스트<input name="alt" maxlength="120" placeholder="배너 설명" required></label><span data-form-state role="status"></span><div class="home-banner-actions"><button type="button" class="ghost-btn" data-home-banner-close>취소</button><button type="submit" class="primary-btn">저장</button></div></form>`;document.body.append(dialog);dialog.addEventListener('close',()=>dialog.remove(),{once:true});dialog.showModal();const state=dialog.querySelector('[data-banner-storage-status]'),result=await auth.homeBannerStorageStatus?.().catch(()=>null),configured=!!result?.storage?.configured;if(state){state.dataset.state=configured?'ready':'missing';state.textContent=configured?'배너 저장소 연결됨':'배너 저장소 미연결 · Vercel Blob 연결 및 재배포 필요';}return;}
   const bannerClose=event.target.closest('[data-home-banner-close]');if(bannerClose){event.preventDefault();bannerClose.closest('dialog')?.close();return;}
   const referralCopy=event.target.closest('[data-copy-referral]');if(referralCopy){try{await navigator.clipboard.writeText(referralCopy.dataset.copyReferral);referralCopy.textContent='복사됨';}catch{referralCopy.textContent='코드를 선택해 복사해 주세요';}return;}
   const more=event.target.closest('[data-trending-more]');if(more){if(more.disabled)return;more.disabled=true;const container=more.closest('.module'),state=container.querySelector('[data-trending-status]');try{const result=await politicians.trending(Number(more.dataset.offset),more.dataset.snapshot);if(!more.isConnected)return;if(!result.ok){state.textContent=result.error==='RANKING_UPDATED'?'순위가 갱신되었습니다. 새로고침해 주세요.':'불러오지 못했습니다. 다시 시도해 주세요.';more.disabled=false;return;}container.querySelector('[data-trending-grid]').insertAdjacentHTML('beforeend',result.items.map(renderNowRankCard).join(''));more.dataset.offset=result.nextOffset;state.textContent=`${result.nextOffset} / ${result.total}명`;if(result.nextOffset>=result.total)more.remove();else more.disabled=false;}catch{if(more.isConnected){state.textContent='불러오지 못했습니다. 다시 시도해 주세요.';more.disabled=false;}}return;}
