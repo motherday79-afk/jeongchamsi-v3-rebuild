@@ -186,7 +186,7 @@
 .product-home-wrap .product-hero-participation .hero-hub-card{min-height:0;padding:14px 12px!important;gap:0}
 .product-home-wrap .product-hero-participation .hero-hub-card strong{font-size:15px}
 .product-home-wrap .product-hero-participation .hero-hub-label{font-size:8px;letter-spacing:.04em}
-.home-wide-banner{position:relative;margin-top:18px;width:100%;height:200px;background:#eef2f5;border:1px solid #dfe6e9;border-radius:16px;overflow:hidden;box-sizing:border-box}
+.home-wide-banner{position:relative;margin-top:18px;width:100%;height:150px;background:#eef2f5;border:1px solid #dfe6e9;border-radius:16px;overflow:hidden;box-sizing:border-box}
 .home-wide-banner>a,.home-wide-banner picture{display:block;width:100%;height:100%}
 .home-wide-banner img{display:block;width:100%;height:100%;object-fit:contain}
 .home-wide-banner>button{position:absolute;right:12px;bottom:12px;border:1px solid #fff;border-radius:20px;background:#102a3b;color:#fff;padding:7px 12px;cursor:pointer}
@@ -241,9 +241,9 @@
 .jc49 .jc-composer>.jc-camp-choice{margin-bottom:12px}.jc49 .jc-reply{margin-top:12px}.jc49 .jc-menu summary:focus-visible{outline:2px solid #927126}.jc49 .author-representative-badge{display:inline-flex;width:20px;height:24px;vertical-align:middle}.jc49 .author-representative-badge svg{width:20px;height:24px}.jc49 .jc-row-link .author-identity{display:inline-flex}.jc49 .jc-popover button{min-height:36px}.jc49 [data-form-state]{display:block;font-size:12px;color:#8f3949;line-height:1.5;margin-top:8px;overflow-wrap:anywhere}.jc49 .jc-copy{overflow-wrap:anywhere}
 dialog.jc49{width:min(640px,calc(100% - 24px));max-height:85vh;overflow:auto;padding:25px;border:1px solid #dfe6eb;border-radius:12px;background:#fff;margin:auto}dialog.jc49::backdrop{background:rgba(16,35,48,.4)}
 .community-title.is-pinned{font-weight:800}.community-title.is-pinned>b{color:#927126;font-size:11px}
-/* Only the new hero slot is 200px tall. Sidebar uses its pre-31.48 64:45 cascade. */
-/* 31.52: fixed 200px frame on desktop and mobile. */
-.home-wide-banner,.home-wide-banner.home-banner-empty{height:200px;min-height:200px;max-height:200px;aspect-ratio:auto;padding:0!important}
+/* Only the new hero slot is 150px tall. Sidebar uses its pre-31.48 64:45 cascade. */
+/* 31.53: fixed 150px frame on desktop and mobile. */
+.home-wide-banner,.home-wide-banner.home-banner-empty{height:150px;min-height:150px;max-height:150px;max-width:100%;min-width:0;aspect-ratio:auto;padding:0!important}
 .home-wide-banner>a{position:absolute;inset:0;display:block;width:100%;height:100%}
 .home-wide-banner picture,.home-wide-banner img{display:block;width:100%;max-width:none;height:100%;max-height:none;margin:0;aspect-ratio:auto;object-fit:cover}
 
