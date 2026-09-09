@@ -1,4 +1,4 @@
-import { SERVICE_CATALOG, launcherServices, moduleActionIconSvg, serviceIconSvg } from '../ui/service-icons.js?v=0.0.31.55';
+import { SERVICE_CATALOG, launcherServices, moduleActionIconSvg, serviceIconSvg } from '../ui/service-icons.js?v=0.0.31.56';
 import { badgeByKey, badgeCrestSvg } from '../data/badge-catalog.js';
 
 const partyClass=(party='')=>party.includes('더불어')?'party-democratic':party.includes('국민의힘')?'party-peoplepower':party.includes('개혁신당')?'party-reform':party.includes('조국혁신당')?'party-innovation':party.includes('진보당')?'party-progressive':party.includes('기본소득당')?'party-basicincome':party.includes('사회민주당')?'party-socialdemocratic':party.includes('공석')?'party-vacant':'party-independent';
@@ -80,7 +80,7 @@ function participationCard(status={},mobile=false,session={}){const authenticate
 
 function homeBanner(banner={},session={},placement='sidebar'){
  const url=imageUrl(banner?.url),mobile=imageUrl(banner?.mobileUrl),tablet=imageUrl(banner?.tabletUrl),target=imageUrl(banner?.targetUrl),admin=session?.user?.role==='admin',hero=placement==='hero',cls=hero?'home-wide-banner':'side-card side-home-banner',edit=`<button type="button" data-home-banner-edit="${placement}">배너 ${url?'변경':'등록'}</button>`;
- if(url)return `<section class="${cls}"><a href="${esc(target||'#')}"${target?' target="_blank" rel="noopener noreferrer"':''}><picture>${!hero&&tablet?`<source media="(min-width:601px) and (max-width:1024px)" srcset="${esc(tablet)}">`:''}${mobile?`<source media="(max-width:${hero?600:1024}px)" srcset="${esc(mobile)}">`:''}<img src="${esc(url)}" alt="${esc(banner.alt||'정참시 배너')}" loading="lazy"></picture></a>${admin?edit:''}</section>`;
+ if(url)return `<section class="${cls}"><a href="${esc(target||'#')}"${target?' target="_blank" rel="noopener noreferrer"':''}><picture>${tablet?`<source media="(min-width:601px) and (max-width:1024px)" srcset="${esc(tablet)}">`:''}${mobile?`<source media="(max-width:${hero?600:1024}px)" srcset="${esc(mobile)}">`:''}<img src="${esc(url)}" alt="${esc(banner.alt||'정참시 배너')}" loading="lazy"></picture></a>${admin?edit:''}</section>`;
  return admin?`<section class="${cls} home-banner-empty"><b>${hero?'히어로 하단 가로 배너':'메인 사이드 배너'}</b><p>PC ${hero?'1180 × 150':'640 × 450'}px · 모바일 720 × 540px${hero?' · 두 이미지 필수':' · 폴드 펼침·태블릿 1200 × 400px'}</p>${edit}</section>`:'';
 }
 
