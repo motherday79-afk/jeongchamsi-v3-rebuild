@@ -1,3 +1,4 @@
+import { createCommunityService, communityStats } from '../lib/community-service.js';
 import { politicalKeywords } from '../lib/operational-ranking.js';
 import { put } from '@vercel/blob';
 import { legacyRedisCommand, rebuildRedisCommand } from '../lib/redis-rest.js';
@@ -189,17 +190,22 @@ export function applyPostEdit(post,input={}){
 
 export async function handleContent(req,res,command,url){
   const domain=cleanDomain(url.searchParams.get('domain')||req.query?.domain);if(!domain)return json(res,400,{ok:false,error:'INVALID_DOMAIN'});
-  if(req.method==='GET'){const data=(await readDomainWithViews(command,domain,null))||({items:[]});return json(res,200,{ok:true,domain,data:await attachRepresentativeBadges(command,data)});}
+  if(req.method==='GET'){
+    let data=(await readDomainWithViews(command,domain,null))||({items:[]});
+    if(['community','itsme','columns','news','comments'].includes(domain)){
+      const user=await currentUser(req,command),activity=user&&domain!=='comments'?await readActivity(command,user.id):{},liked=new Set(activity?.likedPosts||[]);
+      data={...data,items:contentItems(data).filter(x=>x.published!==false).map(row=>{const {likedBy,likeStates,...safe}=row;return {...safe,liked:domain==='comments'?!!user&&(likedBy||[]).includes(user.id):!!user&&(likeStates&&Object.hasOwn(likeStates,user.id)?likeStates[user.id]===true:liked.has(`${domain}:${row.id}`))};})};
+      if(domain==='community'&&data.items.some(x=>x.cageEnabled)){const comments=await readDomain(command,'comments',{items:[]});data.cageStats=communityStats(data.items,contentItems(comments));}
+    }
+    return json(res,200,{ok:true,domain,data:await attachRepresentativeBadges(command,data)});
+  }
 
   if(['PATCH','DELETE'].includes(req.method)){
     const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});
     if(!['columns','community','itsme','news'].includes(domain))return json(res,403,{ok:false,error:'WRITE_NOT_ALLOWED'});
-    const body=bodyOf(req),data=await readDomain(command,domain,{items:[]}),items=contentItems(data),index=items.findIndex(row=>String(row.id)===String(body.id||''));
-    if(index<0)return json(res,404,{ok:false,error:'POST_NOT_FOUND'});
-    if(!canManagePost(user,items[index]))return json(res,403,{ok:false,error:'POST_EDIT_FORBIDDEN'});
-    if(req.method==='DELETE')items.splice(index,1);
-    else {if(!String(body.input?.title||'').trim())return json(res,400,{ok:false,error:'TITLE_REQUIRED'});items[index]=applyPostEdit(items[index],body.input);}
-    data.items=items;await writeDomain(command,domain,data);return json(res,200,{ok:true,item:req.method==='PATCH'?items[index]:null});
+    const body=bodyOf(req),service=createCommunityService({command});
+    try{if(req.method==='DELETE'){const result=await service.deletePost(domain,body.id,user);return json(res,200,result);}const item=await service.editPost(domain,body.id,body.input||{},user);const {likeStates,...safe}=item;return json(res,200,{ok:true,item:safe});}
+    catch(error){return json(res,error.status||503,{ok:false,error:error.message||'CONTENT_SAVE_FAILED'});}
   }
   if(req.method==='POST'){
     const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});
@@ -213,14 +219,13 @@ export async function handleContent(req,res,command,url){
       const blob=await put(`boards/${domain}/${Date.now()}.${valid.extension}`,valid.bytes,{access:'public',contentType:valid.contentType,addRandomSuffix:true});return json(res,201,{ok:true,url:blob.url});
       }catch(error){return json(res,400,{ok:false,error:String(error.message||'IMAGE_UPLOAD_FAILED')});}
     }
-    const input=sanitizeContentInput(bodyOf(req).input||bodyOf(req)),data=(await readDomain(command,domain,{items:[]}))||{items:[]};
-    const item={...input,id:`${domain}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,7)}`,ownerId:user.id,author:String(user.nickname||user.id).slice(0,40),published:true,likes:0,views:0,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
-    data.items=[item,...contentItems(data)].slice(0,500);await writeDomain(command,domain,data);const decorated=await attachRepresentativeBadges(command,{items:[item]});return json(res,201,{ok:true,item:decorated.items[0]});
+    try{const item=await createCommunityService({command}).createPost(domain,bodyOf(req).input||bodyOf(req),user),decorated=await attachRepresentativeBadges(command,{items:[item]});return json(res,201,{ok:true,item:decorated.items[0]});}
+    catch(error){return json(res,error.status||503,{ok:false,error:error.message||'CONTENT_SAVE_FAILED'});}
   }
   return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
 }
 
-async function handleAction(req,res,command){
+export async function handleAction(req,res,command){
   if(req.method!=='POST')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
   const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});
   const body=bodyOf(req),action=String(body.action||''),payload=body.payload||body;let activity=await readActivity(command,user.id);
@@ -230,18 +235,21 @@ async function handleAction(req,res,command){
     if(result)return json(res,result.status,result.body);
   }
 
-  if(action==='post-like'){
-    const domain=String(payload.domain||''),postId=String(payload.postId||'');if(!['columns','community','itsme','news'].includes(domain)||!postId)return json(res,400,{ok:false,error:'INVALID_POST'});
-    const data=await readDomain(command,domain,{items:[]});const post=contentItems(data).find(x=>String(x.id)===postId);if(!post)return json(res,404,{ok:false,error:'POST_NOT_FOUND'});
-    const key=`${domain}:${postId}`,liked=new Set(activity.likedPosts||[]),active=!liked.has(key);active?liked.add(key):liked.delete(key);post.likes=Math.max(0,Number(post.likes||0)+(active?1:-1));activity.likedPosts=[...liked];await writeDomain(command,domain,data);activity=await writeActivity(command,user.id,activity);return json(res,200,{ok:true,active,likes:post.likes,activity});
+  if(['post-like','comment-add','comment-edit','comment-delete','comment-like'].includes(action)){
+    const service=createCommunityService({command}),domain=String(payload.domain||''),postId=String(payload.postId||''),id=String(payload.commentId||'');
+    try{let result;
+      if(action==='post-like')result=await service.likePost(domain,postId,user);
+      if(action==='comment-like')result=await service.likeComment(domain,postId,id,user);
+      if(action==='comment-delete')result=await service.deleteComment(domain,postId,id,user);
+      if(action==='comment-edit')result={ok:true,comment:await service.editComment(domain,postId,id,payload.text,user)};
+      if(action==='comment-add')result={ok:true,comment:await service.addComment(domain,postId,payload,user)};
+      if(result.comment){const {likedBy,...safe}=result.comment;result.comment=safe;}
+      return json(res,200,result);
+    }catch(error){return json(res,error.status||503,{ok:false,error:error.message||'CONTENT_SAVE_FAILED'});}
   }
   if(action==='favorite-toggle'){
     const result=await favoriteService(command).toggle(user,payload);
     return json(res,result.ok?200:result.error==='FAVORITE_TARGET_NOT_FOUND'?404:400,result);
-  }
-  if(action==='comment-add'){
-    const domain=String(payload.domain||''),postId=String(payload.postId||''),text=String(payload.text||'').trim().slice(0,1000);if(!['columns','community','itsme','news'].includes(domain)||!postId||!text)return json(res,400,{ok:false,error:'INVALID_COMMENT'});if(!await findPublishedPost(command,domain,postId))return json(res,404,{ok:false,error:'POST_NOT_FOUND'});
-    const comments=await readDomain(command,'comments',{items:[]});const comment={id:`comment-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,6)}`,domain,postId,ownerId:user.id,author:String(user.nickname||user.id).slice(0,40),text,createdAt:new Date().toISOString(),published:true};comments.items=[comment,...contentItems(comments)].slice(0,3000);await writeDomain(command,'comments',comments);const decorated=await attachRepresentativeBadges(command,{items:[comment]});return json(res,200,{ok:true,comment:decorated.items[0]});
   }
   if(action==='post-view'){const result=await recordContentView(command,user,String(payload.domain||''),String(payload.postId||''));return json(res,result.ok?200:result.error==='POST_NOT_FOUND'?404:400,result);}
   if(action==='vote'){
@@ -426,7 +434,7 @@ export default async function handler(req,res){
     if(route==='action')return handleAction(req,res,command);
     if(route==='stats'){const users=await listUsers(command);return json(res,200,{ok:true,members:users.length});}
     if(route.startsWith('admin/')){const handled=await handleAdmin(req,res,route,command);if(handled!==false)return handled;}
-    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_31_48'});
+    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_31_49'});
     return json(res,404,{ok:false,error:'NOT_FOUND'});
   }catch(error){return json(res,error.message==='MEMBERS_CHANGED_RETRY'?409:error.code==='STORAGE_MISSING'?503:500,{ok:false,error:error.code||error.message||'SERVER_ERROR'});}
 }

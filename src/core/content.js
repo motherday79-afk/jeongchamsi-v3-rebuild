@@ -9,6 +9,7 @@ function createRemoteContentService(){
   const readDomain=async domain=>{const x=await request(`content?domain=${encodeURIComponent(domain)}`);const data=x.ok?x.data:null;if(data)readCache.set(domain,data);return data;};
   return {
     async readDomain(domain){return (await readDomain(domain))||{items:[]};},
+    peekDomain(domain){return readCache.get(domain);},
     async list(domain){const data=await readDomain(domain);return itemsFrom(domain,data).slice().sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));},
     async get(domain,itemId){await request('action',{method:'POST',body:JSON.stringify({action:'post-view',payload:{domain,postId:itemId}})});const data=await readDomain(domain);return itemsFrom(domain,data).find(x=>String(x.id)===String(itemId))||null;},
     async create(domain,input={}){const x=await request(`content?domain=${encodeURIComponent(domain)}`,{method:'POST',body:JSON.stringify({input})});return x.ok?x.item:{error:x.error,status:x.status};},
@@ -35,7 +36,10 @@ function createRemoteContentService(){
     async updatePoliticianRequest(id,status){return request('politician-requests',{method:'PATCH',body:JSON.stringify({id,status})});},
     async createPartnerApplication(input={}){return request('partner-applications',{method:'POST',body:JSON.stringify(input)});},
     async listPartnerApplications(){return request('partner-applications');},
-    async comment(domain,postId,text){return request('action',{method:'POST',body:JSON.stringify({action:'comment-add',payload:{domain,postId,text}})});},
+    async comment(domain,postId,text,options={}){return request('action',{method:'POST',body:JSON.stringify({action:'comment-add',payload:{domain,postId,text,...options}})});},
+    async editComment(domain,postId,commentId,text){return request('action',{method:'POST',body:JSON.stringify({action:'comment-edit',payload:{domain,postId,commentId,text}})});},
+    async deleteComment(domain,postId,commentId){return request('action',{method:'POST',body:JSON.stringify({action:'comment-delete',payload:{domain,postId,commentId}})});},
+    async likeComment(domain,postId,commentId){return request('action',{method:'POST',body:JSON.stringify({action:'comment-like',payload:{domain,postId,commentId}})});},
     async commentsFor(domain,postId){const data=await readDomain('comments');return itemsFrom('comments',data).filter(x=>x.published!==false&&String(x.domain)===String(domain)&&String(x.postId)===String(postId));},
     async academyApply(slotId=''){return request('action',{method:'POST',body:JSON.stringify({action:'academy-apply',payload:{slotId}})});}
   };
