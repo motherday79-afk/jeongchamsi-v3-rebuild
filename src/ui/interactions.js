@@ -1,5 +1,5 @@
-import { renderPrescriptionReport } from '../views/prescription-visuals.js?v=0.0.31.46';
-import { refreshFontScale, setupFontScaleControl } from './font-scale.js?v=0.0.31.46';
+import { renderPrescriptionReport } from '../views/prescription-visuals.js?v=0.0.31.47';
+import { refreshFontScale, setupFontScaleControl } from './font-scale.js?v=0.0.31.47';
 
 export function setupDrawer(root=document){
   const drawer=root.querySelector('[data-drawer]');
@@ -164,4 +164,20 @@ export function setupPoliticianAutocomplete(root=document,search=null){
     results.addEventListener('click',event=>{const button=event.target.closest('[data-politician-suggestion]');if(button)select(rows.find(item=>String(item.id)===button.dataset.politicianSuggestion));});
   }
 }
-export function setupLayoutInteractions(root=document,options={}){setupDrawer(root);setupLauncherExpansion(root);setupNowCarousel(root);setupLayoutNavigation(root);setupCompareSearch(root);setupPoliticianPhotoFallback(root);setupPoliticianAutocomplete(root,options.politicianSearch);setupDiagnosisInteractions(root);setupFontScaleControl(root);}
+export function setupDetail47Interactions(root=document){
+ for(const block of root.querySelectorAll('.jcs-local-47')){
+  if(block.dataset.detail47Ready==='true')continue;block.dataset.detail47Ready='true';
+  block.addEventListener('click',event=>{const button=event.target.closest('[data-life-topic]');if(!button)return;const index=button.dataset.lifeTopic;
+   block.querySelectorAll('[data-life-topic]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
+   block.querySelectorAll('[data-life-evidence]').forEach(item=>{item.hidden=item.dataset.lifeEvidence!==index;});
+   const more=block.querySelector('[data-local-more]');if(more)more.open=true;
+  });
+ }
+ for(const block of root.querySelectorAll('.jcs-lifecycle-47')){
+  if(block.dataset.detail47Ready==='true')continue;block.dataset.detail47Ready='true';
+  block.querySelector('[data-life-select]')?.addEventListener('change',event=>{block.querySelectorAll('[data-life-panel]').forEach(panel=>{panel.hidden=panel.dataset.lifePanel!==event.target.value;});});
+  const select=event=>{const point=event.target.closest('[data-life-day]');if(!point)return;if(event.type==='keydown'&&!['Enter',' '].includes(event.key))return;if(event.type==='keydown')event.preventDefault();const panel=point.closest('[data-life-panel]');panel.querySelector('.jcs-life-day-detail').textContent=point.dataset.lifeDay;panel.querySelectorAll('[data-life-day]').forEach(item=>item.setAttribute('stroke-width',item===point?'3':'1.6'));};
+  block.addEventListener('click',select);block.addEventListener('keydown',select);
+ }
+}
+export function setupLayoutInteractions(root=document,options={}){setupDrawer(root);setupLauncherExpansion(root);setupNowCarousel(root);setupLayoutNavigation(root);setupCompareSearch(root);setupPoliticianPhotoFallback(root);setupPoliticianAutocomplete(root,options.politicianSearch);setupDiagnosisInteractions(root);setupDetail47Interactions(root);setupFontScaleControl(root);}
