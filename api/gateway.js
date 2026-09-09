@@ -195,7 +195,7 @@ export async function handleContent(req,res,command,url){
     if(['community','itsme','columns','news','comments'].includes(domain)){
       const user=await currentUser(req,command),activity=user&&domain!=='comments'?await readActivity(command,user.id):{},liked=new Set(activity?.likedPosts||[]);
       data={...data,items:contentItems(data).filter(x=>x.published!==false).map(row=>{const {likedBy,likeStates,...safe}=row;return {...safe,liked:domain==='comments'?!!user&&(likedBy||[]).includes(user.id):!!user&&(likeStates&&Object.hasOwn(likeStates,user.id)?likeStates[user.id]===true:liked.has(`${domain}:${row.id}`))};})};
-      if(domain==='community'&&data.items.some(x=>x.cageEnabled)){const comments=await readDomain(command,'comments',{items:[]});data.cageStats=communityStats(data.items,contentItems(comments));}
+      if(domain==='community'&&data.items.some(x=>x.cageEnabled)){const comments=contentItems(await readDomain(command,'comments',{items:[]}));data.cageStats=communityStats(data.items,comments);const counts=new Map();for(const c of comments){if(c.domain==='community'&&c.published!==false&&!c.deleted)counts.set(String(c.postId),(counts.get(String(c.postId))||0)+1);}data.items=data.items.map(p=>({...p,commentCount:counts.get(String(p.id))||0}));}
     }
     return json(res,200,{ok:true,domain,data:await attachRepresentativeBadges(command,data)});
   }
@@ -434,7 +434,7 @@ export default async function handler(req,res){
     if(route==='action')return handleAction(req,res,command);
     if(route==='stats'){const users=await listUsers(command);return json(res,200,{ok:true,members:users.length});}
     if(route.startsWith('admin/')){const handled=await handleAdmin(req,res,route,command);if(handled!==false)return handled;}
-    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_31_54'});
+    if(route==='health')return json(res,200,{ok:true,version:'JCS_0_0_31_55'});
     return json(res,404,{ok:false,error:'NOT_FOUND'});
   }catch(error){return json(res,error.message==='MEMBERS_CHANGED_RETRY'?409:error.code==='STORAGE_MISSING'?503:500,{ok:false,error:error.code||error.message||'SERVER_ERROR'});}
 }

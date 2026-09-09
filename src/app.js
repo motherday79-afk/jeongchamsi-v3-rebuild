@@ -1,21 +1,22 @@
-import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.54';
-import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.54';
-import { renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.54';
-import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.54';
-import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.54';
-import { createContentService } from './core/content.js?v=0.0.31.54';
-import { createPoliticianService } from './core/politicians.js?v=0.0.31.54';
-import { createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.54';
-import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.54';
-import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.54';
-import * as views from './views/stage1.js?v=0.0.31.54';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.54';
-import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.54';
-import { generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.54';
-import { renderPresidentPage } from './views/president.js?v=0.0.31.54';
-import { renderSearchPage } from './views/search-page.js?v=0.0.31.54';
-import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.31.54';
-import { regionDistrictOptions, regionSubdistrictOptions } from './data/korean-regions.js?v=0.0.31.54';
+import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.55';
+import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.55';
+import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.55';
+import { renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.55';
+import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.55';
+import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.55';
+import { createContentService } from './core/content.js?v=0.0.31.55';
+import { createPoliticianService } from './core/politicians.js?v=0.0.31.55';
+import { sharePost, createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.55';
+import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.55';
+import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.55';
+import * as views from './views/stage1.js?v=0.0.31.55';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.55';
+import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.55';
+import { generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.55';
+import { renderPresidentPage } from './views/president.js?v=0.0.31.55';
+import { renderSearchPage } from './views/search-page.js?v=0.0.31.55';
+import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.31.55';
+import { regionDistrictOptions, regionSubdistrictOptions } from './data/korean-regions.js?v=0.0.31.55';
 
 const formErrors={CAMP_REQUIRED:'진보진영 또는 보수진영을 선택해 주세요.',PIN_FORBIDDEN:'공지·케이지 고정은 관리자만 할 수 있습니다.',PIN_INVALID:'공지 또는 케이지 중 하나를 선택해 주세요.',POST_EDIT_FORBIDDEN:'본인이 작성한 게시글만 수정·삭제할 수 있습니다.',COMMENT_EDIT_FORBIDDEN:'본인이 작성한 댓글만 수정·삭제할 수 있습니다.',CONTENT_CHANGED_RETRY:'다른 참여 내용이 갱신됐습니다. 입력 내용은 유지되니 다시 저장해 주세요.',CONTENT_STORAGE_INVALID:'저장된 게시판 데이터를 읽지 못했습니다. 다시 시도해 주세요.',TITLE_REQUIRED:'제목을 입력해 주세요.',INVALID_COMMENT:'댓글 내용을 입력해 주세요.',COMMENT_PARENT_INVALID:'답글을 달 댓글이 변경되었거나 삭제되었습니다.',CAGE_NOT_FOUND:'케이지를 찾을 수 없습니다.',POST_NOT_FOUND:'게시글이 삭제되었거나 존재하지 않습니다.',COMMENT_NOT_FOUND:'댓글이 삭제되었거나 존재하지 않습니다.',CAMP_IMMUTABLE:'작성한 글의 진영은 변경할 수 없습니다.',INVALID_REFERRER:'추천인코드를 확인해 주세요. 사용 가능한 회원의 코드를 입력해야 합니다.',INVALID_REFERRER_CODE:'추천인코드는 숫자로 입력해 주세요.',INVALID_REGION:'시·군·구와 해당 구를 올바르게 선택해 주세요.',REGISTRATION_BUSY:'가입 요청이 많습니다. 잠시 후 다시 시도해 주세요.',MEMBERS_CHANGED_RETRY:'회원 정보가 갱신됐습니다. 새로고침 후 다시 저장해 주세요.'};
 const app=document.getElementById('app');
@@ -35,6 +36,20 @@ async function updatePoliticianPhotoStorageStatus(){
 }
 let intelligenceRunnerActive=false;
 let renderSequence=0;
+let cageFeedback=null;
+function cageRouteState(updates){
+ // A query change must invalidate any pending snapshot revalidation.
+ renderSequence++;
+ const [path,query='']=route().split('?'),params=new URLSearchParams(query);
+ for(const [key,value] of Object.entries(updates))params.set(key,String(value));
+ const next=path+'?'+params.toString();window.history.replaceState({...window.history.state,route:next},'',next);
+}
+function showCageFeedback(){
+ const root=document.querySelector('.jc55');if(!root||!cageFeedback||root.dataset.cageId!==String(cageFeedback.rootId))return;
+ const {camp}=cageFeedback;cageFeedback=null;
+ const arena=root.querySelector('[data-cage-arena]');arena?.classList.add(camp==='progressive'?'ca-hit-blue':'ca-hit-red');
+ const status=root.querySelector('[data-cage-status]');if(status)status.textContent=(camp==='progressive'?'진보진영':'보수진영')+'의 참여가 반영됐습니다.';
+}
 const intelligenceAutoResumeGuard=createIntelligenceAutoResumeGuard();
 
 let navigation=null;
@@ -127,7 +142,7 @@ async function render({preserveScroll=false}={}){
   else if(p[0]==='support') body=views.renderSupport();
   else if(['privacy','policy'].includes(p[0])) body=views.renderLegal(p[0]);
   else if(p[0]==='column') body=p[1]==='write'?views.renderBoardWrite('columns',session):p[1]?await views.renderBoardDetail('columns',p[1],content,session,dashboard):await views.renderBoard('columns',content,session);
-  else if(p[0]==='community') body=p[1]==='write'?views.renderBoardWrite('community',session):p[1]?await views.renderBoardDetail('community',p[1],content,session,dashboard):await views.renderBoard('community',content,session,r);
+  else if(p[0]==='community') body=p[1]==='write'?views.renderBoardWrite('community',session):p[1]?await views.renderBoardDetail('community',p[1],content,session,dashboard,r):await views.renderBoard('community',content,session,r);
   else if(p[0]==='news') body=p[1]==='write'?views.renderBoardWrite('news',session):p[1]?await views.renderBoardDetail('news',p[1],content,session,dashboard):await views.renderBoard('news',content,session);
   else if(p[0]==='itsme') body=p[1]==='write'?views.renderItsmeWrite(session):p[1]?await views.renderItsmeDetail(p[1],content,session,dashboard):await views.renderItsme(content,r);
   else if(p[0]==='poll') body=await renderPollBoard({content,session,route:r});
@@ -162,13 +177,14 @@ async function render({preserveScroll=false}={}){
     for(const mount of document.querySelectorAll('[data-badge-showcase-mount]'))mount.innerHTML=renderBadgeShowcase(status);
   });
   setupMemberBadgeManagers();
+  showCageFeedback();
   if(p[0]==='person'){recordRecentPolitician(document);tunePoliticianNarratives();if(session.user?.role==='admin')void updatePoliticianPhotoStorageStatus();}
   if(!preserveScroll)window.scrollTo(0,0);
   navigation?.cacheCurrent();
   if(p[0]==='admin')queueMicrotask(resumeAdminIntelligence);
 }
 
-navigation=createNavigation({window,readSnapshot:()=>app.innerHTML,restoreSnapshot:markup=>{app.innerHTML=markup;},rebind:()=>{setupLayoutInteractions(document,{politicianSearch:(query,limit)=>politicians.search(query,limit)});setupMemberBadgeManagers();if(pipelineActive())queueMicrotask(resumeAdminIntelligence);},onRoute:(_route,options)=>void render(options)});
+navigation=createNavigation({window,readSnapshot:()=>app.innerHTML,restoreSnapshot:markup=>{app.innerHTML=markup;},rebind:()=>{setupLayoutInteractions(document,{politicianSearch:(query,limit)=>politicians.search(query,limit)});setupMemberBadgeManagers();if(document.querySelector('.jc55'))queueMicrotask(()=>void render({preserveScroll:true}));if(pipelineActive())queueMicrotask(resumeAdminIntelligence);},onRoute:(_route,options)=>void render(options)});
 navigation.start();
 window.addEventListener('jcs:layout-route',event=>navigation.navigate(event.detail?.route||'/'));
 window.addEventListener('jcs:layout-search',event=>navigation.navigate(`/search?q=${encodeURIComponent(String(event.detail?.query||'').trim())}`));
@@ -242,11 +258,11 @@ document.addEventListener('submit',async event=>{
   if(type==='login') result=await auth.login(data);
   if(type==='join'){result=await auth.register(data);shellInfoCache=null;}
   if(type==='profile-address'){data.regionDistrict=data.regionDistrict||'';result=await auth.updateProfile(data);}
-  if(type==='board'){const item=await content.create(form.dataset.domain,data),routeName=form.dataset.domain==='columns'?'column':form.dataset.domain==='news'?'news':'community';result=item?.error?{ok:false,error:item.error}:{ok:true,route:`/${routeName}/${item.id}`};}
+  if(type==='board'){const item=await content.create(form.dataset.domain,data),routeName=form.dataset.domain==='columns'?'column':form.dataset.domain==='news'?'news':'community';result=item?.error?{ok:false,error:item.error}:{ok:true,route:`/${routeName}/${item.id}`};if(result.ok&&data.cageParentId){cageFeedback={rootId:data.cageParentId,camp:data.camp};cageRouteState({page:1,mode:'posts'});delete result.route;await render({preserveScroll:true});}}
   if(type==='itsme'){const item=await content.create('itsme',data);result=item?.error?{ok:false,error:item.error}:{ok:true,route:`/itsme/${item.id}`};}
   if(type==='inquiry'){result=await content.createInquiry(data);if(result?.ok)result.route=`/inquiry/${result.item.id}`;}
   if(type==='inquiry-reply'){result=await content.replyInquiry(form.dataset.inquiryId,data.body);if(result?.ok)await render({preserveScroll:true});}
-  if(type==='comment'){result=await content.comment(form.dataset.domain,form.dataset.postId,data.text,{camp:data.camp,parentId:data.parentId});if(result.ok)await render({preserveScroll:true});}
+  if(type==='comment'){result=await content.comment(form.dataset.domain,form.dataset.postId,data.text,{camp:data.camp,parentId:data.parentId});if(result.ok){const root=form.closest('.jc55');if(root&&data.camp){cageFeedback={rootId:root.dataset.cageId,camp:data.camp};cageRouteState({mode:'comments'});}await render({preserveScroll:true});}}
   if(type==='comment-edit'){result=await content.editComment(form.dataset.domain,form.dataset.postId,form.dataset.commentId,data.text);if(result.ok)await render({preserveScroll:true});}
   if(type==='comment-delete'){result=await content.deleteComment(form.dataset.domain,form.dataset.postId,form.dataset.commentId);if(result.ok)await render({preserveScroll:true});}
 
@@ -275,13 +291,19 @@ document.addEventListener('change',event=>{
  if(input.name==='camp'){form.querySelectorAll('[data-camp-body]').forEach(el=>el.disabled=false);const button=form.querySelector('[data-jc-compose]');if(button)button.disabled=false;}
 });
 document.addEventListener('click',async event=>{
+ const pageButton=event.target.closest('[data-cage-page]');
+ if(pageButton){event.preventDefault();if(pageButton.disabled)return;const root=pageButton.closest('.jc55'),data=content.peekDomain('community');if(!root||!data)return;root.querySelector('.ca-hits').outerHTML=renderCageHits(cagePageData(data.items,root.dataset.cageId));root.querySelector('[data-cage-posts]').outerHTML=renderCagePosts(data.items,root.dataset.cageId,pageButton.dataset.cagePage);const current=root.querySelector('[data-cage-posts]');cageRouteState({page:current.dataset.currentPage});current.querySelector('[data-cage-list-title]')?.focus({preventScroll:true});current.scrollIntoView({block:'start',behavior:'auto'});navigation.cacheCurrent();return;}
+ const modeButton=event.target.closest('[data-cage-mode]');
+ if(modeButton){event.preventDefault();const root=modeButton.closest('.jc55'),mode=modeButton.dataset.cageMode,data=content.peekDomain('community');if(!root||!data)return;const arena=root.querySelector('[data-cage-arena]'),oldShare=arena.querySelector('.ca-mat').style.getPropertyValue('--share');arena.outerHTML=renderCageArena(data.cageStats?.[root.dataset.cageId],mode);const next=root.querySelector('[data-cage-arena]'),mat=next.querySelector('.ca-mat'),share=mat.style.getPropertyValue('--share');mat.style.setProperty('--share',oldShare);void mat.offsetWidth;mat.style.setProperty('--share',share);next.querySelector(`[data-cage-mode="${mode}"]`)?.focus({preventScroll:true});cageRouteState({mode});navigation.cacheCurrent();return;}
+ const share=event.target.closest('[data-post-share]');
+ if(share){event.preventDefault();if(share.disabled)return;share.disabled=true;try{const result=await sharePost({domain:share.dataset.domain,id:share.dataset.postId,title:share.dataset.postTitle});if(result.status==='manual'){const dialog=communityDialog('<h2>게시글 공유</h2><p>아래 링크를 복사해 공유해 주세요.</p><input class="jc-manual-share" aria-label="게시글 공유 링크" readonly><div class="jc-editor-bottom"><button type="button" class="jc-primary" data-jc-close>닫기</button></div>',share),input=dialog.querySelector('input');input.value=result.url;input.focus();input.select();}else if(result.status==='copied'){let state=share.parentElement.querySelector('[data-share-state]');if(!state){state=document.createElement('span');state.dataset.shareState='';state.className='jc-share-state';state.setAttribute('role','status');share.parentElement.append(state);}state.textContent='링크를 복사했습니다.';}}catch{share.title='공유하지 못했습니다. 다시 시도해 주세요.';}finally{share.disabled=false;}return;}
  const close=event.target.closest('[data-jc-close]');if(close){event.preventDefault();close.closest('dialog')?.close();return;}
  const edit=event.target.closest('[data-jc-edit]');if(edit){event.preventDefault();const menu=edit.closest('.jc-menu'),template=menu.querySelector('[data-jc-editor]');menu.open=false;communityDialog(template.innerHTML,edit);return;}
  const del=event.target.closest('[data-jc-delete],[data-jc-comment-delete]');if(del){event.preventDefault();const isComment=del.hasAttribute('data-jc-comment-delete'),dialog=communityDialog(`<form data-stage-form="${isComment?'comment-delete':'post-delete'}" data-confirmed="true"><h2>${isComment?'댓글':'게시글'}을 삭제할까요?</h2><div class="jc-editor-bottom"><button class="jc-subtle" type="button" data-jc-close>취소</button><button class="jc-primary" type="submit">삭제</button></div><span data-form-state role="status"></span></form>`,del),form=dialog.querySelector('form');for(const key of ['domain','postId','commentId','returnRoute'])if(del.dataset[key])form.dataset[key]=del.dataset[key];return;}
  const compose=event.target.closest('[data-jc-compose]');if(compose){event.preventDefault();const fields=compose.closest('form').querySelector('[data-cage-fields]');fields.hidden=false;fields.querySelector('input')?.focus();compose.hidden=true;return;}
  const reply=event.target.closest('[data-jc-reply]');if(reply){event.preventDefault();const slot=reply.closest('.jc-comment').querySelector('[data-jc-reply-body]');slot.hidden=!slot.hidden;if(!slot.hidden)slot.querySelector('input,textarea')?.focus();return;}
  const unpin=event.target.closest('[data-jc-unpin]'),commentLike=event.target.closest('[data-jc-comment-like]');
- if(unpin||commentLike){event.preventDefault();const button=unpin||commentLike;if(button.disabled)return;button.disabled=true;try{const result=unpin?await content.update('community',button.dataset.postId,{pinKind:''}):await content.likeComment(button.dataset.domain,button.dataset.postId,button.dataset.commentId);if(result?.status===401){navigation.navigate('/login');return;}if(result?.error){let state=button.closest('.jc49').querySelector('[data-jc-error]');if(!state){state=document.createElement('p');state.dataset.jcError='';state.setAttribute('role','alert');button.closest('.jc49').append(state);}state.textContent=formErrors[result.error]||result.error;return;}await render({preserveScroll:true});}catch{button.title='처리하지 못했습니다. 다시 시도해 주세요.';}finally{button.disabled=false;}return;}
+ if(unpin||commentLike){event.preventDefault();const button=unpin||commentLike;if(button.disabled)return;button.disabled=true;try{const result=unpin?await content.update('community',button.dataset.postId,{pinKind:''}):await content.likeComment(button.dataset.domain,button.dataset.postId,button.dataset.commentId);if(result?.status===401){button.disabled=false;navigation.navigate('/login');return;}if(result?.error){let state=button.closest('.jc49').querySelector('[data-jc-error]');if(!state){state=document.createElement('p');state.dataset.jcError='';state.setAttribute('role','alert');button.closest('.jc49').append(state);}state.textContent=formErrors[result.error]||result.error;return;}await render({preserveScroll:true});}catch{button.title='처리하지 못했습니다. 다시 시도해 주세요.';}finally{button.disabled=false;}return;}
   const bannerEdit=event.target.closest('[data-home-banner-edit]');
   if(bannerEdit){event.preventDefault();const placement=bannerEdit.dataset.homeBannerEdit==='hero'?'hero':'sidebar',dialog=document.createElement('dialog');dialog.className='home-banner-dialog';dialog.innerHTML=`<form data-home-banner-form><h2>${placement==='hero'?'히어로 하단 가로 배너':'메인 사이드 배너'} 등록</h2><input type="hidden" name="placement" value="${placement}"><p>${placement==='hero'?'PC·모바일':'PC·모바일·폴드 펼침/태블릿'} 이미지 모두 필수 · JPG·PNG·WEBP<br>각각 최대 2MB, 전체 합계 최대 3MB</p><p data-banner-storage-status data-state="checking">배너 저장소 연결 확인 중…</p><label>PC 이미지 · ${placement==='hero'?'1180 × 150':'640 × 450'}px<input type="file" name="pc" accept="image/jpeg,image/png,image/webp" required></label><label>모바일 이미지 · 720 × 540px<input type="file" name="mobile" accept="image/jpeg,image/png,image/webp" required></label>${placement==='sidebar'?'<label>폴드 펼침·태블릿 이미지 · 1200 × 400px<input type="file" name="tablet" accept="image/jpeg,image/png,image/webp" required></label>':''}<label>클릭 이동 URL<input type="url" name="targetUrl" placeholder="https://" required></label><label>대체 텍스트<input name="alt" maxlength="120" placeholder="배너 설명" required></label><span data-form-state role="status"></span><div class="home-banner-actions"><button type="button" class="ghost-btn" data-home-banner-close>취소</button><button type="submit" class="primary-btn">저장</button></div></form>`;document.body.append(dialog);dialog.addEventListener('close',()=>dialog.remove(),{once:true});dialog.showModal();const state=dialog.querySelector('[data-banner-storage-status]'),result=await auth.homeBannerStorageStatus?.().catch(()=>null),configured=!!result?.storage?.configured;if(state){state.dataset.state=configured?'ready':'missing';state.textContent=configured?'배너 저장소 연결됨':'배너 저장소 미연결 · Vercel Blob 연결 및 재배포 필요';}return;}
   const bannerClose=event.target.closest('[data-home-banner-close]');if(bannerClose){event.preventDefault();bannerClose.closest('dialog')?.close();return;}
@@ -317,7 +339,7 @@ document.addEventListener('click',async event=>{
   const vote=event.target.closest('[data-stage-vote]');
   if(vote){event.preventDefault();const result=await content.vote(vote.dataset.stageVote,vote.dataset.option);if(result?.status===401){navigation.navigate('/login');return;}if(!result?.ok){alert(result?.error||'투표하지 못했습니다.');return;}await render({preserveScroll:true});return;}
   const like=event.target.closest('[data-post-like]');
-  if(like){event.preventDefault();const result=await content.like(like.dataset.domain,like.dataset.postId);if(result?.status===401){navigation.navigate('/login');return;}if(!result?.ok){alert(formErrors[result?.error]||result?.error||'처리하지 못했습니다.');return;}await render({preserveScroll:true});return;}
+  if(like){event.preventDefault();if(like.disabled)return;like.disabled=true;try{const result=await content.like(like.dataset.domain,like.dataset.postId);if(result?.status===401){like.disabled=false;navigation.navigate('/login');return;}if(!result?.ok){alert(formErrors[result?.error]||result?.error||'처리하지 못했습니다.');return;}await render({preserveScroll:true});}catch{alert('좋아요를 처리하지 못했습니다. 다시 시도해 주세요.');}finally{like.disabled=false;}return;}
   const favorite=event.target.closest('[data-stage-action="favorite-toggle"]');
   if(favorite){event.preventDefault();const result=await content.toggleFavorite({kind:favorite.dataset.favoriteKind,domain:favorite.dataset.favoriteDomain||'',id:favorite.dataset.favoriteId});if(result?.status===401){navigation.navigate('/login');return;}if(!result?.ok){alert(result?.error||'즐겨찾기를 변경하지 못했습니다.');return;}await render({preserveScroll:true});return;}
   const action=event.target.closest('[data-stage-action]')?.dataset.stageAction;

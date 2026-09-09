@@ -28,6 +28,17 @@ export function shareableUrlForRoute(route,origin='https://www.jeongchamsi.com')
   return url.href;
 }
 
+export async function sharePost({domain,id,title='정참시 게시글'},capabilities=globalThis.navigator,origin=globalThis.location?.origin||'https://www.jeongchamsi.com'){
+  if(!['community','itsme','columns','news'].includes(domain)||!String(id||''))throw new Error('SHARE_UNAVAILABLE');
+  const url=shareableUrlForRoute(`/${domain==='columns'?'column':domain}/${encodeURIComponent(id)}`,origin);
+  if(typeof capabilities?.share==='function'){
+    try{await capabilities.share({title:String(title),url});return {status:'shared',url};}
+    catch(error){if(error?.name==='AbortError')return {status:'cancelled',url};}
+  }
+  try{if(typeof capabilities?.clipboard?.writeText==='function'){await capabilities.clipboard.writeText(url);return {status:'copied',url};}}catch{}
+  return {status:'manual',url};
+}
+
 export function createNavigation({window,readSnapshot,restoreSnapshot,rebind,onRoute}){
   const snapshots=new Map();
   const currentRoute=()=>routeFromLocation(window.location);

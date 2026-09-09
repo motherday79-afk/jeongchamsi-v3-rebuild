@@ -1,6 +1,6 @@
-import { authorIdentity, postMenu, sharedPost, sharedWrite, communityBoard, cageDetail } from './community-ui.js?v=0.0.31.54';
+import { authorIdentity, postMenu, sharedPost, sharedWrite, communityBoard, cageDetail } from './community-ui.js?v=0.0.31.55';
 import { BADGE_CATALOG, badgeByKey, badgeCrestSvg } from '../data/badge-catalog.js';
-import { regionProvinceOptions, regionDistrictOptions, regionSubdistrictOptions } from '../data/korean-regions.js?v=0.0.31.54';
+import { regionProvinceOptions, regionDistrictOptions, regionSubdistrictOptions } from '../data/korean-regions.js?v=0.0.31.55';
 
 const esc=(v='')=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=v=>{const date=new Date(v);if(Number.isNaN(date.getTime()))return '';return `${date.getFullYear()}. ${String(date.getMonth()+1).padStart(2,'0')}. ${String(date.getDate()).padStart(2,'0')}.`;};
@@ -42,7 +42,7 @@ export async function renderBoard(domain,content,session={},url=''){
 
 const postEditor=postMenu;
 async function detailView(domain,item,content,session,label,listLabel,route,dashboard={}){return sharedPost(domain,item,content,session,dashboard);}
-export async function renderBoardDetail(domain,id,content,session={},dashboard={}){const item=await content.get(domain,id),config=boardConfig(domain);if(!item)return page('CONTENT','글을 찾을 수 없습니다','<button class="ghost-btn" data-layout-route="/">메인으로</button>');if(domain==='community'&&item.cageEnabled&&!item.cageParentId)return cageDetail(item,content,session,dashboard);return detailView(domain,item,content,session,config.eyebrow,config.title,config.route,dashboard);}
+export async function renderBoardDetail(domain,id,content,session={},dashboard={},url=''){const item=await content.get(domain,id),config=boardConfig(domain);if(!item)return page('CONTENT','글을 찾을 수 없습니다','<button class="ghost-btn" data-layout-route="/">메인으로</button>');if(domain==='community'&&item.cageEnabled&&!item.cageParentId)return cageDetail(item,content,session,dashboard,url);return detailView(domain,item,content,session,config.eyebrow,config.title,config.route,dashboard);}
 export function renderBoardWrite(domain,session={}){return sharedWrite(domain,session);}
 
 export async function renderItsme(content,route=''){const data=await content.readDomain('itsme'),all=Array.isArray(data?.items)?data.items.filter(x=>x.published!==false):[],categories=Array.isArray(data?.categories)?data.categories:[],selected=new URLSearchParams(String(route).split('?')[1]||'').get('category')||'',items=selected?all.filter(x=>x.category===selected):all;const tabs=['',...categories].map(category=>`<button type="button" class="${category===selected?'active':''}" data-layout-route="/itsme${category?`?category=${encodeURIComponent(category)}`:''}">${esc(category||'전체')}</button>`).join('');const rows=items.map(item=>`<article class="no-thumb"><a href="#/itsme/${esc(item.id)}" data-layout-route="/itsme/${esc(item.id)}"><span class="type">${esc(item.category||'IT’S ME')}</span><h2>${esc(item.title)}</h2>${listSummary(item)?`<p>${esc(listSummary(item))}</p>`:''}</a><small>${authorIdentity(item)} · ${fmt(item.createdAt)} · 좋아요 ${Number(item.likes||0).toLocaleString('ko-KR')}</small></article>`).join('')||'<div class="schedule-empty">등록된 제안이 없습니다</div>';return subpage('IT’S ME · POLICY PROPOSAL','IT’S ME','“내가 대통령이라면, 내가 국회의원이라면, 내가 시장이라면, 내가 장관이라면”을 말머리로 정책과 아이디어를 직접 제안하는 참여 게시판입니다',`<section class="content-card"><div class="board-toolbar"><div class="itsme-category-tabs">${tabs}</div><button class="primary-btn" type="button" data-layout-route="/itsme/write">정책 제안하기</button></div><div class="board-list itsme-board-list">${rows}</div></section>`);}
@@ -177,7 +177,7 @@ export async function renderAdminStable(session,auth,state={}){
 }
 
 export function renderMigration(){return page('JCS_0_0_8 · ONE-TIME MIGRATION','기존 데이터 이식',`<div class="legal-copy"><p>회원·게시판 이식과 정치인 기본 DB 이식을 서로 분리해 실행합니다.</p><p>정치인 DB에는 합의된 프로필·정치 기록·등록 사진만 저장하며 NOW 점수·순위·분석값은 포함하지 않습니다.</p></div><form class="stage-form" data-stage-form="migration">${field('secret','마이그레이션 키','password')}<button class="primary-btn">회원·게시판 이식 실행</button><span data-form-state></span></form><form class="stage-form politician-migration-form" data-stage-form="politician-migration">${field('secret','정치인 DB 이관 키','password')}<button class="primary-btn">정치인 DB 543개 슬롯 이식</button><span data-form-state></span></form>`);}
-import { APP_RELEASE } from '../core/release.js?v=0.0.31.54';
+import { APP_RELEASE } from '../core/release.js?v=0.0.31.55';
 
 export function renderAdminLoading(tab='operations'){
  const labels={operations:'운영현황',members:'회원관리',politicians:'정치인정보',pipeline:'데이터수집·게시',site:'풋터정보',keywords:'정치키워드'};
