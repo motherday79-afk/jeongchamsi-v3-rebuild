@@ -2,19 +2,19 @@ import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from '
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.56';
 import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.96';
 import { renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.97';
-import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.96';
+import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.98';
 import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.61';
 import { createContentService, loadNavigationDashboard } from './core/content.js?v=0.0.31.83';
-import { createPoliticianService } from './core/politicians.js?v=0.0.31.56';
+import { createPoliticianService } from './core/politicians.js?v=0.0.31.98';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.61';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.56';
-import * as views from './views/stage1.js?v=0.0.31.97';
+import * as views from './views/stage1.js?v=0.0.31.98';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.56';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.56';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.85';
 import { renderPresidentPage } from './views/president.js?v=0.0.31.56';
-import { renderSearchPage } from './views/search-page.js?v=0.0.31.56';
+import { renderSearchPage } from './views/search-page.js?v=0.0.31.98';
 import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.31.56';
 import { regionDistrictOptions, regionSubdistrictOptions } from './data/korean-regions.js?v=0.0.31.56';
 
@@ -158,7 +158,7 @@ async function render({preserveScroll=false}={}){
   else if(p[0]==='generation-president') body=await renderGenerationPresident({content,politicians,session,route:r});
   else if(p[0]==='national-evaluation') body=await renderNationalEvaluationPage({content,politicians,session,route:r});
   else if(p[0]==='president') body=renderPresidentPage();
-  else if(p[0]==='search') body=await renderSearchPage({query:new URLSearchParams(r.split('?')[1]||'').get('q')||'',politicians,content});
+  else if(p[0]==='search') body=await renderSearchPage({query:new URLSearchParams(r.split('?')[1]||'').get('q')||'',page:new URLSearchParams(r.split('?')[1]||'').get('page')||1,politicians,content});
   else if(p[0]==='academy') body=await views.renderAcademy(content,session);
   else if(p[0]==='trending')body=renderTrendingPage(await politicians.trending());
   else if(p[0]==='keywords')body=renderKeywordsPage(await politicians.keywords(),new URLSearchParams(r.split('?')[1]||'').get('q')||'');

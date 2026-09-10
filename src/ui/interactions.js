@@ -19,6 +19,16 @@ export function setupNowCarousel(root=document){
     const pages=[...set.querySelectorAll('[data-now-rank-page]')];if(!pages.length)continue;let startIndex=0;
     const desktopSize=Number(set.dataset.pageSize)||10,total=Number(set.dataset.total)||pages.reduce((sum,row)=>sum+row.children.length,0),isMobile=()=>!globalThis.document?.documentElement?.classList.contains('desktop-home-fixed')&&globalThis.matchMedia?.('(max-width:1024px)')?.matches===true;
     const paint=()=>{const mobile=isMobile();if(mobile){pages.forEach(page=>{page.hidden=false;[...page.children].forEach(card=>{card.hidden=false;});});set.dataset.page='0';return;}const containerIndex=Math.floor(startIndex/desktopSize);pages.forEach((page,index)=>{page.hidden=index!==containerIndex;[...page.children].forEach(card=>{card.hidden=false;});});set.dataset.page=String(containerIndex);const desktopStatus=set.querySelector('[data-now-rank-status="desktop"]');if(desktopStatus)desktopStatus.textContent=nowRankRangeLabel(containerIndex,desktopSize,total);};
+    const track=set.querySelector('.now-rank-pages');
+    if(track&&!track.dataset.freeScrollReady){
+      track.dataset.freeScrollReady='true';let origin=null,moved=false,blockUntil=0;
+      track.addEventListener('pointerdown',event=>{origin={x:event.clientX,y:event.clientY};moved=false;},{passive:true});
+      track.addEventListener('pointermove',event=>{if(origin&&Math.hypot(event.clientX-origin.x,event.clientY-origin.y)>8)moved=true;},{passive:true});
+      const end=()=>{if(moved)blockUntil=Date.now()+400;origin=null;};
+      track.addEventListener('pointerup',end,{passive:true});track.addEventListener('pointercancel',end,{passive:true});
+      track.addEventListener('scroll',()=>{if(isMobile())blockUntil=Date.now()+180;},{passive:true});
+      track.addEventListener('click',event=>{if(isMobile()&&(moved||Date.now()<blockUntil)){event.preventDefault();event.stopPropagation();moved=false;}},true);
+    }
     const move=direction=>{if(isMobile())return;const maxStart=Math.max(0,Math.ceil(total/desktopSize)-1)*desktopSize;startIndex=direction>0?(startIndex>=maxStart?0:startIndex+desktopSize):(startIndex<=0?maxStart:startIndex-desktopSize);paint();};
     set.querySelector('[data-now-rank-prev]')?.addEventListener('click',()=>move(-1));
     set.querySelector('[data-now-rank-next]')?.addEventListener('click',()=>move(1));
@@ -162,6 +172,7 @@ export function setupPoliticianAutocomplete(root=document,search=null){
     const select=item=>{const selection=politicianSuggestionSelection(input.dataset.politicianSelectMode||'route',item,input.dataset.politicianBase);if(!selection)return;close();if(selection.route){window.dispatchEvent(new CustomEvent('jcs:layout-route',{detail:{route:selection.route}}));return;}input.value=selection.value;const target=input.dataset.politicianTarget?input.closest('form')?.querySelector(input.dataset.politicianTarget):null;if(target)target.value=selection.targetId;input.dispatchEvent(new Event('change',{bubbles:true}));};
     input.addEventListener('input',async()=>{const current=++sequence,term=input.value.trim();if(!term){rows=[];results.innerHTML='';close();return;}rows=await loadPoliticianSuggestions(term,search);if(current!==sequence)return;results.innerHTML=rows.length?politicianSuggestionMarkup(rows):'<p>검색 결과가 없습니다.</p>';results.hidden=false;setupPoliticianPhotoFallback(results);});
     input.addEventListener('keydown',event=>{if(results.hidden||!rows.length)return;if(event.key==='ArrowDown'||event.key==='ArrowUp'){event.preventDefault();active=(active+(event.key==='ArrowDown'?1:-1)+rows.length)%rows.length;[...results.querySelectorAll('button')].forEach((button,index)=>button.classList.toggle('is-active',index===active));}else if(event.key==='Enter'&&active>=0){event.preventDefault();select(rows[active]);}else if(event.key==='Escape')close();});
+    root.addEventListener('pointerdown',event=>{if(event.target!==input&&!results.contains(event.target))close();});
     results.addEventListener('click',event=>{const button=event.target.closest('[data-politician-suggestion]');if(button)select(rows.find(item=>String(item.id)===button.dataset.politicianSuggestion));});
   }
 }

@@ -11,7 +11,7 @@ export function createPoliticianService(){
     trending(offset=0,snapshot=''){return request(`?ranking=trending&offset=${Math.max(0,Number(offset)||0)}&snapshot=${encodeURIComponent(snapshot)}`);},
     keywords(){return request('?keywords=1');},
     rankings(){return request('?ranking=overall');},
-    search(query='',limit=12){return request(`?q=${encodeURIComponent(String(query||'').trim())}&limit=${Math.min(50,Math.max(1,Number(limit)||12))}`);},
+    search(query='',limit=12,offset=0){return request(`?q=${encodeURIComponent(String(query||'').trim())}&limit=${Math.min(50,Math.max(1,Number(limit)||12))}&offset=${Math.max(0,Math.floor(Number(offset)||0))}`);},
     get(id=''){return request(`?id=${encodeURIComponent(id)}`);},
     getForCompare(id=''){return request(`?id=${encodeURIComponent(id)}&view=compare`);}
   };

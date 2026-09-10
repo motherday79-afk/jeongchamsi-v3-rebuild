@@ -889,3 +889,19 @@ html.desktop-home-fixed .product-home-wrap .home-promo-row,html.desktop-home-fix
 .side-support-bridge .support-bridge-link:focus-visible{outline:2px solid #008f76;outline-offset:-4px;border-radius:8px}
 @media(max-width:1024px){.home-balanced-layout .side-support-bridge{order:71;flex:none;width:100%;height:80px}}
 @media(max-width:360px){.support-bridge-link strong{font-size:13px}.support-bridge-link small{font-size:10px}.side-support-bridge .support-bridge-link{gap:5px}.support-bridge-symbol{font-size:20px}}
+
+/* 31.98: full-width compact suggestions, independently of the search submit button. */
+.product-header .product-head-search .product-search .politician-autocomplete-results{left:0;right:0;width:100%;min-width:0;max-height:280px;box-sizing:border-box;overflow-x:hidden;overscroll-behavior:contain}
+.product-header .product-head-search .product-search .politician-autocomplete-results>button{display:grid;grid-template-columns:40px minmax(0,1fr) 30px;align-items:center;gap:10px;width:100%;min-width:0;height:auto;min-height:60px;padding:8px 10px;text-align:left;position:static}
+.politician-autocomplete-results>button>span:nth-child(2){min-width:0;overflow:hidden}
+.politician-autocomplete-results>button b,.politician-autocomplete-results>button small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;word-break:normal}
+.politician-autocomplete-results>button b{font-size:15px;line-height:22px}
+.politician-autocomplete-results>button small{font-size:12px;line-height:18px}
+.politician-autocomplete-results>button em{font-size:11px;white-space:nowrap}
+.search-people-pagination{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin-top:18px}
+.search-people-pagination a{display:grid;place-items:center;min-width:36px;min-height:36px;border:1px solid #dce7e3;border-radius:8px;color:#34554c;text-decoration:none}
+.search-people-pagination a[aria-current=page]{background:#008e76;color:white;border-color:#008e76;font-weight:700}
+@media(max-width:1024px){
+ [data-now-rank-mobile-swipe] .now-rank-pages{scroll-snap-type:x proximity;scroll-behavior:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y;overscroll-behavior-x:contain}
+ [data-now-rank-mobile-swipe] .rank-top-card{scroll-snap-stop:normal}
+}

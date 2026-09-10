@@ -121,8 +121,10 @@ export async function handlePoliticians(req,res,command,url,intelligence){
   if(query){
     const limit=Math.min(50,Math.max(1,Number(url.searchParams.get('limit')||req.query?.limit||12)||12));
     const entries=await Promise.all(POLITICIAN_TYPES.map(async type=>[type,await readPoliticianType(command,type)]));
-    const matches=searchPoliticianProfiles(Object.fromEntries(entries),query,limit).map(item=>({...item,photo:photos[item.id]||null}));
-    return json(res,200,{ok:true,query,limit,total:matches.length,items:matches});
+    const offset=Math.max(0,Math.floor(Number(url.searchParams.get('offset')||req.query?.offset||0)||0));
+    const matches=searchPoliticianProfiles(Object.fromEntries(entries),query,Infinity);
+    const items=matches.slice(offset,offset+limit).map(item=>({...item,photo:photos[item.id]||null}));
+    return json(res,200,{ok:true,query,limit,offset,total:matches.length,hasMore:offset+items.length<matches.length,items});
   }
   const type=cleanPoliticianType(url.searchParams.get('type')||req.query?.type)||'assembly';
   const offset=Math.max(0,Number(url.searchParams.get('offset')||req.query?.offset||0)||0),limit=Math.min(100,Math.max(1,Number(url.searchParams.get('limit')||req.query?.limit||30)||30));
