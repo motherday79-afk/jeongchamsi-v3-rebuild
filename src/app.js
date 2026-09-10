@@ -1,18 +1,18 @@
-import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.79';
+import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.80';
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.56';
-import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.79';
-import { renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.79';
-import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.79';
+import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.80';
+import { renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.80';
+import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.80';
 import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.61';
-import { createContentService, loadNavigationDashboard } from './core/content.js?v=0.0.31.61';
+import { createContentService, loadNavigationDashboard } from './core/content.js?v=0.0.31.80';
 import { createPoliticianService } from './core/politicians.js?v=0.0.31.56';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.61';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.56';
-import * as views from './views/stage1.js?v=0.0.31.79';
+import * as views from './views/stage1.js?v=0.0.31.80';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.56';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.56';
-import { renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.79';
+import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.80';
 import { renderPresidentPage } from './views/president.js?v=0.0.31.56';
 import { renderSearchPage } from './views/search-page.js?v=0.0.31.56';
 import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.31.56';
@@ -141,7 +141,8 @@ async function render({preserveScroll=false}={}){
     const peopleById=Object.fromEntries(resolvedPeople.filter(result=>result?.ok&&result.item).map(result=>[result.item.id,result.item])),generationView={...generation,candidateLabels:Object.fromEntries(generationIds.map(id=>[id,peopleById[id]?.name||id]))},nationalEvaluationView={...nationalEvaluation,slots:Object.fromEntries(Object.entries(nationalEvaluation?.slots||{}).map(([key,slot])=>[key,{...slot,subjectName:peopleById[slot?.subjectId]?.name||slot?.subjectName,party:peopleById[slot?.subjectId]?.party||slot?.party,jurisdiction:peopleById[slot?.subjectId]?.jurisdiction||slot?.jurisdiction,photo:peopleById[slot?.subjectId]?.photo||slot?.photo}]))};
     const home={...HOME_FIXTURE,trending:trendingResult.items||[],keywords:keywordResult.items||[],memberCount,columns,community,communityData:content.peekDomain('community')||{items:community},itsmePosts,newsPosts,polls,generation:generationView,nationalEvaluation:nationalEvaluationView,academy,rank,homeBanner,recentPoliticians:loadRecentPoliticians(),session,badgeStatus};
     body=`<div class="product-home-wrap">${renderHomeLayout(home)}</div>`;
-  } else if(p[0]==='shop') body=p[1]?renderCheerProduct(p[1]):renderCheerShop();
+  } else if(p[0]==='points') body=renderPointShop(await content.points(),session);
+  else if(p[0]==='shop') body=p[1]?renderCheerProduct(p[1]):renderCheerShop();
   else if(p[0]==='about') body=views.renderAbout();
   else if(p[0]==='support') body=views.renderSupport();
   else if(['privacy','policy'].includes(p[0])) body=views.renderLegal(p[0]);
@@ -240,6 +241,8 @@ document.addEventListener('submit',async event=>{
   if(intelligenceDraft){event.preventDefault();const data=new FormData(intelligenceDraft),state=intelligenceDraft.querySelector('[data-intelligence-draft-state]'),result=await auth.intelligenceDraftUpdate({personId:intelligenceDraft.dataset.personId,diagnoses:[{id:'01',headline:String(data.get('diagnosisHeadline')||'')}],prescriptions:[{id:'01',strategicJudgment:String(data.get('prescriptionJudgment')||'')}]});if(state)state.textContent=result?.ok?'수정본을 저장했습니다. 자동 검증 통과 시 바로 게시할 수 있습니다.':(result?.error||'수정본을 저장하지 못했습니다.');if(result?.ok)await render({preserveScroll:true});return;}
   const pastRiskForm=event.target.closest('[data-intelligence-past-risk-form]');
   if(pastRiskForm){event.preventDefault();const data=new FormData(pastRiskForm),state=pastRiskForm.querySelector('[data-intelligence-draft-state]'),pastRisks=String(data.get('pastRisks')||'').split(/\r?\n/).map(line=>line.split('|').map(value=>value.trim())).filter(parts=>parts[0]&&parts[1]&&/^https?:\/\//.test(parts[2])).slice(0,5).map(([tag,title,url,date])=>({tag:tag.startsWith('#')?tag:`#${tag}`,title,url,date:date||''})),result=await auth.intelligenceDraftUpdate({personId:String(data.get('personId')||''),diagnoses:[{id:'01',pastRisks}]});if(state)state.textContent=result?.ok?'PAST RISK SIGNALS를 저장했습니다. 자동 검증 통과 시 바로 게시할 수 있습니다.':(result?.error||'PAST RISK SIGNALS를 저장하지 못했습니다.');if(result?.ok)await render({preserveScroll:true});return;}
+  const pointForm=event.target.closest('[data-point-form]');
+  if(pointForm){event.preventDefault();const fd=new FormData(pointForm),input=Object.fromEntries(fd);input.operation=pointForm.dataset.pointForm;input.confirmed=pointForm.elements.confirmed?.checked===true;input.decision=event.submitter?.value;const state=pointForm.querySelector('[data-form-state]'),buttons=[...pointForm.querySelectorAll('button')];if(input.operation==='review'&&input.decision==='approve'&&!input.confirmed){state.textContent='입금 확인 항목을 체크해 주세요.';return;}if(input.operation==='cage'&&!window.confirm('선택한 포인트를 사용해 케이지를 지금 개설할까요?'))return;buttons.forEach(b=>b.disabled=true);try{const result=await content.pointAction(input);if(result.ok){if(result.id)navigation.navigate('/community/'+result.id);else await render({preserveScroll:true});}else state.textContent=({INSUFFICIENT_POINTS:'보유 포인트가 부족합니다.',BANK_REQUIRED:'은행·계좌번호·예금주를 등록해 주세요.',LOGIN_REQUIRED:'로그인이 필요합니다.',TRANSFER_CONFIRM_REQUIRED:'실제 입금을 확인해 주세요.',INVALID_CAGE:'제목·내용과 50,000~100,000P 사이의 금액을 확인해 주세요.'})[result.error]||result.error||'처리하지 못했습니다.';}catch{state.textContent='처리 결과를 확인하지 못했습니다. 같은 신청으로 다시 시도해 주세요.';}finally{buttons.forEach(b=>b.disabled=false);}return;}
   const cohortForm=event.target.closest('[data-generation-cohort-editor]');
   if(cohortForm){event.preventDefault();const ids=[...cohortForm.querySelectorAll('[name=cohortIds]')].map(x=>x.value),counts=Object.fromEntries([...cohortForm.querySelectorAll('.generation-manage-row')].map(row=>[row.querySelector('[name=cohortIds]').value,Number(row.querySelector('[data-cohort-count]').value)])),state=cohortForm.querySelector('[data-form-state]'),button=cohortForm.querySelector('[type=submit]');button.disabled=true;try{const result=await content.editParticipation('generation','',{age:cohortForm.dataset.age,itemId:cohortForm.dataset.itemId,candidateIds:ids,counts,enabled:cohortForm.elements.enabled.checked},'cohort');if(result.ok)await render({preserveScroll:true});else state.textContent=result.error==='GENERATION_ROUND_CHANGED'?'현재 회차가 바뀌었습니다. 새로고침 후 다시 저장해 주세요.':result.error||'저장하지 못했습니다.';}catch{state.textContent='저장하지 못했습니다. 다시 시도해 주세요.';}finally{button.disabled=false;}return;}
   const demoForm=event.target.closest('[data-participation-demo]');
@@ -302,6 +305,8 @@ document.addEventListener('change',event=>{
  if(input.name==='camp'){form.querySelectorAll('[data-camp-body]').forEach(el=>el.disabled=false);const button=form.querySelector('[data-jc-compose]');if(button)button.disabled=false;}
 });
 document.addEventListener('click',async event=>{
+ const pointPackage=event.target.closest('[data-point-package]');if(pointPackage){const root=pointPackage.closest('.point-shop');root.querySelectorAll('[data-point-package]').forEach(b=>b.setAttribute('aria-pressed',String(b===pointPackage)));const form=root.querySelector('[data-point-form="order"]');if(form){form.elements.amount.value=pointPackage.dataset.pointPackage;form.querySelector('[data-point-quote]').textContent='예상 지급 '+Number(pointPackage.dataset.pointTotal).toLocaleString('ko-KR')+'P';}return;}
+
  const cohort=event.target.closest('[data-generation-cohort-editor]');
  if(cohort&&event.target.closest('[data-cohort-remove],[data-cohort-add],[data-cohort-copy]')){
   const state=cohort.querySelector('[data-form-state]'),rows=cohort.querySelector('[data-cohort-rows]');
@@ -370,3 +375,5 @@ document.addEventListener('click',async event=>{
 });
 
 await render();
+
+document.addEventListener('change',event=>{const select=event.target;if(!select.matches('[data-point-form="order"] select[name=amount]'))return;const root=select.closest('.point-shop'),chosen=[...root.querySelectorAll('[data-point-package]')].find(b=>b.dataset.pointPackage===select.value);if(chosen)chosen.click();});

@@ -14,7 +14,7 @@ import { accessTierForUser, projectIntelligence } from '../lib/intelligence-acce
 import { buildIntelligenceDraft } from '../lib/intelligence-analysis.js';
 import { createBadgeService } from '../lib/badge-service.js';
 import { VALID_BADGE_KEYS } from '../lib/badge-engine.js';
-import { saveGenerationCohort, createParticipationPost, featureParticipationPost, editParticipationPost, setParticipationDemo, mutateParticipation } from '../lib/participation-admin.js';
+import { createPointService, saveGenerationCohort, createParticipationPost, featureParticipationPost, editParticipationPost, setParticipationDemo, mutateParticipation } from '../lib/participation-admin.js';
 import { createAdminPoliticianService } from '../lib/admin-politician-service.js';
 import { createPoliticianPhotoService, politicianPhotoStorageStatus, validatePoliticianPhoto } from '../lib/politician-photo-service.js';
 import { createHomeBannerService, homeBannerStorageStatus } from '../lib/home-banner-service.js';
@@ -436,6 +436,11 @@ export default async function handler(req,res){
       if(req.method==='POST'){const result=await service.createPartnerApplication(user,bodyOf(req));return json(res,result.ok?201:400,result);}
       if(req.method==='GET'){const result=await service.listPartnerApplications(user);return json(res,result.ok?200:403,result);}
       return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
+    }
+    if(route==='points'){
+      if(req.method==='GET'&&url.searchParams.get('clock')==='1')return json(res,200,{ok:true,serverNow:Date.now()});
+      const service=createPointService({command}),user=await currentUser(req,command);
+      try{if(req.method==='GET')return json(res,200,await service.status(user));if(req.method!=='POST')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});const input=bodyOf(req),op=input.operation;if(!['bank','order','review','cage'].includes(op))return json(res,400,{ok:false,error:'INVALID_OPERATION'});return json(res,200,await service[op](user,input));}catch(error){return json(res,error.message==='ADMIN_REQUIRED'?403:error.message==='LOGIN_REQUIRED'?401:400,{ok:false,error:error.message});}
     }
     if(route==='content')return handleContent(req,res,command,url);
     if(route==='home/banner'&&req.method==='GET'){const service=createHomeBannerService({command}),[sidebar,hero]=await Promise.all([service.get(),service.get('hero')]);return json(res,200,{ok:true,banner:{...(sidebar||{}),hero}});}

@@ -8,6 +8,8 @@ function createRemoteContentService(){
   const readCache=new Map();
   const readDomain=async domain=>{const x=await request(`content?domain=${encodeURIComponent(domain)}`);const data=x.ok?x.data:null;if(data)readCache.set(domain,data);return data;};
   return {
+    async points(){return request('points');},
+    async pointAction(input){return request('points',{method:'POST',body:JSON.stringify(input)});},
     async readDomain(domain){return (await readDomain(domain))||{items:[]};},
     peekDomain(domain){return readCache.get(domain);},
     async list(domain){const data=await readDomain(domain);return itemsFrom(domain,data).slice().sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));},
