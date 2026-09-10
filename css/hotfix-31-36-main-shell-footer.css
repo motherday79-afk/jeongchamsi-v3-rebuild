@@ -707,3 +707,31 @@ html.desktop-home-fixed .product-home-wrap .home-promo-row,html.desktop-home-fix
 }
 .product-home-wrap .promo-account-card .member-activity-icon svg{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .product-home-wrap .promo-account-card a:focus-visible{outline:2px solid #00b894;outline-offset:-2px}
+
+/* 31.93: approved desktop home typography hierarchy. */
+@media(min-width:1024.01px){
+ .service-dock .service-dock-label,.service-dock .service-dock-more small{font-size:14px;font-weight:400;line-height:20px}
+ .service-dock .service-dock-icon svg{width:26px;height:26px}
+ .site-shell:has(.service-dock) .product-header .product-head-search .product-search input{font-size:16px;font-weight:400}
+ .product-home-wrap .main-column>.module :is(.module-header,.cheer-shop-heading) h2{font-size:18px;font-weight:700;line-height:25px;letter-spacing:-.4px}
+ .product-home-wrap .home-balanced-layout .module-header .eyebrow,.product-home-wrap .cheer-shop-heading .eyebrow{font-size:11px;font-weight:600;line-height:16px}
+ .product-home-wrap .home-balanced-layout .module-desc{font-size:14px;font-weight:400;line-height:21px}
+ .product-home-wrap #itsme.itsme-home-module .itsme-card b,.product-home-wrap .column-card-copy>b,.product-home-wrap .community-title,.product-home-wrap .schedule-line em{font-size:15px;font-weight:400;line-height:22px}
+ .product-home-wrap .community-title.is-pinned{font-weight:700}
+ .product-home-wrap .column-card-copy>small,.product-home-wrap .community-copy>em,.product-home-wrap .community-stats{font-size:12px;font-weight:400;line-height:17px}
+ .product-home-wrap .rank-top-card{height:auto;min-height:160px;padding-bottom:8px}
+ .product-home-wrap .rank-top-copy{grid-template-rows:minmax(23px,auto) minmax(17px,auto) minmax(34px,auto);gap:1px}
+ .product-home-wrap .rank-top-copy b{font-size:16px;font-weight:700;line-height:23px}
+ .product-home-wrap .rank-top-copy .rank-top-party,.product-home-wrap .rank-top-copy .rank-top-region{font-size:12px;font-weight:400;line-height:17px}
+ .product-home-wrap .rank-top-no{font-size:13px;font-weight:700}
+ .product-home-wrap .promo-account-card .badge-profile-heading b{font-size:16px;font-weight:700;line-height:23px}
+ .product-home-wrap .promo-account-card .member-wallet-row>a:first-child>span{font-size:13px;font-weight:400;line-height:19px}
+ .product-home-wrap .promo-account-card .member-wallet-row b{font-size:19px;font-weight:700;line-height:26px}
+ .product-home-wrap .promo-account-card .member-activity-grid b{font-size:17px;font-weight:700;line-height:24px}
+ .product-home-wrap .promo-account-card .member-activity-grid>a>span:last-child{font-size:12px;font-weight:400;line-height:17px;white-space:normal;word-break:keep-all;overflow-wrap:anywhere}
+ .product-home-wrap .promo-account-card .badge-profile-heading button,.product-home-wrap .promo-account-card .member-charge-link{font-size:13px;font-weight:500;line-height:19px}
+ .product-home-wrap .side-column .side-head b,.product-home-wrap .side-column .home-cage-preview header>b{font-size:16px;font-weight:700;line-height:23px}
+ .product-home-wrap .side-column .home-cage-preview header{height:auto;min-height:23px}
+ .product-home-wrap .side-column .home-cage-title-row>strong{font-size:15px;font-weight:700;line-height:22px}
+ .product-home-wrap .side-column .home-cage-enter{font-size:12px;font-weight:700;line-height:23px}
+}
