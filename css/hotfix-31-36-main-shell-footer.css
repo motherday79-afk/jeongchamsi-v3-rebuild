@@ -375,3 +375,24 @@ dialog.jc49{width:min(640px,calc(100% - 24px));max-height:85vh;overflow:auto;pad
  .jc55 .ca-match-copy{font-size:13px}
  .jc55 .ca-match-shell>.jc-actions{padding:10px 12px;flex-wrap:wrap}
 }
+
+/* 31.67: keep foreground/background pairs explicit across inherited themes. */
+.jc49 .jc-menu .jc-popover{background:#fff;color:#17334b;border-color:#d5dfe8;color-scheme:light}
+.jc49 .jc-menu .jc-popover button{color:#17334b;background:transparent;opacity:1}
+.jc49 .jc-menu .jc-popover button:hover{background:#edf2f7;color:#102a3b}
+.jc49 .jc-menu .jc-popover button.jc-danger{color:#a3293c}
+.politician-compare-page{color-scheme:light;color:#17334b}
+.politician-compare-page .jcs-approved-compare .jcs-compare-report-heading{background:#102a3b;color:#fff}
+.politician-compare-page .jcs-approved-compare .jcs-compare-report-heading :is(h2,p,span,small){color:#f1f6fb}
+.politician-compare-page .jcs-approved-compare .jcs-compare-topic-axis{background:#f1f5f7;color:#102a3b}
+.politician-compare-page .jcs-approved-compare .jcs-compare-topic-axis :is(b,small){color:#294858}
+.politician-compare-page .jcs-approved-compare .jcs-periods button{color:#294858;background:#fff;border-color:#d1dde4}
+.politician-compare-page .jcs-approved-compare .jcs-periods button[aria-pressed=true]{background:#102a3b;color:#fff;border-color:#102a3b}
+.politician-compare-page :is(.politician-compare-selection,.politician-compare-ready,.jcs-competitor-response,.jcs-compare-priority){background:#fff;color:#17334b}
+.politician-compare-page :is(input,select){color:#17334b;background:#fff}
+.politician-compare-page input::placeholder{color:#617383;opacity:1}
+.politician-compare-page :is(.jcs-strategy-target button.active,.politician-compare-run-row .primary-btn){color:#fff;background:#173b50}
+:is(.poll-board-page,.generation-choice-page,.national-evaluation-page) .demo-item-editor{grid-column:1/-1;width:100%;box-sizing:border-box;flex-basis:100%;margin-top:14px;padding:12px;background:#f3f7fa;color:#183549;border:1px solid #d5e0e8;border-radius:9px}
+:is(.poll-board-page,.generation-choice-page,.national-evaluation-page) .demo-item-editor summary{white-space:normal;font-size:13px}
+.demo-item-editor input[type=number]{background:#fff;color:#17334b}
+.demo-item-editor [data-form-state]{display:block;color:#9a2e40;margin-top:8px}
