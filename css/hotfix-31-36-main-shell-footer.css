@@ -593,3 +593,8 @@ body:has(.service-dock),.site-shell:has(.service-dock),.site-shell:has(.service-
 .donation-amount{display:block;margin:22px 0 30px}.donation-amount>span{font-size:12px;color:#7b8379}.donation-amount>div{display:flex;align-items:center;gap:12px;border-bottom:1px solid #bda66e;padding:9px 0}.donation-amount>div>span{font-size:32px;color:#a17a35}.donation-amount input{flex:1;min-width:0;width:100%;border:0;outline-offset:3px;background:transparent;color:#173c32;padding:7px 0;font-size:26px;font-weight:600;border-radius:0}.donation-amount input::placeholder{font-size:20px;color:#a9aba2;font-weight:400}.donation-amount input:focus-visible{outline:2px solid #00b894}.donation-amount b{font-size:18px;font-weight:500}
 .donation-cheque-bottom{border-top:1px dashed #dbcba8;padding-top:16px;font-size:12px;color:#858371}.donation-cheque-bottom b{color:#9a783a;font-weight:500}.donation-bank h3{font-size:16px}.donation-bank>p{font-size:14px}.donation-bank>small{display:block;font-size:12px;line-height:1.7;color:#69766f}
 @media(max-width:600px){.donation-cheque{padding:22px 18px}.donation-cheque-top{align-items:flex-start;gap:8px}.donation-cheque-top>b{font-size:12px;letter-spacing:.06em}.donation-cheque-top>span{font-size:11px}.donation-amount input{font-size:22px}.donation-amount input::placeholder{font-size:14px}.donation-cheque-bottom{gap:8px;font-size:10px}.donation-cheque-to{margin-top:23px}}
+
+/* 31.86: let the account card determine the shared desktop promotion height. */
+@media(min-width:1024.01px){
+ .home-promo-row>.home-wide-banner{height:auto;min-height:0;max-height:none;align-self:stretch;aspect-ratio:auto}
+}
