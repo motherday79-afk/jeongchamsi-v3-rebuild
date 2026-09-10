@@ -573,3 +573,14 @@ body:has(.service-dock),.site-shell:has(.service-dock),.site-shell:has(.service-
 .admin-member-points form{display:grid;gap:12px;border-top:1px solid #e6ece8;padding:14px 0}.admin-member-points form>label{display:block}.admin-member-points input:not([type=checkbox]),.admin-member-points select{display:block;width:100%;padding:10px;border:1px solid #ccd9d3;border-radius:8px;color:#183d32;background:#fff;box-sizing:border-box}.admin-member-points h4{margin:20px 0 10px}.admin-member-points summary{cursor:pointer;font-weight:700;padding:12px 0}.admin-member-points [data-form-state]{color:#9a2e40}
 .community-cage-options{border:1px solid #e0e8e3;padding:16px;border-radius:12px;margin-bottom:18px;background:#fff}.community-cage-options select{padding:10px;color:#183d32;background:#fff;border:1px solid #cbdad2;border-radius:8px}.community-cage-options p{font-size:13px;line-height:1.6}.community-cage-options [hidden]{display:none!important}.community-cage-options [data-normal-post-pin]{margin-top:12px}
 .member-summary-error{display:block;font-size:10px;overflow-wrap:anywhere;color:#914338}.member-mini-stats [data-member-summary-retry]{background:#fff;color:#914338;border:1px solid #eadbd5;border-radius:5px;font-size:11px;padding:3px 6px}
+
+/* 31.84 point-shop admin disclosure */
+.point-admin-disclosure>summary{display:flex;align-items:center;justify-content:space-between;gap:16px;cursor:pointer;list-style:none}
+.point-admin-disclosure>summary::-webkit-details-marker{display:none}
+.point-admin-disclosure>summary h2{margin:0;min-width:0}
+.point-admin-disclosure>summary>span{flex:none;white-space:nowrap;border:1px solid #cbded6;border-radius:8px;padding:8px 12px;background:#fff;color:#00866c;font-size:13px;font-weight:600}
+.point-admin-disclosure>summary:hover>span{border-color:#00b894;background:#f0fcf8}
+.point-admin-disclosure>summary:focus-visible{outline:2px solid #00b894;outline-offset:4px;border-radius:8px}
+.point-admin-disclosure:not([open]) .point-admin-hide,.point-admin-disclosure[open] .point-admin-show{display:none}
+.point-admin-disclosure[open]>.point-orders{margin-top:18px}
+@media(max-width:600px){.point-admin-disclosure>summary{gap:10px}.point-admin-disclosure>summary h2{font-size:17px;line-height:1.5}.point-admin-disclosure>summary>span{padding:7px 9px;font-size:12px}}
