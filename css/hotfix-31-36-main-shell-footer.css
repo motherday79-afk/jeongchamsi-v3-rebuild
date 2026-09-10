@@ -567,3 +567,9 @@ body:has(.service-dock),.site-shell:has(.service-dock),.site-shell:has(.service-
 .badge-collection-card.is-owned,.badge-collection-card.is-eligible,.mypage-badge-summary>span{background:#fff!important;background-image:none!important}
 
 .promo-account-card,.side-participation-account{background:#fff!important;background-image:none!important}
+
+/* 31.83 member payment controls and community cage composer */
+.admin-member-points{border:1px solid #e3d3ac;border-radius:12px;background:#fff;padding:18px;margin-bottom:20px;color:#183d32}
+.admin-member-points form{display:grid;gap:12px;border-top:1px solid #e6ece8;padding:14px 0}.admin-member-points form>label{display:block}.admin-member-points input:not([type=checkbox]),.admin-member-points select{display:block;width:100%;padding:10px;border:1px solid #ccd9d3;border-radius:8px;color:#183d32;background:#fff;box-sizing:border-box}.admin-member-points h4{margin:20px 0 10px}.admin-member-points summary{cursor:pointer;font-weight:700;padding:12px 0}.admin-member-points [data-form-state]{color:#9a2e40}
+.community-cage-options{border:1px solid #e0e8e3;padding:16px;border-radius:12px;margin-bottom:18px;background:#fff}.community-cage-options select{padding:10px;color:#183d32;background:#fff;border:1px solid #cbdad2;border-radius:8px}.community-cage-options p{font-size:13px;line-height:1.6}.community-cage-options [hidden]{display:none!important}.community-cage-options [data-normal-post-pin]{margin-top:12px}
+.member-summary-error{display:block;font-size:10px;overflow-wrap:anywhere;color:#914338}.member-mini-stats [data-member-summary-retry]{background:#fff;color:#914338;border:1px solid #eadbd5;border-radius:5px;font-size:11px;padding:3px 6px}

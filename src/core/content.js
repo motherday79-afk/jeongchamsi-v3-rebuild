@@ -9,8 +9,9 @@ function createRemoteContentService(){
   const readDomain=async domain=>{const x=await request(`content?domain=${encodeURIComponent(domain)}`);const data=x.ok?x.data:null;if(data)readCache.set(domain,data);return data;};
   return {
     async points(){return request('points');},
+    async memberPoints(id){return request('points?member='+encodeURIComponent(id));},
     async myWallet(){return request('points?wallet=1');},
-    async memberSummary(){return request('user/dashboard?summary=1');},
+    async memberSummary(){return request('user/summary');},
     async pointAction(input){return request('points',{method:'POST',body:JSON.stringify(input)});},
     async readDomain(domain){return (await readDomain(domain))||{items:[]};},
     peekDomain(domain){return readCache.get(domain);},
@@ -88,5 +89,5 @@ export async function loadNavigationDashboard(parts,session,content){
  const full=section==='mypage'&&!['activity','badges','points'].includes(item);
  const detail=section==='person'||(['column','community','news','itsme'].includes(section)&&item&&item!=='write');
  if(!full&&!detail)return empty;
- try{return {...empty,...await (full?content.memberDashboard():content.favoriteKeys())};}catch{return empty;}
+ try{const result=await (full?content.memberDashboard():content.favoriteKeys());return result?.ok===false?{...empty,dashboardError:result.error||'LOAD_FAILED'}:{...empty,...result};}catch{return {...empty,dashboardError:'LOAD_FAILED'};}
 }

@@ -1,15 +1,15 @@
-import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.81';
+import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.83';
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.56';
 import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.81';
-import { renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.81';
+import { renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.83';
 import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.81';
 import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.61';
-import { createContentService, loadNavigationDashboard } from './core/content.js?v=0.0.31.81';
+import { createContentService, loadNavigationDashboard } from './core/content.js?v=0.0.31.83';
 import { createPoliticianService } from './core/politicians.js?v=0.0.31.56';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.61';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.56';
-import * as views from './views/stage1.js?v=0.0.31.82';
+import * as views from './views/stage1.js?v=0.0.31.83';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.56';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.56';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.80';
@@ -109,7 +109,7 @@ function resumeAdminIntelligence(){
 }
 
 function setupMemberBadgeManagers(){
-  for(const row of document.querySelectorAll('[data-member-badge-row]'))row.addEventListener('toggle',()=>{if(!row.open)return;const mount=row.querySelector('[data-member-badge-mount]');if(!mount||mount.dataset.loaded)return;try{mount.innerHTML=views.renderMemberBadgeManager(JSON.parse(row.dataset.memberBadgePayload||'{}'));mount.dataset.loaded='true';}catch{mount.innerHTML='<p class="module-desc">배지 목록을 불러오지 못했습니다.</p>';}});
+  for(const row of document.querySelectorAll('[data-member-badge-row]'))row.addEventListener('toggle',()=>{if(!row.open)return;const mount=row.querySelector('[data-member-badge-mount]');if(!mount||mount.dataset.loaded)return;try{mount.innerHTML=views.renderMemberBadgeManager(JSON.parse(row.dataset.memberBadgePayload||'{}'));mount.dataset.loaded='true';void loadMemberPoints(mount.querySelector('[data-member-points-panel]'));}catch{mount.innerHTML='<p class="module-desc">배지 목록을 불러오지 못했습니다.</p>';}});
 }
 
 async function render({preserveScroll=false}={}){
@@ -151,7 +151,7 @@ async function render({preserveScroll=false}={}){
   else if(p[0]==='support') body=views.renderSupport();
   else if(['privacy','policy'].includes(p[0])) body=views.renderLegal(p[0]);
   else if(p[0]==='column') body=p[1]==='write'?views.renderBoardWrite('columns',session):p[1]?await views.renderBoardDetail('columns',p[1],content,session,dashboard):await views.renderBoard('columns',content,session);
-  else if(p[0]==='community') body=p[1]==='write'?views.renderBoardWrite('community',session):p[1]?await views.renderBoardDetail('community',p[1],content,session,dashboard,r):await views.renderBoard('community',content,session,r);
+  else if(p[0]==='community') body=p[1]==='write'?views.renderBoardWrite('community',session,session.authenticated?await content.myWallet().catch(()=>({ok:false})):{} ):p[1]?await views.renderBoardDetail('community',p[1],content,session,dashboard,r):await views.renderBoard('community',content,session,r);
   else if(p[0]==='news') body=p[1]==='write'?views.renderBoardWrite('news',session):p[1]?await views.renderBoardDetail('news',p[1],content,session,dashboard):await views.renderBoard('news',content,session);
   else if(p[0]==='itsme') body=p[1]==='write'?views.renderItsmeWrite(session):p[1]?await views.renderItsmeDetail(p[1],content,session,dashboard):await views.renderItsme(content,r);
   else if(p[0]==='poll') body=await renderPollBoard({content,session,route:r});
@@ -192,6 +192,7 @@ async function render({preserveScroll=false}={}){
     for(const mount of document.querySelectorAll('[data-member-summary-mount]'))mount.innerHTML=renderMemberSummary(summary,wallet);
   });
   setupMemberBadgeManagers();
+  restoreCageDraft();
   showCageFeedback();
   if(p[0]==='person'){recordRecentPolitician(document);tunePoliticianNarratives();if(session.user?.role==='admin')void updatePoliticianPhotoStorageStatus();}
   if(!preserveScroll)window.scrollTo(0,0);
@@ -251,7 +252,7 @@ document.addEventListener('submit',async event=>{
   const pastRiskForm=event.target.closest('[data-intelligence-past-risk-form]');
   if(pastRiskForm){event.preventDefault();const data=new FormData(pastRiskForm),state=pastRiskForm.querySelector('[data-intelligence-draft-state]'),pastRisks=String(data.get('pastRisks')||'').split(/\r?\n/).map(line=>line.split('|').map(value=>value.trim())).filter(parts=>parts[0]&&parts[1]&&/^https?:\/\//.test(parts[2])).slice(0,5).map(([tag,title,url,date])=>({tag:tag.startsWith('#')?tag:`#${tag}`,title,url,date:date||''})),result=await auth.intelligenceDraftUpdate({personId:String(data.get('personId')||''),diagnoses:[{id:'01',pastRisks}]});if(state)state.textContent=result?.ok?'PAST RISK SIGNALS를 저장했습니다. 자동 검증 통과 시 바로 게시할 수 있습니다.':(result?.error||'PAST RISK SIGNALS를 저장하지 못했습니다.');if(result?.ok)await render({preserveScroll:true});return;}
   const pointForm=event.target.closest('[data-point-form]');
-  if(pointForm){event.preventDefault();const fd=new FormData(pointForm),input=Object.fromEntries(fd);input.operation=pointForm.dataset.pointForm;input.confirmed=pointForm.elements.confirmed?.checked===true;input.decision=event.submitter?.value;const state=pointForm.querySelector('[data-form-state]'),buttons=[...pointForm.querySelectorAll('button')];if(input.operation==='review'&&input.decision==='approve'&&!input.confirmed){state.textContent='입금 확인 항목을 체크해 주세요.';return;}if(input.operation==='cage'&&!window.confirm('선택한 포인트를 사용해 케이지를 지금 개설할까요?'))return;buttons.forEach(b=>b.disabled=true);try{const result=await content.pointAction(input);if(result.ok){if(result.id)navigation.navigate('/community/'+result.id);else await render({preserveScroll:true});}else state.textContent=({INSUFFICIENT_POINTS:'보유 포인트가 부족합니다.',BANK_REQUIRED:'은행·계좌번호·예금주를 등록해 주세요.',LOGIN_REQUIRED:'로그인이 필요합니다.',TRANSFER_CONFIRM_REQUIRED:'실제 입금을 확인해 주세요.',INVALID_CAGE:'제목·내용과 50,000~100,000P 사이의 금액을 확인해 주세요.'})[result.error]||result.error||'처리하지 못했습니다.';}catch{state.textContent='처리 결과를 확인하지 못했습니다. 같은 신청으로 다시 시도해 주세요.';}finally{buttons.forEach(b=>b.disabled=false);}return;}
+  if(pointForm){event.preventDefault();const fd=new FormData(pointForm),input=Object.fromEntries(fd);input.operation=pointForm.dataset.pointForm;input.confirmed=pointForm.elements.confirmed?.checked===true;input.decision=event.submitter?.value;const state=pointForm.querySelector('[data-form-state]'),buttons=[...pointForm.querySelectorAll('button')];if((input.operation==='grant'||input.operation==='review'&&input.decision==='approve')&&!input.confirmed){state.textContent='입금 확인 항목을 체크해 주세요.';return;}if(input.operation==='cage'&&!window.confirm('선택한 포인트를 사용해 케이지를 지금 개설할까요?'))return;buttons.forEach(b=>b.disabled=true);try{const result=await content.pointAction(input);if(result.ok){if(result.id)navigation.navigate('/community/'+result.id);else if(pointForm.closest('[data-member-points-panel]'))await loadMemberPoints(pointForm.closest('[data-member-points-panel]'));else await render({preserveScroll:true});}else if(result.error==='INSUFFICIENT_POINTS'){state.textContent='보유 포인트가 부족해 케이지를 열 수 없습니다.';if(await askPointCharge(pointForm)){if(parts(route())[0]==='points')document.querySelector('[data-point-form=order]')?.scrollIntoView({behavior:'smooth'});else navigation.navigate('/points');}}else state.textContent=({INSUFFICIENT_POINTS:'보유 포인트가 부족합니다.',BANK_REQUIRED:'은행·계좌번호·예금주를 등록해 주세요.',LOGIN_REQUIRED:'로그인이 필요합니다.',TRANSFER_CONFIRM_REQUIRED:'실제 입금을 확인해 주세요.',INVALID_CAGE:'제목·내용과 50,000~100,000P 사이의 금액을 확인해 주세요.'})[result.error]||result.error||'처리하지 못했습니다.';}catch{state.textContent='처리 결과를 확인하지 못했습니다. 같은 신청으로 다시 시도해 주세요.';}finally{buttons.forEach(b=>b.disabled=false);}return;}
   const cohortForm=event.target.closest('[data-generation-cohort-editor]');
   if(cohortForm){event.preventDefault();const ids=[...cohortForm.querySelectorAll('[name=cohortIds]')].map(x=>x.value),counts=Object.fromEntries([...cohortForm.querySelectorAll('.generation-manage-row')].map(row=>[row.querySelector('[name=cohortIds]').value,Number(row.querySelector('[data-cohort-count]').value)])),state=cohortForm.querySelector('[data-form-state]'),button=cohortForm.querySelector('[type=submit]');button.disabled=true;try{const result=await content.editParticipation('generation','',{age:cohortForm.dataset.age,itemId:cohortForm.dataset.itemId,candidateIds:ids,counts,enabled:cohortForm.elements.enabled.checked},'cohort');if(result.ok)await render({preserveScroll:true});else state.textContent=result.error==='GENERATION_ROUND_CHANGED'?'현재 회차가 바뀌었습니다. 새로고침 후 다시 저장해 주세요.':result.error||'저장하지 못했습니다.';}catch{state.textContent='저장하지 못했습니다. 다시 시도해 주세요.';}finally{button.disabled=false;}return;}
   const demoForm=event.target.closest('[data-participation-demo]');
@@ -281,6 +282,10 @@ document.addEventListener('submit',async event=>{
   if(type==='login') result=await auth.login(data);
   if(type==='join'){result=await auth.register(data);shellInfoCache=null;}
   if(type==='profile-address'){data.regionDistrict=data.regionDistrict||'';result=await auth.updateProfile(data);}
+  if(type==='board'&&form.dataset.domain==='community'&&data.writeMode==='cage'){
+    const button=form.querySelector('button[type=submit]'),state=form.querySelector('[data-form-state]');if(form.dataset.busy)return;form.dataset.busy='true';button.disabled=true;
+    try{const opened=await content.pointAction({operation:'cage',fee:data.fee,title:data.title,body:data.body,requestId:data.requestId});if(opened.ok){try{sessionStorage.removeItem('jcs-cage-draft:'+form.querySelector('[data-cage-writer]').dataset.userId);}catch{}navigation.navigate('/community/'+opened.id);}else if(opened.error==='INSUFFICIENT_POINTS'){state.textContent='포인트가 부족해 케이지를 열 수 없습니다.';if(await askPointCharge(button)){try{sessionStorage.setItem('jcs-cage-draft:'+form.querySelector('[data-cage-writer]').dataset.userId,JSON.stringify({title:data.title,body:data.body,fee:data.fee,requestId:data.requestId}));}catch{}navigation.navigate('/points');}}else state.textContent=formErrors[opened.error]||opened.error||'개설에 실패했습니다.';}catch{state.textContent='개설 결과를 확인하지 못했습니다. 같은 신청으로 다시 시도해 주세요.';}finally{delete form.dataset.busy;button.disabled=false;}return;
+  }
   if(type==='board'){const item=await content.create(form.dataset.domain,data),routeName=form.dataset.domain==='columns'?'column':form.dataset.domain==='news'?'news':'community';result=item?.error?{ok:false,error:item.error}:{ok:true,route:`/${routeName}/${item.id}`};if(result.ok&&data.cageParentId){cageFeedback={rootId:data.cageParentId,camp:data.camp};cageRouteState({page:1,mode:'posts'});delete result.route;await render({preserveScroll:true});}}
   if(type==='itsme'){const item=await content.create('itsme',data);result=item?.error?{ok:false,error:item.error}:{ok:true,route:`/itsme/${item.id}`};}
   if(type==='inquiry'){result=await content.createInquiry(data);if(result?.ok)result.route=`/inquiry/${result.item.id}`;}
@@ -393,3 +398,12 @@ async function refreshCachedMemberSummary(){
  if(seq!==renderSequence||route()!==r)return;
  for(const mount of document.querySelectorAll('[data-member-summary-mount]'))mount.innerHTML=renderMemberSummary(summary,wallet);
 }
+
+async function loadMemberPoints(panel){if(!panel)return;const id=panel.dataset.memberPointsPanel;const result=await content.memberPoints(id).catch(()=>({ok:false}));if(panel.isConnected)panel.innerHTML=views.renderAdminMemberPoints(result,id);}
+function askPointCharge(trigger){return new Promise(resolve=>{const dialog=communityDialog('<h2>포인트가 부족합니다</h2><p>보유 포인트가 부족해 케이지를 열 수 없습니다. 포인트 충전 페이지로 이동할까요?</p><div class="jc-editor-bottom"><button type="button" data-charge-no class="jc-subtle">아니오</button><button type="button" data-charge-yes class="jc-primary">예 · 충전하기</button></div>',trigger);dialog.querySelector('[data-charge-no]').onclick=()=>dialog.close('no');dialog.querySelector('[data-charge-yes]').onclick=()=>dialog.close('yes');dialog.addEventListener('close',()=>resolve(dialog.returnValue==='yes'),{once:true});});}
+function paintCageWriter(form){const cage=form.elements.writeMode?.value==='cage',settings=form.querySelector('[data-cage-write-settings]'),pin=form.querySelector('[data-normal-post-pin]');if(settings)settings.hidden=!cage;if(pin){pin.hidden=cage;pin.querySelectorAll('input').forEach(x=>x.disabled=cage);}const button=form.querySelector('button[type=submit]');if(button)button.textContent=cage?'포인트 사용 · 케이지 열기':'게시글 등록';}
+function restoreCageDraft(){for(const writer of document.querySelectorAll('[data-cage-writer]')){const form=writer.closest('form');try{const saved=JSON.parse(sessionStorage.getItem('jcs-cage-draft:'+writer.dataset.userId)||'null');if(saved){for(const name of ['title','body','fee','requestId'])if(saved[name])form.elements[name].value=saved[name];form.elements.writeMode.value='cage';}}catch{}paintCageWriter(form);}}
+document.addEventListener('change',event=>{const field=event.target,form=field.closest('form');if(field.name==='writeMode'&&form?.querySelector('[data-cage-writer]'))paintCageWriter(form);if(field.matches('[data-admin-charge-amount]')){const amount=Number(field.value),first=form.dataset.firstCharge==='true',bonus=first?20:amount>=1000000?20:amount>=500000?15:amount>=100000?10:0;form.querySelector('[data-admin-charge-preview]').textContent='지급 예정 '+(amount*(100+bonus)/100).toLocaleString('ko-KR')+' P · 보너스 '+bonus+'%';}});
+document.addEventListener('click',event=>{const retry=event.target.closest('[data-member-points-retry]');if(retry)void loadMemberPoints(retry.closest('[data-member-points-panel]'));if(event.target.closest('[data-member-summary-retry]'))void refreshCachedMemberSummary();});
+
+document.addEventListener('click',event=>{if(event.target.closest('[data-mypage-retry]'))void render({preserveScroll:true});});

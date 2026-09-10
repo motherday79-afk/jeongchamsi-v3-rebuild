@@ -48,12 +48,14 @@ export function politicianPhotoErrorCode(error){
 const CONTENT_DOMAINS=new Set([...LEGACY_DOMAINS,'news']);
 function cleanDomain(domain){return CONTENT_DOMAINS.has(String(domain||''))?String(domain):'';}
 const allPoliticianProfiles=command=>Promise.all(POLITICIAN_TYPES.map(type=>readPoliticianType(command,type))).then(groups=>groups.flat().filter(person=>person?.id&&person.isVacant!==true));
-const favoriteService=command=>createFavoriteService({
-  command,
-  getPerson:async id=>{const [person,photos]=await Promise.all([getPolitician(command,id),readPoliticianPhotos(command)]);return person?{...person,photo:photos[id]||null}:null;},
-  getPost:(domain,id)=>findPublishedPost(command,domain,id),
-  listDomain:async domain=>contentItems(await readDomainWithViews(command,domain,{items:[]}))
-});
+const favoriteService=command=>{
+ const types=new Map();let photoPromise;
+ return createFavoriteService({command,
+ getPerson:async(id,{summaryOnly=false}={})=>{const type=String(id).split('-')[0];if(!POLITICIAN_TYPES.includes(type))return null;if(!types.has(type))types.set(type,readPoliticianType(command,type));const person=(await types.get(type)).find(p=>String(p.id)===String(id));if(!person||summaryOnly)return person||null;photoPromise||=readPoliticianPhotos(command).catch(()=>({}));return {...person,photo:(await photoPromise)[id]||null};},
+ getPost:(domain,id)=>findPublishedPost(command,domain,id),
+ listDomain:async domain=>contentItems(await readDomain(command,domain,{items:[]}))
+ });
+};
 export function sanitizeContentInput(input={}){const safe={};for(const [key,limit] of Object.entries({title:200,body:20000,summary:500,category:80,coverImage:1000})){const value=String(input?.[key]||'').trim().slice(0,limit);if(value)safe[key]=value;}return safe;}
 export function isActiveAcademySlot(data={},slotId=''){const id=String(slotId||'');return !!id&&(Array.isArray(data?.slots)?data.slots:contentItems(data)).some(slot=>String(slot?.id||'')===id&&slot?.published!==false&&!slot?.closedAt);}
 export async function findPublishedPost(command,domain,postId){if(!['columns','community','itsme','news'].includes(String(domain||''))||!postId)return null;const data=await readDomain(command,domain,{items:[]});return contentItems(data).find(post=>String(post.id)===String(postId)&&post.published!==false)||null;}
@@ -177,7 +179,7 @@ async function handleUser(req,res,route,command,url){
   if(route==='user/activity'&&req.method==='GET'){const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});return json(res,200,{ok:true,activity:await readActivity(command,user.id)});}
   if(route==='user/favorites'&&req.method==='GET'){const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});return json(res,200,await favoriteService(command).dashboard(user,{keysOnly:true}));}
   if(route==='user/generation-votes'&&req.method==='GET'){const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});const activity=await readActivity(command,user.id);return json(res,200,{ok:true,votes:activity.generationVotes||{}});}
-  if(route==='user/dashboard'&&req.method==='GET'){const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});return json(res,200,await favoriteService(command).dashboard(user,{summaryOnly:url.searchParams.get('summary')==='1'}));}
+  if(['user/dashboard','user/summary'].includes(route)&&req.method==='GET'){const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});return json(res,200,await favoriteService(command).dashboard(user,{summaryOnly:route==='user/summary'||url.searchParams.get('summary')==='1'||req.query?.summary==='1'}));}
   if(route==='user/badges'){
     const result=await dispatchBadgeRequest(route,req.method,await currentUser(req,command),bodyOf(req),createBadgeService(command));
     return json(res,result.status,result.body);
@@ -440,7 +442,7 @@ export default async function handler(req,res){
     if(route==='points'){
       if(req.method==='GET'&&url.searchParams.get('clock')==='1')return json(res,200,{ok:true,serverNow:Date.now()});
       const service=createPointService({command}),user=await currentUser(req,command);
-      try{if(req.method==='GET')return json(res,200,await (url.searchParams.get('wallet')==='1'?service.wallet(user):service.status(user)));if(req.method!=='POST')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});const input=bodyOf(req),op=input.operation;if(!['bank','order','review','cage'].includes(op))return json(res,400,{ok:false,error:'INVALID_OPERATION'});return json(res,200,await service[op](user,input));}catch(error){return json(res,error.message==='ADMIN_REQUIRED'?403:error.message==='LOGIN_REQUIRED'?401:400,{ok:false,error:error.message});}
+      try{if(req.method==='GET')return json(res,200,await (url.searchParams.get('member')?service.member(user,url.searchParams.get('member')):url.searchParams.get('wallet')==='1'?service.wallet(user):service.status(user)));if(req.method!=='POST')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});const input=bodyOf(req),op=input.operation;if(!['bank','order','review','cage','grant'].includes(op))return json(res,400,{ok:false,error:'INVALID_OPERATION'});return json(res,200,await service[op](user,input));}catch(error){return json(res,error.message==='ADMIN_REQUIRED'?403:error.message==='LOGIN_REQUIRED'?401:400,{ok:false,error:error.message});}
     }
     if(route==='content')return handleContent(req,res,command,url);
     if(route==='home/banner'&&req.method==='GET'){const service=createHomeBannerService({command}),[sidebar,hero]=await Promise.all([service.get(),service.get('hero')]);return json(res,200,{ok:true,banner:{...(sidebar||{}),hero}});}
