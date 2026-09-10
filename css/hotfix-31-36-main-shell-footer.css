@@ -524,3 +524,10 @@ body:has(.service-dock),.site-shell:has(.service-dock),.site-shell:has(.service-
 :is(.rank-top-card,.cheer-product-card,.itsme-card,.column-card,.column-board-card,.community-row,.recent-visual-card,.national-eval-home-card:not(.empty),.badge-showcase-slot,.mypage-list-row,.person-slot-card,.now-category-rank-card):active{border-color:#00b894!important;background:#f0fcf8!important;box-shadow:none!important}
 .cheer-product-card:active .cheer-product-visual{border-color:#00b894;background:#f0fcf8}
 @media(prefers-reduced-motion:reduce){.service-dock .service-dock-icon::before,.service-dock .service-dock-icon svg{transition:none!important}}
+
+/* 31.79: generation management alongside the current cohort. */
+.generation-cohort-editor{margin-top:20px;padding:18px;border:1px solid #cfe4db;border-radius:12px;background:#f6fbf8;color:#203c30}
+.generation-cohort-editor h3{margin:0 0 14px;font-size:17px}.generation-manage-search,.generation-copy{display:flex;gap:8px;margin-bottom:12px}.generation-manage-search>input:first-child{flex:1;min-width:0}.generation-cohort-editor input,.generation-cohort-editor select{background:#fff;color:#203c30;border:1px solid #d2dfd8;border-radius:7px;padding:8px}.generation-cohort-editor button{white-space:nowrap}.generation-manage-row{display:grid;grid-template-columns:minmax(0,1fr) 150px auto;align-items:center;gap:12px;padding:10px 0;border-top:1px solid #e0e9e3}.generation-manage-row small{display:block;font-size:11px;color:#67796e}.generation-manage-row label{font-size:11px}.generation-manage-row input[type=number]{width:100%;display:block}.generation-demo-toggle{display:flex;align-items:center;gap:8px;font-size:12px;margin:15px 0}.generation-cohort-editor [data-form-state]{display:block;margin-top:10px;font-size:12px}
+@media(max-width:560px){.generation-cohort-editor{padding:12px}.generation-manage-row{grid-template-columns:minmax(0,1fr) 100px auto;gap:6px}.generation-manage-row>span{font-size:13px}.generation-manage-row button{padding:7px}.generation-manage-search input{font-size:13px}}
+
+.generation-choice-page:has(.generation-cohort-editor) .generation-search-panel{display:none}

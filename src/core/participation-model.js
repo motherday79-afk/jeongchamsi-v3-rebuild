@@ -14,10 +14,10 @@ export function castGenerationVote(data,activity,user,scope,option,currentYear=n
  if(!GENERATION_AGES.includes(group)||group!==generationAgeGroup(user.birthYear,currentYear))fail('AGE_GROUP_MISMATCH');
  const rows=(data.items||[]).filter(x=>x.published!==false),active=rows.find(x=>x.featured===true)||rows.find(x=>String(x.id)===String(data.activeItemId));
  if(data.enabled===false||active?.closedAt||requestedId&&requestedId!==String(active?.id||'')||!active&&rows.length)fail('GENERATION_VOTE_CLOSED');
- const roundId=active?String(active.id):'',candidates=active?.candidateIds||data.candidates||[];
+ const roundId=active?String(active.id):'',candidates=active?.candidatesByAge?.[group]||data.candidatesByAge?.[group]||active?.candidateIds||data.candidates||[];
  if(!candidates.includes(option))fail('CANDIDATE_NOT_ALLOWED');
  const votes=activity.generationVotes||{};
- if(hasGenerationVote(votes,roundId))fail('ALREADY_VOTED');
+ if(hasGenerationVote(votes,roundId)||active?.legacyVoting&&hasGenerationVote(votes))fail('ALREADY_VOTED');
  const results=active?(active.results=active.results||{}):(data.results=data.results||{});
  results[group]=results[group]||{};results[group][option]=Number(results[group][option]||0)+1;
  if(active){data.results=results;data.candidates=active.candidateIds;}
@@ -30,11 +30,11 @@ export function participationDisplay(domain,source={}){
   if(item.demo?.enabled!==true)continue;
   item.jcsDemo=true;
   if(domain==='polls')item.options=(item.options||[]).map(o=>({...o,votes:item.demo.counts?.[o.id]||0}));
-  if(domain==='generation')item.results=item.demo.counts||{};
+  if(domain==='generation')item.results=Object.fromEntries(GENERATION_AGES.map(age=>[age,(item.demo.enabledByAge?.[age]??item.demo.enabled)?item.demo.counts?.[age]||{}:item.results?.[age]||{}]));
  }
  if(domain==='generation'){
   const active=(data.items||[]).find(x=>x.featured===true)||(data.items||[]).find(x=>String(x.id)===String(data.activeItemId));
-  if(active){data.results=active.results||{};data.candidates=active.candidateIds||[];data.jcsDemo=!!active.jcsDemo;}
+  if(active){data.results=active.results||{};data.candidates=active.candidateIds||[];data.jcsDemo=!!active.jcsDemo;data.candidatesByAge=active.candidatesByAge||{};data.demoByAge=active.demo?.enabledByAge;data.results=Object.fromEntries(GENERATION_AGES.map(age=>[age,Object.fromEntries(Object.entries(data.results[age]||{}).filter(([id])=>(active.candidatesByAge?.[age]||active.candidateIds||[]).includes(id)))]));active.results=data.results;}
  }
  if(domain==='nationalEvaluation'){
   // Demo display is explicit and per item. Never fall back to unlabeled demo counts.

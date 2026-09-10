@@ -14,7 +14,7 @@ import { accessTierForUser, projectIntelligence } from '../lib/intelligence-acce
 import { buildIntelligenceDraft } from '../lib/intelligence-analysis.js';
 import { createBadgeService } from '../lib/badge-service.js';
 import { VALID_BADGE_KEYS } from '../lib/badge-engine.js';
-import { createParticipationPost, featureParticipationPost, editParticipationPost, setParticipationDemo, mutateParticipation } from '../lib/participation-admin.js';
+import { saveGenerationCohort, createParticipationPost, featureParticipationPost, editParticipationPost, setParticipationDemo, mutateParticipation } from '../lib/participation-admin.js';
 import { createAdminPoliticianService } from '../lib/admin-politician-service.js';
 import { createPoliticianPhotoService, politicianPhotoStorageStatus, validatePoliticianPhoto } from '../lib/politician-photo-service.js';
 import { createHomeBannerService, homeBannerStorageStatus } from '../lib/home-banner-service.js';
@@ -333,7 +333,7 @@ async function handleAdmin(req,res,route,command){
     const body=bodyOf(req),domain=String(body.domain||'');if(!['polls','generation','nationalEvaluation'].includes(domain))return json(res,400,{ok:false,error:'INVALID_PARTICIPATION_DOMAIN'});
     try{
       const result=await mutateParticipation(command,[TARGET_KEYS.content(domain)],([current])=>{
-        const result=body.operation==='demo'?setParticipationDemo(domain,current,body.itemId,body.input||{}):['edit','delete'].includes(body.operation)?editParticipationPost(domain,current,body.itemId,body.input||{},body.operation==='delete'):body.operation==='feature'?featureParticipationPost(domain,current,body.itemId):createParticipationPost(domain,current,body.input||{},user);
+        const result=body.operation==='cohort'&&domain==='generation'?saveGenerationCohort(current,body.input||{},user):body.operation==='demo'?setParticipationDemo(domain,current,body.itemId,body.input||{}):['edit','delete'].includes(body.operation)?editParticipationPost(domain,current,body.itemId,body.input||{},body.operation==='delete'):body.operation==='feature'?featureParticipationPost(domain,current,body.itemId):createParticipationPost(domain,current,body.input||{},user);
         for(const key of Object.keys(current))delete current[key];Object.assign(current,result.data);return result;
       });return json(res,200,{ok:true,item:result.item});
     }catch(error){return json(res,400,{ok:false,error:error.message||'PARTICIPATION_SAVE_FAILED'});}

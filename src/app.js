@@ -1,18 +1,18 @@
-import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.78';
+import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.79';
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.56';
-import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.78';
-import { renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.78';
-import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.78';
+import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.79';
+import { renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.79';
+import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.79';
 import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.61';
 import { createContentService, loadNavigationDashboard } from './core/content.js?v=0.0.31.61';
 import { createPoliticianService } from './core/politicians.js?v=0.0.31.56';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.61';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.56';
-import * as views from './views/stage1.js?v=0.0.31.78';
+import * as views from './views/stage1.js?v=0.0.31.79';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.56';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.56';
-import { renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.78';
+import { renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.79';
 import { renderPresidentPage } from './views/president.js?v=0.0.31.56';
 import { renderSearchPage } from './views/search-page.js?v=0.0.31.56';
 import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.31.56';
@@ -137,7 +137,7 @@ async function render({preserveScroll=false}={}){
       content.homeBanner().catch(()=>null),politicians.trending().catch(()=>({items:[]})),politicians.keywords().catch(()=>({items:[]}))
     ]);
     const rank=rankResult?.ok?(Array.isArray(rankResult.items)?rankResult.items:[]).slice(0,100):[];
-    const generationIds=(Array.isArray(generation?.candidates)?generation.candidates:[]).slice(0,15),evaluationIds=Object.values(nationalEvaluation?.slots||{}).map(slot=>slot?.subjectId).filter(Boolean),resolvedPeople=await Promise.all([...new Set([...generationIds,...evaluationIds])].map(id=>politicians.get(id).catch(()=>({ok:false}))));
+    const generationIds=(Array.isArray(generation?.candidates)?generation.candidates:[]).slice(0,75),evaluationIds=Object.values(nationalEvaluation?.slots||{}).map(slot=>slot?.subjectId).filter(Boolean),resolvedPeople=await Promise.all([...new Set([...generationIds,...evaluationIds])].map(id=>politicians.get(id).catch(()=>({ok:false}))));
     const peopleById=Object.fromEntries(resolvedPeople.filter(result=>result?.ok&&result.item).map(result=>[result.item.id,result.item])),generationView={...generation,candidateLabels:Object.fromEntries(generationIds.map(id=>[id,peopleById[id]?.name||id]))},nationalEvaluationView={...nationalEvaluation,slots:Object.fromEntries(Object.entries(nationalEvaluation?.slots||{}).map(([key,slot])=>[key,{...slot,subjectName:peopleById[slot?.subjectId]?.name||slot?.subjectName,party:peopleById[slot?.subjectId]?.party||slot?.party,jurisdiction:peopleById[slot?.subjectId]?.jurisdiction||slot?.jurisdiction,photo:peopleById[slot?.subjectId]?.photo||slot?.photo}]))};
     const home={...HOME_FIXTURE,trending:trendingResult.items||[],keywords:keywordResult.items||[],memberCount,columns,community,communityData:content.peekDomain('community')||{items:community},itsmePosts,newsPosts,polls,generation:generationView,nationalEvaluation:nationalEvaluationView,academy,rank,homeBanner,recentPoliticians:loadRecentPoliticians(),session,badgeStatus};
     body=`<div class="product-home-wrap">${renderHomeLayout(home)}</div>`;
@@ -240,6 +240,8 @@ document.addEventListener('submit',async event=>{
   if(intelligenceDraft){event.preventDefault();const data=new FormData(intelligenceDraft),state=intelligenceDraft.querySelector('[data-intelligence-draft-state]'),result=await auth.intelligenceDraftUpdate({personId:intelligenceDraft.dataset.personId,diagnoses:[{id:'01',headline:String(data.get('diagnosisHeadline')||'')}],prescriptions:[{id:'01',strategicJudgment:String(data.get('prescriptionJudgment')||'')}]});if(state)state.textContent=result?.ok?'수정본을 저장했습니다. 자동 검증 통과 시 바로 게시할 수 있습니다.':(result?.error||'수정본을 저장하지 못했습니다.');if(result?.ok)await render({preserveScroll:true});return;}
   const pastRiskForm=event.target.closest('[data-intelligence-past-risk-form]');
   if(pastRiskForm){event.preventDefault();const data=new FormData(pastRiskForm),state=pastRiskForm.querySelector('[data-intelligence-draft-state]'),pastRisks=String(data.get('pastRisks')||'').split(/\r?\n/).map(line=>line.split('|').map(value=>value.trim())).filter(parts=>parts[0]&&parts[1]&&/^https?:\/\//.test(parts[2])).slice(0,5).map(([tag,title,url,date])=>({tag:tag.startsWith('#')?tag:`#${tag}`,title,url,date:date||''})),result=await auth.intelligenceDraftUpdate({personId:String(data.get('personId')||''),diagnoses:[{id:'01',pastRisks}]});if(state)state.textContent=result?.ok?'PAST RISK SIGNALS를 저장했습니다. 자동 검증 통과 시 바로 게시할 수 있습니다.':(result?.error||'PAST RISK SIGNALS를 저장하지 못했습니다.');if(result?.ok)await render({preserveScroll:true});return;}
+  const cohortForm=event.target.closest('[data-generation-cohort-editor]');
+  if(cohortForm){event.preventDefault();const ids=[...cohortForm.querySelectorAll('[name=cohortIds]')].map(x=>x.value),counts=Object.fromEntries([...cohortForm.querySelectorAll('.generation-manage-row')].map(row=>[row.querySelector('[name=cohortIds]').value,Number(row.querySelector('[data-cohort-count]').value)])),state=cohortForm.querySelector('[data-form-state]'),button=cohortForm.querySelector('[type=submit]');button.disabled=true;try{const result=await content.editParticipation('generation','',{age:cohortForm.dataset.age,itemId:cohortForm.dataset.itemId,candidateIds:ids,counts,enabled:cohortForm.elements.enabled.checked},'cohort');if(result.ok)await render({preserveScroll:true});else state.textContent=result.error==='GENERATION_ROUND_CHANGED'?'현재 회차가 바뀌었습니다. 새로고침 후 다시 저장해 주세요.':result.error||'저장하지 못했습니다.';}catch{state.textContent='저장하지 못했습니다. 다시 시도해 주세요.';}finally{button.disabled=false;}return;}
   const demoForm=event.target.closest('[data-participation-demo]');
   if(demoForm){event.preventDefault();const counts={},state=demoForm.querySelector('[data-form-state]'),button=demoForm.querySelector('button[type="submit"]');for(const field of demoForm.querySelectorAll('[data-demo-key]')){const age=field.dataset.demoAge,key=field.dataset.demoKey;if(age){counts[age]??={};counts[age][key]=Number(field.value);}else counts[key]=Number(field.value);}button.disabled=true;try{const result=await content.editParticipation(demoForm.dataset.domain,demoForm.dataset.postId,{enabled:demoForm.elements.enabled.checked,counts},'demo');if(result.ok)await render({preserveScroll:true});else state.textContent=result.error==='INVALID_DEMO_COUNT'?'0부터 100,000,000까지의 정수를 입력해 주세요.':result.error||'저장하지 못했습니다.';}catch{state.textContent='저장하지 못했습니다. 다시 시도해 주세요.';}finally{button.disabled=false;}return;}
   const cageForm=event.target.closest('[data-home-cage-form]');
@@ -300,6 +302,17 @@ document.addEventListener('change',event=>{
  if(input.name==='camp'){form.querySelectorAll('[data-camp-body]').forEach(el=>el.disabled=false);const button=form.querySelector('[data-jc-compose]');if(button)button.disabled=false;}
 });
 document.addEventListener('click',async event=>{
+ const cohort=event.target.closest('[data-generation-cohort-editor]');
+ if(cohort&&event.target.closest('[data-cohort-remove],[data-cohort-add],[data-cohort-copy]')){
+  const state=cohort.querySelector('[data-form-state]'),rows=cohort.querySelector('[data-cohort-rows]');
+  const add=(id,name)=>{if(rows.querySelectorAll('.generation-manage-row').length>=15){state.textContent='후보는 세대별 최대 15명입니다.';return;}if([...rows.querySelectorAll('[name=cohortIds]')].some(x=>x.value===id))return;
+   const row=document.createElement('div');row.className='generation-manage-row';row.innerHTML='<input type="hidden" name="cohortIds"><span></span><label>데모 득표수<input type="number" min="0" max="100000000" step="1" required value="0" data-cohort-count></label><button type="button" data-cohort-remove>제외</button>';row.querySelector('input').value=id;row.querySelector('span').textContent=name;rows.append(row);};
+  if(event.target.closest('[data-cohort-remove]'))event.target.closest('.generation-manage-row').remove();
+  if(event.target.closest('[data-cohort-add]')){const id=cohort.querySelector('#cohort-add-id'),name=cohort.querySelector('[data-cohort-add-name]');if(!id.value){state.textContent='검색 결과에서 정치인을 선택해 주세요.';return;}add(id.value,name.value);id.value='';name.value='';}
+  if(event.target.closest('[data-cohort-copy]')){if(rows.children.length&&!window.confirm('현재 편집 중인 후보 목록을 선택한 세대의 목록으로 바꿀까요? 데모 득표수는 0으로 시작합니다.'))return;const pool=JSON.parse(cohort.dataset.copyPools)[cohort.querySelector('[data-cohort-copy-age]').value]||[];rows.replaceChildren();pool.forEach(p=>add(p.id,p.name));}
+  state.textContent='변경 내용을 저장하면 반영됩니다.';return;
+ }
+
  const pageButton=event.target.closest('[data-cage-page]');
  if(pageButton){event.preventDefault();if(pageButton.disabled)return;const root=pageButton.closest('.jc55'),data=content.peekDomain('community');if(!root||!data)return;root.querySelector('.ca-hits').outerHTML=renderCageHits(cagePageData(data.items,root.dataset.cageId));root.querySelector('[data-cage-posts]').outerHTML=renderCagePosts(data.items,root.dataset.cageId,pageButton.dataset.cagePage);const current=root.querySelector('[data-cage-posts]');cageRouteState({page:current.dataset.currentPage});current.querySelector('[data-cage-list-title]')?.focus({preventScroll:true});current.scrollIntoView({block:'start',behavior:'auto'});navigation.cacheCurrent();return;}
  const modeButton=event.target.closest('[data-cage-mode]');
