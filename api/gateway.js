@@ -158,7 +158,7 @@ export async function dispatchBadgeRequest(route,method,user,body,service,target
   return null;
 }
 
-async function handleUser(req,res,route,command){
+async function handleUser(req,res,route,command,url){
   if(route==='user/register'&&req.method==='POST'){
     const result=await registerUser(command,bodyOf(req));if(!result.ok)return json(res,result.error==='DUPLICATE_ID'?409:400,result);setSession(res,result.user);return json(res,201,result);
   }
@@ -408,7 +408,7 @@ export default async function handler(req,res){
   try{
     if(route.startsWith('migration/'))return handleMigration(req,res,route);
     const command=rebuildRedisCommand();
-    if(route.startsWith('user/')){const handled=await handleUser(req,res,route,command);if(handled!==false)return handled;}
+    if(route.startsWith('user/')){const handled=await handleUser(req,res,route,command,url);if(handled!==false)return handled;}
     if(route==='inquiries'){
       const service=createInquiryService({command}),user=await currentUser(req,command);
       if(req.method==='GET')return json(res,200,await service.list(user,{offset:url.searchParams.get('offset'),limit:url.searchParams.get('limit')}));
