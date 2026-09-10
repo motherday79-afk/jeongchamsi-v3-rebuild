@@ -629,3 +629,10 @@ body:has(.service-dock),.site-shell:has(.service-dock),.site-shell:has(.service-
  .site-shell:has(.service-dock) .footer.footer-expanded{max-width:1280px}
  .product-home-wrap .home-promo-row,.product-home-wrap .product-content-grid{grid-template-columns:minmax(0,1fr) minmax(0,32.8125%);column-gap:28px}
 }
+
+/* 31.91: PC home keeps a 1280px canvas; smaller windows scroll horizontally. */
+html.desktop-home-fixed{overflow-x:auto}
+html.desktop-home-fixed body,html.desktop-home-fixed #app,html.desktop-home-fixed .site-shell{min-width:1312px;max-width:none;overflow-x:visible}
+html.desktop-home-fixed .site-shell>.page-wrap,html.desktop-home-fixed .product-header .product-head-main,html.desktop-home-fixed .product-header .product-head-search{width:1280px;max-width:none}
+html.desktop-home-fixed .product-home-wrap{width:1280px;max-width:none}
+html.desktop-home-fixed .product-home-wrap .home-promo-row,html.desktop-home-fixed .product-home-wrap .product-content-grid{grid-template-columns:832px 420px;column-gap:28px}

@@ -17,7 +17,7 @@ export function setupNowCarousel(root=document){
   const box=root.querySelector('[data-now-rank-carousel]');if(!box)return;
   for(const set of box.querySelectorAll('[data-now-rank-set]')){
     const pages=[...set.querySelectorAll('[data-now-rank-page]')];if(!pages.length)continue;let startIndex=0;
-    const desktopSize=Number(set.dataset.pageSize)||10,total=Number(set.dataset.total)||pages.reduce((sum,row)=>sum+row.children.length,0),isMobile=()=>globalThis.matchMedia?.('(max-width:1024px), (hover:none) and (pointer:coarse)')?.matches===true;
+    const desktopSize=Number(set.dataset.pageSize)||10,total=Number(set.dataset.total)||pages.reduce((sum,row)=>sum+row.children.length,0),isMobile=()=>!globalThis.document?.documentElement?.classList.contains('desktop-home-fixed')&&globalThis.matchMedia?.('(max-width:1024px), (hover:none) and (pointer:coarse)')?.matches===true;
     const paint=()=>{const mobile=isMobile();if(mobile){pages.forEach(page=>{page.hidden=false;[...page.children].forEach(card=>{card.hidden=false;});});set.dataset.page='0';return;}const containerIndex=Math.floor(startIndex/desktopSize);pages.forEach((page,index)=>{page.hidden=index!==containerIndex;[...page.children].forEach(card=>{card.hidden=false;});});set.dataset.page=String(containerIndex);const desktopStatus=set.querySelector('[data-now-rank-status="desktop"]');if(desktopStatus)desktopStatus.textContent=nowRankRangeLabel(containerIndex,desktopSize,total);};
     const move=direction=>{if(isMobile())return;const maxStart=Math.max(0,Math.ceil(total/desktopSize)-1)*desktopSize;startIndex=direction>0?(startIndex>=maxStart?0:startIndex+desktopSize):(startIndex<=0?maxStart:startIndex-desktopSize);paint();};
     set.querySelector('[data-now-rank-prev]')?.addEventListener('click',()=>move(-1));
@@ -35,7 +35,7 @@ export function setupLauncherExpansion(root=document){
   const primary=[...main.querySelectorAll('.service-dock-item')],additional=[...extra.querySelectorAll('.service-dock-item')],items=[...primary,...additional].filter(item=>!item.hasAttribute('data-dock-more-only')),reserved=additional.filter(item=>item.hasAttribute('data-dock-more-only'));
   const setOpen=open=>{panel.hidden=!open;toggle.setAttribute('aria-expanded',String(open));toggle.setAttribute('aria-label',open?'전체 서비스 접기':'전체 서비스 펼치기');const cue=toggle.querySelector('span');if(cue)cue.textContent=open?'−':'···';};
   const fit=()=>{
-    const mobile=globalThis.matchMedia?.('(max-width:1024px), (hover:none) and (pointer:coarse)')?.matches===true;
+    const mobile=!globalThis.document?.documentElement?.classList.contains('desktop-home-fixed')&&globalThis.matchMedia?.('(max-width:1024px), (hover:none) and (pointer:coarse)')?.matches===true;
     const count=mobile?primary.length:Math.min(items.length,serviceDockVisibleCount(main.clientWidth,items.length+reserved.length));
     const focused=main.ownerDocument?.activeElement;
     items.forEach((item,index)=>{if(index<count)main.insertBefore(item,toggle);else extra.append(item);});
@@ -193,7 +193,7 @@ function setupCageCountdown(root){
  const paint=()=>{let connected=false;for(const node of timers){if(!node.isConnected)continue;connected=true;const left=Math.max(0,Math.ceil((Number(node.dataset.cageEnds)-Date.now()-offset)/1000));node.textContent=left?`남은 시간 ${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}`:'참여 종료';node.classList.toggle('is-ended',!left);if(!left){const page=node.closest('[data-cage-id]'),join=page?.querySelector('.jc-join-box');if(join&&!join.dataset.closed){join.dataset.closed='true';join.textContent='케이지가 종료되었습니다. 최종 결과와 참여 기록을 확인할 수 있습니다.';}page?.querySelectorAll('form[data-stage-form=comment] button[type=submit]').forEach(b=>b.disabled=true);}}return connected;};
  const before=Date.now();fetch('/api/v3/points?clock=1',{credentials:'same-origin'}).then(r=>r.json()).then(x=>{if(Number.isFinite(x.serverNow)){offset=x.serverNow-(before+Date.now())/2;paint();}}).catch(()=>{});paint();const timer=setInterval(()=>{if(!paint())clearInterval(timer);},1000);
 }
-export function setupLayoutInteractions(root=document,options={}){setupPostMenuDismissal(root);setupCageCountdown(root);setupEmptyHomeModule(root);setupDrawer(root);setupLauncherExpansion(root);setupNowCarousel(root);setupLayoutNavigation(root);setupCompareSearch(root);setupPoliticianPhotoFallback(root);setupPoliticianAutocomplete(root,options.politicianSearch);setupDiagnosisInteractions(root);setupDetail47Interactions(root);setupFontScaleControl(root);}
+export function setupLayoutInteractions(root=document,options={}){setupDesktopHomeViewport(root);setupPostMenuDismissal(root);setupCageCountdown(root);setupEmptyHomeModule(root);setupDrawer(root);setupLauncherExpansion(root);setupNowCarousel(root);setupLayoutNavigation(root);setupCompareSearch(root);setupPoliticianPhotoFallback(root);setupPoliticianAutocomplete(root,options.politicianSearch);setupDiagnosisInteractions(root);setupDetail47Interactions(root);setupFontScaleControl(root);}
 
 const postMenuRoots=new WeakSet();
 export function setupPostMenuDismissal(root=document){
@@ -202,4 +202,35 @@ export function setupPostMenuDismissal(root=document){
  root.addEventListener('pointerdown',outside,true);
  root.addEventListener('click',outside,true);
  root.addEventListener('keydown',event=>{if(event.key!=='Escape')return;for(const menu of root.querySelectorAll('details.jc-menu[open]')){const focused=menu.contains(root.activeElement||root.ownerDocument?.activeElement);menu.open=false;if(focused)menu.querySelector('summary')?.focus();}});
+}
+
+// Keep the desktop home layout at its reference width when a PC window narrows.
+// Restore every original media query immediately on other routes or touch layouts.
+export function desktopHomeMedia(query,width=1312){
+ return String(query).replace(/\((min|max)-width\s*:\s*([\d.]+)px\)/gi,(_,bound,value)=>{
+  const matches=bound.toLowerCase()==='min'?width>=Number(value):width<=Number(value);
+  return matches?'(min-width: 0px)':'(max-width: 0px)';
+ });
+}
+const homeMediaControllers=new WeakMap();
+export function setupDesktopHomeViewport(root=document){
+ if(!root.documentElement||!globalThis.matchMedia)return;
+ let controller=homeMediaControllers.get(root);
+ if(!controller){
+  const device=globalThis.matchMedia('(hover: hover) and (pointer: fine)'),originals=new Map();
+  const apply=()=>{
+   const active=device.matches&&!!root.querySelector('.product-home-wrap .service-dock');
+   root.documentElement.classList.toggle('desktop-home-fixed',active);
+   for(const [media,original] of originals)media.mediaText=original;
+   originals.clear();
+   if(!active)return;
+   const adjust=media=>{if(!media)return;const before=media.mediaText,after=desktopHomeMedia(before);if(before!==after){originals.set(media,before);media.mediaText=after;}};
+   const walk=rules=>{for(const rule of rules){adjust(rule.media);if(rule.cssRules)walk(rule.cssRules);}};
+   for(const sheet of root.styleSheets){try{if(sheet.href&&new URL(sheet.href,root.baseURI).origin!==new URL(root.baseURI).origin)continue;adjust(sheet.media);walk(sheet.cssRules);}catch{/* Ignore inaccessible third-party stylesheets. */}}
+  };
+  controller={apply};homeMediaControllers.set(root,controller);
+  device.addEventListener?.('change',()=>{apply();refreshFontScale(root);});
+  root.addEventListener('load',event=>{if(event.target?.tagName==='LINK'&&event.target.rel==='stylesheet')apply();},true);
+ }
+ controller.apply();
 }

@@ -2,14 +2,14 @@ import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from '
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.56';
 import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.88';
 import { renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.88';
-import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.81';
+import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.91';
 import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.61';
 import { createContentService, loadNavigationDashboard } from './core/content.js?v=0.0.31.83';
 import { createPoliticianService } from './core/politicians.js?v=0.0.31.56';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.61';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.56';
-import * as views from './views/stage1.js?v=0.0.31.90';
+import * as views from './views/stage1.js?v=0.0.31.91';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.56';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.56';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.85';
