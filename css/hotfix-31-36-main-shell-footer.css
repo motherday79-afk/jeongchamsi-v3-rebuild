@@ -281,3 +281,25 @@ dialog.jc49{width:min(640px,calc(100% - 24px));max-height:85vh;overflow:auto;pad
 @media(pointer:coarse){.jc55 .ca-pagination button{min-width:32px;min-height:44px}.jc55 .ca-applause{min-height:44px}}
 
 .jc55{--ca-ink:#152b3c;--ca-paper:#fff;--ca-line:#dde5ec;--ca-muted:#63798a;font-family:inherit}.jc55 .ca-arena{margin-top:0}.jc55 .ca-hits{margin-bottom:14px}.jc55 .ca-hit-empty{font-size:13px;color:var(--ca-muted);padding:18px 0;line-height:1.7}.jc55 .ca-hit-card .ca-hit-title{overflow-wrap:anywhere}.jc55 .ca-hit-card .ca-hit-bottom{margin-top:auto}.jc55 .ca-hit-meta{margin-bottom:14px}.jc55 .jc-join-box{margin:14px 0}.jc55 .ca-all-posts{margin-bottom:14px}.jc55 .ca-no-participation .ca-territory-blue,.jc55 .ca-no-participation .ca-territory-red{background:#203143}.jc55 .ca-no-participation .ca-frontline{display:none}.jc55 .ca-arena button:focus-visible,.jc55 .ca-pagination button:focus-visible,.jc55 .ca-applause:focus-visible{outline:3px solid #e7c885;outline-offset:3px}.jc55 .ca-percent{font-variant-numeric:tabular-nums}.jc49 .jc-share-state{font-size:12px;color:#476374;padding:4px 10px;line-height:1.5}.jc55 .ca-post-row .ca-row-main .author-representative-badge svg{width:14px;height:18px}.jc49 .jc-manual-share{width:100%;padding:12px;border:1px solid #c9d6df;border-radius:8px;font-size:14px;color:#17334b;background:#f4f7fa}
+
+/* 31.60: variable candidate counts must not become individual grid columns. */
+.participation-post-list>article{grid-template-columns:auto minmax(0,1fr) auto}
+.participation-candidate-photos{display:flex;flex-wrap:wrap;gap:6px;max-width:186px}
+.participation-candidate-photos .evaluation-post-avatar{flex:0 0 42px}
+.participation-post-list>article>div{min-width:0}
+.participation-post-list>article>div:not(.participation-candidate-photos){word-break:keep-all;overflow-wrap:anywhere}
+.participation-post-list>article>div>b,.participation-post-list>article>div>span{display:block}
+.poll-board-card>header>.post-editor,.participation-post-list>article>.post-editor{grid-column:1/-1;min-width:0;width:100%;margin:0}
+.poll-board-card .post-editor>summary,.participation-post-list .post-editor>summary{white-space:nowrap;width:max-content;max-width:100%;padding:7px 10px;font-size:13px;line-height:1.5;cursor:pointer}
+.poll-board-card .post-editor .stage-form,.participation-post-list .post-editor .stage-form{width:100%;min-width:0;box-sizing:border-box}
+.poll-board-card .post-editor label,.participation-post-list .post-editor label{min-width:0}
+.poll-board-card .post-editor input,.poll-board-card .post-editor textarea,.participation-post-list .post-editor input,.participation-post-list .post-editor textarea{max-width:100%;box-sizing:border-box}
+.poll-board-card>header>div{min-width:0;word-break:keep-all;overflow-wrap:anywhere}
+@media(max-width:1024px){
+ .poll-board-card>header{grid-template-columns:38px minmax(0,1fr)}
+ .poll-board-card>header>.participation-feature{grid-column:1/-1;justify-self:start;width:auto;white-space:nowrap}
+ .participation-post-list>article{grid-template-columns:minmax(0,1fr);gap:10px}
+ .participation-post-list>article>*{grid-column:1/-1}
+ .participation-post-list .participation-feature{justify-self:start;width:auto;white-space:nowrap}
+ .participation-post-list>article>.participation-candidate-photos{max-width:100%;display:flex;flex-wrap:wrap}
+}
