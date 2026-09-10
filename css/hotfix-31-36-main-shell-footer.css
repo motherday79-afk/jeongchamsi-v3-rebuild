@@ -413,3 +413,6 @@ dialog.jc49{width:min(640px,calc(100% - 24px));max-height:85vh;overflow:auto;pad
 .side-column .home-cage-title-row{padding-top:5px;padding-bottom:8px}
 .side-column .home-cage-title-row>strong{font-size:14px;line-height:23px}
 .side-column .home-cage-enter{font-size:11px;line-height:23px}
+
+/* 31.69: center primary services; overflow starts at the first item. */
+.service-dock>.service-dock-row{justify-content:safe center}
