@@ -11,8 +11,9 @@ export function photoUploadMessage(result={}){
 }
 
 const requestCache=new Map();let cacheEpoch=0;
-async function request(path,options={}){
+async function request(path,options={},preserveCache=false){
  const read=!options.method||options.method==='GET',cacheable=read&&(path.startsWith('admin/')||path==='user/session'||(path.includes('count')||path==='stats'));
+ if(!read&&preserveCache)return uncachedRequest(path,options);
  if(!read){requestCache.clear();cacheEpoch++;try{return await uncachedRequest(path,options);}finally{requestCache.clear();cacheEpoch++;}}
  if(!cacheable)return uncachedRequest(path,options);
  const now=Date.now(),cached=requestCache.get(path);if(cached&&cached.until>now)return cached.promise;
@@ -31,7 +32,7 @@ function createRemoteAuthService(){
     async badgeStatus(){const x=await request('user/badges');return x.ok?x.status:null;},
     async setRepresentativeBadge(badgeKey){return request('action',{method:'POST',body:JSON.stringify({action:'badge-representative-set',payload:{badgeKey}})});},
     async toggleShowcaseBadge(badgeKey){return request('action',{method:'POST',body:JSON.stringify({action:'badge-showcase-toggle',payload:{badgeKey}})});},
-    async recordBadgeVisit(){return request('action',{method:'POST',body:JSON.stringify({action:'badge-visit',payload:{}})});},
+    async recordBadgeVisit(){return request('action',{method:'POST',body:JSON.stringify({action:'badge-visit',payload:{}})},true);},
     async updateMemberBadges(id,grantedBadges){return request('admin/users',{method:'PATCH',body:JSON.stringify({id,grantedBadges})});},
     async updateMemberRole(id,role){return request('admin/users',{method:'PATCH',body:JSON.stringify({id,role})});},
     async updateMemberProfile(input={}){return request('admin/users',{method:'PATCH',body:JSON.stringify({operation:'profile',...input})});},

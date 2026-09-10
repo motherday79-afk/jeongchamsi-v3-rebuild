@@ -173,6 +173,7 @@ async function handleUser(req,res,route,command){
     setSession(res,result.user);return json(res,200,result);
   }
   if(route==='user/activity'&&req.method==='GET'){const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});return json(res,200,{ok:true,activity:await readActivity(command,user.id)});}
+  if(route==='user/favorites'&&req.method==='GET'){const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});return json(res,200,await favoriteService(command).dashboard(user,{keysOnly:true}));}
   if(route==='user/dashboard'&&req.method==='GET'){const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});return json(res,200,await favoriteService(command).dashboard(user));}
   if(route==='user/badges'){
     const result=await dispatchBadgeRequest(route,req.method,await currentUser(req,command),bodyOf(req),createBadgeService(command));

@@ -3,8 +3,8 @@ import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.56';
 import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.56';
 import { renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.56';
 import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.56';
-import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.56';
-import { createContentService } from './core/content.js?v=0.0.31.56';
+import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.58';
+import { createContentService, loadNavigationDashboard } from './core/content.js?v=0.0.31.58';
 import { createPoliticianService } from './core/politicians.js?v=0.0.31.56';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.56';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
@@ -72,9 +72,12 @@ function tunePoliticianNarratives(){
 }
 
 let shellInfoCache=null;
-async function shell(body,session,renderId){
+function loadShellInfo(){
   if(!shellInfoCache||shellInfoCache.until<Date.now())shellInfoCache={until:Date.now()+30000,promise:Promise.all([auth.memberCount().catch(()=>0),content.footerInfo().catch(()=>({}))])};
-  const [memberCount,footerInfo]=await shellInfoCache.promise;
+  return shellInfoCache.promise;
+}
+async function shell(body,session,renderId){
+  const [memberCount,footerInfo]=await loadShellInfo();
   if(renderId!==renderSequence)return false;
   app.innerHTML=`<div class="site-shell">${siteHeader(memberCount,session)}<div class="page-wrap">${body}</div>${footer(footerInfo)}${drawer(session)}</div>`;
   setupLayoutInteractions(document,{politicianSearch:(query,limit)=>politicians.search(query,limit)});
@@ -112,12 +115,12 @@ function setupMemberBadgeManagers(){
 async function render({preserveScroll=false}={}){
   const renderId=++renderSequence,r=route(),p=parts(r);
   if(p[0]==='admin'){const target=document.querySelector('.page-wrap');if(target)target.innerHTML=views.renderAdminLoading(adminRouteState(r).tab);}
+  void loadShellInfo();
   const session=await auth.session();
   const badgeStatusPromise=session.authenticated&&p[0]!=='admin'
     ? auth.recordBadgeVisit().then(result=>result?.status||auth.badgeStatus()).catch(()=>null)
     : Promise.resolve(null);
-  const badgeStatus=p[0]==='mypage'?await badgeStatusPromise:null;
-  const dashboard=session.authenticated&&['mypage','person','column','community','news','itsme'].includes(p[0])?await content.memberDashboard().catch(()=>({favoriteKeys:[],authoredPosts:[],favoritePosts:[],favoritePeople:[]})):{favoriteKeys:[],authoredPosts:[],favoritePosts:[],favoritePeople:[]};
+  const [badgeStatus,dashboard]=await Promise.all([p[0]==='mypage'?badgeStatusPromise:Promise.resolve(null),loadNavigationDashboard(p,session,content)]);
   let body='';
   if(!p.length){
     const [memberCount,columns,community,itsmePosts,newsPosts,polls,generation,nationalEvaluation,academy,rankResult,homeBanner,trendingResult,keywordResult]=await Promise.all([

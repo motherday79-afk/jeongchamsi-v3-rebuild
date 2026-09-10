@@ -26,6 +26,7 @@ function createRemoteContentService(){
     async voteResult(scope){if(scope.startsWith('poll:')){const id=scope.slice(5),data=await readDomain('polls'),poll=itemsFrom('polls',data).find(x=>String(x.id)===id);return Object.fromEntries((poll?.options||[]).map(o=>[String(o.id),Number(o.votes||0)]));}return {};},
     async like(domain,postId){return request('action',{method:'POST',body:JSON.stringify({action:'post-like',payload:{domain,postId}})});},
     async toggleFavorite(input={}){return request('action',{method:'POST',body:JSON.stringify({action:'favorite-toggle',payload:input})});},
+    async favoriteKeys(){return request('user/favorites');},
     async memberDashboard(){return request('user/dashboard');},
     async listInquiries(){return request('inquiries');},
     async getInquiry(itemId){return request(`inquiries/detail?id=${encodeURIComponent(itemId)}`);},
@@ -58,6 +59,7 @@ function createLocalContentService(store){
     async voteResult(scope){const votes=await store.get(`votes:${scope}`,{});return Object.values(votes).reduce((acc,opt)=>{acc[opt]=(acc[opt]||0)+1;return acc;},{});},
     async commentsFor(){return [];},
     async toggleFavorite(){return {ok:false,error:'REMOTE_ONLY'};},
+    async favoriteKeys(){return {ok:true,favoriteKeys:[]};},
     async memberDashboard(){return {ok:true,favoriteKeys:[],authoredPosts:[],favoritePosts:[],favoritePeople:[]};},
     async listInquiries(){return {ok:true,items:[]};},
     async getInquiry(){return {ok:false,error:'INQUIRY_NOT_FOUND'};},
@@ -72,3 +74,14 @@ function createLocalContentService(store){
   };
 }
 export function createContentService(store=null){return store?createLocalContentService(store):createRemoteContentService();}
+
+// Navigation loads only the member data consumed by its destination.
+export async function loadNavigationDashboard(parts,session,content){
+ const empty={favoriteKeys:[],authoredPosts:[],favoritePosts:[],favoritePeople:[]};
+ if(!session.authenticated)return empty;
+ const [section,item]=parts;
+ const full=section==='mypage'&&!['activity','badges'].includes(item);
+ const detail=section==='person'||(['column','community','news','itsme'].includes(section)&&item&&item!=='write');
+ if(!full&&!detail)return empty;
+ try{return {...empty,...await (full?content.memberDashboard():content.favoriteKeys())};}catch{return empty;}
+}
