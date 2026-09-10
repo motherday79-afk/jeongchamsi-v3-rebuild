@@ -348,3 +348,30 @@ dialog.jc49{width:min(640px,calc(100% - 24px));max-height:85vh;overflow:auto;pad
 
 /* 31.65: arena meets the card sides and bottom; heading retains its inset. */
 .home-promo-row svg.home-cage-battle{border-radius:0}
+
+/* 31.66: topic and introduction belong to the match, not a separate post card. */
+.jc55 .ca-match-shell{margin:0 0 16px;background:#0d1b29;color:#edf5ff;border:1px solid #294053;border-radius:17px;box-shadow:0 12px 30px #06111e15}
+.jc55 .ca-match-header{display:grid;grid-template-columns:160px minmax(0,1fr) 160px;align-items:start;gap:18px;padding:20px 22px 16px;border-bottom:1px solid #a5c5e026}
+.jc55 .ca-match-header>.ca-mark{margin-top:6px;white-space:nowrap}
+.jc55 .ca-match-intro{min-width:0;text-align:center}
+.jc55 .ca-match-intro h2{margin:0 0 10px;color:#fff2cc;font-size:24px;line-height:1.4;overflow-wrap:anywhere;word-break:keep-all}
+.jc55 .ca-match-copy{color:#e1eaf4;font-size:14px;line-height:1.8;overflow-wrap:anywhere;word-break:keep-all}
+.jc55 .ca-match-copy p{margin:0 0 5px}
+.jc55 .ca-match-meta{display:flex;justify-content:center;align-items:center;gap:9px;flex-wrap:wrap;font-size:10px;color:#a5b7c9;margin-top:12px}
+.jc55 .ca-match-meta .author-identity{font-size:11px;color:#b9cce0}
+.jc55 .ca-match-tools{display:flex;align-items:center;justify-content:flex-end;gap:9px;min-width:0}
+.jc55 .ca-match-tools .ca-mini{white-space:nowrap;font-size:10px}
+.jc55 .ca-match-tools .jc-menu{position:relative;top:auto;right:auto;margin:0;flex:none;z-index:5}
+.jc55 .ca-match-tools .jc-menu>summary{color:#e2c784;background:transparent}
+.jc55 .ca-match-shell>.ca-arena{border:0;border-radius:0;box-shadow:none;margin:0}
+.jc55 .ca-match-shell>.jc-actions{margin:0;padding:12px 22px;border-top:1px solid #a5c5e026;gap:12px}
+.jc55 .ca-match-shell>.jc-actions button{color:#dce9f6;background:transparent;border-color:#3a5067}
+@media(max-width:700px){
+ .jc55 .ca-match-header{grid-template-columns:minmax(0,1fr) auto;gap:14px 8px;padding:15px}
+ .jc55 .ca-match-header>.ca-mark{grid-column:1;grid-row:1;margin-top:3px;font-size:11px}
+ .jc55 .ca-match-tools{grid-column:2;grid-row:1}
+ .jc55 .ca-match-intro{grid-column:1 / -1;grid-row:2}
+ .jc55 .ca-match-intro h2{font-size:20px}
+ .jc55 .ca-match-copy{font-size:13px}
+ .jc55 .ca-match-shell>.jc-actions{padding:10px 12px;flex-wrap:wrap}
+}
