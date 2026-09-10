@@ -455,3 +455,6 @@ body:has(.service-dock),.site-shell:has(.service-dock),.site-shell:has(.service-
 .product-header .product-head-search .product-search input{min-width:0;width:100%;padding-left:10px}
 .product-header .product-head-search .product-search button{width:42px;min-width:42px}
 .eyebrow,.product-wordmark b,.service-dock-tone-teal,.drawer-tone-teal .drawer-service-icon{color:#00b894}
+
+/* 31.72: shift search down 7px; preserve header and navigation positions. */
+.site-shell:has(.service-dock) .product-header .product-head-search{padding-top:11px;padding-bottom:1px}
