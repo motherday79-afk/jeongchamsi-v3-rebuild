@@ -2,7 +2,7 @@
 
 :is(a[href],button:not(:disabled),[role="button"],[data-layout-route]){transition:transform var(--jcs-click-speed) ease,box-shadow var(--jcs-click-speed) ease,border-color var(--jcs-click-speed) ease,background-color var(--jcs-click-speed) ease;transform:translateY(0)}
 @media(hover:hover){
-  :is(a[href],button:not(:disabled),[role="button"],[data-layout-route]):hover{transform:translateY(var(--jcs-click-lift))}
+  :is(a[href],button:not(:disabled),[role="button"],[data-layout-route]):hover{}
   :is(.launcher-card,.rank-top-card,.hero-hub-card,.recent-visual-card,.mypage-list-row,.mypage-person-row,.mypage-badge-row,.badge-showcase-slot):hover{border-color:#cddbd6;box-shadow:var(--jcs-click-shadow)}
 }
 :is(a[href],button:not(:disabled),[role="button"],[data-layout-route]):focus-visible{outline:3px solid rgba(27,120,103,.24);outline-offset:2px}
@@ -12,7 +12,7 @@
 
 .side-home-banner img{aspect-ratio:64/35!important}
 .side-participation-account{cursor:default}
-.side-participation-account:hover{transform:none!important;box-shadow:0 8px 24px rgba(24,48,40,.06)!important}
+.side-participation-account:hover{box-shadow:0 8px 24px rgba(24,48,40,.06)!important}
 .badge-showcase-slot{appearance:none;font:inherit;color:inherit;cursor:pointer;width:100%}
 .badge-showcase-main>.badge-showcase-slot{width:66px}
 

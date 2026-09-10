@@ -20,16 +20,16 @@
 .service-dock-expanded{margin-top:15px;padding-top:15px;border-top:1px solid #e8ecea}
 .service-dock-expanded[hidden]{display:none}
 .service-dock-row-all{justify-content:flex-start;flex-wrap:wrap;overflow:visible}.service-dock-more[hidden]{display:none}
-@media(hover:hover){.service-dock-item:hover .service-dock-icon,.service-dock-more:hover>span{transform:translateY(-2px);border-color:#cbd8d3;box-shadow:0 9px 20px rgba(22,42,36,.09)}}
+@media(hover:hover){.service-dock-item:hover .service-dock-icon,.service-dock-more:hover>span{border-color:#cbd8d3;box-shadow:0 9px 20px rgba(22,42,36,.09)}}
 
 .module-icon-action{display:grid;place-items:center;flex:0 0 38px;width:38px;height:38px;margin-top:1px;border:1px solid #dfe7e4;border-radius:12px;background:#fff;color:#425a52}
 .module-icon-action svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 @media(hover:hover){.module-icon-action:hover{border-color:#bfcfc9;background:#f6faf8;color:#00b894;box-shadow:0 8px 18px rgba(20,60,50,.09)}}
 
 @media(hover:hover){
-  .side-home-banner:hover,.side-home-banner a:hover,.side-recent:hover,.side-news:hover,.side-rising:hover,.side-keywords:hover,.side-participation-account:hover{transform:none!important;border-color:var(--ps-line,#e1e7e5)!important;box-shadow:none!important}
+  .side-home-banner:hover,.side-home-banner a:hover,.side-recent:hover,.side-news:hover,.side-rising:hover,.side-keywords:hover,.side-participation-account:hover{border-color:var(--ps-line,#e1e7e5)!important;box-shadow:none!important}
   .side-participation-account:hover{box-shadow:0 8px 24px rgba(24,48,40,.06)!important}
-  .side-recent .recent-visual-card:hover,.side-news .side-row:hover,.side-rising .side-row:hover{transform:translateY(-2px)!important;border-color:#cddbd6!important;box-shadow:0 9px 20px rgba(22,42,36,.08)!important}
+  .side-recent .recent-visual-card:hover,.side-news .side-row:hover,.side-rising .side-row:hover{border-color:#cddbd6!important;box-shadow:0 9px 20px rgba(22,42,36,.08)!important}
 }
 .side-home-banner,.side-keywords,.side-recent,.side-news,.side-rising,.side-participation-account{cursor:default}
 .side-home-banner a{cursor:pointer}
@@ -316,7 +316,7 @@ dialog.jc49{width:min(640px,calc(100% - 24px));max-height:85vh;overflow:auto;pad
 @media(max-width:600px){.demo-count-grid{grid-template-columns:minmax(0,1fr)}}
 
 :is(.home-promo-row,.side-column) .home-wide-banner,:is(.home-promo-row,.side-column) .home-wide-banner *, :is(.home-promo-row,.side-column) .home-cage-preview,:is(.home-promo-row,.side-column) .home-cage-preview *{transition:none!important;animation:none!important}
-:is(.home-promo-row,.side-column) .home-wide-banner:hover,:is(.home-promo-row,.side-column) .home-wide-banner a:hover,:is(.home-promo-row,.side-column) .home-wide-banner img:hover,:is(.home-promo-row,.side-column) .home-cage-preview:hover,:is(.home-promo-row,.side-column) .home-cage-entry:hover,:is(.home-promo-row,.side-column) .home-cage-preview button:hover{transform:none!important;filter:none!important;box-shadow:none!important}
+:is(.home-promo-row,.side-column) .home-wide-banner:hover,:is(.home-promo-row,.side-column) .home-wide-banner a:hover,:is(.home-promo-row,.side-column) .home-wide-banner img:hover,:is(.home-promo-row,.side-column) .home-cage-preview:hover,:is(.home-promo-row,.side-column) .home-cage-entry:hover,:is(.home-promo-row,.side-column) .home-cage-preview button:hover{filter:none!important;box-shadow:none!important}
 :is(.home-promo-row,.side-column) .home-wide-banner a,:is(.home-promo-row,.side-column) .home-wide-banner button,:is(.home-promo-row,.side-column) .home-cage-preview button{cursor:pointer!important}
 :is(.home-promo-row,.side-column) .home-cage-entry:hover{background:transparent!important;color:inherit!important}
 
@@ -496,3 +496,31 @@ body:has(.service-dock),.site-shell:has(.service-dock),.site-shell:has(.service-
 
 /* 31.77: contain the explicit product crop in every viewport. */
 .cheer-product-image{overflow:hidden}
+
+/* 31.78: stationary hover, approved neon navigation, centered overflow. */
+:root{--jcs-click-lift:0px}
+.service-dock .service-dock-row-all{justify-content:center}
+.service-dock .service-dock-icon,.service-dock .service-dock-more>span{position:relative;transform:none!important;transition:filter .15s ease!important}
+.service-dock .service-dock-icon::before,.service-dock .service-dock-more>span::before{content:"";position:absolute;inset:1px;border-radius:50%;background:radial-gradient(ellipse,color-mix(in srgb,currentColor 23%,transparent),transparent 70%);opacity:0;transition:opacity .15s ease;pointer-events:none}
+.service-dock .service-dock-icon svg{position:relative;transition:filter .15s ease}
+:is(.module-icon-action,.side-action,.now-rank-nav,.cheer-back,.rank-top-card,.cheer-product-card,.itsme-card,.column-card,.column-board-card,.community-row,.recent-visual-card,.national-eval-home-card,.badge-showcase-slot){transition:color .15s ease,background-color .15s ease,border-color .15s ease!important}
+@media(hover:hover){.service-dock :is(.service-dock-item,.service-dock-more):hover :is(.service-dock-icon,span){box-shadow:none!important}
+.service-dock :is(.service-dock-item,.service-dock-more):hover .service-dock-icon::before,.service-dock .service-dock-more:hover>span::before{opacity:1}
+.service-dock :is(.service-dock-item,.service-dock-more):hover .service-dock-icon svg{filter:drop-shadow(0 0 4px currentColor)}
+:is(.module-icon-action,.side-action,.now-rank-nav,.cheer-back):hover{color:#008d72!important;border-color:#00b894!important;background:#e9faf5!important;box-shadow:none!important}
+:is(.rank-top-card,.cheer-product-card,.itsme-card,.column-card,.column-board-card,.community-row,.recent-visual-card,.national-eval-home-card:not(.empty),.badge-showcase-slot,.mypage-list-row,.person-slot-card,.now-category-rank-card):hover{border-color:#00b894!important;background:#f0fcf8!important;box-shadow:none!important}
+.cheer-product-card:hover .cheer-product-visual{border-color:#00b894;background:#f0fcf8}
+}
+.service-dock :is(.service-dock-item,.service-dock-more):focus-visible :is(.service-dock-icon,span){box-shadow:none!important}
+.service-dock :is(.service-dock-item,.service-dock-more):focus-visible .service-dock-icon::before,.service-dock .service-dock-more:focus-visible>span::before{opacity:1}
+.service-dock :is(.service-dock-item,.service-dock-more):focus-visible .service-dock-icon svg{filter:drop-shadow(0 0 4px currentColor)}
+:is(.module-icon-action,.side-action,.now-rank-nav,.cheer-back):focus-visible{color:#008d72!important;border-color:#00b894!important;background:#e9faf5!important;box-shadow:none!important}
+:is(.rank-top-card,.cheer-product-card,.itsme-card,.column-card,.column-board-card,.community-row,.recent-visual-card,.national-eval-home-card:not(.empty),.badge-showcase-slot,.mypage-list-row,.person-slot-card,.now-category-rank-card):focus-visible{border-color:#00b894!important;background:#f0fcf8!important;box-shadow:none!important}
+.cheer-product-card:focus-visible .cheer-product-visual{border-color:#00b894;background:#f0fcf8}
+.service-dock :is(.service-dock-item,.service-dock-more):active :is(.service-dock-icon,span){box-shadow:none!important}
+.service-dock :is(.service-dock-item,.service-dock-more):active .service-dock-icon::before,.service-dock .service-dock-more:active>span::before{opacity:1}
+.service-dock :is(.service-dock-item,.service-dock-more):active .service-dock-icon svg{filter:drop-shadow(0 0 4px currentColor)}
+:is(.module-icon-action,.side-action,.now-rank-nav,.cheer-back):active{color:#008d72!important;border-color:#00b894!important;background:#e9faf5!important;box-shadow:none!important}
+:is(.rank-top-card,.cheer-product-card,.itsme-card,.column-card,.column-board-card,.community-row,.recent-visual-card,.national-eval-home-card:not(.empty),.badge-showcase-slot,.mypage-list-row,.person-slot-card,.now-category-rank-card):active{border-color:#00b894!important;background:#f0fcf8!important;box-shadow:none!important}
+.cheer-product-card:active .cheer-product-visual{border-color:#00b894;background:#f0fcf8}
+@media(prefers-reduced-motion:reduce){.service-dock .service-dock-icon::before,.service-dock .service-dock-icon svg{transition:none!important}}
