@@ -461,3 +461,10 @@ body:has(.service-dock),.site-shell:has(.service-dock),.site-shell:has(.service-
 
 /* 31.73: additional 14px visual search shift; surrounding layout stays fixed. */
 .site-shell:has(.service-dock) .product-header .product-head-search .product-search{position:relative;top:14px}
+
+/* 31.74: remove counter row and tighten NOW section spacing. */
+.now-module{padding-top:14px;padding-bottom:14px}
+.now-module .module-header{margin-bottom:12px}
+.now-module .module-desc{margin-top:6px;margin-bottom:0}
+.now-module .now-rank-set{row-gap:0}
+.now-module .now-rank-pages,.now-module .now-rank-nav{grid-row:1}
