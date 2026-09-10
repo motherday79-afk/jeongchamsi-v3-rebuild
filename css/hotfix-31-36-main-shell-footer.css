@@ -598,3 +598,12 @@ body:has(.service-dock),.site-shell:has(.service-dock),.site-shell:has(.service-
 @media(min-width:1024.01px){
  .home-promo-row>.home-wide-banner{height:auto;min-height:0;max-height:none;align-self:stretch;aspect-ratio:auto}
 }
+
+/* 31.87: main-board titles at 75% of their previous responsive sizes; retain weight. */
+.product-home-wrap .main-column>.module .module-header h2{font-size:18.75px}
+.product-home-wrap .main-column>.cheer-shop .cheer-shop-heading h2{font-size:16.5px}
+@media(max-width:1024px){.product-home-wrap .main-column>.module .module-header h2{font-size:16.5px}}
+@media(max-width:700px){
+ .product-home-wrap .main-column>.module .module-header h2{font-size:15px}
+ .product-home-wrap .main-column>.cheer-shop .cheer-shop-heading h2{font-size:12.75px}
+}
