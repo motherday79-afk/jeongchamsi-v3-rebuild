@@ -786,3 +786,86 @@ html.desktop-home-fixed .product-home-wrap .home-promo-row,html.desktop-home-fix
 .sidebar-editorial .sidebar-rising-item:hover .sidebar-rising-copy b,.sidebar-editorial .sidebar-news-item:hover .sidebar-news-copy>b{color:#008d73}
 .sidebar-editorial .sidebar-keyword-item:hover{background:#dff7ed}
 @media(max-width:360px){.sidebar-editorial .sidebar-rising-item{gap:6px;grid-template-columns:16px 32px minmax(0,1fr) auto}.sidebar-editorial .sidebar-rising-avatar{width:32px;height:32px}.sidebar-editorial .sidebar-rising-change{font-size:12px;padding:4px 5px}.sidebar-editorial .sidebar-rising-change small{display:none}.sidebar-editorial .sidebar-news-item{grid-template-columns:86px minmax(0,1fr);gap:10px}.sidebar-editorial .sidebar-news-thumb{width:86px}}
+
+/* 31.95: phone/fold home order and readable mobile proportions. */
+@media(max-width:1024px){
+ .site-shell:has(.service-dock)>.page-wrap{width:calc(100% - 24px);max-width:860px;margin-left:auto;margin-right:auto}
+ .site-shell:has(.service-dock) .product-home-wrap{width:100%;margin:4px auto 36px}
+ .product-home-wrap .home-balanced-layout{gap:14px;margin-top:12px}
+ .product-home-wrap .home-balanced-layout #itsme{order:10}
+ .product-home-wrap .home-balanced-layout #now{order:20}
+ .product-home-wrap .home-balanced-layout #national-eval{order:30}
+ .product-home-wrap .home-balanced-layout .home-cage-preview{order:40;height:clamp(190px,46vw,260px);min-height:190px;border-radius:12px}
+ .product-home-wrap .home-balanced-layout #cheer-shop{order:50}
+ .product-home-wrap .home-balanced-layout #column{order:60}
+ .product-home-wrap .home-balanced-layout .side-home-banner{order:70}
+ .product-home-wrap .home-balanced-layout #compare{order:80}
+ .product-home-wrap .home-balanced-layout #community{order:90}
+ .product-home-wrap .home-balanced-layout #poll{order:100}
+ .product-home-wrap .home-balanced-layout #generation-president{order:110}
+ .product-home-wrap .home-balanced-layout #academy{order:120}
+ .product-home-wrap .home-balanced-layout .side-recent{order:130}
+ .product-home-wrap .home-balanced-layout .side-rising{order:140}
+ .product-home-wrap .home-balanced-layout .side-news{order:150}
+ .product-home-wrap .home-balanced-layout .side-keywords{order:160}
+ .service-dock>.service-dock-row{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 4px;overflow:visible}
+ .service-dock>.service-dock-row>.service-dock-item,.service-dock>.service-dock-row>.service-dock-more{flex:0 0 calc((100% - 20px)/6);width:calc((100% - 20px)/6);min-width:0;gap:2px}
+ .service-dock .service-dock-label,.service-dock .service-dock-more small{font-size:13px;line-height:19px;font-weight:400}
+ .service-dock .service-dock-icon svg{width:25px;height:25px}
+ .site-shell:has(.service-dock) .product-header .product-head-search{width:calc(100% - 24px);padding-top:4px}
+ .site-shell:has(.service-dock) .product-header .product-head-search .product-search{height:44px}
+ .site-shell:has(.service-dock) .product-header .product-head-search .product-search input{font-size:16px}
+ .product-home-wrap .home-balanced-layout .module{padding:16px;border-radius:12px}
+ .product-home-wrap .home-balanced-layout .module-header{gap:10px;margin-bottom:12px;align-items:flex-start}
+ .product-home-wrap .home-balanced-layout .module-header>div{min-width:0;flex:1}
+ .product-home-wrap .main-column>.module :is(.module-header,.cheer-shop-heading) h2{font-size:17px;line-height:24px;font-weight:700;letter-spacing:-.4px;word-break:keep-all;overflow-wrap:anywhere}
+ .product-home-wrap .home-balanced-layout .module-desc{font-size:13px;line-height:20px;word-break:keep-all;overflow-wrap:anywhere}
+ .product-home-wrap .home-balanced-layout .module-header .eyebrow{font-size:10px;line-height:15px;letter-spacing:.08em}
+ .product-home-wrap .module-icon-action{flex:none;width:36px;height:36px}
+ .product-home-wrap #itsme.itsme-home-module .itsme-card:nth-child(n){min-height:46px}
+ .product-home-wrap #itsme.itsme-home-module .itsme-card b{font-size:14px;line-height:21px}
+ .product-home-wrap .rank-top-card{height:auto;min-height:162px}
+ .product-home-wrap .rank-top-copy{grid-template-rows:minmax(23px,auto) minmax(17px,auto) minmax(34px,auto);gap:1px}
+ .product-home-wrap .rank-top-copy b{font-size:16px;line-height:23px}
+ .product-home-wrap .rank-top-copy .rank-top-party,.product-home-wrap .rank-top-copy .rank-top-region{font-size:12px;line-height:17px}
+ .product-home-wrap .home-balanced-layout .home-wide-banner{height:auto;min-height:0;max-height:none;aspect-ratio:12/5}
+ .product-home-wrap .home-balanced-layout .side-home-banner{height:auto;min-height:0;max-height:none;aspect-ratio:4/3;padding:0;overflow:hidden}
+ .product-home-wrap .home-balanced-layout .side-home-banner>a,.product-home-wrap .home-balanced-layout .side-home-banner picture{display:block;width:100%;height:100%}
+ .product-home-wrap .home-balanced-layout .side-home-banner img{width:100%;height:100%;aspect-ratio:auto!important;object-fit:contain;background:#fff}
+ .product-home-wrap .home-balanced-layout #cheer-shop{height:auto!important;min-height:0;gap:12px}
+ .product-home-wrap #cheer-shop .cheer-shop-heading{align-items:flex-start;flex-wrap:wrap}
+ .product-home-wrap #cheer-shop .cheer-product-grid{flex:none}
+ .product-home-wrap #cheer-shop .cheer-product-visual{flex:none;height:180px}
+ .product-home-wrap #cheer-shop .cheer-product-card>b{font-size:12px;line-height:18px;white-space:normal;word-break:keep-all}
+ .product-home-wrap .compare-operating-entry{display:flex;flex-direction:column;align-items:stretch;gap:14px;padding:16px;min-width:0}
+ .product-home-wrap .compare-operating-entry h3{font-size:17px;line-height:25px;word-break:keep-all}
+ .product-home-wrap .compare-operating-entry p,.product-home-wrap .compare-operating-entry em{font-size:13px;line-height:20px;white-space:normal}
+ .product-home-wrap .community-row{grid-template-columns:24px minmax(0,1fr);gap:8px}
+ .product-home-wrap .community-title,.product-home-wrap .column-card-copy>b{font-size:14px;line-height:21px}
+ .product-home-wrap .community-stats{grid-column:2;font-size:11px}
+ .product-home-wrap .promo-account-card .badge-profile-heading b{font-size:15px}
+ .product-home-wrap .promo-account-card .member-activity-grid b{font-size:16px;line-height:23px}
+ .product-home-wrap .promo-account-card .member-activity-grid>a>span:last-child{font-size:11px;line-height:16px;white-space:normal;word-break:keep-all}
+ .product-home-wrap .promo-account-card .member-wallet-row>a:first-child>span{font-size:12px}
+ .product-home-wrap .home-cage-title-row>strong{font-size:14px;line-height:22px}
+}
+@media(max-width:600px){
+ .product-home-wrap #national-eval .national-eval-dual{grid-template-columns:minmax(0,1fr)}
+ .product-home-wrap #poll .poll-main{grid-template-columns:minmax(0,1fr);gap:14px}
+ .product-home-wrap #poll .poll-question h3{font-size:17px;line-height:25px}
+ .product-home-wrap #poll .poll-vote-panel{padding:10px}
+ .product-home-wrap #academy .academy-layout{grid-template-columns:minmax(0,1fr)}
+ .product-home-wrap #academy .schedule-row{grid-template-columns:48px minmax(0,1fr);gap:8px}
+ .product-home-wrap #academy .schedule-row>button{grid-column:2;justify-self:start;min-height:34px}
+ .product-home-wrap #cheer-shop .cheer-product-grid{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory}
+ .product-home-wrap #cheer-shop .cheer-product-card{flex:0 0 calc((100% - 10px)/2);scroll-snap-align:start}
+}
+@media(min-width:601px) and (max-width:1024px){
+ .service-dock>.service-dock-row{max-width:658px;margin:0 auto;gap:2px;flex-wrap:nowrap}
+ .service-dock>.service-dock-row>.service-dock-item,.service-dock>.service-dock-row>.service-dock-more{flex:1 1 0;width:auto;min-width:0}
+ .product-home-wrap .home-balanced-layout .home-wide-banner{aspect-ratio:4/1}
+ .product-home-wrap .home-balanced-layout .side-home-banner{aspect-ratio:3/1}
+ .product-home-wrap #itsme.itsme-home-module .itsme-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .product-home-wrap #cheer-shop .cheer-product-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));overflow:visible}
+ .product-home-wrap #cheer-shop .cheer-product-visual{height:160px}
+}
