@@ -32,8 +32,8 @@
 /* Neutral brand surfaces — no single political hue owns the page */
 body{background:#f4f6f7;color:var(--ps-ink)}
 .product-header,.product-service-bar{background:#fff}
-.product-wordmark b{color:#087f74}
-.product-primary-nav a:hover,.product-service-inner>span{color:#087f74}
+.product-wordmark b{color:#00b894}
+.product-primary-nav a:hover,.product-service-inner>span{color:#00b894}
 .product-search{background:#f6f7f7;border-color:#e0e3e5}
 .product-menu:hover,.product-account-tools button:hover{background:#f4f5f6}
 
@@ -45,7 +45,7 @@ body{background:#f4f6f7;color:var(--ps-ink)}
 .product-hero-kicker em,.product-hero-proof{color:#c9d5d9}
 .product-hero-live{box-shadow:0 24px 55px rgba(18,30,36,.20)}
 .live-dot{background:var(--jc-teal);box-shadow:0 0 0 5px rgba(22,169,157,.11)}
-.hero-live-head em{background:var(--jc-teal-soft);color:#087d73}
+.hero-live-head em{background:var(--jc-teal-soft);color:#00b894}
 .hero-rank-stack button:first-child .hero-rank-no{color:var(--jc-blue)}
 .hero-rank-stack button:nth-child(2) .hero-rank-no{color:var(--jc-red)}
 .hero-rank-stack button:nth-child(3) .hero-rank-no{color:var(--jc-orange)}
@@ -61,7 +61,7 @@ body{background:#f4f6f7;color:var(--ps-ink)}
 .launcher-choice{background:var(--jc-red-soft);border-color:#f5dadd}
 .launcher-choice .launcher-no,.launcher-choice .launcher-cue{color:var(--jc-red)}
 .launcher-itsme{background:var(--jc-teal-soft);border-color:#d3eeea}
-.launcher-itsme .launcher-no,.launcher-itsme .launcher-cue{color:#0b8f84}
+.launcher-itsme .launcher-no,.launcher-itsme .launcher-cue{color:#00b894}
 .product-launcher-grid .launcher-card:nth-child(4){background:var(--jc-orange-soft);border-color:#f2e0ca}
 .product-launcher-grid .launcher-card:nth-child(4) .launcher-no,.product-launcher-grid .launcher-card:nth-child(4) .launcher-cue{color:#c87627}
 .product-launcher-grid .launcher-card:nth-child(5){background:var(--jc-navy-soft);border-color:#dfe3f3}
@@ -70,7 +70,7 @@ body{background:#f4f6f7;color:var(--ps-ink)}
 .product-launcher-grid .launcher-card:nth-child(6) .launcher-no,.product-launcher-grid .launcher-card:nth-child(6) .launcher-cue{color:#4f833f}
 
 /* Main modules — color is a navigation aid, not decoration */
-.eyebrow{color:#087f74}
+.eyebrow{color:#00b894}
 
 #poll{background:var(--jc-red-soft);border-color:#f1d7da}
 #poll .poll-status{color:#c63d49}
@@ -116,7 +116,7 @@ body{background:#f4f6f7;color:var(--ps-ink)}
 .keyword-grid span:nth-child(6n+1){background:var(--jc-blue-soft);color:#365aa9}
 .keyword-grid span:nth-child(6n+2){background:var(--jc-red-soft);color:#b94750}
 .keyword-grid span:nth-child(6n+3){background:var(--jc-orange-soft);color:#ae6d2f}
-.keyword-grid span:nth-child(6n+4){background:var(--jc-teal-soft);color:#217d75}
+.keyword-grid span:nth-child(6n+4){background:var(--jc-teal-soft);color:#00b894}
 .keyword-grid span:nth-child(6n+5){background:var(--jc-navy-soft);color:#4a5c9d}
 .keyword-grid span:nth-child(6n){background:var(--jc-green-soft);color:#5c7d52}
 .footer{background:#20262b}
@@ -156,7 +156,7 @@ a,.more-btn{--jc-link:#087f74}
   border-color:#e5e8ea;
 }
 .product-launcher .launcher-itsme .launcher-no,
-.product-launcher .launcher-itsme .launcher-cue{color:#0b8f84}
+.product-launcher .launcher-itsme .launcher-cue{color:#00b894}
 .product-launcher .launcher-generation .launcher-no,
 .product-launcher .launcher-generation .launcher-cue,
 .product-launcher-grid .launcher-card:nth-child(5) .launcher-no,
@@ -523,7 +523,7 @@ a,.more-btn{--jc-link:#087f74}
   border-color:#e5e9ec;
   color:var(--ps-ink);
 }
-#generation-president .eyebrow{color:#087f74}
+#generation-president .eyebrow{color:#00b894}
 #generation-president .module-desc{color:#6f787d}
 #generation-president .more-btn{color:#535f5b}
 #generation-president .generation-intro{
@@ -534,7 +534,7 @@ a,.more-btn{--jc-link:#087f74}
 }
 #generation-president .generation-mark{
   background:#eef6f3;
-  color:#087f74;
+  color:#00b894;
 }
 #generation-president .generation-intro button{
   background:var(--ps-blue);
@@ -658,7 +658,7 @@ a,.more-btn{--jc-link:#087f74}
    Scope lock: National Evaluation + Compare + NOW Rank only. */
 
 /* NATIONAL EVALUATION — brand mint in the label/title signature, color only on the score. */
-#national-eval .eyebrow{color:#087f74}
+#national-eval .eyebrow{color:#00b894}
 #national-eval .module-header h2{
   display:inline-block;
   position:relative;
@@ -682,7 +682,7 @@ a,.more-btn{--jc-link:#087f74}
 #national-eval .eval-score strong{color:#568447}
 
 /* COMPARE — neutral shell; spectrum belongs to the four data dimensions only. */
-#compare .eyebrow{color:#087f74}
+#compare .eyebrow{color:#00b894}
 #compare .compare-layout{
   background:#fff;
   border-color:#e3e7e9;
@@ -858,7 +858,7 @@ a,.more-btn{--jc-link:#087f74}
 .product-home-wrap .product-hero-participation .hero-participation-hub{display:grid;grid-template-rows:1fr 1fr;gap:10px;align-self:stretch;min-height:0}
 .product-home-wrap .product-hero-participation .hero-hub-card{width:100%;min-height:0;padding:18px 19px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;border:1px solid #e7ecea;border-radius:16px;background:#fff;text-align:left;cursor:pointer;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
 .product-home-wrap .product-hero-participation .hero-hub-card:hover{transform:translateY(-1px);border-color:#b9dcd2;box-shadow:0 8px 22px rgba(23,42,36,.08)}
-.product-home-wrap .product-hero-participation .hero-hub-label{font-size:9px;font-weight:950;letter-spacing:.09em;color:#0b8b73}
+.product-home-wrap .product-hero-participation .hero-hub-label{font-size:9px;font-weight:950;letter-spacing:.09em;color:#00b894}
 .product-home-wrap .product-hero-participation .hero-hub-partners .hero-hub-label{color:#8a5d08}
 .product-home-wrap .product-hero-participation .hero-hub-card strong{display:block;margin-top:6px;color:#17231f;font-size:16px;line-height:1.35;letter-spacing:-.35px}
 .product-home-wrap .product-hero-participation .hero-hub-card p{margin:5px 0 0;color:#76827e;font-size:11px;line-height:1.5}

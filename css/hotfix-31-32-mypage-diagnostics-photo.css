@@ -6,7 +6,7 @@
 .jcs-persistence-32 svg{overflow:visible}.jcs-persistence-32 .jcs-persistence-y-label{fill:#7c8883;font-size:9px}.jcs-persistence-32 .jcs-persistence-bar{fill:#c7d8d2}.jcs-persistence-32 .jcs-persistence-trend{fill:none;stroke:var(--jcs-navy);stroke-width:3;stroke-linejoin:round}.jcs-persistence-32 .jcs-persistence-peak{fill:var(--jcs-gold);stroke:#fff;stroke-width:2}
 @media(max-width:760px){.jcs-local-split-32{grid-template-columns:1fr!important}.jcs-local-response-matrix{min-height:250px}.jcs-support-index-note{align-items:flex-start;flex-direction:column}}
 [data-photo-storage-status]{display:block;margin-top:5px;color:#71807a;font-size:10px;line-height:1.4}
-[data-photo-storage-status][data-state="ready"]{color:#26745b}
+[data-photo-storage-status][data-state="ready"]{color:#00b894}
 [data-photo-storage-status][data-state="missing"]{color:#a6414d}
 
 /* 31.37 · approved brand grid: equal six panels, distinct evidence visuals. */

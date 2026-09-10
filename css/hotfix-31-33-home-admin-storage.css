@@ -51,7 +51,7 @@
 #community .community-copy em{flex:0 0 auto;margin:0;white-space:nowrap}
 
 [data-banner-storage-status]{padding:8px 10px;border-radius:9px;background:#f5f7f6;color:#61706b!important}
-[data-banner-storage-status][data-state="ready"]{background:#edf8f4;color:#08745e!important}
+[data-banner-storage-status][data-state="ready"]{background:#edf8f4;color:#00b894!important}
 [data-banner-storage-status][data-state="missing"]{background:#fff2f3;color:#b43d49!important}
 
 @media(max-width:760px){

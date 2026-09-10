@@ -24,7 +24,7 @@
 
 .module-icon-action{display:grid;place-items:center;flex:0 0 38px;width:38px;height:38px;margin-top:1px;border:1px solid #dfe7e4;border-radius:12px;background:#fff;color:#425a52}
 .module-icon-action svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-@media(hover:hover){.module-icon-action:hover{border-color:#bfcfc9;background:#f6faf8;color:#087863;box-shadow:0 8px 18px rgba(20,60,50,.09)}}
+@media(hover:hover){.module-icon-action:hover{border-color:#bfcfc9;background:#f6faf8;color:#00b894;box-shadow:0 8px 18px rgba(20,60,50,.09)}}
 
 @media(hover:hover){
   .side-home-banner:hover,.side-home-banner a:hover,.side-recent:hover,.side-news:hover,.side-rising:hover,.side-keywords:hover,.side-participation-account:hover{transform:none!important;border-color:var(--ps-line,#e1e7e5)!important;box-shadow:none!important}
@@ -36,7 +36,7 @@
 .side-participation-account .participation-account-row button{font-size:calc(var(--fs-meta,12px) - 2px)!important}
 
 .footer.footer-expanded{display:grid;grid-template-columns:auto 1fr;align-items:start;gap:10px 20px;min-height:0;max-width:1180px;margin:0 auto;padding:18px 16px 20px}
-.footer-brand{display:flex;align-items:baseline;gap:9px}.footer-brand>b{color:#0a7868}.footer-brand>span{color:#7b8783;font-size:11px}
+.footer-brand{display:flex;align-items:baseline;gap:9px}.footer-brand>b{color:#00b894}.footer-brand>span{color:#7b8783;font-size:11px}
 .footer-links{display:flex;justify-content:flex-end;gap:18px}.footer-links a{color:#4e5d58;font-size:12px;text-decoration:none}
 .footer-business-grid{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:3px 0;padding-top:8px;border-top:1px solid #dfe6e3}
 .footer-business-item{display:inline-flex;align-items:baseline;gap:5px;color:#687570;font-size:11px;line-height:1.45;max-width:100%;overflow-wrap:anywhere}.footer-business-item b{color:#687570;font-size:11px;font-weight:500;margin:0;flex-shrink:0}.footer-business-item+.footer-business-item:before{content:"|";color:#b5bfba;margin:0 8px}.footer-business-item span,.footer-business-item a{font-size:11px}.footer-business-item a{color:inherit;text-underline-offset:3px}
@@ -88,7 +88,7 @@
 }
 .service-dock-tone-blue .service-dock-icon{color:#2474c8;background:#f4f8fd}
 .service-dock-tone-red .service-dock-icon{color:#d74455;background:#fff5f6}
-.service-dock-tone-teal .service-dock-icon{color:#078b79;background:#f2fbf8}
+.service-dock-tone-teal .service-dock-icon{color:#00b894;background:#f2fbf8}
 .service-dock-tone-orange .service-dock-icon{color:#d26b1e;background:#fff8f2}
 .service-dock-tone-navy .service-dock-icon{color:#335cae;background:#f5f7fd}
 .service-dock-tone-green .service-dock-icon{color:#4d893c;background:#f5faf2}
@@ -96,7 +96,7 @@
 
 .footer-business-row{display:flex;flex-wrap:wrap;gap:6px 18px}.admin-tabs{overflow-x:auto;white-space:nowrap}.admin-tabs button{flex:none}
 
-.trending-grid{grid-template-columns:repeat(5,minmax(0,1fr));margin:20px 0}.rising-change{font-size:10px;color:#b64043}.my-referral{display:flex;flex-wrap:wrap;align-items:center;gap:12px}.my-referral strong{font-size:24px;color:#165c51}.my-referral small{width:100%}
+.trending-grid{grid-template-columns:repeat(5,minmax(0,1fr));margin:20px 0}.rising-change{font-size:10px;color:#b64043}.my-referral{display:flex;flex-wrap:wrap;align-items:center;gap:12px}.my-referral strong{font-size:24px;color:#00b894}.my-referral small{width:100%}
 @media(max-width:1024px){.trending-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:560px){.trending-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
@@ -213,7 +213,7 @@
 .politician-compare-page .jcs-compare-topic-axis .jcs-no{color:#87671d}
 .politician-compare-page .jcs-periods button{color:#294858;background:#fff;border-color:#d1dde4}
 .politician-compare-page .jcs-periods button[aria-pressed=true]{background:#102a3b;color:#fff;border-color:#102a3b}
-.politician-compare-page .jcs-cmp-frames .is-positive{color:#17634b}.politician-compare-page .jcs-cmp-frames .is-negative{color:#93364b}.politician-compare-page .jcs-cmp-frames .is-neutral{color:#50616d}
+.politician-compare-page .jcs-cmp-frames .is-positive{color:#00b894}.politician-compare-page .jcs-cmp-frames .is-negative{color:#93364b}.politician-compare-page .jcs-cmp-frames .is-neutral{color:#50616d}
 @media(max-width:1024px){.home-wide-banner{height:auto;aspect-ratio:4/3}.home-wide-banner.home-banner-empty{min-height:180px;aspect-ratio:auto}.home-wide-banner img{height:auto;aspect-ratio:4/3;object-fit:contain}.product-home-wrap .product-hero-participation{grid-template-columns:1fr;gap:14px;padding:18px!important}}
 @media(prefers-reduced-motion:reduce){.service-dock-icon,.service-dock-more>span{transition:none!important;transform:none!important}}
 
@@ -403,7 +403,7 @@ dialog.jc49{width:min(640px,calc(100% - 24px));max-height:85vh;overflow:auto;pad
 .home-promo-row .promo-account-card .side-badge-showcase{--showcase-height:59px;--showcase-crest-width:32px;--showcase-crest-height:37px;gap:8px}
 .badge-profile-heading{display:flex;align-items:center;gap:8px;justify-content:space-between;min-width:0}
 .badge-profile-heading>b{min-width:0;overflow-wrap:anywhere}
-.badge-profile-heading>button{flex:none;white-space:nowrap;border:1px solid #d3e1dd;background:#fff;color:#174e43;border-radius:7px;padding:5px 7px;font-size:11px;cursor:pointer}
+.badge-profile-heading>button{flex:none;white-space:nowrap;border:1px solid #d3e1dd;background:#fff;color:#00b894;border-radius:7px;padding:5px 7px;font-size:11px;cursor:pointer}
 .home-promo-row .promo-account-card .badge-showcase-main p{font-size:9px;margin-top:5px}
 .home-promo-row .promo-account-card:has(.participation-account-row) .side-badge-showcase{--showcase-height:43px;--showcase-crest-width:24px;--showcase-crest-height:28px;gap:5px}
 .home-promo-row .promo-account-card .participation-account-row{display:flex;align-items:center;justify-content:space-between;margin:0 0 6px;font-size:11px}
@@ -448,3 +448,10 @@ body:has(.service-dock),.site-shell:has(.service-dock),.site-shell:has(.service-
 .service-dock .service-dock-item,.service-dock .service-dock-more{flex-basis:66px;width:66px;min-width:66px}
 .service-dock .service-dock-row{gap:2px}
 @media(max-width:560px){.product-header .product-head-search .product-search{height:40px}}
+
+/* 31.71: original logo silhouette in brand mint; reserved overflow entries. */
+.product-header .product-head-search .product-search{display:grid;grid-template-columns:42px minmax(0,1fr) 42px;align-items:center;border-color:#00b894}
+.product-header .product-head-search .search-brand-icon{width:30px;height:30px;margin-left:10px;display:block}
+.product-header .product-head-search .product-search input{min-width:0;width:100%;padding-left:10px}
+.product-header .product-head-search .product-search button{width:42px;min-width:42px}
+.eyebrow,.product-wordmark b,.service-dock-tone-teal,.drawer-tone-teal .drawer-service-icon{color:#00b894}
