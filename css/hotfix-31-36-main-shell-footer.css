@@ -468,3 +468,6 @@ body:has(.service-dock),.site-shell:has(.service-dock),.site-shell:has(.service-
 .now-module .module-desc{margin-top:6px;margin-bottom:0}
 .now-module .now-rank-set{row-gap:0}
 .now-module .now-rank-pages,.now-module .now-rank-nav{grid-row:1}
+
+/* 31.75: reserved empty module follows the live IT’S ME box height. */
+.home-empty-module{box-sizing:border-box;min-height:0;padding:0;pointer-events:none}

@@ -181,4 +181,11 @@ export function setupDetail47Interactions(root=document){
   block.addEventListener('click',select);block.addEventListener('keydown',select);
  }
 }
-export function setupLayoutInteractions(root=document,options={}){setupDrawer(root);setupLauncherExpansion(root);setupNowCarousel(root);setupLayoutNavigation(root);setupCompareSearch(root);setupPoliticianPhotoFallback(root);setupPoliticianAutocomplete(root,options.politicianSearch);setupDiagnosisInteractions(root);setupDetail47Interactions(root);setupFontScaleControl(root);}
+function setupEmptyHomeModule(root){
+  const source=root.querySelector('#itsme.itsme-home-module'),target=root.querySelector('[data-match-itsme-size]');
+  if(!source||!target)return;
+  const sync=()=>{target.style.height=source.offsetHeight+'px';};
+  sync();
+  if(globalThis.ResizeObserver){const observer=new ResizeObserver(()=>{if(!target.isConnected){observer.disconnect();return;}sync();});observer.observe(source);}
+}
+export function setupLayoutInteractions(root=document,options={}){setupEmptyHomeModule(root);setupDrawer(root);setupLauncherExpansion(root);setupNowCarousel(root);setupLayoutNavigation(root);setupCompareSearch(root);setupPoliticianPhotoFallback(root);setupPoliticianAutocomplete(root,options.politicianSearch);setupDiagnosisInteractions(root);setupDetail47Interactions(root);setupFontScaleControl(root);}
