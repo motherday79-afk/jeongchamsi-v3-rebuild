@@ -1,7 +1,7 @@
-import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.84';
+import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.85';
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.56';
-import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.84';
-import { renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.84';
+import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.85';
+import { renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.85';
 import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.81';
 import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.61';
 import { createContentService, loadNavigationDashboard } from './core/content.js?v=0.0.31.83';
@@ -9,10 +9,10 @@ import { createPoliticianService } from './core/politicians.js?v=0.0.31.56';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.61';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.56';
-import * as views from './views/stage1.js?v=0.0.31.84';
+import * as views from './views/stage1.js?v=0.0.31.85';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.56';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.56';
-import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.84';
+import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.85';
 import { renderPresidentPage } from './views/president.js?v=0.0.31.56';
 import { renderSearchPage } from './views/search-page.js?v=0.0.31.56';
 import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.31.56';
@@ -148,7 +148,7 @@ async function render({preserveScroll=false}={}){
   } else if(p[0]==='points') body=renderPointShop(await content.points(),session);
   else if(p[0]==='shop') body=p[1]?renderCheerProduct(p[1]):renderCheerShop();
   else if(p[0]==='about') body=views.renderAbout();
-  else if(p[0]==='support') body=views.renderSupport();
+  else if(p[0]==='support') body=renderPointShop(await content.points(),session);
   else if(['privacy','policy'].includes(p[0])) body=views.renderLegal(p[0]);
   else if(p[0]==='column') body=p[1]==='write'?views.renderBoardWrite('columns',session):p[1]?await views.renderBoardDetail('columns',p[1],content,session,dashboard):await views.renderBoard('columns',content,session);
   else if(p[0]==='community') body=p[1]==='write'?views.renderBoardWrite('community',session,session.authenticated?await content.myWallet().catch(()=>({ok:false})):{} ):p[1]?await views.renderBoardDetail('community',p[1],content,session,dashboard,r):await views.renderBoard('community',content,session,r);
@@ -195,7 +195,7 @@ async function render({preserveScroll=false}={}){
   restoreCageDraft();
   showCageFeedback();
   if(p[0]==='person'){recordRecentPolitician(document);tunePoliticianNarratives();if(session.user?.role==='admin')void updatePoliticianPhotoStorageStatus();}
-  if(!preserveScroll)window.scrollTo(0,0);
+  if(!preserveScroll){window.scrollTo(0,0);if(p[0]==='support'||p[0]==='points'&&new URLSearchParams(r.split('?')[1]||'').get('view')==='support'){const target=document.getElementById('jcs-support');target?.scrollIntoView({block:'start'});target?.querySelector('h2')?.focus({preventScroll:true});}}
   navigation?.cacheCurrent();
   if(p[0]==='admin')queueMicrotask(resumeAdminIntelligence);
 }

@@ -14,6 +14,8 @@ export const SERVICE_CATALOG = Object.freeze([
   { key:"trending", tone:"blue", label:"실시간 급상승 정치인", shortLabel:"급상승 정치인", description:"주목도가 빠르게 오른 정치인", href:"/trending", launcher:false }
 ]);
 const ICON_PATHS=Object.freeze({
+ cheer:`<path d="M12 20 4.8 13a4.7 4.7 0 0 1 6.6-6.7l.6.6.6-.6a4.7 4.7 0 0 1 6.6 6.7L12 20Z"/><path d="M12 2v1M3 4l1 1M21 4l-1 1"/>`,
+ donate:`<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M6 9h4M6 13h3M14 15l2 1 3-4M6 16h3"/>`,
  shop:`<path d="M4 10v10h16V10M3 10l2-6h14l2 6M3 10a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0M10 20v-6h4v6"/>`,
  requestPolitician:`<circle cx="10" cy="9" r="3"/><path d="M4 19v-2a5 5 0 0 1 8-4"/><circle cx="17" cy="16" r="3"/><path d="m19 18 3 3"/>`,
  partners:`<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V4h8v3M3 12h18M10 12v3h4v-3"/>`,
