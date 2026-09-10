@@ -869,3 +869,7 @@ html.desktop-home-fixed .product-home-wrap .home-promo-row,html.desktop-home-fix
  .product-home-wrap #cheer-shop .cheer-product-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));overflow:visible}
  .product-home-wrap #cheer-shop .cheer-product-visual{height:160px}
 }
+
+/* 31.96: native transparent brand marks, independent of SVG filter rendering. */
+.product-header :is(.header-brand-icon,.search-brand-icon),
+.product-header :is(.header-brand-icon,.search-brand-icon) path{fill:#00b894;stroke:none;filter:none;background:transparent}

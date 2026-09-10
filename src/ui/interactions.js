@@ -17,7 +17,7 @@ export function setupNowCarousel(root=document){
   const box=root.querySelector('[data-now-rank-carousel]');if(!box)return;
   for(const set of box.querySelectorAll('[data-now-rank-set]')){
     const pages=[...set.querySelectorAll('[data-now-rank-page]')];if(!pages.length)continue;let startIndex=0;
-    const desktopSize=Number(set.dataset.pageSize)||10,total=Number(set.dataset.total)||pages.reduce((sum,row)=>sum+row.children.length,0),isMobile=()=>!globalThis.document?.documentElement?.classList.contains('desktop-home-fixed')&&globalThis.matchMedia?.('(max-width:1024px), (hover:none) and (pointer:coarse)')?.matches===true;
+    const desktopSize=Number(set.dataset.pageSize)||10,total=Number(set.dataset.total)||pages.reduce((sum,row)=>sum+row.children.length,0),isMobile=()=>!globalThis.document?.documentElement?.classList.contains('desktop-home-fixed')&&globalThis.matchMedia?.('(max-width:1024px)')?.matches===true;
     const paint=()=>{const mobile=isMobile();if(mobile){pages.forEach(page=>{page.hidden=false;[...page.children].forEach(card=>{card.hidden=false;});});set.dataset.page='0';return;}const containerIndex=Math.floor(startIndex/desktopSize);pages.forEach((page,index)=>{page.hidden=index!==containerIndex;[...page.children].forEach(card=>{card.hidden=false;});});set.dataset.page=String(containerIndex);const desktopStatus=set.querySelector('[data-now-rank-status="desktop"]');if(desktopStatus)desktopStatus.textContent=nowRankRangeLabel(containerIndex,desktopSize,total);};
     const move=direction=>{if(isMobile())return;const maxStart=Math.max(0,Math.ceil(total/desktopSize)-1)*desktopSize;startIndex=direction>0?(startIndex>=maxStart?0:startIndex+desktopSize):(startIndex<=0?maxStart:startIndex-desktopSize);paint();};
     set.querySelector('[data-now-rank-prev]')?.addEventListener('click',()=>move(-1));
@@ -35,7 +35,7 @@ export function setupLauncherExpansion(root=document){
   const primary=[...main.querySelectorAll('.service-dock-item')],additional=[...extra.querySelectorAll('.service-dock-item')],items=[...primary,...additional].filter(item=>!item.hasAttribute('data-dock-more-only')),reserved=additional.filter(item=>item.hasAttribute('data-dock-more-only'));
   const setOpen=open=>{panel.hidden=!open;toggle.setAttribute('aria-expanded',String(open));toggle.setAttribute('aria-label',open?'전체 서비스 접기':'전체 서비스 펼치기');const cue=toggle.querySelector('span');if(cue)cue.textContent=open?'−':'···';};
   const fit=()=>{
-    const mobile=!globalThis.document?.documentElement?.classList.contains('desktop-home-fixed')&&globalThis.matchMedia?.('(max-width:1024px), (hover:none) and (pointer:coarse)')?.matches===true;
+    const mobile=!globalThis.document?.documentElement?.classList.contains('desktop-home-fixed')&&globalThis.matchMedia?.('(max-width:1024px)')?.matches===true;
     const count=mobile?primary.length:Math.min(items.length,serviceDockVisibleCount(main.clientWidth,items.length+reserved.length));
     const focused=main.ownerDocument?.activeElement;
     items.forEach((item,index)=>{if(index<count)main.insertBefore(item,toggle);else extra.append(item);});
@@ -210,17 +210,42 @@ export function desktopHomeMedia(query,width=1312){
  return String(query).replace(/\((min|max)-width\s*:\s*([\d.]+)px\)/gi,(_,bound,value)=>{
   const matches=bound.toLowerCase()==='min'?width>=Number(value):width<=Number(value);
   return matches?'(min-width: 0px)':'(max-width: 0px)';
- });
+ }).replace(/\(hover\s*:\s*none\)|\(pointer\s*:\s*coarse\)/gi,'(max-width: 0px)');
+}
+// Browser desktop requests advertise a desktop user agent even on touch hardware.
+// Input precision controls interaction affordances, not the requested page layout.
+export function requestsDesktopHome(agent='',mobileHint,mouseFallback=false){
+ const ua=String(agent||'');
+ if(/Android|iPhone|iPad|iPod|Mobile|Windows Phone/i.test(ua))return false;
+ if(/Windows NT|X11|Macintosh|CrOS|Linux x86_64/i.test(ua))return true;
+ if(mobileHint===true)return false;
+ return ua?mobileHint===false||mouseFallback:mouseFallback;
 }
 const homeMediaControllers=new WeakMap();
 export function setupDesktopHomeViewport(root=document){
  if(!root.documentElement||!globalThis.matchMedia)return;
  let controller=homeMediaControllers.get(root);
  if(!controller){
-  const device=globalThis.matchMedia('(hover: hover) and (pointer: fine)'),originals=new Map();
-  const apply=()=>{
-   const active=device.matches&&!!root.querySelector('.product-home-wrap .service-dock');
+  const device=globalThis.matchMedia('(hover: hover) and (pointer: fine)'),originals=new Map(),sourceOriginals=new Map();
+  const viewport=root.querySelector('meta[name="viewport"]'),originalViewport=viewport?.getAttribute('content')||'width=device-width,initial-scale=1,viewport-fit=cover';
+  let lastActive=null;
+  const apply=(force=false)=>{
+   const nav=globalThis.navigator||{};
+   const active=!!root.querySelector('.product-home-wrap .service-dock')&&requestsDesktopHome(nav.userAgent,nav.userAgentData?.mobile,device.matches);
    root.documentElement.classList.toggle('desktop-home-fixed',active);
+   const nextViewport=active?'width=1312,initial-scale=1,viewport-fit=cover':originalViewport;
+   // Let a touch browser fit its requested desktop canvas instead of magnifying it.
+   const fittedViewport=active&&!device.matches?'width=1312,viewport-fit=cover':nextViewport;
+   if(viewport&&viewport.getAttribute('content')!==fittedViewport)viewport.setAttribute('content',fittedViewport);
+   if(!active){
+    for(const [source,media] of sourceOriginals)if(source.isConnected)source.media=media;
+    sourceOriginals.clear();
+   }else{
+    for(const source of sourceOriginals.keys())if(!source.isConnected)sourceOriginals.delete(source);
+    for(const source of root.querySelectorAll('.product-home-wrap picture source'))if(!sourceOriginals.has(source)){sourceOriginals.set(source,source.media);source.media='not all';}
+   }
+   if(active===lastActive&&!force)return;
+   lastActive=active;
    for(const [media,original] of originals)media.mediaText=original;
    originals.clear();
    if(!active)return;
@@ -230,7 +255,9 @@ export function setupDesktopHomeViewport(root=document){
   };
   controller={apply};homeMediaControllers.set(root,controller);
   device.addEventListener?.('change',()=>{apply();refreshFontScale(root);});
-  root.addEventListener('load',event=>{if(event.target?.tagName==='LINK'&&event.target.rel==='stylesheet')apply();},true);
+  globalThis.addEventListener?.('pageshow',()=>apply());
+  globalThis.addEventListener?.('resize',()=>apply());
+  root.addEventListener('load',event=>{if(event.target?.tagName==='LINK'&&event.target.rel==='stylesheet')apply(true);},true);
  }
  controller.apply();
 }
