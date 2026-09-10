@@ -620,3 +620,12 @@ body:has(.service-dock),.site-shell:has(.service-dock),.site-shell:has(.service-
 @media(max-width:700px){
  .product-home-wrap .main-column>.module :is(.module-header,.cheer-shop-heading) h2{font-size:12.75px}
 }
+
+/* 31.90: desktop home proportions matched to the supplied portal reference. */
+@media(min-width:1024.01px){
+ .site-shell:has(.service-dock)>.page-wrap{width:min(1280px,calc(100% - 32px))}
+ .site-shell:has(.service-dock) .product-home-wrap{width:100%}
+ .site-shell:has(.service-dock) .product-head-main{width:min(1280px,calc(100% - 32px))}
+ .site-shell:has(.service-dock) .footer.footer-expanded{max-width:1280px}
+ .product-home-wrap .home-promo-row,.product-home-wrap .product-content-grid{grid-template-columns:minmax(0,1fr) minmax(0,32.8125%);column-gap:28px}
+}
