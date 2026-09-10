@@ -9,6 +9,8 @@ function createRemoteContentService(){
   const readDomain=async domain=>{const x=await request(`content?domain=${encodeURIComponent(domain)}`);const data=x.ok?x.data:null;if(data)readCache.set(domain,data);return data;};
   return {
     async points(){return request('points');},
+    async myWallet(){return request('points?wallet=1');},
+    async memberSummary(){return request('user/dashboard?summary=1');},
     async pointAction(input){return request('points',{method:'POST',body:JSON.stringify(input)});},
     async readDomain(domain){return (await readDomain(domain))||{items:[]};},
     peekDomain(domain){return readCache.get(domain);},
@@ -83,7 +85,7 @@ export async function loadNavigationDashboard(parts,session,content){
  const empty={favoriteKeys:[],authoredPosts:[],favoritePosts:[],favoritePeople:[]};
  if(!session.authenticated)return empty;
  const [section,item]=parts;
- const full=section==='mypage'&&!['activity','badges'].includes(item);
+ const full=section==='mypage'&&!['activity','badges','points'].includes(item);
  const detail=section==='person'||(['column','community','news','itsme'].includes(section)&&item&&item!=='write');
  if(!full&&!detail)return empty;
  try{return {...empty,...await (full?content.memberDashboard():content.favoriteKeys())};}catch{return empty;}

@@ -1,15 +1,15 @@
-import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.80';
+import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.81';
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.56';
-import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.80';
-import { renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.80';
-import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.80';
+import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.81';
+import { renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.81';
+import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.81';
 import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.61';
-import { createContentService, loadNavigationDashboard } from './core/content.js?v=0.0.31.80';
+import { createContentService, loadNavigationDashboard } from './core/content.js?v=0.0.31.81';
 import { createPoliticianService } from './core/politicians.js?v=0.0.31.56';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.61';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.56';
-import * as views from './views/stage1.js?v=0.0.31.80';
+import * as views from './views/stage1.js?v=0.0.31.81';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.56';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.56';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.80';
@@ -120,7 +120,11 @@ async function render({preserveScroll=false}={}){
   const badgeStatusPromise=session.authenticated&&p[0]!=='admin'
     ? auth.recordBadgeVisit().then(result=>result?.status||auth.badgeStatus()).catch(()=>null)
     : Promise.resolve(null);
+  const wantsWallet=session.authenticated&&(!p.length||p[0]==='mypage'&&!['activity','badges'].includes(p[1]));
+  const walletPromise=wantsWallet?content.myWallet().catch(()=>({ok:false,error:'LOAD_FAILED'})):Promise.resolve(null);
+  const summaryPromise=!p.length&&session.authenticated?content.memberSummary().catch(()=>({ok:false,error:'LOAD_FAILED'})):Promise.resolve(null);
   const [badgeStatus,dashboard]=await Promise.all([p[0]==='mypage'?badgeStatusPromise:Promise.resolve(null),loadNavigationDashboard(p,session,content)]);
+  if(p[0]==='mypage'&&wantsWallet)dashboard.pointResult=await walletPromise;
   let body='';
   if(!p.length){
     const [memberCount,columns,community,itsmePosts,newsPosts,polls,generation,nationalEvaluation,academy,rankResult,homeBanner,trendingResult,keywordResult]=await Promise.all([
@@ -167,6 +171,7 @@ async function render({preserveScroll=false}={}){
   else if(p[0]==='join') body=views.renderJoin();
   else if(p[0]==='inquiry') body=p[1]==='write'?views.renderInquiryWrite(session):p[1]?await views.renderInquiryDetail(p[1],content,session):await views.renderInquiryBoard(content,session);
   else if(p[0]==='mypage'&&['activity','badges'].includes(p[1])) body=views.renderMyActivity(session,badgeStatus||{},r.includes('?')?`?${r.split('?')[1]}`:'');
+  else if(p[0]==='mypage'&&['points','comments'].includes(p[1])) body=views.renderMyPage(session,badgeStatus||{},dashboard,{section:p[1],search:r.includes('?')?`?${r.split('?')[1]}`:''});
   else if(p[0]==='mypage'&&p[1]==='posts') body=views.renderMyPage(session,badgeStatus||{},dashboard,{section:'authored',search:r.includes('?')?`?${r.split('?')[1]}`:''});
   else if(p[0]==='mypage'&&p[1]==='favorites'&&p[2]==='posts') body=views.renderMyPage(session,badgeStatus||{},dashboard,{section:'favorite-posts',search:r.includes('?')?`?${r.split('?')[1]}`:''});
   else if(p[0]==='mypage'&&p[1]==='favorites'&&p[2]==='politicians') body=views.renderMyPage(session,badgeStatus||{},dashboard,{section:'favorite-people'});
@@ -182,6 +187,10 @@ async function render({preserveScroll=false}={}){
     if(renderId!==renderSequence||route()!==r||!status)return;
     for(const mount of document.querySelectorAll('[data-badge-showcase-mount]'))mount.innerHTML=renderBadgeShowcase(status,mount.dataset.badgeMypage==='true');
   });
+  if(!p.length&&session.authenticated)void Promise.all([summaryPromise,walletPromise]).then(([summary,wallet])=>{
+    if(renderId!==renderSequence||route()!==r)return;
+    for(const mount of document.querySelectorAll('[data-member-summary-mount]'))mount.innerHTML=renderMemberSummary(summary,wallet);
+  });
   setupMemberBadgeManagers();
   showCageFeedback();
   if(p[0]==='person'){recordRecentPolitician(document);tunePoliticianNarratives();if(session.user?.role==='admin')void updatePoliticianPhotoStorageStatus();}
@@ -190,7 +199,7 @@ async function render({preserveScroll=false}={}){
   if(p[0]==='admin')queueMicrotask(resumeAdminIntelligence);
 }
 
-navigation=createNavigation({window,readSnapshot:()=>app.innerHTML,restoreSnapshot:markup=>{app.innerHTML=markup;},rebind:()=>{setupLayoutInteractions(document,{politicianSearch:(query,limit)=>politicians.search(query,limit)});setupMemberBadgeManagers();if(document.querySelector('.jc55'))queueMicrotask(()=>void render({preserveScroll:true}));if(pipelineActive())queueMicrotask(resumeAdminIntelligence);},onRoute:(_route,options)=>void render(options)});
+navigation=createNavigation({window,readSnapshot:()=>app.innerHTML,restoreSnapshot:markup=>{app.innerHTML=markup;},rebind:()=>{++renderSequence;const cachedRoute=parts(route());if(['mypage','points'].includes(cachedRoute[0]))queueMicrotask(()=>void render({preserveScroll:true}));else if(!cachedRoute.length)void refreshCachedMemberSummary();setupLayoutInteractions(document,{politicianSearch:(query,limit)=>politicians.search(query,limit)});setupMemberBadgeManagers();if(document.querySelector('.jc55'))queueMicrotask(()=>void render({preserveScroll:true}));if(pipelineActive())queueMicrotask(resumeAdminIntelligence);},onRoute:(_route,options)=>void render(options)});
 navigation.start();
 window.addEventListener('jcs:layout-route',event=>navigation.navigate(event.detail?.route||'/'));
 window.addEventListener('jcs:layout-search',event=>navigation.navigate(`/search?q=${encodeURIComponent(String(event.detail?.query||'').trim())}`));
@@ -377,3 +386,10 @@ document.addEventListener('click',async event=>{
 await render();
 
 document.addEventListener('change',event=>{const select=event.target;if(!select.matches('[data-point-form="order"] select[name=amount]'))return;const root=select.closest('.point-shop'),chosen=[...root.querySelectorAll('[data-point-package]')].find(b=>b.dataset.pointPackage===select.value);if(chosen)chosen.click();});
+
+async function refreshCachedMemberSummary(){
+ const seq=renderSequence,r=route(),session=await auth.session();if(!session.authenticated)return;
+ const [summary,wallet]=await Promise.all([content.memberSummary().catch(()=>({ok:false,error:'LOAD_FAILED'})),content.myWallet().catch(()=>({ok:false,error:'LOAD_FAILED'}))]);
+ if(seq!==renderSequence||route()!==r)return;
+ for(const mount of document.querySelectorAll('[data-member-summary-mount]'))mount.innerHTML=renderMemberSummary(summary,wallet);
+}
