@@ -1,7 +1,7 @@
-import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.56';
+import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.64';
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.56';
 import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.56';
-import { renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.63';
+import { renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase } from './layout/home-layout.js?v=0.0.31.64';
 import { setupLayoutInteractions } from './ui/interactions.js?v=0.0.31.56';
 import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.61';
 import { createContentService, loadNavigationDashboard } from './core/content.js?v=0.0.31.61';
@@ -9,7 +9,7 @@ import { createPoliticianService } from './core/politicians.js?v=0.0.31.56';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.61';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.56';
-import * as views from './views/stage1.js?v=0.0.31.63';
+import * as views from './views/stage1.js?v=0.0.31.64';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.56';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.56';
 import { renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.61';
@@ -302,7 +302,7 @@ document.addEventListener('click',async event=>{
  const pageButton=event.target.closest('[data-cage-page]');
  if(pageButton){event.preventDefault();if(pageButton.disabled)return;const root=pageButton.closest('.jc55'),data=content.peekDomain('community');if(!root||!data)return;root.querySelector('.ca-hits').outerHTML=renderCageHits(cagePageData(data.items,root.dataset.cageId));root.querySelector('[data-cage-posts]').outerHTML=renderCagePosts(data.items,root.dataset.cageId,pageButton.dataset.cagePage);const current=root.querySelector('[data-cage-posts]');cageRouteState({page:current.dataset.currentPage});current.querySelector('[data-cage-list-title]')?.focus({preventScroll:true});current.scrollIntoView({block:'start',behavior:'auto'});navigation.cacheCurrent();return;}
  const modeButton=event.target.closest('[data-cage-mode]');
- if(modeButton){event.preventDefault();const root=modeButton.closest('.jc55'),mode=modeButton.dataset.cageMode,data=content.peekDomain('community');if(!root||!data)return;const arena=root.querySelector('[data-cage-arena]'),oldShare=arena.querySelector('.ca-mat').style.getPropertyValue('--share');arena.outerHTML=renderCageArena(data.cageStats?.[root.dataset.cageId],mode);const next=root.querySelector('[data-cage-arena]'),mat=next.querySelector('.ca-mat'),share=mat.style.getPropertyValue('--share');mat.style.setProperty('--share',oldShare);void mat.offsetWidth;mat.style.setProperty('--share',share);next.querySelector(`[data-cage-mode="${mode}"]`)?.focus({preventScroll:true});cageRouteState({mode});navigation.cacheCurrent();return;}
+ if(modeButton){event.preventDefault();const root=modeButton.closest('.jc55'),mode=modeButton.dataset.cageMode,data=content.peekDomain('community');if(!root||!data)return;const arena=root.querySelector('[data-cage-arena]');arena.outerHTML=renderCageArena(data.cageStats?.[root.dataset.cageId],mode);const next=root.querySelector('[data-cage-arena]');next.querySelector(`[data-cage-mode="${mode}"]`)?.focus({preventScroll:true});cageRouteState({mode});navigation.cacheCurrent();return;}
  const share=event.target.closest('[data-post-share]');
  if(share){event.preventDefault();if(share.disabled)return;share.disabled=true;try{const result=await sharePost({domain:share.dataset.domain,id:share.dataset.postId,title:share.dataset.postTitle});if(result.status==='manual'){const dialog=communityDialog('<h2>게시글 공유</h2><p>아래 링크를 복사해 공유해 주세요.</p><input class="jc-manual-share" aria-label="게시글 공유 링크" readonly><div class="jc-editor-bottom"><button type="button" class="jc-primary" data-jc-close>닫기</button></div>',share),input=dialog.querySelector('input');input.value=result.url;input.focus();input.select();}else if(result.status==='copied'){let state=share.parentElement.querySelector('[data-share-state]');if(!state){state=document.createElement('span');state.dataset.shareState='';state.className='jc-share-state';state.setAttribute('role','status');share.parentElement.append(state);}state.textContent='링크를 복사했습니다.';}}catch{share.title='공유하지 못했습니다. 다시 시도해 주세요.';}finally{share.disabled=false;}return;}
  const close=event.target.closest('[data-jc-close]');if(close){event.preventDefault();close.closest('dialog')?.close();return;}

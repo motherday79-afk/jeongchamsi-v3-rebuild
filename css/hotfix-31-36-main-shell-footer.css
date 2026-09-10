@@ -333,3 +333,15 @@ dialog.jc49{width:min(640px,calc(100% - 24px));max-height:85vh;overflow:auto;pad
 .home-promo-row .home-cage-entry footer small{color:#092953;font-size:9px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .home-promo-row .home-cage-entry footer b{display:block;flex:none;background:#f04413;border:1px solid #ec3b10;color:white;border-radius:5px;padding:0 7px;font-size:11px;line-height:19px;font-weight:800}
 .home-promo-row .home-cage-preview.is-empty svg.home-cage-battle{filter:saturate(.35)}
+
+/* 31.64: compact heading/entry row; all remaining space belongs to the arena. */
+.home-promo-row .home-cage-preview{display:flex;flex-direction:column}
+.home-promo-row .home-cage-preview header{flex:none}
+.home-promo-row .home-cage-entry{display:flex;flex-direction:column;flex:1;min-height:0}
+.home-promo-row .home-cage-title-row{display:flex;align-items:center;gap:6px;flex:none;width:100%;min-width:0;padding:2px 3px 4px;box-sizing:border-box}
+.home-promo-row .home-cage-title-row>strong{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px;line-height:20px;font-weight:800}
+.home-promo-row .home-cage-enter{flex:none;white-space:nowrap;border-radius:5px;background:#f04413;color:#fff;font-size:10px;font-weight:800;line-height:21px;padding:0 6px}
+.home-promo-row svg.home-cage-battle{flex:1;min-height:0;height:auto;width:100%}
+.jc55 .ca-approved-battle{width:100%;overflow:hidden;background:#eef1f3}
+.jc55 .ca-approved-battle svg.home-cage-battle{display:block;width:100%;height:auto;aspect-ratio:1609/448;max-width:none;overflow:hidden}
+.jc55 .ca-no-participation .ca-approved-battle{filter:saturate(.35)}
