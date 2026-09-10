@@ -1,3 +1,4 @@
+import { castGenerationVote } from '../src/core/participation-model.js';
 import { APP_RELEASE } from '../src/core/release.js';
 import { createCommunityService, communityStats } from '../lib/community-service.js';
 import { politicalKeywords } from '../lib/operational-ranking.js';
@@ -13,7 +14,7 @@ import { accessTierForUser, projectIntelligence } from '../lib/intelligence-acce
 import { buildIntelligenceDraft } from '../lib/intelligence-analysis.js';
 import { createBadgeService } from '../lib/badge-service.js';
 import { VALID_BADGE_KEYS } from '../lib/badge-engine.js';
-import { createParticipationPost, featureParticipationPost, editParticipationPost } from '../lib/participation-admin.js';
+import { createParticipationPost, featureParticipationPost, editParticipationPost, setParticipationDemo, mutateParticipation } from '../lib/participation-admin.js';
 import { createAdminPoliticianService } from '../lib/admin-politician-service.js';
 import { createPoliticianPhotoService, politicianPhotoStorageStatus, validatePoliticianPhoto } from '../lib/politician-photo-service.js';
 import { createHomeBannerService, homeBannerStorageStatus } from '../lib/home-banner-service.js';
@@ -175,6 +176,7 @@ async function handleUser(req,res,route,command){
   }
   if(route==='user/activity'&&req.method==='GET'){const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});return json(res,200,{ok:true,activity:await readActivity(command,user.id)});}
   if(route==='user/favorites'&&req.method==='GET'){const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});return json(res,200,await favoriteService(command).dashboard(user,{keysOnly:true}));}
+  if(route==='user/generation-votes'&&req.method==='GET'){const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});const activity=await readActivity(command,user.id);return json(res,200,{ok:true,votes:activity.generationVotes||{}});}
   if(route==='user/dashboard'&&req.method==='GET'){const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});return json(res,200,await favoriteService(command).dashboard(user));}
   if(route==='user/badges'){
     const result=await dispatchBadgeRequest(route,req.method,await currentUser(req,command),bodyOf(req),createBadgeService(command));
@@ -257,19 +259,18 @@ export async function handleAction(req,res,command){
   if(action==='vote'){
     const scope=String(payload.scope||''),option=String(payload.option||'');
     if(scope.startsWith('poll:')){
-      const pollId=scope.slice(5),polls=await readDomain(command,'polls',{items:[]});const poll=contentItems(polls).find(x=>String(x.id)===pollId&&x.published!==false);const opt=poll?.options?.find(x=>String(x.id)===option);if(!poll||!opt)return json(res,404,{ok:false,error:'POLL_NOT_FOUND'});activity.pollVotes=activity.pollVotes||{};if(activity.pollVotes[pollId])return json(res,409,{ok:false,error:'ALREADY_VOTED'});opt.votes=Number(opt.votes||0)+1;activity.pollVotes[pollId]=option;await writeDomain(command,'polls',polls);await writeActivity(command,user.id,activity);return json(res,200,{ok:true});
+      try{const result=await mutateParticipation(command,[TARGET_KEYS.content('polls'),TARGET_KEYS.activity(user.id)],([polls,a])=>{
+        const pollId=scope.slice(5),poll=contentItems(polls).find(x=>String(x.id)===pollId&&x.published!==false),opt=poll?.options?.find(x=>String(x.id)===option);if(!poll||!opt)throw new Error('POLL_NOT_FOUND');if(poll.closedAt)throw new Error('POLL_CLOSED');a.pollVotes=a.pollVotes||{};if(a.pollVotes[pollId])throw new Error('ALREADY_VOTED');opt.votes=Number(opt.votes||0)+1;a.pollVotes[pollId]=option;return {ok:true};
+      });return json(res,200,result);}catch(error){return json(res,409,{ok:false,error:error.message});}
     }
     if(scope.startsWith('generation:')){
-      const parts=scope.slice('generation:'.length).split(':'),roundId=parts.length>1?parts.shift():'',group=parts.join(':')||scope.slice('generation:'.length);
-      if(group!==ageGroup(user.birthYear))return json(res,400,{ok:false,error:'AGE_GROUP_MISMATCH'});
-      const data=await readDomain(command,'generation',{enabled:true,candidates:[],results:{},items:[]}),round=roundId?contentItems(data).find(item=>String(item.id)===roundId&&item.published!==false):null,candidates=round?.candidateIds||data.candidates||[];
-      if(data.enabled===false)return json(res,403,{ok:false,error:'GENERATION_VOTE_CLOSED'});if(candidates.length&&!candidates.includes(option))return json(res,400,{ok:false,error:'CANDIDATE_NOT_ALLOWED'});
-      const voteKey=roundId?`${roundId}:${group}`:group;activity.generationVotes=activity.generationVotes||{};if(activity.generationVotes[voteKey])return json(res,409,{ok:false,error:'ALREADY_VOTED'});
-      const results=round?(round.results=round.results||{}):(data.results=data.results||{});results[group]=results[group]||{};results[group][option]=Number(results[group][option]||0)+1;
-      if(round?.featured){data.results=round.results;data.candidates=round.candidateIds;}activity.generationVotes[voteKey]=option;await writeDomain(command,'generation',data);await writeActivity(command,user.id,activity);return json(res,200,{ok:true});
+      try{const result=await mutateParticipation(command,[TARGET_KEYS.content('generation'),TARGET_KEYS.activity(user.id)],([data,storedActivity])=>castGenerationVote(data,storedActivity,user,scope,option));return json(res,200,result);}catch(error){return json(res,409,{ok:false,error:error.message});}
     }
     if(scope.startsWith('national:')){
-      const pair=scope.slice('national:'.length).split('::'),evaluationId=pair[0]||'',personId=pair[1]||'';const rating=option;if(!evaluationId||!personId||!['positive','neutral','negative'].includes(rating))return json(res,400,{ok:false,error:'INVALID_NATIONAL_EVALUATION'});const data=await readDomain(command,'nationalEvaluation',{results:{},slots:{}});const active=Object.values(data.slots||{}).find(s=>String(s?.evaluationId||'')===evaluationId&&String(s?.subjectId||'')===personId&&s?.enabled===true&&!String(s?.closedAt||''));if(!active)return json(res,403,{ok:false,error:'EVALUATION_CLOSED'});activity.nationalEvaluationVotes=activity.nationalEvaluationVotes||{};if(activity.nationalEvaluationVotes[evaluationId])return json(res,409,{ok:false,error:'ALREADY_VOTED'});data.results=data.results||{};data.results[evaluationId]={positive:0,neutral:0,negative:0,...(data.results[evaluationId]||{})};data.results[evaluationId][rating]=Number(data.results[evaluationId][rating]||0)+1;activity.nationalEvaluationVotes[evaluationId]=rating;await writeDomain(command,'nationalEvaluation',data);await writeActivity(command,user.id,activity);return json(res,200,{ok:true});
+      try{const result=await mutateParticipation(command,[TARGET_KEYS.content('nationalEvaluation'),TARGET_KEYS.activity(user.id)],([data,a])=>{
+        const [evaluationId,personId]=scope.slice('national:'.length).split('::');if(!evaluationId||!personId||!['positive','neutral','negative'].includes(option))throw new Error('INVALID_NATIONAL_EVALUATION');
+        const active=Object.values(data.slots||{}).find(x=>String(x?.evaluationId||'')===evaluationId&&String(x?.subjectId||'')===personId&&x.enabled===true&&!x.closedAt);if(!active)throw new Error('EVALUATION_CLOSED');a.nationalEvaluationVotes=a.nationalEvaluationVotes||{};if(a.nationalEvaluationVotes[evaluationId])throw new Error('ALREADY_VOTED');data.results=data.results||{};data.results[evaluationId]={positive:0,neutral:0,negative:0,...data.results[evaluationId]};data.results[evaluationId][option]=Number(data.results[evaluationId][option]||0)+1;a.nationalEvaluationVotes[evaluationId]=option;return {ok:true};
+      });return json(res,200,result);}catch(error){return json(res,409,{ok:false,error:error.message});}
     }
     return json(res,400,{ok:false,error:'INVALID_VOTE'});
   }
@@ -322,12 +323,19 @@ async function handleAdmin(req,res,route,command){
     if(req.method==='PATCH'){const rules=sanitizeKeywordRules(bodyOf(req));await command(['SET',KEYWORD_RULES_KEY,JSON.stringify(rules)]);return json(res,200,{ok:true,rules});}
     return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
   }
+  if(route==='admin/participation'&&req.method==='GET'){
+    const domains=['polls','generation','nationalEvaluation','community'],rows=await Promise.all(domains.map(async d=>[d,await readDomain(command,d,{items:[]})]));return json(res,200,{ok:true,data:Object.fromEntries(rows)});
+  }
+  if(route==='admin/home-cage'&&req.method==='POST'){
+    try{const result=await createCommunityService({command}).featureCage(String(bodyOf(req).id||''),user);return json(res,200,result);}catch(error){return json(res,error.status||400,{ok:false,error:error.message});}
+  }
   if(route==='admin/participation'&&req.method==='POST'){
     const body=bodyOf(req),domain=String(body.domain||'');if(!['polls','generation','nationalEvaluation'].includes(domain))return json(res,400,{ok:false,error:'INVALID_PARTICIPATION_DOMAIN'});
-    const current=(await readDomain(command,domain,domain==='polls'?{items:[]}:{slots:{},results:{},history:[],items:[]}))||{};
     try{
-      const result=['edit','delete'].includes(body.operation)?editParticipationPost(domain,current,body.itemId,body.input||{},body.operation==='delete'):body.operation==='feature'?featureParticipationPost(domain,current,body.itemId):createParticipationPost(domain,current,body.input||{},user);
-      await writeDomain(command,domain,result.data);return json(res,200,{ok:true,item:result.item,data:result.data});
+      const result=await mutateParticipation(command,[TARGET_KEYS.content(domain)],([current])=>{
+        const result=body.operation==='demo'?setParticipationDemo(domain,current,body.itemId,body.input||{}):['edit','delete'].includes(body.operation)?editParticipationPost(domain,current,body.itemId,body.input||{},body.operation==='delete'):body.operation==='feature'?featureParticipationPost(domain,current,body.itemId):createParticipationPost(domain,current,body.input||{},user);
+        for(const key of Object.keys(current))delete current[key];Object.assign(current,result.data);return result;
+      });return json(res,200,{ok:true,item:result.item});
     }catch(error){return json(res,400,{ok:false,error:error.message||'PARTICIPATION_SAVE_FAILED'});}
   }
   if(route.startsWith('admin/intelligence/')){

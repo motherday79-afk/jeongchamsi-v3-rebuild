@@ -27,6 +27,7 @@ function createRemoteContentService(){
     async like(domain,postId){return request('action',{method:'POST',body:JSON.stringify({action:'post-like',payload:{domain,postId}})});},
     async toggleFavorite(input={}){return request('action',{method:'POST',body:JSON.stringify({action:'favorite-toggle',payload:input})});},
     async favoriteKeys(){return request('user/favorites');},
+    async generationVotes(){return request('user/generation-votes');},
     async memberDashboard(){return request('user/dashboard');},
     async listInquiries(){return request('inquiries');},
     async getInquiry(itemId){return request(`inquiries/detail?id=${encodeURIComponent(itemId)}`);},

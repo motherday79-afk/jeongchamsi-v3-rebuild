@@ -7,7 +7,7 @@ export const routeFromLocation=location=>{
   return decodeRoute(raw||'/');
 };
 const routePath=route=>{const value=String(route||'/');return value.startsWith('/')?value:`/${value}`;};
-const ADMIN_TABS=new Set(['operations','members','politicians','pipeline','site','keywords']);
+const ADMIN_TABS=new Set(['operations','members','politicians','pipeline','site','keywords','participation']);
 export function adminRouteState(route='/admin'){
   const params=new URLSearchParams(String(route).split('?')[1]||''),tab=params.get('tab')||'operations';
   return {tab:ADMIN_TABS.has(tab)?tab:'operations',q:String(params.get('q')||''),person:String(params.get('person')||'')};

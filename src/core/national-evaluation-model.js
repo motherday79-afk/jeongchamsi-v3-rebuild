@@ -8,7 +8,7 @@ export function normalizeNationalEvaluation(input={}){
   for(const slot of NATIONAL_EVALUATION_SLOT_KEYS){
     const source=slots[slot]||{},legacy=slot==='assembly'?data:{};
     const subjectId=text(source.subjectId||legacy.subjectId),evaluationId=text(source.evaluationId)||(subjectId?`legacy-${slot}-${subjectId}`:'');
-    normalized[slot]={slot,evaluationId,subjectId:subjectId||null,enabled:subjectId?(typeof source.enabled==='boolean'?source.enabled:legacy.enabled===true):false,startedAt:text(source.startedAt),updatedAt:text(source.updatedAt),closedAt:text(source.closedAt)};
+    normalized[slot]={jcsDemo:source.jcsDemo===true,slot,evaluationId,subjectId:subjectId||null,enabled:subjectId?(typeof source.enabled==='boolean'?source.enabled:legacy.enabled===true):false,startedAt:text(source.startedAt),updatedAt:text(source.updatedAt),closedAt:text(source.closedAt)};
   }
   return {...data,slots:normalized,results:data.results&&typeof data.results==='object'?data.results:{},demoResults:data.demoResults&&typeof data.demoResults==='object'?data.demoResults:{},history:Array.isArray(data.history)?data.history:[]};
 }

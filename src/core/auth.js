@@ -12,7 +12,7 @@ export function photoUploadMessage(result={}){
 
 const requestCache=new Map();let cacheEpoch=0;
 async function request(path,options={},preserveCache=false){
- const read=!options.method||options.method==='GET',cacheable=read&&(path.startsWith('admin/')||path==='user/session'||(path.includes('count')||path==='stats'));
+ const read=!options.method||options.method==='GET',cacheable=read&&path!=='admin/participation'&&(path.startsWith('admin/')||path==='user/session'||(path.includes('count')||path==='stats'));
  if(!read&&preserveCache)return uncachedRequest(path,options);
  if(!read){requestCache.clear();cacheEpoch++;try{return await uncachedRequest(path,options);}finally{requestCache.clear();cacheEpoch++;}}
  if(!cacheable)return uncachedRequest(path,options);
@@ -38,6 +38,8 @@ function createRemoteAuthService(){
     async updateMemberProfile(input={}){return request('admin/users',{method:'PATCH',body:JSON.stringify({operation:'profile',...input})});},
     async resetMemberPassword(id,temporaryPassword){return request('admin/users',{method:'PATCH',body:JSON.stringify({operation:'password-reset',id,temporaryPassword})});},
     async exportMembers(){const x=await request('admin/users');return x.ok?x.users:[];},
+    async participationSettings(){return request('admin/participation');},
+    async saveHomeCage(id){return request('admin/home-cage',{method:'POST',body:JSON.stringify({id})});},
     async adminSummary(){return request('admin/summary');},
     async intelligenceStatus(){return request('admin/intelligence/status');},
     async intelligenceCollectStart(){return request('admin/intelligence/collect/start',{method:'POST',body:'{}'});},
