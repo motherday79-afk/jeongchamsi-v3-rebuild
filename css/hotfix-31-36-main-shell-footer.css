@@ -607,3 +607,10 @@ body:has(.service-dock),.site-shell:has(.service-dock),.site-shell:has(.service-
  .product-home-wrap .main-column>.module .module-header h2{font-size:15px}
  .product-home-wrap .main-column>.cheer-shop .cheer-shop-heading h2{font-size:12.75px}
 }
+
+/* 31.88: compact home brand replaces the drawer trigger. */
+.product-header .header-brand-home{display:inline-flex;align-items:center;gap:10px;min-width:0;color:#17231f;text-decoration:none;flex-shrink:0}
+.product-header .header-brand-icon{display:block;width:30px;height:30px;flex:none}
+.product-header .header-brand-slogan{font-size:15px;font-weight:700;white-space:nowrap;letter-spacing:-.5px}
+.product-header .header-brand-slogan em{font-style:normal;color:#00b894}
+@media(max-width:400px){.product-header .header-brand-home{gap:6px}.product-header .header-brand-slogan{font-size:12px}}
