@@ -971,3 +971,49 @@ html.desktop-home-fixed .product-home-wrap .home-promo-row,html.desktop-home-fix
  .subpage .board-list article{padding:9px 0;row-gap:3px}
  .subpage .board-list small{margin-top:0}
 }
+
+/* 31.104: board typography hierarchy. Scope excludes the home and analysis pages. */
+.subpage.board-typography{font-family:var(--font-ui);font-size:14px;line-height:1.5}
+.board-typography :is(button,input,textarea,select){font-family:inherit}
+.board-typography :is(.page-hero h1,.jc-heading h1){font-size:24px;line-height:1.35;font-weight:700;letter-spacing:-.6px}
+.board-typography :is(.page-hero p,.jc-heading p,.board-toolbar>p){font-size:14px;line-height:1.6;font-weight:400;letter-spacing:0}
+.board-typography :is(.page-hero .eyebrow,.jc-eyebrow){font-size:11px;line-height:16px;font-weight:600;letter-spacing:.08em}
+.board-typography :is(.section-title h2,.academy-detail-intro h2,.jc-comments-head h3){font-size:18px;line-height:25px;font-weight:700;letter-spacing:-.3px}
+.board-typography .board-list h2,.board-typography .jc-row-link strong,.board-typography .ca-row-title{font-size:16px;line-height:24px;font-weight:500;letter-spacing:-.2px}
+.board-typography .jc-list-row.pinned .jc-row-link strong,.board-typography .board-list article.pinned h2{font-weight:700}
+.board-typography .board-list p{font-size:14px;line-height:21px;font-weight:400;color:#52616b;letter-spacing:0}
+.board-typography .board-list .type{font-size:12px;line-height:18px;font-weight:500;letter-spacing:0}
+.board-typography :is(.board-list small,.jc-row-link small,.jc-list-stats,.ca-row-meta){font-size:12px;line-height:18px;font-weight:400;color:#687780}
+.board-typography :is(.board-list,.jc-row-link,.ca-row-meta) .author-nickname{font-size:inherit;font-weight:400}
+.board-typography :is(.itsme-category-tabs button,.jc-tabs button,.generation-age-tabs button){font-size:14px;line-height:20px;font-weight:400;letter-spacing:-.2px;word-break:keep-all}
+.board-typography :is(.itsme-category-tabs button.active,.jc-tabs button.active,.generation-age-tabs button.active){font-weight:600}
+.board-typography :is(.primary-btn,.ghost-btn,.jc-primary,.jc-subtle,.jc-popover button){font-size:14px;line-height:20px;font-weight:500;letter-spacing:0}
+.board-typography .jc-article>h2{font-size:24px;line-height:1.4;font-weight:700;letter-spacing:-.5px;word-break:keep-all;overflow-wrap:anywhere}
+.board-typography :is(.jc-copy,.jc-copy p,.article-body,.article-body p){font-size:16px;line-height:1.75;font-weight:400;letter-spacing:0}
+.board-typography .jc-lead{font-size:16px;line-height:1.65;font-weight:500}
+.board-typography .jc-byline .jc-author b{font-size:13px;font-weight:600}
+.board-typography .jc-byline .jc-author small{font-size:12px;line-height:18px;font-weight:400}
+.board-typography .jc-comment>p{font-size:14px;line-height:21px;font-weight:400}
+.board-typography .jc-comment .author-nickname{font-size:13px;font-weight:600}
+.board-typography .jc-comment-top .jc-author small{font-size:12px;font-weight:400}
+.board-typography .jc-comment-tools button{font-size:12px;line-height:20px;font-weight:400}
+.board-typography :is(.jc-field>span,.form-field>span){font-size:14px;line-height:20px;font-weight:500}
+.board-typography :is(.jc-field input,.jc-field textarea,.stage-form input,.stage-form textarea){font-size:16px;line-height:1.5;font-weight:400}
+.board-typography .poll-board-card header h2{font-size:18px;line-height:27px;font-weight:600;letter-spacing:-.3px}
+.board-typography .poll-board-card header p{font-size:14px;line-height:21px;font-weight:400}
+.board-typography .poll-board-card header small{font-size:12px;line-height:18px;font-weight:400}
+.board-typography .poll-board-options label>span{font-size:16px;line-height:24px;font-weight:400}
+.board-typography .poll-board-options label>b{font-size:16px;font-weight:600}
+.board-typography .participation-post-copy>b{font-size:16px;line-height:24px;font-weight:500}
+.board-typography .participation-post-copy>span{font-size:14px;line-height:21px;font-weight:400}
+.board-typography .national-evaluation-person-head h2{font-size:20px;line-height:28px;font-weight:700}
+.board-typography .national-evaluation-person-head p{font-size:14px;line-height:21px;font-weight:400}
+.board-typography .academy-slot-list article>div>span{font-size:16px;line-height:24px;font-weight:500}
+.board-typography .academy-slot-list article>div>b{font-size:13px;line-height:20px;font-weight:500}
+.board-typography .academy-slot-list button{font-size:14px;font-weight:500}
+@media(max-width:620px){
+ .board-typography :is(.page-hero h1,.jc-heading h1,.jc-article>h2){font-size:22px;line-height:1.4}
+ .board-typography :is(.page-hero p,.jc-heading p){font-size:13px;line-height:20px}
+ .board-typography :is(.itsme-category-tabs button,.jc-tabs button,.generation-age-tabs button){font-size:13px}
+ .board-typography .board-list h2,.board-typography .jc-row-link strong,.board-typography .ca-row-title{font-size:16px;line-height:23px}
+}

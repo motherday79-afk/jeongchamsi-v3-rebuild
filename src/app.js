@@ -9,7 +9,7 @@ import { createPoliticianService } from './core/politicians.js?v=0.0.31.99';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.61';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.56';
-import * as views from './views/stage1.js?v=0.0.31.103';
+import * as views from './views/stage1.js?v=0.0.31.104';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.56';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.56';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.85';
@@ -190,6 +190,7 @@ async function render({preserveScroll=false}={}){
   else if(unstable.has(p[0])) body=`<section class="module"><span class="eyebrow">NEXT PHASE</span><h2>${p[0]}</h2><p class="module-desc">이 영역은 이번 버전에서 제외했습니다. NOW·정치인 데이터·분석 엔진은 연결하지 않습니다.</p></section>`;
   else body=`<section class="module"><h2>페이지를 찾을 수 없습니다</h2></section>`;
   if(renderId!==renderSequence)return;
+  if(['community','itsme','column','news','inquiry','poll','generation-president','national-evaluation','academy'].includes(p[0]))body=body.replace(/class="subpage\b/,'class="subpage board-typography');
   if(!await shell(body,session,renderId))return;
   if(!p.length&&session.authenticated)void badgeStatusPromise.then(status=>{
     if(renderId!==renderSequence||route()!==r||!status)return;
