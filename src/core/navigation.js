@@ -1,6 +1,8 @@
 const NAV_FLAG='__jcsNav';
 const key=()=>`${Date.now().toString(36)}-${Math.random().toString(36).slice(2,10)}`;
-const decodeRoute=raw=>{try{return decodeURIComponent(raw);}catch{return raw;}};
+// Decode readable Unicode only in queries; keep %2B, %26, %25 and separators escaped.
+const readableQuery=value=>value.replace(/(?:%[89a-f][0-9a-f])+/gi,part=>{try{return decodeURIComponent(part);}catch{return part;}});
+const decodeRoute=raw=>{const index=raw.indexOf('?'),path=index<0?raw:raw.slice(0,index),query=index<0?'':raw.slice(index);try{return decodeURIComponent(path)+readableQuery(query);}catch{return raw;}};
 export const routeFromLocation=location=>{
   const hash=String(location?.hash||'');
   const raw=hash.startsWith('#/')?hash.slice(1):`${String(location?.pathname||'/')||'/'}${String(location?.search||'')}`;
@@ -65,7 +67,7 @@ export function createNavigation({window,readSnapshot,restoreSnapshot,rebind,onR
   };
   const navigate=route=>{
     const target=String(route||'/').startsWith('/')?String(route||'/'):`/${route}`;
-    if(target===currentRoute())return;
+    if(decodeRoute(target)===currentRoute())return;
     record();
     const next=stateFor(target,{});
     window.history.pushState(next,'',target);

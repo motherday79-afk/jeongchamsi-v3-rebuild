@@ -62,10 +62,11 @@ export function setupLauncherExpansion(root=document){
   else globalThis.addEventListener?.('resize',fit);
   fit();
 }
+const layoutNavigationBound=new WeakSet(),layoutSearchBound=new WeakSet();
 export function setupLayoutNavigation(root=document){
   root.querySelectorAll('a[data-layout-route]').forEach(link=>{const route=link.dataset.layoutRoute;if(route)link.setAttribute('href',route);});
-  root.addEventListener('click',event=>{const target=event.target.closest('[data-layout-route]');if(!target)return;const route=target.dataset.layoutRoute;if(!route)return;event.preventDefault();window.dispatchEvent(new CustomEvent('jcs:layout-route',{detail:{route}}));});
-  root.querySelector('[data-layout-search]')?.addEventListener('submit',event=>{event.preventDefault();const query=new FormData(event.currentTarget).get('q')||'';window.dispatchEvent(new CustomEvent('jcs:layout-search',{detail:{query:String(query)}}));});
+  if(!layoutNavigationBound.has(root)){layoutNavigationBound.add(root);root.addEventListener('click',event=>{const target=event.target.closest('[data-layout-route]');if(!target)return;const route=target.dataset.layoutRoute;if(!route)return;event.preventDefault();window.dispatchEvent(new CustomEvent('jcs:layout-route',{detail:{route}}));});}
+  const searchForm=root.querySelector('[data-layout-search]');if(searchForm&&!layoutSearchBound.has(searchForm)){layoutSearchBound.add(searchForm);searchForm.addEventListener('submit',event=>{event.preventDefault();const query=new FormData(event.currentTarget).get('q')||'';window.dispatchEvent(new CustomEvent('jcs:layout-search',{detail:{query:String(query)}}));});}
 }
 export function compareSearchRoute(baseRoute='/compare',slot=1,query=''){
   const [pathname,raw='']=String(baseRoute||'/compare').split('?');
