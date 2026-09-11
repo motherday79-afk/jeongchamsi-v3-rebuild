@@ -1235,7 +1235,7 @@ body:has(.product-home-wrap .home-balanced-layout) .footer-brand>b{color:#202124
 }
 
 /* 31.120: ONLY proposal, citizen poll and generation modules. */
-.product-home-wrap #itsme .proposal-feature{display:grid;grid-template-columns:180px minmax(0,1fr);gap:20px;align-items:start}
+.product-home-wrap #itsme .proposal-feature{display:grid;grid-template-columns:160px minmax(0,1fr);gap:20px;align-items:start}
 .product-home-wrap #itsme .proposal-cover{display:block;min-width:0;text-decoration:none;color:#333;text-align:center}
 .product-home-wrap #itsme .proposal-cover img{display:block;width:100%;aspect-ratio:1;object-fit:contain;border-radius:10px}
 .product-home-wrap #itsme .proposal-cover>span{display:block;font-size:12px;font-weight:500;margin-top:7px;line-height:1.4}
@@ -1284,3 +1284,11 @@ body:has(.product-home-wrap .home-balanced-layout) .footer-brand>b{color:#202124
  .product-home-wrap #generation-president .generation-portrait-grid{display:flex;overflow-x:auto;gap:8px;padding-bottom:6px;scroll-snap-type:x proximity}
  .product-home-wrap #generation-president .generation-portrait-card{flex:0 0 105px;scroll-snap-align:start}
 }
+
+/* 31.121: compact proposals and a single section-level demo note. */
+.product-home-wrap #itsme .proposal-rows>a{padding-top:6px;padding-bottom:6px}
+.product-home-wrap #generation-president .generation-heading{display:flex;align-items:baseline;flex-wrap:wrap;column-gap:9px;row-gap:3px}
+.product-home-wrap #generation-president .generation-heading .generation-demo-note{display:inline;font-size:11px;font-weight:400;line-height:1.4;color:#777;background:none;border:0;padding:0;letter-spacing:0;white-space:nowrap}
+.product-home-wrap #generation-president .generation-portrait-card .generation-age{display:block;min-height:20px;line-height:20px}
+.product-home-wrap #generation-president .generation-portrait-card .generation-faces{height:68px;min-height:68px;flex:0 0 68px;margin:0}
+.product-home-wrap #generation-president .generation-portrait-card .generation-leader-name{min-height:40px;margin:0;line-height:20px}
