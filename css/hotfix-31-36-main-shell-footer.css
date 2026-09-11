@@ -905,3 +905,14 @@ html.desktop-home-fixed .product-home-wrap .home-promo-row,html.desktop-home-fix
  [data-now-rank-mobile-swipe] .now-rank-pages{scroll-snap-type:x proximity;scroll-behavior:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y;overscroll-behavior-x:contain}
  [data-now-rank-mobile-swipe] .rank-top-card{scroll-snap-stop:normal}
 }
+
+/* 31.100: expanded navigation shares the primary row spacing. */
+.service-dock .service-dock-row-all{justify-content:center;align-items:flex-start;gap:2px;margin:0 auto;padding:8px 0}
+.service-dock .service-dock-row-all .service-dock-item{flex:0 0 58px;width:58px;min-width:58px}
+.service-dock .service-dock-row-all .service-dock-label{width:100%;max-width:none;white-space:normal;word-break:keep-all;overflow-wrap:anywhere;text-overflow:clip;overflow:visible;min-height:40px}
+@media(max-width:1024px){
+ .service-dock .service-dock-row-all{gap:6px 4px}
+ .service-dock .service-dock-row-all .service-dock-item{flex:0 0 calc((100% - 20px)/6);width:calc((100% - 20px)/6);min-width:0;gap:2px}
+ .service-dock .service-dock-row-all .service-dock-label{min-height:38px}
+}
+@media(min-width:601px) and (max-width:1024px){.service-dock .service-dock-row-all{max-width:658px;gap:2px}}
