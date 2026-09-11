@@ -1072,3 +1072,35 @@ html.desktop-home-fixed .product-home-wrap .home-promo-row,html.desktop-home-fix
 /* 31.108 cheer catalog and custom goods request */
 .cheer-more{white-space:nowrap;text-decoration:none}.cheer-more:hover{color:#008b70;background:#eefaf6}.cheer-catalog,.goods-request{display:grid;gap:20px}.catalog-hero{padding:16px 4px 4px}.catalog-hero h1{font-size:26px;font-weight:700;margin:8px 0 12px;letter-spacing:-.6px}.catalog-hero p{font-size:15px;color:#60736b;line-height:1.7;margin:0}.catalog-section{padding:24px}.catalog-section>header{display:flex;align-items:center;gap:14px;margin-bottom:20px}.catalog-number{font-size:24px;font-weight:600;color:#a9bcb5}.catalog-section h2{font-size:20px;font-weight:700;margin:5px 0 0}.catalog-section>header>small{margin-left:auto;color:#70817a;font-size:12px;white-space:nowrap}.catalog-note{font-size:14px;color:#6b7b75;margin:-6px 0 20px}.cheer-catalog .cheer-product-grid{display:grid;gap:16px}.cheer-catalog .catalog-cheer-grid{grid-template-columns:repeat(5,minmax(0,1fr))}.cheer-catalog .catalog-goods-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.cheer-catalog .cheer-product-card{display:flex;flex-direction:column;gap:8px;text-decoration:none;min-width:0;padding:12px 10px 16px;border:1px solid #e4ebe7;border-radius:12px;background:#fff;text-align:center}.cheer-catalog .cheer-product-card:hover{border-color:var(--cheer-color);background:#fff}.cheer-catalog .cheer-product-visual{height:230px;background:#fff;display:flex;align-items:center;justify-content:center}.cheer-catalog .catalog-goods-grid .cheer-product-visual{height:290px}.cheer-catalog .cheer-product-card>b{font-size:15px;font-weight:600;line-height:1.55;word-break:keep-all}.cheer-catalog .cheer-product-card>small{font-size:12px;color:#70817a}.catalog-product-tag{font-size:10px;letter-spacing:1px;font-weight:600;color:var(--cheer-color)}.goods-product-image{display:block;width:100%;height:100%;max-height:500px}.catalog-custom{background:linear-gradient(115deg,#f5fbf8,#fff);border:1px solid #dcebe4}.catalog-custom>p{font-size:15px;line-height:1.8;margin:10px 0}.catalog-custom>small{display:block;font-size:12px;color:#718079;margin-top:14px}.goods-lead-time{font-weight:600;color:#00856a}.catalog-custom .primary-btn{display:inline-flex;margin-top:12px;text-decoration:none}.cheer-detail-actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px}.cheer-detail-actions>a{text-decoration:none}.goods-request{max-width:900px;margin:0 auto}.goods-request>.module{padding:28px}.goods-request-form{display:grid;gap:20px}.goods-request-form label{display:flex;flex-direction:column;gap:8px;min-width:0;font-size:14px;font-weight:500}.goods-request-form input,.goods-request-form textarea{box-sizing:border-box;width:100%;max-width:100%;min-width:0;font:inherit;font-size:15px;font-weight:400;padding:12px;border:1px solid #dce5e0;border-radius:8px;background:#fff;color:#192d25}.goods-request-form input:focus,.goods-request-form textarea:focus{outline:2px solid #00b894;outline-offset:2px}.goods-form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}.goods-request-notice{padding:18px;background:#f5f9f7;border-radius:10px}.goods-request-notice b{font-size:14px}.goods-request-notice p{font-size:13px;line-height:1.7;color:#53685e;margin:8px 0}.goods-form-actions{display:flex;justify-content:space-between;align-items:center;gap:12px}.goods-form-actions>a{font-size:14px;color:#5d7066}.goods-request [data-form-state]{margin:0;font-size:14px}.cheer-detail-visual .goods-product-image{height:480px}
 @media(max-width:767px){.catalog-hero h1{font-size:22px}.catalog-section,.goods-request>.module{padding:18px}.catalog-section h2{font-size:18px}.catalog-section>header{gap:10px}.catalog-section>header>small{display:none}.cheer-catalog .catalog-cheer-grid,.cheer-catalog .catalog-goods-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.cheer-catalog .cheer-product-visual,.cheer-catalog .catalog-goods-grid .cheer-product-visual{height:210px}.cheer-catalog .cheer-product-card{padding:8px 6px 14px}.cheer-catalog .cheer-product-card>b{font-size:14px}.catalog-product-tag{font-size:9px;letter-spacing:.5px}.goods-form-row{grid-template-columns:1fr}.cheer-detail-visual .goods-product-image{height:360px}}
+
+/* 31.110 compact catalog: scoped to the full item listing */
+.cheer-catalog{gap:14px}
+.cheer-catalog .catalog-hero{padding:4px 0 0}
+.cheer-catalog .catalog-hero h1{font-size:22px;line-height:1.4;margin:4px 0 6px}
+.cheer-catalog .catalog-hero p{font-size:14px;line-height:1.6}
+.cheer-catalog .catalog-section{padding:18px 20px}
+.cheer-catalog .catalog-section>header{gap:10px;margin-bottom:12px}
+.cheer-catalog .catalog-section h2{font-size:18px;line-height:1.4;margin:3px 0 0}
+.cheer-catalog .catalog-number{font-size:20px}
+.cheer-catalog .catalog-note{font-size:13px;line-height:1.5;margin:0 0 12px}
+.cheer-catalog .cheer-product-grid{gap:12px;flex:none;align-items:start;overflow:visible}
+.cheer-catalog .catalog-goods-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+.cheer-catalog .cheer-product-card{flex:none;gap:5px;padding:8px 8px 10px;border-radius:10px}
+.cheer-catalog .cheer-product-visual,.cheer-catalog .catalog-goods-grid .cheer-product-visual{height:160px;min-height:160px;max-height:160px;flex:none;aspect-ratio:auto}
+.cheer-catalog .cheer-product-visual>svg{height:100%;width:100%;max-height:160px;min-height:0}
+.cheer-catalog .cheer-product-card>b{font-size:14px;line-height:20px;white-space:normal;overflow-wrap:anywhere;min-height:40px;display:flex;align-items:center;justify-content:center}
+.cheer-catalog .cheer-product-card>small{font-size:11px;line-height:16px}
+.cheer-catalog .catalog-product-tag{font-size:9px;line-height:14px;letter-spacing:.5px}
+.cheer-catalog .catalog-custom>p{font-size:14px;line-height:1.6;margin:6px 0}
+.cheer-catalog .catalog-custom .primary-btn{margin-top:8px}
+.cheer-catalog .catalog-custom>small{margin-top:8px}
+@media(max-width:767px){
+ .cheer-catalog{gap:12px}
+ .cheer-catalog .catalog-hero h1{font-size:20px}
+ .cheer-catalog .catalog-section{padding:14px}
+ .cheer-catalog .catalog-section h2{font-size:16px}
+ .cheer-catalog .catalog-cheer-grid,.cheer-catalog .catalog-goods-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .cheer-catalog .cheer-product-visual,.cheer-catalog .catalog-goods-grid .cheer-product-visual{height:140px;min-height:140px;max-height:140px}
+ .cheer-catalog .cheer-product-visual>svg{max-height:140px}
+ .cheer-catalog .cheer-product-card>b{font-size:13px;line-height:19px;min-height:38px}
+}
