@@ -214,15 +214,16 @@ export function setupHomeCompare(root=document){
   if(homeCompareBound.has(form))continue;homeCompareBound.add(form);
   const slots=[...form.querySelectorAll('[data-home-compare-slot]')],state=form.querySelector('[data-home-compare-state]'),button=form.querySelector('[type=submit]');
   const ids=()=>slots.map(slot=>slot.querySelector('[data-home-compare-id]').value);
-  const update=()=>{button.disabled=!homeCompareRoute(ids());state.textContent=button.disabled?'비교할 정치인 두 명을 선택해 주세요.':'두 정치인의 비교를 시작할 수 있습니다.';};
+  const update=()=>{button.disabled=!homeCompareRoute(ids());const feature=form.querySelector('[data-home-compare-feature]');if(feature)feature.disabled=button.disabled;state.textContent=button.disabled?'비교할 정치인 두 명을 선택해 주세요.':'두 정치인의 비교를 시작할 수 있습니다.';};
   const clear=slot=>{slot.querySelector('[data-home-compare-id]').value='';slot.querySelector('[data-home-compare-preview]').innerHTML='<span class="home-compare-avatar" aria-hidden="true">＋</span><div><b>정치인을 선택하세요</b><small>검색 결과에서 선택</small></div>';};
+  form.addEventListener('click',event=>{const change=event.target.closest('[data-home-compare-change]');if(!change)return;const panel=change.closest('[data-home-compare-slot]').querySelector('[data-home-compare-search-panel]');panel.hidden=!panel.hidden;change.setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden){const input=panel.querySelector('[data-home-compare-search]');input.focus();input.select();}});
   form.addEventListener('input',event=>{const input=event.target.closest('[data-home-compare-search]');if(!input)return;clear(input.closest('[data-home-compare-slot]'));input.setAttribute('value',input.value);update();});
   form.addEventListener('jcs:politician-selected',event=>{
    const slot=event.target.closest('[data-home-compare-slot]'),item=event.detail?.item;if(!slot||!item)return;
    if(slots.some(other=>other!==slot&&other.querySelector('[data-home-compare-id]').value===String(item.id))){clear(slot);update();state.textContent='서로 다른 정치인을 선택해 주세요.';return;}
    const input=slot.querySelector('[data-home-compare-search]');input.setAttribute('value',input.value);
    const src=String(item.photo?.url||item.photo?.localPath||'');
-   slot.querySelector('[data-home-compare-preview]').innerHTML=`<span class="home-compare-avatar" data-politician-avatar><span class="politician-photo-initial">${esc(String(item.name||'?').slice(0,1))}</span>${src?`<img data-politician-photo src="${esc(src)}" alt="" style="object-position:${esc(item.photo?.focus||'50% 28%')}">`:''}</span><div><b>${esc(item.name)}</b><small>${esc([item.party,item.jurisdiction||item.office||item.roleLabel].filter(Boolean).join(' · '))}</small></div>`;setupPoliticianPhotoFallback(slot);update();
+   slot.querySelector('[data-home-compare-preview]').innerHTML=`<span class="home-compare-avatar" data-politician-avatar><span class="politician-photo-initial">${esc(String(item.name||'?').slice(0,1))}</span>${src?`<img data-politician-photo src="${esc(src)}" alt="" style="object-position:${esc(item.photo?.focus||'50% 28%')}">`:''}</span><div><b>${esc(item.name)}</b><small>${esc([item.party,item.jurisdiction||item.office||item.roleLabel].filter(Boolean).join(' · '))}</small></div>`;setupPoliticianPhotoFallback(slot);const panel=slot.querySelector('[data-home-compare-search-panel]');if(panel)panel.hidden=true;slot.querySelector('[data-home-compare-change]')?.setAttribute('aria-expanded','false');update();
   });
   form.addEventListener('submit',event=>{event.preventDefault();const route=homeCompareRoute(ids());if(!route){update();return;}window.dispatchEvent(new CustomEvent('jcs:layout-route',{detail:{route}}));});update();
  }

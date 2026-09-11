@@ -1379,3 +1379,44 @@ body:has(.product-home-wrap .home-balanced-layout) .footer-brand>b{color:#202124
  .product-home-wrap #compare .home-compare-footer{flex-direction:column;align-items:stretch}
  .product-home-wrap #compare .home-compare-footer button{width:100%}
 }
+/* 31.127: a restrained match-up stage; real profiles, no invented scores. */
+.product-home-wrap #compare .home-compare-matchup{position:relative;isolation:isolate;padding:18px 24px 16px;border-radius:12px;background:radial-gradient(ellipse at 12% 30%,#30475b 0,transparent 52%),radial-gradient(ellipse at 88% 30%,#534333 0,transparent 52%),#161a20;color:#fff;border:1px solid #30353d}
+.product-home-wrap #compare .matchup-caption{text-align:center;margin-bottom:14px}
+.product-home-wrap #compare .matchup-caption>span{font-size:10px;letter-spacing:1.4px;font-weight:600;color:#cbb998}
+.product-home-wrap #compare .matchup-caption>p{margin:5px 0 0;font-size:14px;font-weight:500;line-height:1.5;color:#f1f2f4}
+.product-home-wrap #compare .home-compare-matchup .home-compare-slots{position:relative;gap:76px}
+.product-home-wrap #compare .home-compare-matchup .home-compare-slot{position:relative;padding:0;border:0;background:none;border-radius:0;text-align:center;min-width:0}
+.product-home-wrap #compare .home-compare-matchup .home-compare-person{flex-direction:column;justify-content:flex-start;gap:8px;margin:0;min-height:190px}
+.product-home-wrap #compare .home-compare-matchup .home-compare-avatar{width:112px;height:126px;border-radius:32px 32px 12px 12px;border:1px solid #a5b3c24a;background:linear-gradient(140deg,#48515a,#252d36);box-shadow:-12px 4px 35px #82b0d227;color:#dbe2e9;font-size:36px}
+.product-home-wrap #compare .home-compare-matchup .home-compare-slot:nth-child(2) .home-compare-avatar{border-color:#c8b99b4a;box-shadow:12px 4px 35px #e0ba7927;background:linear-gradient(220deg,#595146,#292723)}
+.product-home-wrap #compare .home-compare-matchup .home-compare-person>div{width:100%}
+.product-home-wrap #compare .home-compare-matchup .home-compare-person b{font-size:23px;color:#fff;font-weight:700;line-height:1.3;letter-spacing:-.5px}
+.product-home-wrap #compare .home-compare-matchup .home-compare-person small{font-size:12px;color:#b7bec8;line-height:1.4;margin-top:5px;min-height:34px}
+.product-home-wrap #compare .matchup-vs{position:absolute;left:50%;top:60px;transform:translate(-50%,-50%) skew(-9deg);font-size:45px;font-style:italic;font-weight:900;letter-spacing:-3px;color:#f1ddba;text-shadow:0 3px 20px #dfba7d55;pointer-events:none}
+.product-home-wrap #compare .matchup-vs:before,.product-home-wrap #compare .matchup-vs:after{content:'';position:absolute;left:50%;width:1px;height:28px;background:linear-gradient(transparent,#d9c29466)}
+.product-home-wrap #compare .matchup-vs:before{bottom:calc(100% + 12px)}
+.product-home-wrap #compare .matchup-vs:after{top:calc(100% + 12px);transform:rotate(180deg)}
+.product-home-wrap #compare .matchup-change{background:#ffffff09;border:1px solid #ffffff30;border-radius:20px;color:#e1e4e8;padding:6px 13px;font:inherit;font-size:12px;cursor:pointer;margin-top:2px}
+.product-home-wrap #compare .matchup-change:hover{background:#ffffff19;border-color:#ffffff70}
+.product-home-wrap #compare .home-compare-matchup label{margin-top:10px;text-align:left}
+.product-home-wrap #compare .home-compare-matchup label[hidden]{display:none!important}
+.product-home-wrap #compare .home-compare-matchup label>span{color:#b7bec8}
+.product-home-wrap #compare .home-compare-matchup .politician-autocomplete-results{z-index:20;min-width:260px;max-width:min(390px,calc(100vw - 56px));text-align:left}
+.product-home-wrap #compare .home-compare-matchup .home-compare-slot:nth-child(2) .politician-autocomplete-results{left:auto;right:0}
+.product-home-wrap #compare .home-compare-matchup .home-compare-footer{flex-direction:column;gap:8px;margin-top:17px;padding-top:15px;border-top:1px solid #ffffff17}
+.product-home-wrap #compare .home-compare-matchup .home-compare-footer button[type=submit]{min-height:43px;min-width:250px;background:linear-gradient(100deg,#d7c09b,#f3e2c7);color:#211e19;border:1px solid #f5dfb9;font-size:14px;box-shadow:0 3px 12px #0003}
+.product-home-wrap #compare .home-compare-matchup .home-compare-footer button[type=submit]:disabled{background:#363b43;border-color:#444a54;color:#9299a3;box-shadow:none}
+.product-home-wrap #compare .home-compare-matchup .home-compare-footer>span{font-size:11px;color:#aeb5bf;text-align:center}
+.product-home-wrap #compare .home-compare-matchup .home-compare-footer .matchup-feature{min-height:28px;background:transparent;border:0;color:#b6bec8;font-size:11px;font-weight:400;text-decoration:underline;text-underline-offset:3px;padding:0}
+.product-home-wrap #compare .home-compare-matchup .home-compare-footer .matchup-feature:disabled{color:#737b86}
+@media(max-width:600px){
+ .product-home-wrap #compare .home-compare-matchup{padding:15px 12px}
+ .product-home-wrap #compare .matchup-caption>p{font-size:12px}
+ .product-home-wrap #compare .home-compare-matchup .home-compare-slots{gap:38px}
+ .product-home-wrap #compare .home-compare-matchup .home-compare-person{align-items:center;min-height:178px}
+ .product-home-wrap #compare .home-compare-matchup .home-compare-avatar{width:86px;height:104px;border-radius:24px 24px 10px 10px}
+ .product-home-wrap #compare .home-compare-matchup .home-compare-person b{font-size:19px}
+ .product-home-wrap #compare .home-compare-matchup .home-compare-person small{font-size:10px;min-height:42px}
+ .product-home-wrap #compare .matchup-vs{top:50px;font-size:30px}
+ .product-home-wrap #compare .home-compare-matchup .home-compare-footer button[type=submit]{width:100%;min-width:0}
+}

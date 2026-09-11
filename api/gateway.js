@@ -391,6 +391,13 @@ async function handleAdmin(req,res,route,command){
     try{const service=createPoliticianPhotoService({command,profilesProvider:()=>allPoliticianProfiles(command)}),result=await service.save({personId:body.personId,contentType:body.contentType,bytes:Buffer.from(encoded,'base64'),focus:body.focus},user.id);await adminPoliticians.log(user.id,'POLITICIAN_PHOTO_UPDATE',body.personId,{size:result.photo.size,contentType:result.photo.contentType,previousUrl:result.previous?.url||'',previousPathname:result.previous?.pathname||'',currentUrl:result.photo.url,currentPathname:result.photo.pathname});return json(res,200,{ok:true,...result});}
     catch(error){const code=politicianPhotoErrorCode(error);return json(res,code==='POLITICIAN_PROFILE_MISSING'?404:code==='PHOTO_TOO_LARGE'?413:code==='PHOTO_STORAGE_NOT_CONFIGURED'?503:400,{ok:false,error:code});}
   }
+  if(route==='admin/home-compare'&&req.method==='POST'){
+    const ids=bodyOf(req).ids;
+    if(!Array.isArray(ids)||ids.length!==2||ids.some(id=>typeof id!=='string'||!id.trim()||id.length>120)||ids[0].trim()===ids[1].trim())return json(res,400,{ok:false,error:'COMPARE_PAIR_INVALID'});
+    const normalized=ids.map(id=>id.trim()),people=await allPoliticianProfiles(command);
+    if(normalized.some(id=>!people.some(person=>person.id===id)))return json(res,400,{ok:false,error:'POLITICIAN_NOT_FOUND'});
+    const pair=await createHomeBannerService({command}).saveCompare(normalized,user.id);return json(res,200,{ok:true,pair});
+  }
   if(route==='admin/home-banner'&&req.method==='GET')return json(res,200,{ok:true,storage:homeBannerStorageStatus(process.env),limits:{maxBytes:2_097_152,maxMegabytes:2,formats:['JPG','PNG','WEBP','GIF'],recommended:{width:640,height:450},mobileRecommended:{width:720,height:540},heroRecommended:{width:1180,height:150},heroMobileRecommended:{width:720,height:300},tabletRecommended:{width:1200,height:400},heroTabletRecommended:{width:1200,height:300},sidebarDevices:['pc','mobile','tablet'],heroDevices:['pc','mobile','tablet'],pairMaxBytes:3_145_728,requiredDevices:['pc','mobile','tablet']}});
   if(route==='admin/home-banner'&&req.method==='POST'){
     const body=bodyOf(req),pc=body.pc||{},mobile=body.mobile||{},tablet=body.tablet||{},tabletEncoded=String(tablet.dataBase64||''),pcEncoded=String(pc.dataBase64||''),mobileEncoded=String(mobile.dataBase64||'');
@@ -455,7 +462,7 @@ export default async function handler(req,res){
       try{if(req.method==='GET')return json(res,200,await (url.searchParams.get('member')?service.member(user,url.searchParams.get('member')):url.searchParams.get('wallet')==='1'?service.wallet(user):service.status(user)));if(req.method!=='POST')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});const input=bodyOf(req),op=input.operation;if(!['bank','order','review','cage','grant'].includes(op))return json(res,400,{ok:false,error:'INVALID_OPERATION'});return json(res,200,await service[op](user,input));}catch(error){return json(res,error.message==='ADMIN_REQUIRED'?403:error.message==='LOGIN_REQUIRED'?401:400,{ok:false,error:error.message});}
     }
     if(route==='content')return handleContent(req,res,command,url);
-    if(route==='home/banner'&&req.method==='GET'){const service=createHomeBannerService({command}),[sidebar,hero]=await Promise.all([service.get(),service.get('hero')]);return json(res,200,{ok:true,banner:{...(sidebar||{}),hero}});}
+    if(route==='home/banner'&&req.method==='GET'){const service=createHomeBannerService({command}),[sidebar,hero,featuredCompare]=await Promise.all([service.get(),service.get('hero'),service.getCompare()]);return json(res,200,{ok:true,banner:{...(sidebar||{}),hero,featuredCompare:featuredCompare?{ids:featuredCompare.ids}:null}});}
     if(route==='site/footer-info'&&req.method==='GET')return json(res,200,{ok:true,info:await createSiteSettingsService({command}).get()});
     if(route==='politicians')return handlePoliticians(req,res,command,url,createIntelligenceService({command}));
     if(route==='action')return handleAction(req,res,command);
