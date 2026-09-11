@@ -163,13 +163,14 @@ export function politicianSuggestionSelection(mode,item,base=''){
   if(mode==='admin'){const params=new URLSearchParams();params.set('tab','politicians');params.set('q',String(item.name||''));params.set('person',String(item.id||''));return {route:`/admin?${params.toString()}`};}
   return {value:String(item.name||''),targetId:String(item.id||'')};
 }
+const autocompleteBound=new WeakSet();
 export function setupPoliticianAutocomplete(root=document,search=null){
   if(typeof search!=='function')return;
   for(const input of root.querySelectorAll('[data-politician-autocomplete]')){
-    if(input.dataset.autocompleteReady==='true')continue;input.dataset.autocompleteReady='true';
-    const results=document.createElement('div');results.className='politician-autocomplete-results';results.hidden=true;input.insertAdjacentElement('afterend',results);let rows=[],active=-1,sequence=0;
+    if(autocompleteBound.has(input))continue;autocompleteBound.add(input);input.dataset.autocompleteReady='true';
+    const previous=input.nextElementSibling;const results=previous?.classList.contains('politician-autocomplete-results')?previous:document.createElement('div');results.className='politician-autocomplete-results';results.hidden=true;results.innerHTML='';if(results!==previous)input.insertAdjacentElement('afterend',results);let rows=[],active=-1,sequence=0;
     const close=()=>{results.hidden=true;active=-1;};
-    const select=item=>{const selection=politicianSuggestionSelection(input.dataset.politicianSelectMode||'route',item,input.dataset.politicianBase);if(!selection)return;close();if(selection.route){window.dispatchEvent(new CustomEvent('jcs:layout-route',{detail:{route:selection.route}}));return;}input.value=selection.value;const target=input.dataset.politicianTarget?input.closest('form')?.querySelector(input.dataset.politicianTarget):null;if(target)target.value=selection.targetId;input.dispatchEvent(new Event('change',{bubbles:true}));};
+    const select=item=>{const selection=politicianSuggestionSelection(input.dataset.politicianSelectMode||'route',item,input.dataset.politicianBase);if(!selection)return;++sequence;close();if(selection.route){window.dispatchEvent(new CustomEvent('jcs:layout-route',{detail:{route:selection.route}}));return;}input.value=selection.value;const target=input.dataset.politicianTarget?input.closest('form')?.querySelector(input.dataset.politicianTarget):null;if(target)target.value=selection.targetId;input.dispatchEvent(new Event('change',{bubbles:true}));input.dispatchEvent(new CustomEvent('jcs:politician-selected',{bubbles:true,detail:{item}}));};
     input.addEventListener('input',async()=>{const current=++sequence,term=input.value.trim();if(!term){rows=[];results.innerHTML='';close();return;}rows=await loadPoliticianSuggestions(term,search);if(current!==sequence)return;results.innerHTML=rows.length?politicianSuggestionMarkup(rows):'<p>검색 결과가 없습니다.</p>';results.hidden=false;setupPoliticianPhotoFallback(results);});
     input.addEventListener('keydown',event=>{if(results.hidden||!rows.length)return;if(event.key==='ArrowDown'||event.key==='ArrowUp'){event.preventDefault();active=(active+(event.key==='ArrowDown'?1:-1)+rows.length)%rows.length;[...results.querySelectorAll('button')].forEach((button,index)=>button.classList.toggle('is-active',index===active));}else if(event.key==='Enter'&&active>=0){event.preventDefault();select(rows[active]);}else if(event.key==='Escape')close();});
     root.addEventListener('pointerdown',event=>{if(event.target!==input&&!results.contains(event.target))close();});
@@ -205,7 +206,27 @@ export function setupCageCountdown(root){
  const paint=()=>{let connected=false;for(const node of timers){if(!node.isConnected)continue;connected=true;const left=Math.max(0,Math.ceil((Number(node.dataset.cageEnds)-Date.now()-offset)/1000));node.textContent=left?`남은 시간 ${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}`:'참여 종료';node.classList.toggle('is-ended',!left);if(!left){const page=node.closest('[data-cage-id]'),join=page?.querySelector('.jc-join-box');if(join&&!join.dataset.closed){join.dataset.closed='true';join.textContent='케이지가 종료되었습니다. 최종 결과와 참여 기록을 확인할 수 있습니다.';}page?.querySelectorAll('form[data-stage-form=comment] button[type=submit]').forEach(b=>b.disabled=true);}}return connected;};
  const before=Date.now();fetch('/api/v3/points?clock=1',{credentials:'same-origin'}).then(r=>r.json()).then(x=>{if(Number.isFinite(x.serverNow)){offset=x.serverNow-(before+Date.now())/2;paint();}}).catch(()=>{});paint();const timer=setInterval(()=>{if(!paint())clearInterval(timer);},1000);for(const node of timers)cageTimerIds.set(node,timer);
 }
-export function setupLayoutInteractions(root=document,options={}){setupDesktopHomeViewport(root);setupPostMenuDismissal(root);setupCageCountdown(root);setupEmptyHomeModule(root);setupDrawer(root);setupLauncherExpansion(root);setupNowCarousel(root);setupLayoutNavigation(root);setupCompareSearch(root);setupPoliticianPhotoFallback(root);setupPoliticianAutocomplete(root,options.politicianSearch);setupDiagnosisInteractions(root);setupDetail47Interactions(root);setupFontScaleControl(root);}
+const homeCompareBound=new WeakSet();
+export function homeCompareRoute(ids){const values=ids.map(id=>String(id||'').trim());return values.length===2&&values.every(Boolean)&&values[0]!==values[1]?'/compare?ids='+encodeURIComponent(values.join(','))+'&run=1':null;}
+export function setupHomeCompare(root=document){
+ for(const form of root.querySelectorAll('[data-home-compare]')){
+  if(homeCompareBound.has(form))continue;homeCompareBound.add(form);
+  const slots=[...form.querySelectorAll('[data-home-compare-slot]')],state=form.querySelector('[data-home-compare-state]'),button=form.querySelector('[type=submit]');
+  const ids=()=>slots.map(slot=>slot.querySelector('[data-home-compare-id]').value);
+  const update=()=>{button.disabled=!homeCompareRoute(ids());state.textContent=button.disabled?'비교할 정치인 두 명을 선택해 주세요.':'두 정치인의 비교를 시작할 수 있습니다.';};
+  const clear=slot=>{slot.querySelector('[data-home-compare-id]').value='';slot.querySelector('[data-home-compare-preview]').innerHTML='<span class="home-compare-avatar" aria-hidden="true">＋</span><div><b>정치인을 선택하세요</b><small>검색 결과에서 선택</small></div>';};
+  form.addEventListener('input',event=>{const input=event.target.closest('[data-home-compare-search]');if(!input)return;clear(input.closest('[data-home-compare-slot]'));input.setAttribute('value',input.value);update();});
+  form.addEventListener('jcs:politician-selected',event=>{
+   const slot=event.target.closest('[data-home-compare-slot]'),item=event.detail?.item;if(!slot||!item)return;
+   if(slots.some(other=>other!==slot&&other.querySelector('[data-home-compare-id]').value===String(item.id))){clear(slot);update();state.textContent='서로 다른 정치인을 선택해 주세요.';return;}
+   const input=slot.querySelector('[data-home-compare-search]');input.setAttribute('value',input.value);
+   const src=String(item.photo?.url||item.photo?.localPath||'');
+   slot.querySelector('[data-home-compare-preview]').innerHTML=`<span class="home-compare-avatar" data-politician-avatar><span class="politician-photo-initial">${esc(String(item.name||'?').slice(0,1))}</span>${src?`<img data-politician-photo src="${esc(src)}" alt="" style="object-position:${esc(item.photo?.focus||'50% 28%')}">`:''}</span><div><b>${esc(item.name)}</b><small>${esc([item.party,item.jurisdiction||item.office||item.roleLabel].filter(Boolean).join(' · '))}</small></div>`;setupPoliticianPhotoFallback(slot);update();
+  });
+  form.addEventListener('submit',event=>{event.preventDefault();const route=homeCompareRoute(ids());if(!route){update();return;}window.dispatchEvent(new CustomEvent('jcs:layout-route',{detail:{route}}));});update();
+ }
+}
+export function setupLayoutInteractions(root=document,options={}){setupDesktopHomeViewport(root);setupPostMenuDismissal(root);setupCageCountdown(root);setupEmptyHomeModule(root);setupDrawer(root);setupLauncherExpansion(root);setupNowCarousel(root);setupLayoutNavigation(root);setupCompareSearch(root);setupHomeCompare(root);setupPoliticianPhotoFallback(root);setupPoliticianAutocomplete(root,options.politicianSearch);setupDiagnosisInteractions(root);setupDetail47Interactions(root);setupFontScaleControl(root);}
 
 const postMenuRoots=new WeakSet();
 export function setupPostMenuDismissal(root=document){

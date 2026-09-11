@@ -1344,3 +1344,38 @@ body:has(.product-home-wrap .home-balanced-layout) .footer-brand>b{color:#202124
 @keyframes admin-live-pulse{0%{box-shadow:0 0 0 0 rgba(0,184,148,.34)}70%{box-shadow:0 0 0 8px rgba(0,184,148,0)}100%{box-shadow:0 0 0 0 rgba(0,184,148,0)}}
 .product-home-wrap #generation-president>.module-header .eyebrow{color:#111!important}
 .product-home-wrap #national-eval .eval-score strong{color:#315fc4!important}
+
+/* 31.125: reusable voting campaign and functional two-person comparison. */
+.product-home-wrap #poll .choice-intro{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:stretch;margin-bottom:14px}
+.product-home-wrap #poll .choice-intro .choice-description{margin-bottom:0}
+.product-home-wrap #poll .choice-campaign{position:relative;contain:size;min-height:0;border-radius:8px;overflow:hidden;background:#f8fafb}
+.product-home-wrap #poll .choice-campaign img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.product-home-wrap #poll .choice-campaign strong{position:absolute;top:50%;right:4%;transform:translateY(-50%);width:43%;font-size:14px;line-height:1.6;color:#263b46;font-weight:700;word-break:keep-all}
+.product-home-wrap #compare .home-compare-slots{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.product-home-wrap #compare .home-compare-slot{min-width:0;border:1px solid #e5e5e5;border-radius:10px;padding:16px;background:#fff}
+.product-home-wrap #compare .home-compare-slot label{display:block;position:relative}
+.product-home-wrap #compare .home-compare-slot label>span{display:block;font-size:12px;font-weight:500;color:#777;margin-bottom:8px}
+.product-home-wrap #compare .home-compare-slot input[type=search]{width:100%;box-sizing:border-box;height:40px;border:1px solid #ddd;border-radius:7px;background:#fff;padding:0 11px;font:inherit;font-size:14px;color:#222}
+.product-home-wrap #compare .home-compare-slot input:focus-visible{outline:2px solid #444;outline-offset:1px}
+.product-home-wrap #compare .home-compare-person{display:flex;align-items:center;gap:12px;min-height:64px;margin-top:16px}
+.product-home-wrap #compare .home-compare-avatar{position:relative;display:grid;place-items:center;width:56px;height:56px;flex:none;border-radius:50%;overflow:hidden;background:#f2f3f4;color:#888;font-size:24px}
+.product-home-wrap #compare .home-compare-avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.product-home-wrap #compare .home-compare-person>div{min-width:0}
+.product-home-wrap #compare .home-compare-person b{display:block;font-size:16px;line-height:1.5;color:#222}
+.product-home-wrap #compare .home-compare-person small{display:block;font-size:12px;color:#777;line-height:1.5;margin-top:4px;overflow-wrap:anywhere}
+.product-home-wrap #compare .home-compare-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px}
+.product-home-wrap #compare .home-compare-footer>span{font-size:12px;color:#777}
+.product-home-wrap #compare .home-compare-footer button{min-height:40px;padding:0 17px;border:0;border-radius:7px;background:#252525;color:#fff;font:inherit;font-size:13px;font-weight:600;white-space:nowrap}
+.product-home-wrap #compare .home-compare-footer button:disabled{background:#eee;color:#999;cursor:default}
+@media(max-width:600px){
+ .product-home-wrap #poll .choice-intro{grid-template-columns:1fr;gap:12px}
+ .product-home-wrap #poll .choice-campaign{height:100px;contain:none}
+ .product-home-wrap #compare .home-compare-slots{gap:8px}
+ .product-home-wrap #compare .home-compare-slot{padding:10px}
+ .product-home-wrap #compare .home-compare-slot input[type=search]{font-size:12px;padding:0 7px}
+ .product-home-wrap #compare .home-compare-person{flex-direction:column;align-items:flex-start;gap:7px;margin-top:12px}
+ .product-home-wrap #compare .home-compare-person b{font-size:14px}
+ .product-home-wrap #compare .home-compare-person small{font-size:11px}
+ .product-home-wrap #compare .home-compare-footer{flex-direction:column;align-items:stretch}
+ .product-home-wrap #compare .home-compare-footer button{width:100%}
+}
