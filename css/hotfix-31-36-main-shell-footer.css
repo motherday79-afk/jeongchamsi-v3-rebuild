@@ -1477,3 +1477,10 @@ body :is(input,textarea,[contenteditable=""],[contenteditable="true"],[contented
 .product-home-wrap #generation-president .generation-portrait-card .generation-faces{height:130px}
 .product-home-wrap #generation-president .generation-portrait-card .generation-leader-name{display:block;height:18px;line-height:18px;white-space:nowrap;text-overflow:ellipsis}
 .product-home-wrap #compare .home-compare-matchup .home-compare-footer button[type=submit]:not(:disabled){background-image:linear-gradient(110deg,transparent 35%,#fff9 50%,transparent 65%),linear-gradient(100deg,#d7c09b,#f3e2c7);background-size:250% 100%,100% 100%;background-position:150% 0,0 0;background-repeat:no-repeat}
+
+/* 31.130: override the legacy ID-scoped community title typography. */
+.product-home-wrap #community .community-title{font-size:15px;font-weight:400;line-height:22px}
+.product-home-wrap #community .community-title.is-pinned{font-weight:700}
+@media(max-width:1024px){
+ .product-home-wrap #community .community-title{font-size:14px;line-height:21px}
+}
