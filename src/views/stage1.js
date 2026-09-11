@@ -96,7 +96,7 @@ export function renderMyActivity(session,status={},search=''){
 }
 
 const myPostRoute=item=>{const route=item.route||(item.domain==='columns'?'column':item.domain||'community');return `/${esc(route)}/${esc(item.id)}`;};
-const myPostRows=items=>(items||[]).map(item=>`<a class="mypage-list-row" href="#${myPostRoute(item)}" data-layout-route="${myPostRoute(item)}"><b>${esc(item.title||'제목 없는 게시글')}</b><small>${esc(item.domain||'게시판')} · ${fmt(item.createdAt)}</small></a>`).join('')||'<p class="mypage-empty">해당 내역이 없습니다.</p>';
+const myPostRows=items=>(items||[]).map(item=>`<a class="mypage-list-row" href="#${myPostRoute(item)}" data-layout-route="${myPostRoute(item)}"><b>${esc(item.title||'제목 없는 게시글')}</b><small>${esc(({community:'커뮤니티',itsme:'잇츠미',columns:'칼럼',news:'정참시 뉴스',inquiry:'문의'})[item.domain]||'게시글')} · ${fmt(item.createdAt)}</small></a>`).join('')||'<p class="mypage-empty">해당 내역이 없습니다.</p>';
 const myBadgeRows=keys=>(keys||[]).map(key=>{const badge=badgeByKey(key);return badge?`<button type="button" class="mypage-badge-row" data-layout-route="/mypage/activity">${badgeCrestSvg(key)}<span><b>${esc(badge.name)}</b><small>${esc(badge.mission)}</small></span></button>`:'';}).join('')||'<p class="mypage-empty">해당 배지가 없습니다.</p>';
 const BADGE_TIER_PRIORITY={BLACK:5,PLATINUM:4,GOLD:3,SILVER:2,BRONZE:1};
 const highestBadgeKeys=keys=>(keys||[]).map(key=>badgeByKey(key)).filter(Boolean).sort((a,b)=>(BADGE_TIER_PRIORITY[b.tier]||0)-(BADGE_TIER_PRIORITY[a.tier]||0)||BADGE_CATALOG.indexOf(a)-BADGE_CATALOG.indexOf(b)).map(item=>item.key);
@@ -104,7 +104,7 @@ const pageNumber=search=>Math.max(1,Number(new URLSearchParams(String(search||''
 const paginate=(items,search,size=15)=>{const rows=Array.isArray(items)?items:[],pages=Math.max(1,Math.ceil(rows.length/size)),page=Math.min(pages,pageNumber(search)),start=(page-1)*size;return {rows:rows.slice(start,start+size),page,pages,total:rows.length};};
 const pagination=(base,page,pages)=>pages<=1?'':`<nav class="mypage-pagination" aria-label="페이지 이동">${Array.from({length:pages},(_,index)=>{const value=index+1;return `<button type="button" data-page="${value}" ${value===page?'aria-current="page"':''} data-layout-route="${base}?page=${value}">${value}</button>`;}).join('')}</nav>`;
 const personAvatar=item=>{const src=imageUrl(item?.photo?.url||item?.photo?.localPath),initial=esc(String(item?.name||'?').slice(0,1));return src?`<span class="mypage-person-avatar has-photo" data-politician-avatar style="--photo-position:${esc(item.photo?.focus||'50% 28%')}"><span>${initial}</span><img data-politician-photo src="${esc(src)}" alt=""></span>`:`<span class="mypage-person-avatar"><span>${initial}</span></span>`;};
-const myPeopleRows=(items,full=false)=>(items||[]).map((item,index)=>{const rank=Number(item?.now?.rank||item?.rank||0),klass=full?'mypage-person-rank-row':'mypage-person-row';return `<button type="button" class="${klass}" data-layout-route="/person/${esc(item.id)}">${full?`<strong>${rank||index+1}</strong>`:''}${personAvatar(item)}<div><b>${esc(item.name)}</b><small>${esc([item.party,item.jurisdiction||item.office].filter(Boolean).join(' · '))}</small></div>${rank?`<em>NOW ${rank}위</em>`:''}</button>`;}).join('')||'<p class="mypage-empty">즐겨찾기한 정치인이 없습니다.</p>';
+const myPeopleRows=(items,full=false)=>(items||[]).map((item,index)=>{const rank=Number(item?.now?.rank||item?.rank||0),klass=full?'mypage-person-rank-row':'mypage-person-row';return `<button type="button" class="${klass}" data-layout-route="/person/${esc(item.id)}">${full?`<strong>${index+1}</strong>`:''}${personAvatar(item)}<div><b>${esc(item.name)}</b><small>${esc([item.party,item.jurisdiction||item.office].filter(Boolean).join(' · '))}</small></div>${rank?`<em>NOW ${rank}위</em>`:''}</button>`;}).join('')||'<p class="mypage-empty">즐겨찾기한 정치인이 없습니다.</p>';
 
 const myCommentRows=items=>(items||[]).map(item=>`<a class="mypage-list-row" href="/${esc(item.route)}/${esc(item.postId)}" data-layout-route="/${esc(item.route)}/${esc(item.postId)}"><b>${esc(item.text||'댓글')}</b><small>${esc(item.postTitle||'게시글')} · ${fmt(item.createdAt)}</small></a>`).join('')||'<p class="mypage-empty">작성한 댓글이 없습니다.</p>';
 export function renderMyPoints(result={},full=false,search=''){
@@ -126,7 +126,7 @@ function renderMyCollection(session,status,dashboard,options){
   }
   if(section==='favorite-people'){
     const items=dashboard.favoritePeople||[];
-    return subpage('MY JEONGCHAMSI','즐겨찾기한 정치인',`${items.length.toLocaleString('ko-KR')}명의 정치인을 NOW 목록 형태로 확인합니다.`,`<section class="content-card mypage-collection-page"><div class="section-title"><h2>즐겨찾기 정치인 전체</h2><button type="button" class="ghost-btn" data-layout-route="/mypage">마이페이지</button></div><div class="mypage-favorite-politician-list">${myPeopleRows(items,true)}</div></section>`);
+    return subpage('MY JEONGCHAMSI','즐겨찾기한 정치인',`${items.length.toLocaleString('ko-KR')}명의 정치인을 즐겨찾기에 보관하고 있습니다.`,`<section class="content-card mypage-collection-page"><div class="section-title"><h2>즐겨찾기한 정치인</h2><button type="button" class="ghost-btn" data-layout-route="/mypage">마이페이지</button></div><div class="mypage-favorite-politician-list">${myPeopleRows(items,true)}</div></section>`);
   }
   return '';
 }
@@ -190,7 +190,7 @@ export async function renderAdminStable(session,auth,state={}){
 }
 
 export function renderMigration(){return page('JCS_0_0_8 · ONE-TIME MIGRATION','기존 데이터 이식',`<div class="legal-copy"><p>회원·게시판 이식과 정치인 기본 DB 이식을 서로 분리해 실행합니다.</p><p>정치인 DB에는 합의된 프로필·정치 기록·등록 사진만 저장하며 NOW 점수·순위·분석값은 포함하지 않습니다.</p></div><form class="stage-form" data-stage-form="migration">${field('secret','마이그레이션 키','password')}<button class="primary-btn">회원·게시판 이식 실행</button><span data-form-state></span></form><form class="stage-form politician-migration-form" data-stage-form="politician-migration">${field('secret','정치인 DB 이관 키','password')}<button class="primary-btn">정치인 DB 543개 슬롯 이식</button><span data-form-state></span></form>`);}
-import { APP_RELEASE } from '../core/release.js?v=0.0.31.104';
+import { APP_RELEASE } from '../core/release.js?v=0.0.31.105';
 
 export function renderAdminLoading(tab='operations'){
  const labels={operations:'운영현황',members:'회원관리',politicians:'정치인정보',pipeline:'데이터수집·게시',site:'풋터정보',keywords:'정치키워드',participation:'참여·데모'};

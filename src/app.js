@@ -9,7 +9,7 @@ import { createPoliticianService } from './core/politicians.js?v=0.0.31.99';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.61';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.56';
-import * as views from './views/stage1.js?v=0.0.31.104';
+import * as views from './views/stage1.js?v=0.0.31.105';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.56';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.56';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.85';
@@ -191,6 +191,10 @@ async function render({preserveScroll=false}={}){
   else body=`<section class="module"><h2>페이지를 찾을 수 없습니다</h2></section>`;
   if(renderId!==renderSequence)return;
   if(['community','itsme','column','news','inquiry','poll','generation-president','national-evaluation','academy'].includes(p[0]))body=body.replace(/class="subpage\b/,'class="subpage board-typography');
+  if(p[0]==='mypage'&&session.authenticated){
+    const current=r.split('?')[0],tabs=[['/mypage','마이페이지'],['/mypage/favorites/politicians','즐겨찾는 정치인'],['/mypage/favorites/posts','즐겨찾는 게시글'],['/mypage/posts','내 게시글'],['/mypage/comments','내 댓글'],['/mypage/points','포인트']];
+    body=`<div class="mypage-workspace"><nav class="mypage-section-nav" aria-label="마이페이지 메뉴">${tabs.map(([href,label])=>`<a href="${href}" data-layout-route="${href}" ${current===href?'aria-current="page"':''}>${label}</a>`).join('')}</nav>${body}</div>`;
+  }
   if(!await shell(body,session,renderId))return;
   if(!p.length&&session.authenticated)void badgeStatusPromise.then(status=>{
     if(renderId!==renderSequence||route()!==r||!status)return;

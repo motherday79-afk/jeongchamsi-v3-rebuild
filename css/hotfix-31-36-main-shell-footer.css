@@ -1017,3 +1017,49 @@ html.desktop-home-fixed .product-home-wrap .home-promo-row,html.desktop-home-fix
  .board-typography :is(.itsme-category-tabs button,.jc-tabs button,.generation-age-tabs button){font-size:13px}
  .board-typography .board-list h2,.board-typography .jc-row-link strong,.board-typography .ca-row-title{font-size:16px;line-height:23px}
 }
+
+/* 31.105: full-width personal collections and a consistent reading hierarchy. */
+.mypage-workspace{width:100%;min-width:0;font-family:var(--font-ui);font-size:14px;color:#172b3a}
+.mypage-section-nav{display:flex;align-items:center;flex-wrap:wrap;gap:4px 18px;border-bottom:1px solid #dfe7e5;margin-bottom:16px;padding:0 4px}
+.mypage-section-nav a{display:block;padding:12px 2px;text-decoration:none;color:#63716e;font-size:14px;line-height:22px;border-bottom:2px solid transparent}
+.mypage-section-nav a[aria-current=page]{color:#008e76;border-color:#00b894;font-weight:600}
+.mypage-section-nav a:hover{color:#008e76;background:#f4fbf8}
+.mypage-workspace>.subpage{width:100%;min-width:0;align-items:stretch;justify-items:stretch;gap:16px}
+.mypage-workspace .mypage-collection-page,.mypage-workspace .my-points{width:100%;max-width:none;min-width:0;box-sizing:border-box;margin:0;padding:22px 24px;border-radius:12px;box-shadow:none}
+.mypage-workspace .page-hero{width:100%;box-sizing:border-box;padding:20px 24px;border-radius:12px;box-shadow:none}
+.mypage-workspace .page-hero h1{font-size:24px;line-height:33px;letter-spacing:-.5px;font-weight:700;margin:4px 0}
+.mypage-workspace .page-hero p{font-size:14px;line-height:22px;color:#63716e;margin:4px 0 0}
+.mypage-workspace .eyebrow{font-size:11px;line-height:16px;font-weight:600}
+.mypage-workspace .section-title{gap:12px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.mypage-workspace .section-title h2,.mypage-workspace>.module>.module-header h2{font-size:18px;line-height:26px;font-weight:700;letter-spacing:-.3px}
+.mypage-workspace :is(.ghost-btn,.mypage-view-all){font-size:13px;line-height:20px;font-weight:500;padding:8px 12px;white-space:nowrap}
+.mypage-workspace .mypage-favorite-politician-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:0}
+.mypage-workspace .mypage-person-rank-row{display:grid;grid-template-columns:26px 48px minmax(0,1fr) auto;gap:12px;min-height:86px;padding:14px;text-align:left}
+.mypage-workspace :is(.mypage-person-rank-row,.mypage-person-row)>div{min-width:0}
+.mypage-workspace :is(.mypage-person-rank-row,.mypage-person-row)>div>b{display:block;font-size:16px;font-weight:600;line-height:24px;margin:0 0 3px}
+.mypage-workspace :is(.mypage-person-rank-row,.mypage-person-row)>div>small{display:block;font-size:13px;line-height:20px;font-weight:400;color:#687780;overflow-wrap:anywhere}
+.mypage-workspace .mypage-person-rank-row>strong{font-size:13px;font-weight:500;color:#7a8884}
+.mypage-workspace .mypage-person-rank-row>em{font-size:12px;font-weight:500;white-space:nowrap}
+.mypage-workspace .mypage-list-row{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;width:100%;min-width:0;box-sizing:border-box;margin:0;padding:13px 4px;border:0;border-bottom:1px solid #e7ecea;border-radius:0;box-shadow:none}
+.mypage-workspace .mypage-list-row>b{font-size:16px;line-height:24px;font-weight:500;word-break:keep-all;overflow-wrap:anywhere}
+.mypage-workspace .mypage-list-row>small{margin:0;font-size:12px;line-height:18px;font-weight:400;color:#687780}
+.mypage-workspace .mypage-empty{grid-column:1/-1;width:100%;box-sizing:border-box;margin:0;padding:28px 12px;text-align:center;background:#f8faf9;border-radius:8px;font-size:14px;line-height:22px;color:#687780}
+.mypage-workspace .my-point-totals strong{font-size:24px;line-height:34px;font-weight:700}
+.mypage-workspace .my-point-totals span{font-size:13px;line-height:20px}
+.mypage-workspace .my-point-record{padding:12px 0}
+.mypage-workspace .my-point-record b{font-size:15px;line-height:23px;font-weight:500}
+.mypage-workspace .my-point-record small{font-size:12px;line-height:18px;margin-top:3px}
+.mypage-workspace .my-point-record strong{font-size:16px;font-weight:600}
+.mypage-workspace .mypage-pagination{margin-top:18px}
+.mypage-workspace .mypage-pagination button{font-size:14px;font-weight:500}
+@media(max-width:700px){
+ .mypage-section-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 6px}
+ .mypage-section-nav a{text-align:center;font-size:12px;padding:10px 0;white-space:nowrap}
+ .mypage-workspace .page-hero,.mypage-workspace .mypage-collection-page,.mypage-workspace .my-points{padding:16px}
+ .mypage-workspace .page-hero h1{font-size:22px;line-height:30px}
+ .mypage-workspace .mypage-favorite-politician-list{grid-template-columns:minmax(0,1fr)}
+ .mypage-workspace .mypage-person-rank-row{grid-template-columns:20px 42px minmax(0,1fr);gap:10px;padding:12px;min-height:78px}
+ .mypage-workspace .mypage-person-rank-row>em{grid-column:3;margin-top:-6px}
+ .mypage-workspace .my-point-record{align-items:flex-start;gap:10px}
+ .mypage-workspace .my-point-record strong{font-size:14px}
+}
