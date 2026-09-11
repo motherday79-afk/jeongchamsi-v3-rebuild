@@ -228,7 +228,15 @@ export function setupHomeCompare(root=document){
   form.addEventListener('submit',event=>{event.preventDefault();const route=homeCompareRoute(ids());if(!route){update();return;}window.dispatchEvent(new CustomEvent('jcs:layout-route',{detail:{route}}));});update();
  }
 }
-export function setupLayoutInteractions(root=document,options={}){setupDesktopHomeViewport(root);setupPostMenuDismissal(root);setupCageCountdown(root);setupEmptyHomeModule(root);setupDrawer(root);setupLauncherExpansion(root);setupNowCarousel(root);setupLayoutNavigation(root);setupCompareSearch(root);setupHomeCompare(root);setupPoliticianPhotoFallback(root);setupPoliticianAutocomplete(root,options.politicianSearch);setupDiagnosisInteractions(root);setupDetail47Interactions(root);setupFontScaleControl(root);}
+const copyAllowedSelector='input,textarea,[contenteditable=""],[contenteditable="true"],[contenteditable="plaintext-only"],[data-allow-copy],.point-bank,.donation-bank,a[href^="mailto:"],a[href^="tel:"]';
+export function copyAllowed(node){const element=node?.nodeType===3?node.parentElement:node;return !!element?.closest?.(copyAllowedSelector);}
+const copyRestrictionRoots=new WeakSet();
+export function setupCopyRestrictions(root=document){
+ if(copyRestrictionRoots.has(root))return;copyRestrictionRoots.add(root);
+ root.addEventListener('contextmenu',event=>{if(!copyAllowed(event.target))event.preventDefault();});
+ root.addEventListener('copy',event=>{const selection=root.getSelection?.()||globalThis.getSelection?.();if(copyAllowed(event.target)||(copyAllowed(selection?.anchorNode)&&copyAllowed(selection?.focusNode)))return;event.preventDefault();});
+}
+export function setupLayoutInteractions(root=document,options={}){setupDesktopHomeViewport(root);setupCopyRestrictions(root);setupPostMenuDismissal(root);setupCageCountdown(root);setupEmptyHomeModule(root);setupDrawer(root);setupLauncherExpansion(root);setupNowCarousel(root);setupLayoutNavigation(root);setupCompareSearch(root);setupHomeCompare(root);setupPoliticianPhotoFallback(root);setupPoliticianAutocomplete(root,options.politicianSearch);setupDiagnosisInteractions(root);setupDetail47Interactions(root);setupFontScaleControl(root);}
 
 const postMenuRoots=new WeakSet();
 export function setupPostMenuDismissal(root=document){
