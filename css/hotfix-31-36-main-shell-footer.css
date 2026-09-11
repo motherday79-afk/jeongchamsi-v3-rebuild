@@ -1292,3 +1292,46 @@ body:has(.product-home-wrap .home-balanced-layout) .footer-brand>b{color:#202124
 .product-home-wrap #generation-president .generation-portrait-card .generation-age{display:block;min-height:20px;line-height:20px}
 .product-home-wrap #generation-president .generation-portrait-card .generation-faces{height:68px;min-height:68px;flex:0 0 68px;margin:0}
 .product-home-wrap #generation-president .generation-portrait-card .generation-leader-name{min-height:40px;margin:0;line-height:20px}
+
+/* 31.122: text-led ballot and artwork fitted to the existing proposal list. */
+.product-home-wrap #itsme .proposal-feature{align-items:stretch}
+.product-home-wrap #itsme .proposal-cover{display:flex;flex-direction:column;min-height:0;contain:size;align-self:stretch}
+.product-home-wrap #itsme .proposal-art-frame{display:block;position:relative;flex:1;min-height:0;overflow:hidden;border-radius:10px}
+.product-home-wrap #itsme .proposal-art-frame img{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;object-fit:cover;object-position:center}
+.product-home-wrap #itsme .proposal-cover>.proposal-art-frame{margin:0}
+.product-home-wrap #itsme .proposal-cover>span:last-child{flex:none;margin:0;padding-top:7px}
+.product-home-wrap #itsme .proposal-rows>a:last-child{padding-bottom:0}
+.product-home-wrap #poll .choice-vote-heading>small{font-size:12px;color:#777}
+.product-home-wrap #poll .choice-vote-heading .choice-question{font-size:17px;line-height:1.5;margin:7px 0 12px;font-weight:700}
+.product-home-wrap #poll .choice-description{font-size:13px;line-height:1.6;color:#666;margin:0 0 14px;white-space:pre-line}
+.product-home-wrap #poll .choice-ballot-list{list-style:none;margin:0;padding:0;border-top:1px solid #e8e8e8}
+.product-home-wrap #poll .choice-ballot-list>li{margin:0;padding:0;border-bottom:1px solid #eee}
+.product-home-wrap #poll .choice-ballot-row{display:grid;grid-template-columns:24px minmax(0,1fr) 52px 12px;gap:12px;align-items:center;min-height:58px;padding:9px 10px;box-sizing:border-box;text-decoration:none;color:#242424;border-radius:6px}
+.product-home-wrap #poll .choice-ballot-number{font-size:12px;color:#888;font-weight:500}
+.product-home-wrap #poll .choice-ballot-content{display:flex;align-items:center;gap:12px;min-width:0}
+.product-home-wrap #poll .choice-ballot-content img{width:44px;height:44px;flex:none;object-fit:contain;background:#fafafa;border-radius:6px}
+.product-home-wrap #poll .choice-ballot-label{font-size:15px;font-weight:500;line-height:1.5;overflow-wrap:anywhere}
+.product-home-wrap #poll .choice-ballot-result{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.product-home-wrap #poll .choice-ballot-result b{font-size:14px;font-weight:600}
+.product-home-wrap #poll .choice-ballot-result small{font-size:11px;color:#888}
+.product-home-wrap #poll .choice-ballot-arrow{font-size:18px;color:#999}
+.product-home-wrap #poll .choice-ballot-row:hover{background:#f6f6f6}
+.product-home-wrap #poll .choice-ballot-row:focus-visible,.product-home-wrap #poll .choice-vote-button:focus-visible{outline:2px solid #333;outline-offset:2px}
+.product-home-wrap #poll .choice-vote-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px}
+.product-home-wrap #poll .choice-vote-footer>span{font-size:13px;color:#555}
+.product-home-wrap #poll .choice-vote-footer small{display:block;margin-top:4px;font-size:11px;color:#888}
+.product-home-wrap #poll .choice-vote-button{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 16px;background:#252525;color:#fff;border-radius:7px;white-space:nowrap;text-decoration:none;font-size:13px;font-weight:600}
+.product-home-wrap #poll .choice-archive{margin-top:18px;border-top:1px solid #e8e8e8;padding-top:12px}
+.product-home-wrap #poll .choice-archive>summary{cursor:pointer;font-size:13px;font-weight:500;color:#555}
+.product-home-wrap #poll .choice-archive>summary small{font-size:12px;color:#888;margin-left:6px}
+.product-home-wrap #poll .choice-archive ul{list-style:none;margin:8px 0 0;padding:0}
+.product-home-wrap #poll .choice-archive li>a{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;text-decoration:none;color:#444;font-size:13px;border-bottom:1px solid #eee}
+.product-home-wrap #poll .choice-archive li>a>span{min-width:0;overflow-wrap:anywhere}
+.product-home-wrap #poll .choice-archive li>a>small{flex:none;font-size:11px;color:#888}
+@media(max-width:600px){
+ .product-home-wrap #poll .choice-ballot-row{grid-template-columns:18px minmax(0,1fr) 42px 8px;gap:8px;padding:9px 2px}
+ .product-home-wrap #poll .choice-ballot-label{font-size:14px}
+ .product-home-wrap #poll .choice-ballot-content{gap:7px}
+ .product-home-wrap #poll .choice-ballot-content img{width:36px;height:36px}
+ .product-home-wrap #poll .choice-vote-button{padding:0 12px}
+}
