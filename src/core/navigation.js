@@ -40,13 +40,13 @@ export async function sharePost({domain,id,title='정참시 게시글'},capabili
 }
 
 export function createNavigation({window,readSnapshot,restoreSnapshot,rebind,onRoute}){
-  const snapshots=new Map();
+  const snapshots=new Map();let skipNextRecord=false;
   const currentRoute=()=>routeFromLocation(window.location);
   const stateFor=(route,previous={})=>({...(previous||{}),[NAV_FLAG]:true,key:previous?.key||key(),route,x:Number(previous?.x||0),y:Number(previous?.y||0)});
   const state=()=>stateFor(currentRoute(),window.history.state?.[NAV_FLAG]?window.history.state:{});
   const record=()=>{
     const current={...state(),route:currentRoute(),x:Number(window.scrollX||0),y:Number(window.scrollY||0)};
-    const markup=readSnapshot?.();if(markup)snapshots.set(current.key,{markup,route:current.route,x:current.x,y:current.y});
+    const markup=readSnapshot?.();if(markup&&!skipNextRecord)snapshots.set(current.key,{markup,route:current.route,x:current.x,y:current.y});skipNextRecord=false;
     window.history.replaceState(current,'',routePath(current.route));
     return current;
   };
@@ -72,5 +72,5 @@ export function createNavigation({window,readSnapshot,restoreSnapshot,rebind,onR
     onRoute?.(target,{restored:false,preserveScroll:false});
   };
   const start=()=>{window.history.scrollRestoration='manual';const current=state();window.history.replaceState(current,'',routePath(current.route));window.addEventListener('popstate',handlePop);return current;};
-  return {start,navigate,record,cacheCurrent,handlePop,route:currentRoute};
+  return {start,navigate,record,cacheCurrent,handlePop,route:currentRoute,clearCache:()=>{snapshots.clear();skipNextRecord=true;}};
 }

@@ -199,10 +199,11 @@ function setupEmptyHomeModule(root){
   sync();
   if(globalThis.ResizeObserver){const observer=new ResizeObserver(()=>{if(!target.isConnected){observer.disconnect();return;}sync();});observer.observe(source);}
 }
-function setupCageCountdown(root){
- const timers=[...root.querySelectorAll('[data-cage-ends]')];if(!timers.length)return;let offset=0;
+const cageTimerIds=new WeakMap();
+export function setupCageCountdown(root){
+ const timers=[...root.querySelectorAll('[data-cage-ends]')];if(!timers.length)return;for(const node of timers){const previous=cageTimerIds.get(node);if(previous)clearInterval(previous);}let offset=0;
  const paint=()=>{let connected=false;for(const node of timers){if(!node.isConnected)continue;connected=true;const left=Math.max(0,Math.ceil((Number(node.dataset.cageEnds)-Date.now()-offset)/1000));node.textContent=left?`남은 시간 ${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}`:'참여 종료';node.classList.toggle('is-ended',!left);if(!left){const page=node.closest('[data-cage-id]'),join=page?.querySelector('.jc-join-box');if(join&&!join.dataset.closed){join.dataset.closed='true';join.textContent='케이지가 종료되었습니다. 최종 결과와 참여 기록을 확인할 수 있습니다.';}page?.querySelectorAll('form[data-stage-form=comment] button[type=submit]').forEach(b=>b.disabled=true);}}return connected;};
- const before=Date.now();fetch('/api/v3/points?clock=1',{credentials:'same-origin'}).then(r=>r.json()).then(x=>{if(Number.isFinite(x.serverNow)){offset=x.serverNow-(before+Date.now())/2;paint();}}).catch(()=>{});paint();const timer=setInterval(()=>{if(!paint())clearInterval(timer);},1000);
+ const before=Date.now();fetch('/api/v3/points?clock=1',{credentials:'same-origin'}).then(r=>r.json()).then(x=>{if(Number.isFinite(x.serverNow)){offset=x.serverNow-(before+Date.now())/2;paint();}}).catch(()=>{});paint();const timer=setInterval(()=>{if(!paint())clearInterval(timer);},1000);for(const node of timers)cageTimerIds.set(node,timer);
 }
 export function setupLayoutInteractions(root=document,options={}){setupDesktopHomeViewport(root);setupPostMenuDismissal(root);setupCageCountdown(root);setupEmptyHomeModule(root);setupDrawer(root);setupLauncherExpansion(root);setupNowCarousel(root);setupLayoutNavigation(root);setupCompareSearch(root);setupPoliticianPhotoFallback(root);setupPoliticianAutocomplete(root,options.politicianSearch);setupDiagnosisInteractions(root);setupDetail47Interactions(root);setupFontScaleControl(root);}
 

@@ -1,7 +1,18 @@
 const clean=v=>String(v??'').trim();
 const clone=v=>JSON.parse(JSON.stringify(v));
 const id=()=>`${Date.now().toString(36)}-${Math.random().toString(36).slice(2,9)}`;
-async function request(path,options={}){const res=await fetch(`/api/v3/${path}`,{credentials:'same-origin',headers:{'Content-Type':'application/json',...(options.headers||{})},...options});const data=await res.json().catch(()=>({ok:false,error:'INVALID_RESPONSE'}));return {status:res.status,...data};}
+async function rawContentRequest(path,options={}){const res=await fetch(`/api/v3/${path}`,{credentials:'same-origin',headers:{'Content-Type':'application/json',...(options.headers||{})},...options});const data=await res.json().catch(()=>({ok:false,error:'INVALID_RESPONSE'}));return {status:res.status,...data};}
+const publicContentCache=new Map();
+const publicContentPaths=new Set(['content?domain=columns','content?domain=community','content?domain=itsme','content?domain=news','content?domain=polls','content?domain=generation','content?domain=nationalEvaluation','content?domain=academy','home/banner']);
+function request(path,options={}){
+ const write=options.method&&options.method!=='GET';
+ if(write){publicContentCache.clear();return rawContentRequest(path,options).finally(()=>{publicContentCache.clear();globalThis.dispatchEvent?.(new Event('jcs:data-changed'));});}
+ if(!publicContentPaths.has(path))return rawContentRequest(path,options);
+ const cached=publicContentCache.get(path);if(cached&&Date.now()<cached.until)return cached.promise;
+ const entry={until:Date.now()+30000};entry.promise=rawContentRequest(path,options).then(result=>{if(!result.ok&&publicContentCache.get(path)===entry)publicContentCache.delete(path);return result;}).catch(error=>{if(publicContentCache.get(path)===entry)publicContentCache.delete(path);throw error;});publicContentCache.set(path,entry);return entry.promise;
+}
+globalThis.addEventListener?.('jcs:auth-changed',()=>publicContentCache.clear());
+globalThis.addEventListener?.('jcs:admin-changed',()=>publicContentCache.clear());
 function itemsFrom(domain,data){if(Array.isArray(data?.items))return data.items;if(domain==='academy'&&Array.isArray(data?.slots))return data.slots;return [];}
 
 function createRemoteContentService(){

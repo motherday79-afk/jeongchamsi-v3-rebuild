@@ -14,7 +14,7 @@ const requestCache=new Map();let cacheEpoch=0;
 async function request(path,options={},preserveCache=false){
  const read=!options.method||options.method==='GET',cacheable=read&&path!=='admin/participation'&&(path.startsWith('admin/')||path==='user/session'||(path.includes('count')||path==='stats'));
  if(!read&&preserveCache)return uncachedRequest(path,options);
- if(!read){requestCache.clear();cacheEpoch++;try{return await uncachedRequest(path,options);}finally{requestCache.clear();cacheEpoch++;}}
+ if(!read){requestCache.clear();cacheEpoch++;try{return await uncachedRequest(path,options);}finally{requestCache.clear();cacheEpoch++;globalThis.dispatchEvent?.(new Event(/login|logout|register/.test(path)?'jcs:auth-changed':'jcs:admin-changed'));}}
  if(!cacheable)return uncachedRequest(path,options);
  const now=Date.now(),cached=requestCache.get(path);if(cached&&cached.until>now)return cached.promise;
  const epoch=cacheEpoch,promise=uncachedRequest(path,options).then(result=>{if((result.status>=400||result.ok===false)&&epoch===cacheEpoch)requestCache.delete(path);return result;}).catch(error=>{if(epoch===cacheEpoch)requestCache.delete(path);throw error;});

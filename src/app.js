@@ -1,15 +1,16 @@
+import { refreshFontScale } from './ui/font-scale.js?v=0.0.31.56';
 import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.103';
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.56';
 import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.96';
 import { renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.102';
-import { setupLayoutInteractions, setupPoliticianPhotoFallback } from './ui/interactions.js?v=0.0.31.98';
-import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.61';
-import { createContentService, loadNavigationDashboard } from './core/content.js?v=0.0.31.83';
-import { createPoliticianService } from './core/politicians.js?v=0.0.31.99';
-import { sharePost, createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.61';
+import { setupLayoutInteractions, setupPoliticianPhotoFallback, setupNowCarousel, setupCageCountdown, setupDesktopHomeViewport } from './ui/interactions.js?v=0.0.31.106';
+import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.106';
+import { createContentService, loadNavigationDashboard } from './core/content.js?v=0.0.31.106';
+import { createPoliticianService } from './core/politicians.js?v=0.0.31.106';
+import { sharePost, createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.106';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.56';
-import * as views from './views/stage1.js?v=0.0.31.105';
+import * as views from './views/stage1.js?v=0.0.31.106';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.56';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.56';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.85';
@@ -71,6 +72,27 @@ function tunePoliticianNarratives(){
   if(executive){const title=executive.querySelector('h2'),body=executive.querySelector('p');if(title)title.textContent='운영 구조 및 전환 과제';if(body)body.textContent=copy.adminDecision;}
 }
 
+let homeSnapshot=null;
+const sessionIdentity=session=>session?.authenticated?`${session.user?.id}:${session.user?.role}:${session.user?.sessionVersion||0}`:'guest';
+const invalidateHome=()=>{if(homeSnapshot)homeSnapshot.at=0;};
+window.addEventListener('jcs:data-changed',invalidateHome);
+window.addEventListener('jcs:admin-changed',invalidateHome);
+window.addEventListener('jcs:auth-changed',()=>{homeSnapshot=null;navigation?.clearCache();});
+window.addEventListener('storage',()=>{homeSnapshot=null;navigation?.clearCache();});
+function updateVisibleHome(body){
+ const before=document.createElement('template'),after=document.createElement('template');before.innerHTML=homeSnapshot.body;after.innerHTML=body;
+ for(const selector of ['.main-column','.side-column']){
+  const oldRows=[...before.content.querySelector(selector).children],newRows=[...after.content.querySelector(selector).children],live=document.querySelector('.product-home-wrap '+selector);
+  const key=node=>node.id||node.className;
+  for(const row of newRows){const previous=oldRows.find(x=>key(x)===key(row));if(previous?.outerHTML===row.outerHTML)continue;
+   const current=[...live.children].find(x=>key(x)===key(row));if(current)current.replaceWith(row);else {const following=newRows.slice(newRows.indexOf(row)+1).map(x=>[...live.children].find(y=>key(y)===key(x))).find(Boolean);live.insertBefore(row,following||null);}
+   setupPoliticianPhotoFallback(row);setupNowCarousel(row);setupCageCountdown(row);
+  }
+  for(const current of [...live.children])if(!newRows.some(row=>key(row)===key(current)))current.remove();
+ }
+ setupDesktopHomeViewport(document);refreshFontScale(document);
+ homeSnapshot.body=body;homeSnapshot.at=Date.now();
+}
 let shellInfoCache=null;
 function loadShellInfo(){
   if(!shellInfoCache||shellInfoCache.until<Date.now())shellInfoCache={until:Date.now()+30000,promise:Promise.all([auth.memberCount().catch(()=>0),content.footerInfo().catch(()=>({}))])};
@@ -112,8 +134,20 @@ function setupMemberBadgeManagers(){
   for(const row of document.querySelectorAll('[data-member-badge-row]'))row.addEventListener('toggle',()=>{if(!row.open)return;const mount=row.querySelector('[data-member-badge-mount]');if(!mount||mount.dataset.loaded)return;try{mount.innerHTML=views.renderMemberBadgeManager(JSON.parse(row.dataset.memberBadgePayload||'{}'));mount.dataset.loaded='true';void loadMemberPoints(mount.querySelector('[data-member-points-panel]'));}catch{mount.innerHTML='<p class="module-desc">배지 목록을 불러오지 못했습니다.</p>';}});
 }
 
-async function render({preserveScroll=false}={}){
+async function render({preserveScroll=false,refreshHome=false}={}){
   const renderId=++renderSequence,r=route(),p=parts(r);
+  if(!p.length&&!refreshHome&&homeSnapshot){
+    app.replaceChildren(homeSnapshot.node);setupCageCountdown(document);
+    if(!preserveScroll)window.scrollTo(0,0);
+    const snapshot=homeSnapshot;
+    void auth.session().then(session=>{
+      if(renderId!==renderSequence||parts(route()).length)return;
+      if(sessionIdentity(session)!==snapshot.identity){homeSnapshot=null;navigation?.clearCache();void render({refreshHome:true,preserveScroll:true});return;}
+      if(Date.now()-snapshot.at>30000)void render({refreshHome:true,preserveScroll:true});
+      else void refreshCachedMemberSummary();
+    }).catch(()=>{});
+    navigation?.cacheCurrent();return;
+  }
   const searchParams=new URLSearchParams(r.split('?')[1]||''),searchTerm=(searchParams.get('q')||'').trim(),mountedSearch=document.querySelector('.search-page[data-search-query]');
   if(p[0]==='search'&&mountedSearch?.dataset.searchQuery===searchTerm&&hasSearchSnapshot(content,searchTerm)){
     const markup=await renderSearchPage({query:searchTerm,page:searchParams.get('page')||1,politicians,content});
@@ -149,7 +183,7 @@ async function render({preserveScroll=false}={}){
       content.homeBanner().catch(()=>null),politicians.trending().catch(()=>({items:[]})),politicians.keywords().catch(()=>({items:[]}))
     ]);
     const rank=rankResult?.ok?(Array.isArray(rankResult.items)?rankResult.items:[]).slice(0,100):[];
-    const generationIds=(Array.isArray(generation?.candidates)?generation.candidates:[]).slice(0,75),evaluationIds=Object.values(nationalEvaluation?.slots||{}).map(slot=>slot?.subjectId).filter(Boolean),resolvedPeople=await Promise.all([...new Set([...generationIds,...evaluationIds])].map(id=>politicians.get(id).catch(()=>({ok:false}))));
+    const generationIds=(Array.isArray(generation?.candidates)?generation.candidates:[]).slice(0,75),evaluationIds=Object.values(nationalEvaluation?.slots||{}).map(slot=>slot?.subjectId).filter(Boolean),profileIds=[...new Set([...generationIds,...evaluationIds])],profileResult=profileIds.length?await politicians.profiles(profileIds).catch(()=>({items:[]})):{items:[]},resolvedPeople=(profileResult.items||[]).map(item=>({ok:true,item}));
     const peopleById=Object.fromEntries(resolvedPeople.filter(result=>result?.ok&&result.item).map(result=>[result.item.id,result.item])),generationView={...generation,candidateLabels:Object.fromEntries(generationIds.map(id=>[id,peopleById[id]?.name||id]))},nationalEvaluationView={...nationalEvaluation,slots:Object.fromEntries(Object.entries(nationalEvaluation?.slots||{}).map(([key,slot])=>[key,{...slot,subjectName:peopleById[slot?.subjectId]?.name||slot?.subjectName,party:peopleById[slot?.subjectId]?.party||slot?.party,jurisdiction:peopleById[slot?.subjectId]?.jurisdiction||slot?.jurisdiction,photo:peopleById[slot?.subjectId]?.photo||slot?.photo}]))};
     const home={...HOME_FIXTURE,trending:trendingResult.items||[],keywords:keywordResult.items||[],memberCount,columns,community,communityData:content.peekDomain('community')||{items:community},itsmePosts,newsPosts,polls,generation:generationView,nationalEvaluation:nationalEvaluationView,academy,rank,homeBanner,recentPoliticians:loadRecentPoliticians(),session,badgeStatus};
     body=`<div class="product-home-wrap">${renderHomeLayout(home)}</div>`;
@@ -195,7 +229,9 @@ async function render({preserveScroll=false}={}){
     const current=r.split('?')[0],tabs=[['/mypage','마이페이지'],['/mypage/favorites/politicians','즐겨찾는 정치인'],['/mypage/favorites/posts','즐겨찾는 게시글'],['/mypage/posts','내 게시글'],['/mypage/comments','내 댓글'],['/mypage/points','포인트']];
     body=`<div class="mypage-workspace"><nav class="mypage-section-nav" aria-label="마이페이지 메뉴">${tabs.map(([href,label])=>`<a href="${href}" data-layout-route="${href}" ${current===href?'aria-current="page"':''}>${label}</a>`).join('')}</nav>${body}</div>`;
   }
-  if(!await shell(body,session,renderId))return;
+  if(refreshHome&&homeSnapshot&&document.querySelector('.product-home-wrap')&&homeSnapshot.identity===sessionIdentity(session))updateVisibleHome(body);
+  else if(!await shell(body,session,renderId))return;
+  if(!p.length)homeSnapshot={node:app.firstElementChild,body,at:Date.now(),identity:sessionIdentity(session)};
   if(!p.length&&session.authenticated)void badgeStatusPromise.then(status=>{
     if(renderId!==renderSequence||route()!==r||!status)return;
     for(const mount of document.querySelectorAll('[data-badge-showcase-mount]'))mount.innerHTML=renderBadgeShowcase(status,mount.dataset.badgeMypage==='true',mount.dataset.displayName||'');
@@ -207,13 +243,13 @@ async function render({preserveScroll=false}={}){
   setupMemberBadgeManagers();
   restoreCageDraft();
   showCageFeedback();
-  if(p[0]==='person'){recordRecentPolitician(document);tunePoliticianNarratives();if(session.user?.role==='admin')void updatePoliticianPhotoStorageStatus();}
+  if(p[0]==='person'){invalidateHome();recordRecentPolitician(document);tunePoliticianNarratives();if(session.user?.role==='admin')void updatePoliticianPhotoStorageStatus();}
   if(!preserveScroll){window.scrollTo(0,0);if(p[0]==='support'||p[0]==='points'&&new URLSearchParams(r.split('?')[1]||'').get('view')==='support'){const target=document.getElementById('jcs-support');target?.scrollIntoView({block:'start'});target?.querySelector('h2')?.focus({preventScroll:true});}}
   navigation?.cacheCurrent();
   if(p[0]==='admin')queueMicrotask(resumeAdminIntelligence);
 }
 
-navigation=createNavigation({window,readSnapshot:()=>app.innerHTML,restoreSnapshot:markup=>{app.innerHTML=markup;},rebind:()=>{++renderSequence;const cachedRoute=parts(route());if(['mypage','points'].includes(cachedRoute[0]))queueMicrotask(()=>void render({preserveScroll:true}));else if(!cachedRoute.length)void refreshCachedMemberSummary();setupLayoutInteractions(document,{politicianSearch:(query,limit)=>politicians.search(query,limit)});setupMemberBadgeManagers();if(document.querySelector('.jc55'))queueMicrotask(()=>void render({preserveScroll:true}));if(pipelineActive())queueMicrotask(resumeAdminIntelligence);},onRoute:(_route,options)=>void render(options)});
+navigation=createNavigation({window,readSnapshot:()=>app.innerHTML,restoreSnapshot:markup=>{app.innerHTML=markup;if(document.querySelector('.product-home-wrap')&&homeSnapshot)homeSnapshot.node=app.firstElementChild;},rebind:()=>{++renderSequence;const cachedRoute=parts(route());if(['mypage','points'].includes(cachedRoute[0]))queueMicrotask(()=>void render({preserveScroll:true}));else if(!cachedRoute.length)void refreshCachedMemberSummary();setupLayoutInteractions(document,{politicianSearch:(query,limit)=>politicians.search(query,limit)});setupMemberBadgeManagers();if(document.querySelector('.jc55'))queueMicrotask(()=>void render({preserveScroll:true}));if(pipelineActive())queueMicrotask(resumeAdminIntelligence);},onRoute:(_route,options)=>void render(options)});
 navigation.start();
 window.addEventListener('jcs:layout-route',event=>navigation.navigate(event.detail?.route||'/'));
 window.addEventListener('jcs:layout-search',event=>navigation.navigate(`/search?q=${encodeURIComponent(String(event.detail?.query||'').trim())}`));

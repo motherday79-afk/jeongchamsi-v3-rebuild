@@ -7,6 +7,7 @@ async function request(path){
 
 export function createPoliticianService(){
   return {
+    profiles(ids=[]){return request(`?ids=${encodeURIComponent([...new Set(ids)].slice(0,100).join(','))}`);},
     list(type='assembly',offset=0,limit=30){return request(`?type=${encodeURIComponent(type)}&offset=${Math.max(0,Number(offset)||0)}&limit=${Math.max(1,Number(limit)||30)}`);},
     trending(offset=0,snapshot=''){return request(`?ranking=trending&offset=${Math.max(0,Number(offset)||0)}&snapshot=${encodeURIComponent(snapshot)}`);},
     keywords(){return request('?keywords=1');},

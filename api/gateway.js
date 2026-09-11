@@ -89,6 +89,12 @@ async function handleMigration(req,res,route){
 
 export async function handlePoliticians(req,res,command,url,intelligence){
   if(req.method!=='GET')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
+  if(url.searchParams.has('ids')){
+    const ids=[...new Set(url.searchParams.get('ids').split(',').filter(Boolean))].slice(0,100);
+    const [photos,...groups]=await Promise.all([readPoliticianPhotos(command),...POLITICIAN_TYPES.map(type=>readPoliticianType(command,type))]);
+    const wanted=new Set(ids),items=groups.flat().filter(person=>wanted.has(person.id)).map(person=>({id:person.id,name:person.name,party:person.party,jurisdiction:person.jurisdiction,office:person.office,roleLabel:person.roleLabel,photo:photos[person.id]||null}));
+    return json(res,200,{ok:true,items});
+  }
   const id=String(url.searchParams.get('id')||req.query?.id||'').trim(),query=String(url.searchParams.get('q')||req.query?.q||'').trim(),ranking=String(url.searchParams.get('ranking')||req.query?.ranking||'').trim(),photos=await readPoliticianPhotos(command);
   if(id){
     const [item,report,user]=await Promise.all([getPolitician(command,id),intelligence.getPublicIntelligence(id),currentUser(req,command)]);
