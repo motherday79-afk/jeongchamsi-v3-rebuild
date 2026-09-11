@@ -1335,3 +1335,12 @@ body:has(.product-home-wrap .home-balanced-layout) .footer-brand>b{color:#202124
  .product-home-wrap #poll .choice-ballot-content img{width:36px;height:36px}
  .product-home-wrap #poll .choice-vote-button{padding:0 12px}
 }
+
+/* 31.124: live indicators retain the brand mint; selected numeric emphasis is blue. */
+.main-live-pulse,.product-home-wrap .home-balanced-layout .main-live-pulse{background:transparent!important;border-color:transparent!important}
+.main-live-pulse i,.product-home-wrap .home-balanced-layout .main-live-pulse i,.admin-live-pulse:not(.is-idle) i{background:#00b894!important}
+.main-live-pulse:after,.product-home-wrap .home-balanced-layout .main-live-pulse:after,.admin-live-pulse:not(.is-idle):after{border-color:rgba(0,184,148,.5)!important}
+.sidebar-live-dot,.live-dot,.product-home-wrap .home-balanced-layout .sidebar-live-dot{background:#00b894!important;box-shadow:0 0 0 4px rgba(0,184,148,.1)!important}
+@keyframes admin-live-pulse{0%{box-shadow:0 0 0 0 rgba(0,184,148,.34)}70%{box-shadow:0 0 0 8px rgba(0,184,148,0)}100%{box-shadow:0 0 0 0 rgba(0,184,148,0)}}
+.product-home-wrap #generation-president>.module-header .eyebrow{color:#111!important}
+.product-home-wrap #national-eval .eval-score strong{color:#315fc4!important}
