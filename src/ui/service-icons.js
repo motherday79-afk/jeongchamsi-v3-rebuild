@@ -32,7 +32,7 @@ const ICON_PATHS=Object.freeze({
  evaluation:`<path d="M5 4h14v16H5z"/><path d="m8 12 2.3 2.3L16 8"/><path d="M8 7h3"/>`,
  academy:`<path d="m3 8 9-4 9 4-9 4z"/><path d="M7 10v5c2.8 2 7.2 2 10 0v-5"/><path d="M21 8v6"/>`,
  keywords:`<path d="M5 7h14M5 12h14M5 17h9"/><circle cx="18" cy="17" r="1.5"/>`,
- trending:`<path d="m4 17 5-5 3 3 8-9"/><path d="M15 6h5v5"/>`,
+ trending:`<path d="M13 2c1 5-3 6-3 9-2-1-2-3-2-3-3 3-4 5-4 7a8 8 0 0 0 16 0c0-5-4-9-7-13Z"/><path d="M12 14c-2 2-3 3-3 4a3 3 0 0 0 6 0c0-1-1-3-3-4Z"/>`,
  recent:`<path d="M12 8v5l3 2"/><circle cx="12" cy="12" r="9"/>`,
  badge:`<path d="M12 3 8 5v5c0 3 1.6 5.3 4 7 2.4-1.7 4-4 4-7V5z"/><path d="m9 18-1 3 4-2 4 2-1-3"/>`,
  guide:`<circle cx="12" cy="12" r="9"/><path d="M12 10v6M12 7h.01"/>`
