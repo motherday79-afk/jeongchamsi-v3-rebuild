@@ -1510,19 +1510,8 @@ body :is(input,textarea,[contenteditable=""],[contenteditable="true"],[contented
 .product-home-wrap .home-balanced-layout .side-support-bridge .support-bridge-link:focus-visible{outline:2px solid #ffe0a0;outline-offset:-3px;background:#ffffff0d}
 @media(max-width:380px){.product-home-wrap .side-support-bridge .support-campaign-copy{left:13px}.product-home-wrap .side-support-bridge .support-campaign-copy strong{font-size:20px;line-height:27px}.product-home-wrap .side-support-bridge .support-campaign-copy small{font-size:10px}}
 
-/* 31.136: party-coloured satin standards; existing card dimensions retained. */
-.product-home-wrap #generation-president .generation-flag{position:relative;isolation:isolate;flex:1 1 0;min-width:0;height:100%;overflow:hidden;background:#17191d;--flag-color:#69727f}
-.product-home-wrap #generation-president .generation-flag.party-democratic{--flag-color:#1762dd}
-.product-home-wrap #generation-president .generation-flag.party-peoplepower{--flag-color:#d82737}
-.product-home-wrap #generation-president .generation-flag.party-reform{--flag-color:#ed711f}
-.product-home-wrap #generation-president .generation-flag.party-innovation{--flag-color:#2767a7}
-.product-home-wrap #generation-president .generation-flag.party-progressive{--flag-color:#c42c49}
-.product-home-wrap #generation-president .generation-flag.party-basicincome{--flag-color:#15867e}
-.product-home-wrap #generation-president .generation-flag.party-socialdemocratic{--flag-color:#d86734}
-.product-home-wrap #generation-president .generation-flag-fabric{position:absolute;inset:0;background-image:linear-gradient(var(--flag-color),var(--flag-color)),url('/assets/banners/generation-flag-136.webp');background-blend-mode:multiply;background-size:100% 100%;background-position:center}
-.product-home-wrap #generation-president .generation-flag-lettering{position:absolute;inset:30% 12% auto;display:flex;flex-direction:column;align-items:center;text-align:center;color:#fff;text-shadow:0 1px 3px #0008;transform:rotate(-2deg)}
-.product-home-wrap #generation-president .generation-flag-lettering small{font-size:7px;line-height:10px;letter-spacing:1px;color:#ffffffb3}
-.product-home-wrap #generation-president .generation-flag-lettering strong{font-size:19px;line-height:24px;font-weight:800;letter-spacing:-.7px;word-break:keep-all;overflow-wrap:anywhere;margin-top:5px;color:#fff}
-.product-home-wrap #generation-president .generation-faces:has(.generation-flag:nth-child(2)) .generation-flag-lettering strong{font-size:13px;line-height:18px}
-.product-home-wrap #generation-president .generation-faces:has(.generation-flag:nth-child(2)) .generation-flag-lettering small{display:none}
-@media(max-width:600px){.product-home-wrap #generation-president .generation-flag-lettering strong{font-size:16px;line-height:21px}.product-home-wrap #generation-president .generation-flag-lettering small{font-size:6px;letter-spacing:.4px}}
+
+/* 31.137: approved light, horizontal flag artwork. */
+.product-home-wrap #generation-president .generation-flag{position:relative;display:flex;align-items:center;justify-content:center;flex:1 1 0;min-width:0;height:100%;overflow:hidden;background:#f5f8fb}
+.product-home-wrap #generation-president .generation-flag-image{display:block;width:100%;height:100%;object-fit:contain}
+.product-home-wrap #generation-president .generation-flag-fallback{font-size:15px;line-height:22px;font-weight:600;color:#32445b;text-align:center;padding:8px}
