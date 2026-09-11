@@ -1495,18 +1495,17 @@ body :is(input,textarea,[contenteditable=""],[contenteditable="true"],[contented
 .matchup-effects .matchup-impact{inset:12% 22%;border-radius:50%;background:radial-gradient(ellipse,transparent 24%,#ffe2a999 28%,transparent 36%)}
 @media(prefers-reduced-motion:reduce){.matchup-effects{display:none}}
 
-/* 31.133: single quiet surface, precise line icons and equal hit areas. */
-.product-home-wrap .home-balanced-layout .side-support-bridge{height:80px;background:#fff;border:1px solid #e5e5e5;border-radius:12px;box-shadow:0 2px 5px #00000003}
-.product-home-wrap .side-support-bridge .support-bridge-link{justify-content:center;gap:10px;padding:12px 10px;color:#222}
-.product-home-wrap .side-support-bridge .support-bridge-symbol{flex:0 0 26px;width:26px;height:30px;fill:none;stroke:#303238;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round}
-.product-home-wrap .side-support-bridge .support-bridge-link strong{font-size:14px;line-height:21px;letter-spacing:-.5px;font-weight:600}
-.product-home-wrap .side-support-bridge .support-bridge-link small{font-size:10px;line-height:15px;letter-spacing:-.2px;color:#858585;margin-top:3px}
-.product-home-wrap .side-support-bridge .support-bridge-arrow{flex:0 0 12px;width:12px;height:16px;fill:none;stroke:#a2a2a2;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;transition:transform .18s}
-.product-home-wrap .home-balanced-layout .support-bridge-link:is(:hover,:focus-visible){background:#f6f6f6;color:#111;outline-color:#333}
-.product-home-wrap .support-bridge-link:hover .support-bridge-arrow{transform:translateX(2px)}
-@media(max-width:380px){.product-home-wrap .side-support-bridge .support-bridge-link{gap:6px;padding:10px 6px}.product-home-wrap .side-support-bridge .support-bridge-link strong{font-size:13px}.product-home-wrap .side-support-bridge .support-bridge-symbol{flex-basis:22px;width:22px}.product-home-wrap .side-support-bridge .support-bridge-arrow{display:none}}
-
 /* Keyboard-accessible empty portrait selector. */
 .product-home-wrap #compare button.home-compare-avatar{display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;font-family:inherit}
 .product-home-wrap #compare button.home-compare-avatar:hover{filter:brightness(1.2)}
 .product-home-wrap #compare button.home-compare-avatar:focus-visible{outline:2px solid #f3e2c7;outline-offset:3px}
+
+/* 31.135: full-bleed campaign creative, two equal accessible destinations. */
+.product-home-wrap .home-balanced-layout .side-support-bridge{position:relative;display:grid;grid-template-columns:1fr 1fr;isolation:isolate;height:80px;width:100%;overflow:hidden;border:0;border-radius:9px;background:#201329 url('/assets/banners/support-135.webp') center/cover no-repeat}
+.product-home-wrap .side-support-bridge .support-campaign-copy{position:absolute;left:18px;top:50%;transform:translateY(-50%);pointer-events:none;color:#fff;z-index:1;text-shadow:0 1px 3px #0005}
+.product-home-wrap .side-support-bridge .support-campaign-copy strong{display:block;font-size:23px;font-weight:800;letter-spacing:-1px;line-height:30px;color:#fff}
+.product-home-wrap .side-support-bridge .support-campaign-copy small{display:block;margin-top:2px;font-size:11px;font-weight:500;line-height:16px;color:#f0e5ed}
+.product-home-wrap .home-balanced-layout .side-support-bridge .support-bridge-link{display:block;position:relative;width:100%;height:100%;padding:0;border:0;background:transparent;z-index:2;cursor:pointer;transition:background .15s}
+.product-home-wrap .home-balanced-layout .side-support-bridge .support-bridge-link:hover{background:#ffffff0d}
+.product-home-wrap .home-balanced-layout .side-support-bridge .support-bridge-link:focus-visible{outline:2px solid #ffe0a0;outline-offset:-3px;background:#ffffff0d}
+@media(max-width:380px){.product-home-wrap .side-support-bridge .support-campaign-copy{left:13px}.product-home-wrap .side-support-bridge .support-campaign-copy strong{font-size:20px;line-height:27px}.product-home-wrap .side-support-bridge .support-campaign-copy small{font-size:10px}}
