@@ -208,6 +208,25 @@ export function setupCageCountdown(root){
  const before=Date.now();fetch('/api/v3/points?clock=1',{credentials:'same-origin'}).then(r=>r.json()).then(x=>{if(Number.isFinite(x.serverNow)){offset=x.serverNow-(before+Date.now())/2;paint();}}).catch(()=>{});paint();const timer=setInterval(()=>{if(!paint())clearInterval(timer);},1000);for(const node of timers)cageTimerIds.set(node,timer);
 }
 const homeCompareBound=new WeakSet();
+const compareMotion=new WeakMap();
+export function animateCompareSelection(form,slot,index,ready){
+ const stop=key=>{for(const animation of compareMotion.get(key)||[])animation.cancel();compareMotion.delete(key);};
+ stop(slot);stop(form);
+ if(globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
+ const play=(list,node,frames,options)=>{if(node?.animate)list.push(node.animate(frames,{duration:480,easing:'cubic-bezier(.2,.7,.2,1)',...options}));};
+ const person=slot.querySelector('[data-home-compare-preview]'),local=[],shared=[];
+ const direction=index===0?-22:22;
+ play(local,person,[{opacity:0,transform:`translateX(${direction}px)`},{opacity:1,transform:'translateX(0)'}]);
+ play(local,person?.querySelector?.('.home-compare-avatar'),[{filter:'brightness(1)'},{filter:'brightness(1.4)',offset:.3},{filter:'brightness(1)'}]);
+ play(local,person?.querySelector?.('div'),[{opacity:0,transform:'translateY(5px)'},{opacity:1,transform:'translateY(0)'}],{delay:80,duration:360,fill:'backwards'});
+ compareMotion.set(slot,local);
+ if(ready){
+  play(shared,form.querySelector('.matchup-vs'),[{scale:'.9',filter:'brightness(1)'},{scale:'1.14',filter:'brightness(1.6)',offset:.45},{scale:'1',filter:'brightness(1)'}],{duration:560});
+  play(shared,form.querySelector('[type=submit]'),[{backgroundPosition:'150% 0'},{backgroundPosition:'-50% 0'}],{duration:600});
+ }
+ compareMotion.set(form,shared);
+}
+
 export function homeCompareRoute(ids){const values=ids.map(id=>String(id||'').trim());return values.length===2&&values.every(Boolean)&&values[0]!==values[1]?'/compare?ids='+encodeURIComponent(values.join(','))+'&run=1':null;}
 export function setupHomeCompare(root=document){
  for(const form of root.querySelectorAll('[data-home-compare]')){
@@ -223,7 +242,7 @@ export function setupHomeCompare(root=document){
    if(slots.some(other=>other!==slot&&other.querySelector('[data-home-compare-id]').value===String(item.id))){clear(slot);update();state.textContent='서로 다른 정치인을 선택해 주세요.';return;}
    const input=slot.querySelector('[data-home-compare-search]');input.setAttribute('value',input.value);
    const src=String(item.photo?.url||item.photo?.localPath||'');
-   slot.querySelector('[data-home-compare-preview]').innerHTML=`<span class="home-compare-avatar" data-politician-avatar><span class="politician-photo-initial">${esc(String(item.name||'?').slice(0,1))}</span>${src?`<img data-politician-photo src="${esc(src)}" alt="" style="object-position:${esc(item.photo?.focus||'50% 28%')}">`:''}</span><div><b>${esc(item.name)}</b><small>${esc([item.party,item.jurisdiction||item.office||item.roleLabel].filter(Boolean).join(' · '))}</small></div>`;setupPoliticianPhotoFallback(slot);const panel=slot.querySelector('[data-home-compare-search-panel]');if(panel)panel.hidden=true;slot.querySelector('[data-home-compare-change]')?.setAttribute('aria-expanded','false');update();
+   slot.querySelector('[data-home-compare-preview]').innerHTML=`<span class="home-compare-avatar" data-politician-avatar><span class="politician-photo-initial">${esc(String(item.name||'?').slice(0,1))}</span>${src?`<img data-politician-photo src="${esc(src)}" alt="" style="object-position:${esc(item.photo?.focus||'50% 28%')}">`:''}</span><div><b>${esc(item.name)}</b><small>${esc([item.party,item.jurisdiction||item.office||item.roleLabel].filter(Boolean).join(' · '))}</small></div>`;setupPoliticianPhotoFallback(slot);const panel=slot.querySelector('[data-home-compare-search-panel]');if(panel)panel.hidden=true;slot.querySelector('[data-home-compare-change]')?.setAttribute('aria-expanded','false');update();animateCompareSelection(form,slot,slots.indexOf(slot),!button.disabled);
   });
   form.addEventListener('submit',event=>{event.preventDefault();const route=homeCompareRoute(ids());if(!route){update();return;}window.dispatchEvent(new CustomEvent('jcs:layout-route',{detail:{route}}));});update();
  }
