@@ -1104,3 +1104,9 @@ html.desktop-home-fixed .product-home-wrap .home-promo-row,html.desktop-home-fix
  .cheer-catalog .cheer-product-visual>svg{max-height:140px}
  .cheer-catalog .cheer-product-card>b{font-size:13px;line-height:19px;min-height:38px}
 }
+
+/* 31.111 approved product photographs, compact kids collection */
+.cheer-catalog .catalog-kids .cheer-product-visual{height:140px;min-height:140px;max-height:140px}
+.cheer-catalog .catalog-kids-note{font-size:12px;line-height:1.6;color:#718079;margin:12px 0 0}
+.cheer-catalog .goods-product-image,.cheer-detail .goods-product-image{background:#fff;overflow:hidden}
+@media(max-width:767px){.cheer-catalog .catalog-kids .cheer-product-visual{height:125px;min-height:125px;max-height:125px}}
