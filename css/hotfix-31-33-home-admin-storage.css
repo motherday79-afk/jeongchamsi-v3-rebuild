@@ -16,11 +16,11 @@
 #itsme.itsme-home-module .itsme-card:nth-child(n){min-height:70px;padding:12px 14px}
 #itsme.itsme-home-module .itsme-card b{margin-top:8px;line-height:1.35}
 
-#poll .poll-main{grid-template-columns:minmax(180px,34%) minmax(0,1fr);gap:16px;align-items:center}
-#poll .poll-question h3{margin:0;font-size:20px}
-#poll .poll-vote-panel{padding:10px 12px}
-#poll .poll-options{gap:6px}
-#poll .poll-options button{min-height:58px;padding:9px 11px}
+
+
+
+
+
 
 #national-eval .module-desc{margin-top:3px}
 #national-eval .national-eval-dual{gap:9px}
@@ -35,7 +35,7 @@
 #generation-president .eyebrow{color:#315fbc!important}
 #generation-president .generation-header-actions{display:flex;align-items:center;gap:8px}
 #generation-president .generation-participation-cta{min-height:34px;padding:7px 10px;border:1px solid #d6deed;background:#f7f9fd;color:#315fbc}
-#generation-president .generation-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px}
+#generation-president .generation-grid{display:grid;gap:7px}
 #generation-president .generation-card,
 #generation-president .generation-card.focus{min-height:92px;padding:9px;background:#fff!important;border-color:#dfe5ed!important;color:var(--ps-ink,#172126)!important}
 #generation-president .generation-age{padding:4px 7px;background:#eff3fb!important;color:#315fbc!important}

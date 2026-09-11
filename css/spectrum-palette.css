@@ -38,12 +38,12 @@ body{background:#f4f6f7;color:var(--ps-ink)}
 .product-menu:hover,.product-account-tools button:hover{background:#f4f5f6}
 
 /* Hero: neutral authority with the spectrum appearing in controlled accents */
-.product-hero{background:#18242a}
-.product-hero:after{color:rgba(255,255,255,.028)}
-.product-hero h1 strong{color:#f2b447}
-.product-hero-copy>p{color:#dce3e6}
+
+
+
+
 .product-hero-kicker em,.product-hero-proof{color:#c9d5d9}
-.product-hero-live{box-shadow:0 24px 55px rgba(18,30,36,.20)}
+
 .live-dot{background:var(--jc-teal);box-shadow:0 0 0 5px rgba(22,169,157,.11)}
 .hero-live-head em{background:var(--jc-teal-soft);color:#00b894}
 .hero-rank-stack button:first-child .hero-rank-no{color:var(--jc-blue)}
@@ -72,10 +72,10 @@ body{background:#f4f6f7;color:var(--ps-ink)}
 /* Main modules — color is a navigation aid, not decoration */
 .eyebrow{color:#00b894}
 
-#poll{background:var(--jc-red-soft);border-color:#f1d7da}
-#poll .poll-status{color:#c63d49}
+#poll{background:var(--jc-red-soft);}
+
 #poll .poll-options em{background:var(--jc-red)}
-#poll .poll-options b{color:#c63d49}
+
 
 #itsme .itsme-card:nth-child(1){background:var(--jc-teal-soft);border-color:#d2ece8}
 #itsme .itsme-card:nth-child(2){background:#fff}
@@ -84,28 +84,28 @@ body{background:#f4f6f7;color:var(--ps-ink)}
 #itsme .itsme-card:nth-child(5){background:var(--jc-green-soft);border-color:#dcebd7}
 #itsme .itsme-card:nth-child(6){background:var(--jc-navy-soft);border-color:#dfe3f3}
 
-#column .column-lead{background:#f6f7f8}
+
 
 /* Data / participation tools */
-#generation-president{background:#fff3f4;border-color:#f1d8db;color:var(--ps-ink)}
-#generation-president .eyebrow{color:#c74450}
-#generation-president .module-desc{color:#7b6c6f}
-#generation-president .more-btn{color:#b83d48}
-#generation-president .generation-intro{background:#e96570;color:#fff}
-#generation-president .generation-intro button{background:#fff;color:#b83d48}
-#generation-president .generation-card{background:#fff;border-color:#efd9dc;color:var(--ps-ink)}
-#generation-president .generation-card.focus{background:#ffe7ea;border-color:#e9aeb5}
-#generation-president .generation-age{background:#fff0f2;color:#bd4650}
-#generation-president .generation-card small{color:#806d70}
-#generation-president .generation-bar{background:#f5e2e4}
-#generation-president .generation-bar i{background:#e25562}
+#generation-president{color:var(--ps-ink)}
 
-#national-eval .eyebrow{color:#4f833f}
+
+
+
+
+#generation-president .generation-card{color:var(--ps-ink)}
+
+
+
+
+
+
+
 #national-eval .national-eval-layout{background:var(--jc-green-soft)}
 #compare .eyebrow{color:var(--jc-navy)}
 #compare .compare-layout{background:var(--jc-navy-soft)}
 #academy .academy-intro{background:var(--jc-orange)}
-#academy .academy-mark{color:#cb7628}
+
 
 /* Sidebar and small controls */
 .login-card{background:#fff;border-color:#e3e6e8;color:var(--ps-ink);box-shadow:0 10px 28px rgba(25,34,38,.04)}
@@ -119,7 +119,7 @@ body{background:#f4f6f7;color:var(--ps-ink)}
 .keyword-grid span:nth-child(6n+4){background:var(--jc-teal-soft);color:#00b894}
 .keyword-grid span:nth-child(6n+5){background:var(--jc-navy-soft);color:#4a5c9d}
 .keyword-grid span:nth-child(6n){background:var(--jc-green-soft);color:#5c7d52}
-.footer{background:#20262b}
+
 
 /* keep interactive green as Jeongchamsi's own utility color, not a political signal */
 a,.more-btn{--jc-link:#087f74}
@@ -129,10 +129,9 @@ a,.more-btn{--jc-link:#087f74}
 
 /* 1) Avoid black/dark base surfaces: hero and footer become light, neutral brand surfaces. */
 .product-hero{
-  background:#f2f5f8;
   border:1px solid #e3e8ed;
 }
-.product-hero:after{color:rgba(49,95,196,.035)}
+
 .product-hero-copy{color:var(--ps-ink)}
 .product-hero-kicker span{color:#315fc4}
 .product-hero-kicker em{color:#6f7b83;border-left-color:#cfd6dc}
@@ -146,7 +145,7 @@ a,.more-btn{--jc-link:#087f74}
 .product-hero-live{box-shadow:0 18px 42px rgba(35,52,62,.10)}
 .footer{background:#f3f5f6;color:#778086;border-top:1px solid #e1e5e8}
 .footer b{color:#20282d}
-.footer-links a{color:#667178}
+
 
 /* 3) Explore cards: IT'S ME and Generation President return to clean white surfaces. */
 .product-launcher .launcher-itsme,
@@ -163,10 +162,7 @@ a,.more-btn{--jc-link:#087f74}
 .product-launcher-grid .launcher-card:nth-child(5) .launcher-cue{color:#65727a}
 
 /* 4) Generation cards: no special background for the 20s/focus card. */
-#generation-president .generation-card.focus{
-  background:#fff;
-  border-color:#efd9dc;
-}
+
 
 /* JEONGCHAMSI alpha6.0.36.3 — HERO HUNMINJEONGEUM TEXTURE HOTFIX
    Hero-only color/texture adjustment. Layout and behavior untouched. */
@@ -279,60 +275,41 @@ a,.more-btn{--jc-link:#087f74}
 #itsme .itsme-card span{color:#68747a}
 
 /* Citizens' Choice is the single broad participation color scene. */
-#poll{
-  background:#fff5f6;
-  border-color:#f0dadd;
-}
-#poll .poll-vote-panel{background:#fff}
-#poll .poll-status{background:#fff;color:#c63d49}
+
+
+
 #poll .poll-options em{background:var(--jc-red)}
-#poll .poll-options b{color:#bd3c48}
+
 
 /* Generation President: remove the second red block; keep red in controls/data only. */
 #generation-president{
-  background:#fff;
-  border-color:#e5e9ec;
   color:var(--ps-ink);
 }
-#generation-president .eyebrow{color:#c74450}
-#generation-president .module-desc{color:#6f787d}
-#generation-president .more-btn{color:#b83d48}
-#generation-president .generation-intro{
-  background:#fff;
-  color:#182126;
-  border:1px solid #eadfe1;
-  box-shadow:inset 4px 0 0 #e65a66;
-}
-#generation-president .generation-intro button{background:#e65a66;color:#fff}
-#generation-president .generation-card,
-#generation-president .generation-card.focus{
-  background:#fff;
-  border-color:#e6e9eb;
-  color:#182126;
-}
-#generation-president .generation-age{background:#fff0f2;color:#bd4650}
-#generation-president .generation-card small{color:#747d82}
-#generation-president .generation-bar{background:#f1e5e7}
-#generation-president .generation-bar i{background:#e25562}
+
+
+
+
+
+
+
+
+
+
 
 /* National evaluation: neutral surface, green reduced to one data signature. */
 #national-eval{background:#fff}
 #national-eval .national-eval-layout{
-  background:#fff;
-  border-color:#dfe8dd;
   box-shadow:inset 0 3px 0 var(--jc-green);
 }
-#national-eval .eval-score strong{color:#568447}
+
 
 /* Compare: neutral body, navy only where comparison data speaks. */
 #compare{background:#fff}
 #compare .compare-layout{
-  background:#fff;
-  border-color:#e2e5ee;
   box-shadow:inset 0 3px 0 var(--jc-navy);
 }
 #compare .compare-metrics em{background:var(--jc-navy)}
-#compare .compare-sample-badge{color:#5264a5}
+
 
 /* Academy: remove the large orange panel; orange remains the action color. */
 #academy{background:#fff}
@@ -442,11 +419,9 @@ a,.more-btn{--jc-link:#087f74}
   border-radius:999px;
   background:var(--jc-teal);
 }
-#itsme.itsme-home-module .itsme-grid{gap:10px}
+
 #itsme.itsme-home-module .itsme-card,
 #itsme.itsme-home-module .itsme-card:nth-child(n){
-  min-height:104px;
-  padding:16px 17px;
   background:#fff;
   border-color:#e5e9ec;
   box-shadow:none;
@@ -460,10 +435,8 @@ a,.more-btn{--jc-link:#087f74}
 #itsme.itsme-home-module .itsme-card b{
   display:-webkit-box;
   overflow:hidden;
-  margin-top:18px;
   color:#172026;
   font-size:15px;
-  line-height:1.45;
   letter-spacing:-.35px;
   -webkit-box-orient:vertical;
   -webkit-line-clamp:2;
@@ -486,7 +459,7 @@ a,.more-btn{--jc-link:#087f74}
   .product-launcher-compact .launcher-icon svg{width:19px;height:19px}
   .product-launcher-compact .launcher-copy b{font-size:12px}
   .product-launcher-compact .launcher-cue{display:none}
-  #itsme.itsme-home-module .itsme-card{min-height:96px;padding:14px}
+  
   #itsme.itsme-home-module .itsme-card b{margin-top:14px;font-size:14px}
   #itsme.itsme-home-module .itsme-signature-title::after{height:4px;width:min(190px,75%)}
 }
@@ -497,16 +470,12 @@ a,.more-btn{--jc-link:#087f74}
   background:#fff;
   border-color:#e5e9ec;
 }
-#poll .poll-vote-panel{
-  background:transparent;
-  padding:0;
-}
+
 #poll .poll-status{
   background:#fff;
   color:#c63d49;
 }
 #poll .poll-options button{
-  background:#fff4f5;
   border-color:#f0dadd;
 }
 #poll .poll-options button:hover{
@@ -519,11 +488,9 @@ a,.more-btn{--jc-link:#087f74}
 
 /* GENERATION PRESIDENT: mint label, neutral shell, blue as the data/state color. */
 #generation-president{
-  background:#fff;
-  border-color:#e5e9ec;
   color:var(--ps-ink);
 }
-#generation-president .eyebrow{color:#00b894}
+
 #generation-president .module-desc{color:#6f787d}
 #generation-president .more-btn{color:#535f5b}
 #generation-president .generation-intro{
@@ -538,7 +505,6 @@ a,.more-btn{--jc-link:#087f74}
 }
 #generation-president .generation-intro button{
   background:var(--ps-blue);
-  color:#fff;
 }
 #generation-president .generation-card{
   background:#fff;
@@ -551,11 +517,10 @@ a,.more-btn{--jc-link:#087f74}
   color:#182126;
 }
 #generation-president .generation-age{
-  background:#eef3ff;
   color:var(--ps-blue);
 }
 #generation-president .generation-card small{color:#747d82}
-#generation-president .generation-bar{background:#e7edf8}
+
 #generation-president .generation-bar i{background:var(--ps-blue)}
 
 /* alpha6.0.36.10 — generation president refinement */
@@ -579,21 +544,13 @@ a,.more-btn{--jc-link:#087f74}
 /* Age labels are plain information, not colored badges. */
 #generation-president .generation-age{
   display:block;
-  padding:0;
   border-radius:0;
-  background:transparent;
-  color:#182126;
   font-size:12px;
   font-weight:850;
 }
 
 /* All generation cards share one neutral surface — no special 20s/focus tile. */
-#generation-president .generation-card,
-#generation-president .generation-card.focus{
-  background:#fff;
-  border-color:#e6e9eb;
-  color:#182126;
-}
+
 
 /* Blue remains only where it carries data meaning. */
 #generation-president .generation-bar{background:#e7edf8}
@@ -617,8 +574,6 @@ a,.more-btn{--jc-link:#087f74}
 
 /* alpha6.0.36.13 — generation result PANEL (definitive override) */
 #generation-president .generation-result{
-  margin-top:10px;
-  padding:10px 11px 9px;
   border:1px solid #d9e4f8;
   border-radius:11px;
   background:#f4f7fe;
@@ -642,7 +597,6 @@ a,.more-btn{--jc-link:#087f74}
 }
 #generation-president .generation-result small{
   display:block;
-  margin-top:7px;
   color:#66737a;
   font-size:11px;
   line-height:1.35;
@@ -819,7 +773,7 @@ a,.more-btn{--jc-link:#087f74}
 .live-community-inner{position:relative;width:min(1180px,calc(100% - 32px));height:100%;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:20px}
 .live-community-count{display:flex;align-items:baseline;gap:3px;white-space:nowrap;color:#606b67;font-size:12px}
 .live-community-count b{color:#17211d;font-size:13px;font-weight:950;font-variant-numeric:tabular-nums}
-.live-community-actions{position:relative;width:190px;height:26px;margin-left:auto;overflow:hidden}
+.live-community-actions{position:relative;margin-left:auto;}
 .live-community-cta{position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-end;gap:6px;color:#46534e;font-size:12px;font-weight:850;opacity:0;transform:translateY(7px);pointer-events:none;transition:opacity .28s ease,transform .28s ease,color .16s ease}
 .live-community-cta.is-active{opacity:1;transform:translateY(0);pointer-events:auto}
 .live-community-cta:hover{color:var(--ps-brand)}
@@ -834,7 +788,7 @@ a,.more-btn{--jc-link:#087f74}
 #generation-president .generation-card{cursor:pointer}
 #generation-president .generation-avatar{display:none}
 #generation-president .generation-card,#generation-president .generation-card.focus{min-height:100px;padding:10px}
-#generation-president .generation-result{margin-top:8px}
+
 #generation-president .generation-card:hover{border-color:#cfd9e8;background:#fbfcff}
 
 /* Generation detail: selected-age TOP 15. */
@@ -855,12 +809,12 @@ a,.more-btn{--jc-link:#087f74}
 
 /* 0.36.22 · hero participation hub */
 .product-home-wrap .product-hero-participation .product-hero-actions a{height:48px;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;border-radius:13px;font-size:13px;font-weight:900;text-decoration:none}
-.product-home-wrap .product-hero-participation .hero-participation-hub{display:grid;grid-template-rows:1fr 1fr;gap:10px;align-self:stretch;min-height:0}
-.product-home-wrap .product-hero-participation .hero-hub-card{width:100%;min-height:0;padding:18px 19px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;border:1px solid #e7ecea;border-radius:16px;background:#fff;text-align:left;cursor:pointer;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+.product-home-wrap .product-hero-participation .hero-participation-hub{display:grid;align-self:stretch;}
+.product-home-wrap .product-hero-participation .hero-hub-card{width:100%;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;border:1px solid #e7ecea;border-radius:16px;background:#fff;text-align:left;cursor:pointer;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
 .product-home-wrap .product-hero-participation .hero-hub-card:hover{border-color:#b9dcd2;box-shadow:0 8px 22px rgba(23,42,36,.08)}
-.product-home-wrap .product-hero-participation .hero-hub-label{font-size:9px;font-weight:950;letter-spacing:.09em;color:#00b894}
+.product-home-wrap .product-hero-participation .hero-hub-label{font-weight:950;color:#00b894}
 .product-home-wrap .product-hero-participation .hero-hub-partners .hero-hub-label{color:#8a5d08}
-.product-home-wrap .product-hero-participation .hero-hub-card strong{display:block;margin-top:6px;color:#17231f;font-size:16px;line-height:1.35;letter-spacing:-.35px}
+.product-home-wrap .product-hero-participation .hero-hub-card strong{display:block;margin-top:6px;color:#17231f;line-height:1.35;letter-spacing:-.35px}
 .product-home-wrap .product-hero-participation .hero-hub-card p{margin:5px 0 0;color:#76827e;font-size:11px;line-height:1.5}
 .product-home-wrap .product-hero-participation .hero-hub-card em{margin-top:9px;color:#44524d;font-size:10px;font-style:normal;font-weight:900}
 .product-home-wrap .product-hero-participation .product-hero-actions{align-items:center}
