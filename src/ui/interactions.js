@@ -209,20 +209,25 @@ export function setupCageCountdown(root){
 }
 const homeCompareBound=new WeakSet();
 const compareMotion=new WeakMap();
+function stopCompareMotion(key){for(const animation of compareMotion.get(key)||[])animation.cancel();compareMotion.delete(key);}
 export function animateCompareSelection(form,slot,index,ready){
- const stop=key=>{for(const animation of compareMotion.get(key)||[])animation.cancel();compareMotion.delete(key);};
- stop(slot);stop(form);
+ stopCompareMotion(slot);stopCompareMotion(form);
  if(globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
- const play=(list,node,frames,options)=>{if(node?.animate)list.push(node.animate(frames,{duration:480,easing:'cubic-bezier(.2,.7,.2,1)',...options}));};
+ const play=(list,node,frames,options={})=>{if(node?.animate)list.push(node.animate(frames,{duration:1700,easing:'cubic-bezier(.16,.8,.22,1)',...options}));};
  const person=slot.querySelector('[data-home-compare-preview]'),local=[],shared=[];
- const direction=index===0?-22:22;
- play(local,person,[{opacity:0,transform:`translateX(${direction}px)`},{opacity:1,transform:'translateX(0)'}]);
- play(local,person?.querySelector?.('.home-compare-avatar'),[{filter:'brightness(1)'},{filter:'brightness(1.4)',offset:.3},{filter:'brightness(1)'}]);
- play(local,person?.querySelector?.('div'),[{opacity:0,transform:'translateY(5px)'},{opacity:1,transform:'translateY(0)'}],{delay:80,duration:360,fill:'backwards'});
+ const mobile=globalThis.matchMedia?.('(max-width:600px)').matches,direction=(index===0?-1:1)*(mobile?28:60);
+ let effects=form.querySelector('.matchup-effects');
+ if(!effects&&form.ownerDocument){effects=form.ownerDocument.createElement('div');effects.className='matchup-effects';effects.setAttribute('aria-hidden','true');effects.innerHTML='<i class="matchup-spot"></i><i class="matchup-streak"></i><i class="matchup-impact"></i>';form.append(effects);}
+ if(effects)effects.dataset.side=String(index);
+ play(shared,effects?.querySelector('.matchup-spot'),[{opacity:0,transform:'scale(.5)'},{opacity:.85,transform:'scale(1.15)',offset:.28},{opacity:.45,transform:'scale(1)',offset:.65},{opacity:0,transform:'scale(1.3)'}]);
+ play(shared,effects?.querySelector('.matchup-streak'),[{opacity:0,transform:`translateX(${direction*3}px) skew(-25deg)`},{opacity:.8,offset:.3},{opacity:0,transform:`translateX(${-direction*2}px) skew(-25deg)`}],{delay:280,duration:650});
+ play(local,person,[{opacity:0,transform:`translateX(${direction}px) scale(.88)`},{opacity:1,transform:'translateX(0) scale(1.06)',offset:.7},{opacity:1,transform:'translateX(0) scale(1)'}],{delay:300,duration:800,fill:'backwards'});
+ play(local,person?.querySelector?.('div'),[{opacity:0,transform:'translateY(12px)'},{opacity:1,transform:'translateY(0)'}],{delay:700,duration:400,fill:'backwards'});
  compareMotion.set(slot,local);
  if(ready){
-  play(shared,form.querySelector('.matchup-vs'),[{scale:'.9',filter:'brightness(1)'},{scale:'1.14',filter:'brightness(1.6)',offset:.45},{scale:'1',filter:'brightness(1)'}],{duration:560});
-  play(shared,form.querySelector('[type=submit]'),[{backgroundPosition:'150% 0'},{backgroundPosition:'-50% 0'}],{duration:600});
+  play(shared,form.querySelector('.matchup-vs'),[{opacity:0,transform:'translate(-50%,-50%) skew(-9deg) scale(2.1)'},{opacity:1,transform:'translate(-50%,-50%) skew(-9deg) scale(.94)',offset:.6},{opacity:1,transform:'translate(-50%,-50%) skew(-9deg) scale(1)'}],{delay:1000,duration:450,fill:'backwards'});
+  play(shared,effects?.querySelector('.matchup-impact'),[{opacity:0,transform:'scale(.2)'},{opacity:.85,offset:.18},{opacity:0,transform:'scale(2.2)'}],{delay:1150,duration:550});
+  play(shared,form.querySelector('[type=submit]'),[{backgroundPosition:'150% 0'},{backgroundPosition:'-50% 0'}],{delay:1250,duration:450});
  }
  compareMotion.set(form,shared);
 }
@@ -234,7 +239,7 @@ export function setupHomeCompare(root=document){
   const slots=[...form.querySelectorAll('[data-home-compare-slot]')],state=form.querySelector('[data-home-compare-state]'),button=form.querySelector('[type=submit]');
   const ids=()=>slots.map(slot=>slot.querySelector('[data-home-compare-id]').value);
   const update=()=>{button.disabled=!homeCompareRoute(ids());const feature=form.querySelector('[data-home-compare-feature]');if(feature)feature.disabled=button.disabled;state.textContent=button.disabled?'비교할 정치인 두 명을 선택해 주세요.':'두 정치인의 비교를 시작할 수 있습니다.';};
-  const clear=slot=>{slot.querySelector('[data-home-compare-id]').value='';slot.querySelector('[data-home-compare-preview]').innerHTML='<span class="home-compare-avatar" aria-hidden="true">＋</span><div><b>정치인을 선택하세요</b><small>검색 결과에서 선택</small></div>';};
+  const clear=slot=>{stopCompareMotion(slot);stopCompareMotion(form);slot.querySelector('[data-home-compare-id]').value='';slot.querySelector('[data-home-compare-preview]').innerHTML='<span class="home-compare-avatar" aria-hidden="true">＋</span><div><b>정치인을 선택하세요</b><small>검색 결과에서 선택</small></div>';};
   form.addEventListener('click',event=>{const change=event.target.closest('[data-home-compare-change]');if(!change)return;const panel=change.closest('[data-home-compare-slot]').querySelector('[data-home-compare-search-panel]');panel.hidden=!panel.hidden;change.setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden){const input=panel.querySelector('[data-home-compare-search]');input.focus();input.select();}});
   form.addEventListener('input',event=>{const input=event.target.closest('[data-home-compare-search]');if(!input)return;clear(input.closest('[data-home-compare-slot]'));input.setAttribute('value',input.value);update();});
   form.addEventListener('jcs:politician-selected',event=>{

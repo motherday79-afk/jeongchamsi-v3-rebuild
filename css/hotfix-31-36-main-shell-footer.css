@@ -1484,3 +1484,13 @@ body :is(input,textarea,[contenteditable=""],[contenteditable="true"],[contented
 @media(max-width:1024px){
  .product-home-wrap #community .community-title{font-size:14px;line-height:21px}
 }
+
+/* 31.131: composited entry lighting, confined to the unchanged stage. */
+.product-home-wrap #compare .matchup-effects{position:absolute;inset:0;overflow:hidden;border-radius:inherit;pointer-events:none;z-index:-1}
+.matchup-effects i{position:absolute;display:block;opacity:0;pointer-events:none}
+.matchup-effects .matchup-spot{inset:0 45% 0 -10%;background:radial-gradient(ellipse,#8bc9ff99,transparent 68%)}
+.matchup-effects[data-side="1"] .matchup-spot{inset:0 -10% 0 45%;background:radial-gradient(ellipse,#ffd59999,transparent 68%)}
+.matchup-effects .matchup-streak{left:15%;top:0;width:35%;height:100%;background:linear-gradient(90deg,transparent,#ffffff70,transparent)}
+.matchup-effects[data-side="1"] .matchup-streak{left:50%}
+.matchup-effects .matchup-impact{inset:12% 22%;border-radius:50%;background:radial-gradient(ellipse,transparent 24%,#ffe2a999 28%,transparent 36%)}
+@media(prefers-reduced-motion:reduce){.matchup-effects{display:none}}
