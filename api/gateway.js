@@ -224,10 +224,11 @@ export async function handleContent(req,res,command,url){
   }
   if(req.method==='POST'){
     const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});
-    if(!['columns','community','itsme','news'].includes(domain))return json(res,403,{ok:false,error:'WRITE_NOT_ALLOWED'});
+    const pollImageUpload=domain==='polls'&&bodyOf(req).operation==='upload-image';if(pollImageUpload&&user.role!=='admin')return json(res,403,{ok:false,error:'ADMIN_REQUIRED'});
+    if(!['columns','community','itsme','news'].includes(domain)&&!pollImageUpload)return json(res,403,{ok:false,error:'WRITE_NOT_ALLOWED'});
     if(['columns','news'].includes(domain)&&!['admin','partner'].includes(user.role)&&!(bodyOf(req).operation==='upload-image'&&bodyOf(req).id))return json(res,403,{ok:false,error:'EDITOR_WRITE_FORBIDDEN'});
     if(bodyOf(req).operation==='upload-image'){
-      try{const body=bodyOf(req);if(!['columns','news'].includes(domain))return json(res,403,{ok:false,error:'IMAGE_NOT_ALLOWED'});
+      try{const body=bodyOf(req);if(!['columns','news','polls'].includes(domain))return json(res,403,{ok:false,error:'IMAGE_NOT_ALLOWED'});
       if(body.id){const data=await readDomain(command,domain,{items:[]}),post=contentItems(data).find(row=>String(row.id)===String(body.id));if(!canManagePost(user,post))return json(res,403,{ok:false,error:'POST_EDIT_FORBIDDEN'});}
       const valid=validatePoliticianPhoto({contentType:body.contentType,bytes:Buffer.from(String(body.base64||''),'base64')});
       if(!politicianPhotoStorageStatus().configured)return json(res,503,{ok:false,error:'PHOTO_STORAGE_NOT_CONFIGURED'});

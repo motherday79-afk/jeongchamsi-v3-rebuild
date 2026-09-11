@@ -1233,3 +1233,54 @@ body:has(.product-home-wrap .home-balanced-layout) .footer-brand>b{color:#202124
  .product-home-wrap .home-balanced-layout #academy .academy-mentor-promo{min-height:270px}
  .product-home-wrap .home-balanced-layout #academy .academy-mentor-copy{padding:20px}
 }
+
+/* 31.120: ONLY proposal, citizen poll and generation modules. */
+.product-home-wrap #itsme .proposal-feature{display:grid;grid-template-columns:180px minmax(0,1fr);gap:20px;align-items:start}
+.product-home-wrap #itsme .proposal-cover{display:block;min-width:0;text-decoration:none;color:#333;text-align:center}
+.product-home-wrap #itsme .proposal-cover img{display:block;width:100%;aspect-ratio:1;object-fit:contain;border-radius:10px}
+.product-home-wrap #itsme .proposal-cover>span{display:block;font-size:12px;font-weight:500;margin-top:7px;line-height:1.4}
+.product-home-wrap #itsme .proposal-copy{min-width:0}
+.product-home-wrap #itsme .proposal-lead{text-decoration:none;color:#202124}
+.product-home-wrap #itsme .proposal-lead h3{font-size:17px;line-height:1.45;margin:0 0 7px;font-weight:700;word-break:keep-all}
+.product-home-wrap #itsme .proposal-copy>p{font-size:13px;color:#777;line-height:1.5;margin:0 0 10px}
+.product-home-wrap #itsme .proposal-rows{display:grid}
+.product-home-wrap #itsme .proposal-rows>a{display:grid;grid-template-columns:110px minmax(0,1fr);gap:8px;align-items:center;padding:8px 0;border-top:1px solid #eee;text-decoration:none;color:#333;min-width:0}
+.product-home-wrap #itsme .proposal-rows small{font-size:11px;color:#777;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.product-home-wrap #itsme .proposal-rows span{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.product-home-wrap #itsme .proposal-rows>a:hover{background:#f7f7f7}
+.product-home-wrap #poll .choice-question{font-size:17px;line-height:1.45;margin:0 0 14px;font-weight:700}
+.product-home-wrap #poll .choice-options{display:flex;gap:12px;overflow-x:auto;padding:2px 2px 8px;scroll-snap-type:x proximity;overscroll-behavior-x:contain}
+.product-home-wrap #poll .choice-option{display:flex;flex:0 0 calc(50% - 6px);flex-direction:column;min-width:0;border:1px solid #e3e3e3;border-radius:10px;overflow:hidden;text-decoration:none;color:#202124;background:#fff;scroll-snap-align:start;box-sizing:border-box}
+.product-home-wrap #poll .choice-option>img{display:block;width:100%;height:120px;object-fit:contain;background:#f8f8f8}
+.product-home-wrap #poll .choice-option-placeholder{height:64px;display:grid;place-items:center;background:#f5f5f5;color:#999;font-size:24px;font-weight:600}
+.product-home-wrap #poll .choice-option-copy{display:flex;flex-direction:column;gap:6px;padding:10px 12px;flex:1;min-width:0}
+.product-home-wrap #poll .choice-option-copy>b{font-size:15px;line-height:1.4;overflow-wrap:anywhere}
+.product-home-wrap #poll .choice-option-copy>small{font-size:12px;color:#777}
+.product-home-wrap #poll .choice-option-action{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding:7px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;color:#333}
+.product-home-wrap #poll .choice-option-action i{font-style:normal}
+.product-home-wrap #poll .choice-option:hover{border-color:#888;background:#fafafa}
+.product-home-wrap #poll .choice-summary{font-size:12px;color:#777;margin:6px 0 0}
+.product-home-wrap #generation-president .generation-portrait-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.product-home-wrap #generation-president .generation-portrait-card{display:flex;flex-direction:column;gap:7px;min-width:0;padding:12px 8px;text-align:center;text-decoration:none;background:#fff;color:#202124;border:1px solid #e5e5e5;border-radius:10px}
+.product-home-wrap #generation-president .generation-portrait-card .generation-age{padding:0;background:none;color:#333;font-size:13px;font-weight:600}
+.product-home-wrap #generation-president .generation-faces{display:flex;align-items:center;justify-content:center;min-height:68px;gap:3px}
+.product-home-wrap #generation-president .generation-face{display:grid;place-items:center;position:relative;width:64px;height:64px;flex:0 1 64px;min-width:0;border-radius:50%;overflow:hidden;background:#f2f2f2;color:#777;font-size:18px}
+.product-home-wrap #generation-president .generation-face img{position:relative;z-index:1;display:block;width:100%;height:100%;object-fit:cover;object-position:var(--photo-position,50% 28%)}
+.product-home-wrap #generation-president .generation-face .politician-photo-initial{position:absolute;inset:0;display:grid;place-items:center}
+.product-home-wrap #generation-president .generation-leader-name{font-size:14px;line-height:1.4;overflow-wrap:anywhere}
+.product-home-wrap #generation-president .generation-bar{width:100%;height:5px;border-radius:4px;background:#eee;margin-top:auto;overflow:hidden}
+.product-home-wrap #generation-president .generation-bar i{display:block;height:100%;background:#555}
+.product-home-wrap #generation-president .generation-portrait-card>small{font-size:11px;color:#777;line-height:1.4}
+.product-home-wrap #generation-president .generation-portrait-card:hover{border-color:#999;background:#fafafa}
+.poll-image-composer{grid-column:1/-1}.poll-image-composer>summary{font-size:14px;font-weight:600;padding:10px 0}.poll-image-composer>p{font-size:13px;color:#666}.poll-image-field{padding:10px 0;display:grid;gap:8px;border-bottom:1px solid #eee}.poll-image-field>label{display:grid;gap:6px;font-size:13px}.poll-image-field img{max-width:180px;max-height:100px;object-fit:contain}.poll-image-field input[type=checkbox]{width:auto}.poll-image-field input[type=file]{max-width:100%;font-size:13px}
+@media(max-width:600px){
+ .product-home-wrap #itsme .proposal-feature{grid-template-columns:110px minmax(0,1fr);gap:12px}
+ .product-home-wrap #itsme .proposal-lead h3{font-size:15px}
+ .product-home-wrap #itsme .proposal-copy>p{font-size:12px}
+ .product-home-wrap #itsme .proposal-rows>a{grid-template-columns:minmax(0,1fr);gap:2px;padding:7px 0}
+ .product-home-wrap #itsme .proposal-rows span{font-size:13px}
+ .product-home-wrap #poll .choice-option>img{height:100px}
+ .product-home-wrap #poll .choice-option-copy{padding:9px}
+ .product-home-wrap #generation-president .generation-portrait-grid{display:flex;overflow-x:auto;gap:8px;padding-bottom:6px;scroll-snap-type:x proximity}
+ .product-home-wrap #generation-president .generation-portrait-card{flex:0 0 105px;scroll-snap-align:start}
+}
