@@ -1,8 +1,8 @@
 import { refreshFontScale } from './ui/font-scale.js?v=0.0.31.56';
-import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.107';
+import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.108';
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.56';
 import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.107';
-import { renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.107';
+import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.108';
 import { setupLayoutInteractions, setupPoliticianPhotoFallback, setupNowCarousel, setupCageCountdown, setupDesktopHomeViewport } from './ui/interactions.js?v=0.0.31.106';
 import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.106';
 import { createContentService, loadNavigationDashboard } from './core/content.js?v=0.0.31.106';
@@ -10,7 +10,7 @@ import { createPoliticianService } from './core/politicians.js?v=0.0.31.106';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.106';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.56';
-import * as views from './views/stage1.js?v=0.0.31.107';
+import * as views from './views/stage1.js?v=0.0.31.108';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.56';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.56';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.107';
@@ -19,7 +19,7 @@ import { renderSearchPage, hasSearchSnapshot } from './views/search-page.js?v=0.
 import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.31.56';
 import { regionDistrictOptions, regionSubdistrictOptions } from './data/korean-regions.js?v=0.0.31.56';
 
-const formErrors={ALREADY_VOTED:'이번 회차 투표를 이미 완료했습니다.',AGE_GROUP_MISMATCH:'20대 이상 회원은 본인 세대에서만 투표할 수 있습니다.',GENERATION_VOTE_CLOSED:'현재 진행 중인 모의투표가 아닙니다.',CANDIDATE_NOT_ALLOWED:'이번 회차에 등록된 후보를 선택해 주세요.',ADMIN_VOTE_DISABLED:'관리자는 데모 설정으로 현황을 관리해 주세요.',CAMP_REQUIRED:'진보진영 또는 보수진영을 선택해 주세요.',PIN_FORBIDDEN:'공지·케이지 고정은 관리자만 할 수 있습니다.',PIN_INVALID:'공지 또는 케이지 중 하나를 선택해 주세요.',POST_EDIT_FORBIDDEN:'본인이 작성한 게시글만 수정·삭제할 수 있습니다.',COMMENT_EDIT_FORBIDDEN:'본인이 작성한 댓글만 수정·삭제할 수 있습니다.',CONTENT_CHANGED_RETRY:'다른 참여 내용이 갱신됐습니다. 입력 내용은 유지되니 다시 저장해 주세요.',CONTENT_STORAGE_INVALID:'저장된 게시판 데이터를 읽지 못했습니다. 다시 시도해 주세요.',TITLE_REQUIRED:'제목을 입력해 주세요.',INVALID_COMMENT:'댓글 내용을 입력해 주세요.',COMMENT_PARENT_INVALID:'답글을 달 댓글이 변경되었거나 삭제되었습니다.',CAGE_NOT_FOUND:'케이지를 찾을 수 없습니다.',POST_NOT_FOUND:'게시글이 삭제되었거나 존재하지 않습니다.',COMMENT_NOT_FOUND:'댓글이 삭제되었거나 존재하지 않습니다.',CAMP_IMMUTABLE:'작성한 글의 진영은 변경할 수 없습니다.',INVALID_REFERRER:'추천인코드를 확인해 주세요. 사용 가능한 회원의 코드를 입력해야 합니다.',INVALID_REFERRER_CODE:'추천인코드는 숫자로 입력해 주세요.',INVALID_REGION:'시·군·구와 해당 구를 올바르게 선택해 주세요.',REGISTRATION_BUSY:'가입 요청이 많습니다. 잠시 후 다시 시도해 주세요.',MEMBERS_CHANGED_RETRY:'회원 정보가 갱신됐습니다. 새로고침 후 다시 저장해 주세요.'};
+const formErrors={GOODS_REQUEST_REQUIRED:'상품 종류, 희망 수량, 연락처와 제작 요청을 확인해 주세요.',ALREADY_VOTED:'이번 회차 투표를 이미 완료했습니다.',AGE_GROUP_MISMATCH:'20대 이상 회원은 본인 세대에서만 투표할 수 있습니다.',GENERATION_VOTE_CLOSED:'현재 진행 중인 모의투표가 아닙니다.',CANDIDATE_NOT_ALLOWED:'이번 회차에 등록된 후보를 선택해 주세요.',ADMIN_VOTE_DISABLED:'관리자는 데모 설정으로 현황을 관리해 주세요.',CAMP_REQUIRED:'진보진영 또는 보수진영을 선택해 주세요.',PIN_FORBIDDEN:'공지·케이지 고정은 관리자만 할 수 있습니다.',PIN_INVALID:'공지 또는 케이지 중 하나를 선택해 주세요.',POST_EDIT_FORBIDDEN:'본인이 작성한 게시글만 수정·삭제할 수 있습니다.',COMMENT_EDIT_FORBIDDEN:'본인이 작성한 댓글만 수정·삭제할 수 있습니다.',CONTENT_CHANGED_RETRY:'다른 참여 내용이 갱신됐습니다. 입력 내용은 유지되니 다시 저장해 주세요.',CONTENT_STORAGE_INVALID:'저장된 게시판 데이터를 읽지 못했습니다. 다시 시도해 주세요.',TITLE_REQUIRED:'제목을 입력해 주세요.',INVALID_COMMENT:'댓글 내용을 입력해 주세요.',COMMENT_PARENT_INVALID:'답글을 달 댓글이 변경되었거나 삭제되었습니다.',CAGE_NOT_FOUND:'케이지를 찾을 수 없습니다.',POST_NOT_FOUND:'게시글이 삭제되었거나 존재하지 않습니다.',COMMENT_NOT_FOUND:'댓글이 삭제되었거나 존재하지 않습니다.',CAMP_IMMUTABLE:'작성한 글의 진영은 변경할 수 없습니다.',INVALID_REFERRER:'추천인코드를 확인해 주세요. 사용 가능한 회원의 코드를 입력해야 합니다.',INVALID_REFERRER_CODE:'추천인코드는 숫자로 입력해 주세요.',INVALID_REGION:'시·군·구와 해당 구를 올바르게 선택해 주세요.',REGISTRATION_BUSY:'가입 요청이 많습니다. 잠시 후 다시 시도해 주세요.',MEMBERS_CHANGED_RETRY:'회원 정보가 갱신됐습니다. 새로고침 후 다시 저장해 주세요.'};
 const app=document.getElementById('app');
 renderInitialLoading(app);
 const auth=createAuthService();
@@ -188,7 +188,7 @@ async function render({preserveScroll=false,refreshHome=false}={}){
     const home={...HOME_FIXTURE,trending:trendingResult.items||[],keywords:keywordResult.items||[],memberCount,columns,community,communityData:content.peekDomain('community')||{items:community},itsmePosts,newsPosts,polls,generation:generationView,nationalEvaluation:nationalEvaluationView,academy,rank,homeBanner,recentPoliticians:loadRecentPoliticians(),session,badgeStatus};
     body=`<div class="product-home-wrap">${renderHomeLayout(home)}</div>`;
   } else if(p[0]==='points') body=renderPointShop(await content.points(),session,new URLSearchParams(r.split('?')[1]||'').get('view')==='support'?'support':'shop');
-  else if(p[0]==='shop') body=p[1]?renderCheerProduct(p[1]):renderCheerShop();
+  else if(p[0]==='shop') body=p[1]==='request'?renderGoodsRequest(session,r):p[1]?renderCheerProduct(p[1]):renderCheerCatalog();
   else if(p[0]==='about') body=views.renderAbout();
   else if(p[0]==='support') body=renderPointShop(await content.points(),session,'support');
   else if(['privacy','policy'].includes(p[0])) body=views.renderLegal(p[0]);
@@ -337,6 +337,7 @@ document.addEventListener('submit',async event=>{
   }
   if(type==='board'){const item=await content.create(form.dataset.domain,data),routeName=form.dataset.domain==='columns'?'column':form.dataset.domain==='news'?'news':'community';result=item?.error?{ok:false,error:item.error}:{ok:true,route:`/${routeName}/${item.id}`};if(result.ok&&data.cageParentId){cageFeedback={rootId:data.cageParentId,camp:data.camp};cageRouteState({page:1,mode:'posts'});delete result.route;await render({preserveScroll:true});}}
   if(type==='itsme'){const item=await content.create('itsme',data);result=item?.error?{ok:false,error:item.error}:{ok:true,route:`/itsme/${item.id}`};}
+  if(type==='goods-request'){result=await content.createInquiry({...data,kind:'goods-request',visibility:'private'});if(result?.ok)result.route=`/inquiry/${result.item.id}`;}
   if(type==='inquiry'){result=await content.createInquiry(data);if(result?.ok)result.route=`/inquiry/${result.item.id}`;}
   if(type==='inquiry-reply'){result=await content.replyInquiry(form.dataset.inquiryId,data.body);if(result?.ok)await render({preserveScroll:true});}
   if(type==='comment'){result=await content.comment(form.dataset.domain,form.dataset.postId,data.text,{camp:data.camp,parentId:data.parentId});if(result.ok){const root=form.closest('.jc55');if(root&&data.camp){cageFeedback={rootId:root.dataset.cageId,camp:data.camp};cageRouteState({mode:'comments'});}await render({preserveScroll:true});}}
