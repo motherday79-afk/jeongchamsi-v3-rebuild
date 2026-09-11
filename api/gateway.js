@@ -123,7 +123,8 @@ export async function handlePoliticians(req,res,command,url,intelligence){
     const entries=await Promise.all(POLITICIAN_TYPES.map(async type=>[type,await readPoliticianType(command,type)]));
     const offset=Math.max(0,Math.floor(Number(url.searchParams.get('offset')||req.query?.offset||0)||0));
     const matches=searchPoliticianProfiles(Object.fromEntries(entries),query,Infinity);
-    const items=matches.slice(offset,offset+limit).map(item=>({...item,photo:photos[item.id]||null}));
+    const all=url.searchParams.get('all')==='1';
+    const items=(all?matches:matches.slice(offset,offset+limit)).map(item=>({id:item.id,name:item.name,party:item.party,jurisdiction:item.jurisdiction,office:item.office,roleLabel:item.roleLabel,photo:photos[item.id]||null}));
     return json(res,200,{ok:true,query,limit,offset,total:matches.length,hasMore:offset+items.length<matches.length,items});
   }
   const type=cleanPoliticianType(url.searchParams.get('type')||req.query?.type)||'assembly';
