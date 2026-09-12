@@ -21,3 +21,10 @@ test('no public snapshot does not read drafts and does not fabricate publisher s
  const db=storage(),service=createMediaSpreadService({command:db.command,scope:'empty-'+Math.random(),profiles:[profile]});const result=await service.search({query:'김민석'});
  assert.equal(result.target.person.name,'김민석');assert.deepEqual(result.publishers,[]);assert(!db.calls.some(x=>x[0]==='MGET'));
 });
+test('old publisher index is rebuilt from the same published inputs without collecting news again',async()=>{
+ const {createMediaSpreadService}=await load(),db=storage();db.values.set(K.publicPointer,'existing');db.values.set(K.draft('existing',profile.id),encodeStored(draft('연합뉴스')));
+ db.values.set(K.mediaIndex('existing'),encodeStored({revision:'',index:{version:1,people:[profile],publishers:['다음뉴스'],articles:[],issues:[],coverage:{}}}));
+ const result=await createMediaSpreadService({command:db.command,scope:'legacy-index-'+Math.random(),profiles:[profile],now:()=>Date.parse('2026-09-12T00:00:00Z')}).search({query:'김민석'});
+ assert.equal(result.selected.name,'연합뉴스');assert(!result.publishers.some(row=>row.name==='다음뉴스'));
+ assert(db.calls.some(row=>row[0]==='MGET'&&row.includes(K.draft('existing',profile.id))));
+});

@@ -18,6 +18,24 @@ export function buildRoleNarratives(input={}){
 const MEDIA_NAMES=Object.freeze({'v.daum.net':'다음뉴스','news.daum.net':'다음뉴스','yna.co.kr':'연합뉴스','newspim.com':'뉴스핌','biz.chosun.com':'조선비즈','chosun.com':'조선일보','ohmynews.com':'오마이뉴스','ohmynews':'오마이뉴스','mt.co.kr':'머니투데이','hidomin.com':'경북도민일보','cpbc news':'가톨릭평화신문','news.nate.com':'네이트뉴스','news.sbs.co.kr':'SBS뉴스','chosunbiz':'조선비즈','edaily.co.kr':'이데일리','kyongbuk.co.kr':'경북일보','newsis.com':'뉴시스','newsis':'뉴시스','donga.com':'동아일보','joongang.co.kr':'중앙일보','joins.com':'중앙일보','hani.co.kr':'한겨레','khan.co.kr':'경향신문','kbs':'KBS뉴스','kbs news':'KBS뉴스','kbs 뉴스':'KBS뉴스','kbs.co.kr':'KBS뉴스','mbc':'MBC뉴스','mbc news':'MBC뉴스','mbc 뉴스':'MBC뉴스','imbc.com':'MBC뉴스','sbs':'SBS뉴스','sbs news':'SBS뉴스','sbs 뉴스':'SBS뉴스','sbs.co.kr':'SBS뉴스','ytn':'YTN','ytn.co.kr':'YTN','yonhap':'연합뉴스'});
 export function mediaLabel(value){const original=String(value||'').trim(),name=original.toLowerCase().replace(/\s+/g,' ');if(MEDIA_NAMES[name])return MEDIA_NAMES[name];let host=name;try{host=new URL(/^https?:\/\//i.test(name)?name:'https://'+name).hostname;}catch{return original;}host=host.replace(/^www\./,'');if(MEDIA_NAMES[host])return MEDIA_NAMES[host];const domain=Object.keys(MEDIA_NAMES).filter(key=>key.includes('.')).sort((a,b)=>b.length-a.length).find(key=>host.endsWith('.'+key));return domain?MEDIA_NAMES[domain]:original;}
 
+// A news distributor is not an editorial publisher. Keep mediaLabel for link attribution.
+const DISTRIBUTOR_NAMES=new Set('다음 다음뉴스 daum daumnews daum뉴스 네이버 네이버뉴스 naver navernews naver뉴스 네이트 네이트뉴스 nate natenews nate뉴스 구글 구글뉴스 google google뉴스 googlenews 구글뉴스rss googlenewsrss msn msn뉴스 microsoftstart'.split(' '));
+export function isNewsDistributor(value){
+ const text=String(value||'').trim(),name=text.toLowerCase().replace(/[\s·._-]+/g,'');
+ if(DISTRIBUTOR_NAMES.has(name))return true;
+ try{const host=new URL(/^https?:\/\//i.test(text)?text:'https://'+text).hostname.toLowerCase();return /(?:^|\.)(?:daum\.net|naver\.com|nate\.com|msn\.com)$/.test(host)||host==='news.google.com';}catch{return false;}
+}
+export function publisherLabel(value){const label=mediaLabel(value);return !label||isNewsDistributor(value)||isNewsDistributor(label)?'':label;}
+export function articlePublisher(item={}){
+ const explicit=typeof item.publisher==='object'?item.publisher?.name:item.publisher;
+ for(const value of [explicit,item.source]){const name=publisherLabel(value);if(name)return name;}
+ // Domain attribution is allowed only for a known original publisher, never from headline words.
+ for(const value of [item.sourceUrl,item.originalUrl,item.url]){
+  try{const host=new URL(String(value||'')).hostname.toLowerCase().replace(/^www\./,'');if(isNewsDistributor(host))continue;const name=mediaLabel(host);if(name!==host&&publisherLabel(name))return name;}catch{}
+ }
+ return '';
+}
+
 export const MAJOR_OUTLET_NAMES=Object.freeze(['조선일보','중앙일보','동아일보','한겨레','경향신문','KBS뉴스','MBC뉴스','SBS뉴스','YTN','연합뉴스']);
 
 // Separate specific title anchors from generic political vocabulary; do not group by politician alone.

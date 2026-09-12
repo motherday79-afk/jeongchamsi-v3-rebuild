@@ -1,9 +1,30 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { fetchGoogleNews, googleNewsFingerprint } from '../lib/google-news.js';
+import { fetchGoogleNews, googleNewsFingerprint, mergeNewsHistory, parseGoogleNewsRss } from '../lib/google-news.js';
 
 const rss=items=>`<rss><channel>${items.map(row=>`<item><title>${row.title}</title><description>${row.description||''}</description><link>${row.url}</link><pubDate>${row.date}</pubDate><source>${row.source||'테스트뉴스'}</source></item>`).join('')}</channel></rss>`;
 const NOW=Date.parse('2026-09-06T12:00:00Z');
+
+test('publisher normalization preserves previously saved RSS article exclusions',async()=>{
+  for(const source of ['yna.co.kr','MBC']){
+    const raw={title:'고민정 정책 발표',source,url:'https://news.example/stable',date:'Sun, 06 Sep 2026 08:00:00 GMT'};
+    const fingerprint=googleNewsFingerprint(raw);
+    const result=await fetchGoogleNews({id:'assembly-001',name:'고민정'},{fetchImpl:async()=>({ok:true,text:async()=>rss([raw])}),now:()=>NOW,exclusions:[fingerprint]});
+    assert.equal(result.items.length,0,`${source}: saved exclusion must still match`);
+    assert.ok(result.excludedCount>0);
+  }
+});
+
+test('recollecting an article with a normalized publisher does not increase saved history counts',()=>{
+  for(const [source,publisher] of [['yna.co.kr','연합뉴스'],['MBC','MBC뉴스']]){
+    const raw={title:'고민정 정책 발표',source,url:'https://news.example/stable',date:'Sun, 06 Sep 2026 08:00:00 GMT'};
+    const previous=mergeNewsHistory({},{items:[{...raw,publishedAt:raw.date}],coverage:[]},new Date(NOW).toISOString());
+    const [parsed]=parseGoogleNewsRss(rss([raw]));
+    assert.equal(parsed.source,publisher);
+    const next=mergeNewsHistory(previous,{items:[parsed],coverage:[]},new Date(NOW).toISOString());
+    assert.equal(next.daily.find(row=>row.date==='2026-09-06').count,1,`${source}: recollection must reuse original identity`);
+  }
+});
 
 test('Google News uses bounded 1d, 7d, and 30d queries and discards stale relevance results',async()=>{
   const urls=[];
@@ -12,8 +33,8 @@ test('Google News uses bounded 1d, 7d, and 30d queries and discards stale releva
     {title:'고민정 과거 기사',url:'https://news.example/stale',date:'Tue, 01 Jul 2026 08:00:00 GMT'}
   ])};};
   const result=await fetchGoogleNews({id:'assembly-001',name:'고민정',party:'더불어민주당',jurisdiction:'서울 광진구을'},{fetchImpl,now:()=>NOW});
-  assert.equal(urls.length,3);
-  assert.match(urls[0],/when:1d/);assert.match(urls[1],/when:7d/);assert.match(urls[2],/when:30d/);
+  assert.equal(urls.length,5);
+  assert.match(urls[0],/after:2026-08-06/);assert.match(urls.at(-1),/before:2026-09-07/);assert.equal(result.coverage.length,31);
   assert.equal(result.items.some(row=>row.url.includes('stale')),false);
   assert.deepEqual(result.periodCounts,{h24:1,d7:1,d30:1});
 });
@@ -37,6 +58,6 @@ test('Google News period windows remain monotonic and record collection basis',a
   ];
   const result=await fetchGoogleNews({id:'assembly-001',name:'고민정'},{fetchImpl:async()=>({ok:true,text:async()=>rss(items)}),now:()=>NOW});
   assert.deepEqual(result.periodCounts,{h24:1,d7:2,d30:3});
-  assert.equal(result.queryBasis,'Google News RSS · 최근 1일/7일/30일');
-  assert.equal(result.queries.length,3);
+  assert.equal(result.queryBasis,'Google News RSS · 한국 날짜 기준 30일 전~오늘, 기간 분할 수집');
+  assert.equal(result.queries.length,5);
 });
