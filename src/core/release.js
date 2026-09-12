@@ -1,4 +1,4 @@
-export const APP_RELEASE='JCS_0_0_31_144';
+export const APP_RELEASE='JCS_0_0_31_145';
 
 export function releaseMetadata(env={}){
   return {
