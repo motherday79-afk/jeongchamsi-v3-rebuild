@@ -1536,13 +1536,13 @@ body :is(input,textarea,[contenteditable=""],[contenteditable="true"],[contented
 .product-home-wrap .sidebar-more-arrow:is(:hover,:focus-visible){background:var(--jcs-gold-soft)!important;color:var(--jcs-gold)!important;border-color:#c8a55d!important}
 .national-evaluation-page .evaluation-result-grid strong{color:#753bbd}
 
-/* 31.142: tactile font controls; desktop account entry lives in sidebar. */
-.product-header .jcs-font-scale-control button{display:grid;place-items:center;width:34px;height:34px;padding:7px;border:1px solid #d9d2e2;border-radius:9px;background:var(--jcs-purple-gloss);color:#f3dfae;box-shadow:inset 0 1px 0 #d8bcec,0 2px 0 #4b2868;transition:background .15s,box-shadow .15s,transform .1s}
-.product-header .jcs-font-scale-control button svg{display:block;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:square}
-.product-header .jcs-font-scale-control button:hover:not(:disabled){border:1px solid #bf9c58;background:var(--jcs-purple-gloss);color:#ffedc7}
-.product-header .jcs-font-scale-control button:active:not(:disabled){transform:translateY(2px);box-shadow:none}
-.product-header .jcs-font-scale-control button:focus-visible{outline:2px solid #753bbd;outline-offset:3px}
-.product-header .jcs-font-scale-control button:disabled{color:#b4acbd;background:#f7f5f9;box-shadow:0 1px 0 #e4deea;cursor:default}
+/* 31.146: smooth key surface and single-piece symbols; desktop account stays in sidebar. */
+.product-header .jcs-font-scale-control button{display:grid;place-items:center;width:34px;height:34px;padding:7px;box-sizing:border-box;appearance:none;border:1px solid #70419b;border-radius:9px;background:linear-gradient(155deg,#9160bd,#7442a3 55%,#60328a);color:#f4dfab;box-shadow:0 1px 2px #48206f24;outline:none;transition:color .15s,border-color .15s,transform .1s}
+.product-header .jcs-font-scale-control button svg{display:block;width:18px;height:18px;fill:currentColor;stroke:none;pointer-events:none}
+.product-header .jcs-font-scale-control button:hover:not(:disabled){border-color:#b69250;background:linear-gradient(155deg,#9160bd,#7442a3 55%,#60328a);color:#ffedc7;outline:none}
+.product-header .jcs-font-scale-control button:active:not(:disabled){transform:translateY(1px);box-shadow:none}
+.product-header .jcs-font-scale-control button:focus-visible,.product-header .jcs-font-scale-control button:hover:focus-visible{outline:2px solid #946a28;outline-offset:3px}
+.product-header .jcs-font-scale-control button:disabled{color:#b4acbd;border-color:#e3deea;background:#f7f5f9;box-shadow:none;cursor:default}
 @media(min-width:1024.01px){.product-header .product-user-chip{display:none!important}.product-header .jcs-font-scale-control{order:2;margin-left:auto}.product-header .product-account-tools{margin-left:auto;justify-content:flex-end}}
 @media(max-width:560px){.product-header .jcs-font-scale-control{gap:6px}.product-header .jcs-font-scale-control button{width:32px;height:32px;padding:6px}}
 

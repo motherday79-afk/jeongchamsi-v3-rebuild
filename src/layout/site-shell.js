@@ -17,7 +17,7 @@ export function siteHeader(memberCount=0,session={authenticated:false,user:null}
 }
 
 export function fontSizeControl(){
-  return `<div class="jcs-font-scale-control" data-font-scale-control data-font-scale="0" role="group" aria-label="페이지 글자 크기"><button type="button" data-font-scale-decrease aria-label="글자 크기 줄이기" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button><button type="button" data-font-scale-increase aria-label="글자 크기 키우기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"/></svg></button></div>`;
+  return `<div class="jcs-font-scale-control" data-font-scale-control data-font-scale="0" role="group" aria-label="페이지 글자 크기"><button type="button" data-font-scale-decrease aria-label="글자 크기 줄이기" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5h16v3H4z"/></svg></button><button type="button" data-font-scale-increase aria-label="글자 크기 키우기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 4h3v6.5H20v3h-6.5V20h-3v-6.5H4v-3h6.5z"/></svg></button></div>`;
 }
 
 export function drawer(session={authenticated:false,user:null}){
