@@ -1,0 +1,53 @@
+name: Build Jeongchamsi Minimal APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [android-minimal-webview, main, master]
+    paths:
+      - 'android/**'
+      - '.github/workflows/build-android-apk.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: jcs-android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Read source
+        uses: actions/checkout@v4
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Test, build and verify APK
+        env:
+          SIGNING_KEYSTORE_B64: ${{ secrets.SIGNING_KEYSTORE_B64 }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+        run: bash android/tools/build.sh
+      - name: APK for your Android phone
+        uses: actions/upload-artifact@v4
+        with:
+          name: jeongchamsi-minimal-apk
+          path: android/dist/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Tests and verification reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jeongchamsi-verification
+          path: android/verification/
+          if-no-files-found: ignore
+          retention-days: 30
