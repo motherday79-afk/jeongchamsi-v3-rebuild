@@ -51,28 +51,44 @@ const MODULE_ACTION_PATHS=Object.freeze({
   community:ICON_PATHS.community,
   academy:ICON_PATHS.academy
 });
-export function moduleActionIconSvg(key=""){return `<svg viewBox="0 0 24 24" aria-hidden="true">${MODULE_ACTION_PATHS[key]||ICON_PATHS.guide}</svg>`;}
+export function moduleActionIconSvg(key=""){if(NAV_SOLID[key])return serviceNavIconSvg(key);return `<svg viewBox="0 0 24 24" aria-hidden="true">${MODULE_ACTION_PATHS[key]||ICON_PATHS.guide}</svg>`;}
 
-// Navigation-only solid glyphs. Shared small utility icons retain their own rendering.
+// One material system for the brand mark and service glyphs. IDs are unique per SVG.
+const materialSequence=Symbol.for('jcs.material.sequence');
+if(!Object.prototype.hasOwnProperty.call(globalThis,materialSequence))Object.defineProperty(globalThis,materialSequence,{value:0,writable:true});
+function materialPaint(){
+ const id=`jcs-material-${++globalThis[materialSequence]}`;
+ return {purple:`url(#${id}-p)`,gold:`url(#${id}-g)`,defs:`<defs><linearGradient id="${id}-p" x1="0" y1="0" x2=".7" y2="1"><stop stop-color="#c5a6ed"/><stop offset=".25" stop-color="#9962d0"/><stop offset=".46" stop-color="#753bbd"/><stop offset=".53" stop-color="#57258b"/><stop offset=".83" stop-color="#773daf"/><stop offset="1" stop-color="#48206f"/></linearGradient><linearGradient id="${id}-g" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#f6e6b5"/><stop offset=".27" stop-color="#d7b365"/><stop offset=".46" stop-color="#f3db99"/><stop offset=".55" stop-color="#b2863f"/><stop offset="1" stop-color="#ddbf78"/></linearGradient></defs>`};
+}
+export function brandMarkSvg(className=''){
+ const paint=materialPaint(),ray='M247 57 Q256 40 265 57 L277 163 C280 178 270 187 256 187 C242 187 232 178 235 163 Z';
+ const paths=Array.from({length:8},(_,i)=>`<path d="${ray}" transform="rotate(${i*45} 256 256)" fill="${i===1||i===5?paint.gold:paint.purple}"/>`).join('');
+ return `<svg class="${className} jcs-brand-material" viewBox="0 0 512 512" aria-hidden="true">${paint.defs}${paths}</svg>`;
+}
+// Gold is assigned to each glyph's distinguishing part, rather than a frame around it.
 const NAV_SOLID={
- president:'<path d="m2 12 14-9 14 9zM4 27h24v3H4zM7 14h4v11H7zm7 0h4v11h-4zm7 0h4v11h-4z"/>',
- news:'<rect x="3" y="4" width="22" height="25" rx="3"/><path d="M27 10h4v16a3 3 0 0 1-3 3h-1z" fill="#29262e"/><path d="M8 10h12M8 16h12M8 22h8" stroke="white" stroke-width="2"/>',
- keywords:'<path d="M5 3h16l10 13-15 15L3 18V5z"/><circle cx="10" cy="10" r="3" fill="white"/>',
- inquiry:'<path d="M6 3h20a4 4 0 0 1 4 4v15a4 4 0 0 1-4 4H12l-8 5v-6a4 4 0 0 1-2-3V7a4 4 0 0 1 4-4"/><path d="M12 11a4 4 0 0 1 8 0c0 4-4 3-4 7" stroke="white" stroke-width="2.5" fill="none"/><circle cx="16" cy="22" r="1.5" fill="white"/>',
- cheer:'<path d="M16 29 3 16C-5 5 9-2 16 7 23-2 37 5 29 16z"/>',
- donate:'<rect x="2" y="7" width="28" height="20" rx="4"/><circle cx="16" cy="17" r="6" fill="white"/><path d="M5 12h3M24 22h3" stroke="white" stroke-width="2"/>',
- shop:'<path d="M5 3h22l4 10H1zM3 16h26v14H3z"/><path d="M13 21h7v9h-7z" fill="white"/><path d="M2 14h28" stroke="white" stroke-width="2"/>',
- requestPolitician:'<circle cx="12" cy="9" r="6"/><path d="M1 29v-5a11 11 0 0 1 15-10l-3 15z"/><circle cx="23" cy="21" r="6" fill="none" stroke="#29262e" stroke-width="3"/><path d="m27 26 4 5" stroke="#29262e" stroke-width="3"/>',
- partners:'<path d="M11 2h10v6h-3V5h-4v3h-3z"/><rect x="2" y="8" width="28" height="22" rx="3"/><path d="M2 17h28" stroke="white" stroke-width="2"/><rect x="13" y="14" width="6" height="7" rx="1" fill="white"/>',
- now:'<rect x="3" y="18" width="7" height="11" rx="2"/><rect x="12" y="11" width="7" height="18" rx="2"/><rect x="21" y="3" width="7" height="26" rx="2"/>',
- poll:'<path d="M6 13h20l4 6H2z"/><rect x="3" y="21" width="26" height="9" rx="2"/><rect x="12" y="2" width="12" height="14" rx="2" transform="rotate(18 18 9)"/><path d="m15 8 2 2 4-4" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"/>',
- itsme:'<path d="M6 2h15v8h7v18a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2m17 0 5 6h-5z"/><path d="M10 22h12M10 26h8M16 12v3m-6 0 2 2m10-2-2 2" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"/>',
- compare:'<path d="M4 3h10a2 2 0 0 1 2 2v10l-4 3v9H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2"/><path d="M20 6h8a2 2 0 0 1 2 2v20a2 2 0 0 1-2 2H16a2 2 0 0 1-2-2V20l4-3V8a2 2 0 0 1 2-2" fill="#29262e"/><path d="M6 9h6M20 24h6" stroke="white" stroke-width="2.5" stroke-linecap="round"/>',
- community:'<path d="M3 3h18a4 4 0 0 1 4 4v5H15a6 6 0 0 0-6 6v4l-6 4v-7a4 4 0 0 1-3-4V7a4 4 0 0 1 3-4"/><path d="M16 14h12a4 4 0 0 1 4 4v7a4 4 0 0 1-4 4v3l-5-3h-7a4 4 0 0 1-4-4v-7a4 4 0 0 1 4-4" fill="#29262e"/>',
- evaluation:'<rect x="5" y="5" width="22" height="25" rx="3"/><rect x="11" y="1" width="10" height="7" rx="2" fill="#29262e"/><path d="m10 18 4 4 8-9" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
- column:'<rect x="5" y="2" width="22" height="28" rx="3"/><path d="M11 9h10M11 15h10M11 21h7" stroke="white" stroke-width="2.5" stroke-linecap="round"/>',
- academy:'<path d="m1 11 15-8 15 8-15 8zM7 17l9 5 9-5v8c-6 5-12 5-18 0z"/><path d="M29 13v11" stroke="#29262e" stroke-width="2"/>',
- generation:'<circle cx="11" cy="9" r="5"/><path d="M1 29v-5a10 10 0 0 1 20 0v5z"/><circle cx="24" cy="11" r="4" fill="#29262e"/><path d="M23 29v-5a12 12 0 0 0-3-8c6-2 11 3 11 8v5z" fill="#29262e"/>',
- trending:'<path d="M17 1c2 8 11 11 11 20a12 12 0 0 1-24 0c0-6 4-11 7-14 0 6 3 7 3 7s5-5 3-13"/><path d="M17 16c1 4 5 5 5 9a6 6 0 0 1-12 0c0-3 3-6 4-7 0 3 2 4 2 4s2-2 1-6" fill="white"/>'
+ president:'<path data-gold d="m2 11 14-8 14 8zM3 28h26v2H3z"/><path d="M4 13h24v3H4zM6 17h4v9H6zm8 0h4v9h-4zm8 0h4v9h-4z"/>',
+ news:'<rect x="3" y="3" width="22" height="26" rx="3"/><path data-gold d="M27 10h4v16a3 3 0 0 1-3 3h-1z"/><rect data-gold x="8" y="8" width="12" height="5" rx="1"/><path d="M8 18h12M8 23h8" stroke="#f7efff" stroke-width="2"/>',
+ keywords:'<path d="M5 3h16l10 13-15 15L3 18V5z"/><circle cx="10" cy="10" r="2.5" fill="#fff"/><path data-gold d="m19 13 2 2-9 9-2-2z"/>',
+ inquiry:'<path d="M6 3h20a4 4 0 0 1 4 4v15a4 4 0 0 1-4 4H12l-8 5v-6a4 4 0 0 1-2-3V7a4 4 0 0 1 4-4"/><path data-gold-stroke d="M12 11a4 4 0 0 1 8 0c0 4-4 3-4 7" stroke-width="2.8" fill="none"/><circle data-gold cx="16" cy="22" r="1.5"/>',
+ cheer:'<path d="M16 29 4 17C-3 7 8 0 16 8 24 0 35 7 28 17z"/><path data-gold d="m25 1 1.5 4.5L31 7l-4.5 1.5L25 13l-1.5-4.5L19 7l4.5-1.5z"/>',
+ donate:'<rect x="2" y="7" width="28" height="20" rx="4"/><circle data-gold cx="16" cy="17" r="7"/><path d="M14 22V12h3a3 3 0 0 1 0 6h-3" stroke="#604023" stroke-width="1.5" fill="none"/>',
+ shop:'<path d="M3 15h26v15H3z"/><path data-gold d="M5 3h22l4 9c-1 4-5 4-7 1-2 3-6 3-8 0-2 3-6 3-8 0-2 3-6 3-7-1z"/><path d="M13 21h7v9h-7z" fill="#faf5ff"/>',
+ requestPolitician:'<circle cx="12" cy="9" r="6"/><path d="M1 29v-5a11 11 0 0 1 15-10l-3 15z"/><circle data-gold-stroke cx="23" cy="21" r="6" fill="none" stroke-width="3"/><path data-gold-stroke d="m27 26 3 4" stroke-width="3"/>',
+ partners:'<path data-gold d="M11 2h10v6h-3V5h-4v3h-3z"/><rect x="2" y="8" width="28" height="22" rx="3"/><path data-gold-stroke d="M2 17h28" stroke-width="1.6"/><rect data-gold x="13" y="14" width="6" height="7" rx="1"/>',
+ now:'<rect x="3" y="18" width="7" height="11" rx="1.5"/><rect x="12" y="11" width="7" height="18" rx="1.5"/><rect data-gold x="21" y="3" width="7" height="26" rx="1.5"/>',
+ poll:'<path d="M6 13h20l4 6H2z"/><rect x="3" y="21" width="26" height="9" rx="2"/><rect data-gold x="12" y="2" width="12" height="14" rx="2" transform="rotate(18 18 9)"/><path d="m15 8 2 2 4-4" fill="none" stroke="#624122" stroke-width="2" stroke-linecap="round"/>',
+ itsme:'<path d="M6 2h15v8h7v18a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2m17 0 5 6h-5z"/><path data-gold d="m11 18 10-10 4 4-10 10-5 1z"/><path d="M10 27h12" stroke="#f6edff" stroke-width="2"/>',
+ compare:'<rect x="2" y="3" width="13" height="25" rx="2.5"/><rect data-gold x="18" y="5" width="12" height="25" rx="2.5"/><circle cx="8.5" cy="11" r="2.5" fill="#f5eafd"/><path d="M5 22v-3a3.5 3.5 0 0 1 7 0v3" fill="#f5eafd"/><circle cx="24" cy="13" r="2.5" fill="#785027"/><path d="M21 24v-3a3 3 0 0 1 6 0v3" fill="#785027"/>',
+ community:'<path d="M4 3h16a4 4 0 0 1 4 4v5H15a6 6 0 0 0-6 6v4l-6 4v-7a4 4 0 0 1-2-3V7a4 4 0 0 1 3-4"/><path data-gold d="M16 14h11a4 4 0 0 1 4 4v7a4 4 0 0 1-4 4v3l-5-3h-6a4 4 0 0 1-4-4v-7a4 4 0 0 1 4-4"/>',
+ evaluation:'<rect x="5" y="5" width="22" height="25" rx="3"/><rect data-gold x="11" y="1" width="10" height="7" rx="2"/><path data-gold-stroke d="m10 18 4 4 8-9" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+ column:'<rect x="5" y="2" width="22" height="28" rx="3"/><path data-gold d="M18 2h5v12l-2.5-2-2.5 2z"/><path d="M10 17h11M10 22h9M10 26h6" stroke="#f6edff" stroke-width="2" stroke-linecap="round"/>',
+ academy:'<path d="m1 11 15-8 15 8-15 8zM7 17l9 5 9-5v6c-6 4-12 4-18 0z"/><path data-gold-stroke d="m16 11 12 3v10" stroke-width="2" fill="none"/><path data-gold d="M26 23h4v6h-4z"/>',
+ generation:'<circle cx="11" cy="9" r="5"/><path d="M1 29v-5a10 10 0 0 1 20 0v5z"/><circle data-gold cx="24" cy="11" r="4"/><path data-gold d="M23 29v-5a12 12 0 0 0-3-8c6-2 11 3 11 8v5z"/>',
+ trending:'<path d="M17 1c2 8 11 11 11 20a12 12 0 0 1-24 0c0-6 4-11 7-14 0 6 3 7 3 7s5-5 3-13"/><path data-gold d="M17 16c1 4 5 5 5 9a6 6 0 0 1-12 0c0-3 3-6 4-7 0 3 2 4 2 4s2-2 1-6"/>'
 };
-export function serviceNavIconSvg(key){return NAV_SOLID[key]?`<svg class="service-solid-icon" viewBox="0 0 32 32" aria-hidden="true" fill="currentColor">${NAV_SOLID[key]}</svg>`:serviceIconSvg(key);}
+export function serviceNavIconSvg(key){
+ if(!NAV_SOLID[key])return serviceIconSvg(key);
+ const paint=materialPaint(),glyph=NAV_SOLID[key].replace(/data-gold-stroke/g,`stroke="${paint.gold}"`).replace(/data-gold/g,`fill="${paint.gold}"`);
+ return `<svg class="service-solid-icon jcs-material-icon" viewBox="0 0 32 32" aria-hidden="true">${paint.defs}<g fill="${paint.purple}" stroke="none">${glyph}</g></svg>`;
+}
