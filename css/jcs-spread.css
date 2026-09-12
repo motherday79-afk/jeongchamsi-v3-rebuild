@@ -59,6 +59,65 @@
 .jcs-spread .spread-period-note{color:#704596;background:#f4eef9;border-radius:20px;padding:6px 11px;font-size:11px;flex:none}
 .jcs-spread .spread-publisher-stats{display:flex;flex-wrap:wrap;gap:8px 22px;margin:16px 0 24px;padding-bottom:18px;border-bottom:1px solid var(--spread-line);color:var(--spread-muted);font-size:12px}
 .jcs-spread .spread-publisher-stats b{color:#62358c;font-weight:650;margin-left:5px}
+.jcs-spread .publisher-share{margin:0 0 28px;border:1px solid #e5d9ee;border-radius:13px;background:linear-gradient(120deg,#fcf9ff,#fff 62%,#fffcf5);padding:20px;min-width:0}
+.jcs-spread .publisher-share-header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.jcs-spread .publisher-share-header h3{font-size:17px;line-height:1.4;letter-spacing:-.3px;margin:4px 0 0;color:var(--spread-ink)}
+.jcs-spread .publisher-share-sources{font-size:10px;color:#796c83;border:1px solid #e8dfed;border-radius:20px;padding:5px 9px;text-align:center;line-height:1.5}
+.jcs-spread .publisher-share-intro{font-size:11px;color:#807487;line-height:1.7;margin:8px 0 20px}
+.jcs-spread .publisher-share-main{display:grid;grid-template-columns:minmax(120px,.75fr) minmax(0,2fr);gap:28px;align-items:center}
+.jcs-spread .publisher-share-subject{min-width:0}
+.jcs-spread .publisher-share-subject h4{font-size:16px;line-height:1.5;margin:0 0 8px;overflow-wrap:anywhere}
+.jcs-spread .publisher-share-subject p{display:flex;flex-direction:column;gap:3px;margin:0}
+.jcs-spread .publisher-share-subject p strong{font-size:21px;line-height:1.4;color:#6d389d;letter-spacing:-.5px;font-weight:700;overflow-wrap:anywhere}
+.jcs-spread .publisher-share-subject p small{font-size:10px;color:#8a7b94}
+.jcs-spread .publisher-share-ratio{display:inline-block;font-size:10px;margin-top:10px;background:#f4ebdf;color:#8b612a;border-radius:5px;padding:3px 7px}
+.jcs-spread .publisher-share-bars{min-width:0;display:grid;gap:16px}
+.jcs-spread .publisher-share-bar-label{display:flex;align-items:baseline;gap:12px;margin-bottom:8px}
+.jcs-spread .publisher-share-bar-label>b{font-size:12px;font-weight:600;color:#5f4b70;flex:1;min-width:0;overflow-wrap:anywhere}
+.jcs-spread .publisher-share-bar-label>span{display:flex;align-items:baseline;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.jcs-spread .publisher-share-bar-label strong{font-size:18px;font-weight:700;line-height:1.4;color:#6c359f;white-space:nowrap;font-variant-numeric:tabular-nums}
+.jcs-spread .publisher-share-bar-label small{font-size:11px;color:#8a7e91;white-space:nowrap;font-variant-numeric:tabular-nums}
+.jcs-spread .publisher-share-track{display:block;height:7px;border-radius:7px;background:#eee8f3;overflow:hidden}
+.jcs-spread .publisher-share-track i{display:block;height:100%;border-radius:7px;background:linear-gradient(90deg,#b18ad6,#753bbd)}
+.jcs-spread .publisher-share-bar.is-other .publisher-share-track{background:#f0eadf}
+.jcs-spread .publisher-share-bar.is-other .publisher-share-track i{background:linear-gradient(90deg,#ddc58e,#b18a43)}
+.jcs-spread .publisher-share-bar.is-other .publisher-share-bar-label strong{color:#946a28}
+.jcs-spread .publisher-share-scale{font-size:9px;color:#938899;text-align:right;margin:-8px 0 0}
+.jcs-spread .publisher-share-sample{font-size:10px;line-height:1.65;color:#897052;background:#faf4e9;border-radius:6px;margin:16px 0 0;padding:7px 10px}
+.jcs-spread .publisher-share-peers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-top:22px;padding-top:18px;border-top:1px solid #eae2ef}
+.jcs-spread .publisher-share-peer-group{min-width:0}
+.jcs-spread .publisher-share-peer-group:only-child{grid-column:1/-1}
+.jcs-spread .publisher-share-peer-group h4{font-size:12px;color:#706177;font-weight:600;line-height:1.5;margin:0 0 7px}
+.jcs-spread .publisher-share-peer-group ol{list-style:none;margin:0;padding:0}
+.jcs-spread .publisher-share-peer-group li+li{border-top:1px solid #ece5f1}
+.jcs-spread .publisher-share-peer-group a{display:block;min-height:54px;border-radius:6px;padding:9px 5px}
+.jcs-spread .publisher-share-peer-group a:hover{background:#f4edf9}
+.jcs-spread .publisher-share-peer-heading{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.jcs-spread .publisher-share-peer-heading strong{font-size:13px;color:#493650;overflow-wrap:anywhere}
+.jcs-spread .publisher-share-peer-heading>b{font-size:11px;font-weight:600;color:#795398;text-align:right;flex:none}
+.jcs-spread .publisher-share-peer-values{display:flex;flex-wrap:wrap;gap:3px 12px;font-size:10px;color:#928697;line-height:1.65;margin-top:4px}
+.jcs-spread .publisher-share-peer-values b{color:#795398;font-weight:600}
+.jcs-spread .publisher-share-peer-values>span+span b{color:#946a28}
+.jcs-spread .publisher-share-peer-values small{font-size:9px}
+.jcs-spread .publisher-share-peer-note{display:block;color:#9b835f;font-size:9px;margin-top:3px}
+.jcs-spread .publisher-share-peer-basis{font-size:9px;color:#928597;line-height:1.7;margin:7px 0 0}
+.jcs-spread .publisher-share-basis{margin-top:16px;border-top:1px solid #eae2ef}
+.jcs-spread .publisher-share-basis summary{min-height:44px;font-size:11px;color:#75637f;padding:13px 0 7px}
+.jcs-spread .publisher-share-method{font-size:10px;color:#82728b;line-height:1.9}
+.jcs-spread .publisher-share-method p{margin:5px 0}
+.jcs-spread .publisher-share-method b{color:#6c5579;font-weight:550}
+.jcs-spread .publisher-share-evidence{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-top:17px}
+.jcs-spread .publisher-share-evidence>div{min-width:0}
+.jcs-spread .publisher-share-evidence h5{font-size:11px;color:#705782;overflow-wrap:anywhere;margin:0 0 10px}
+.jcs-spread .publisher-share-evidence>div+div h5{color:#926d39}
+.jcs-spread .publisher-share-evidence ol{margin:0;padding-left:16px;color:#8d8195}
+.jcs-spread .publisher-share-evidence li{font-size:11px;line-height:1.7;margin:0 0 11px;overflow-wrap:anywhere}
+.jcs-spread .publisher-share-evidence li>span{display:flex;justify-content:space-between;gap:8px;font-size:9px;margin-bottom:2px}
+.jcs-spread .publisher-share-evidence li b{font-weight:500}
+.jcs-spread .publisher-share-evidence li time{flex:none}
+.jcs-spread .publisher-share-evidence a{color:#776081;text-decoration:underline;text-underline-offset:3px}
+.jcs-spread .publisher-share-evidence li p{margin:0}
+.jcs-spread .publisher-share-no-evidence,.jcs-spread .publisher-share-evidence-note{font-size:10px;color:#928697;line-height:1.7;margin:0}
 .jcs-spread .spread-analysis-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px}
 .jcs-spread .spread-analysis-grid h3{font-size:15px;color:#322b3b;font-weight:650;margin:0 0 16px;line-height:1.5}
 .jcs-spread .spread-people-bars{list-style:none;padding:0;margin:0}
@@ -141,6 +200,24 @@
  .jcs-spread .spread-analysis-grid{grid-template-columns:minmax(0,1fr);gap:28px}
  .jcs-spread .spread-timelines{border-left:0;border-top:1px solid var(--spread-line);padding:24px 0 0}
  .jcs-spread .spread-publisher-stats{gap:7px 16px;font-size:11px}
+ .jcs-spread .publisher-share{padding:16px 14px;margin-bottom:24px;border-radius:10px}
+ .jcs-spread .publisher-share-header{align-items:flex-start;flex-wrap:wrap;gap:8px}
+ .jcs-spread .publisher-share-header h3{font-size:16px}
+ .jcs-spread .publisher-share-sources{font-size:9px}
+ .jcs-spread .publisher-share-intro{font-size:10px;margin-bottom:16px}
+ .jcs-spread .publisher-share-main{grid-template-columns:minmax(0,1fr);gap:18px}
+ .jcs-spread .publisher-share-subject{display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px}
+ .jcs-spread .publisher-share-subject h4{font-size:15px;margin:0;flex:1}
+ .jcs-spread .publisher-share-subject p strong{font-size:18px}
+ .jcs-spread .publisher-share-subject p small{font-size:9px}
+ .jcs-spread .publisher-share-ratio{margin:0}
+ .jcs-spread .publisher-share-bar-label{gap:8px}
+ .jcs-spread .publisher-share-bar-label>b{font-size:11px}
+ .jcs-spread .publisher-share-bar-label>span{gap:2px 7px;max-width:64%}
+ .jcs-spread .publisher-share-bar-label strong{font-size:16px}
+ .jcs-spread .publisher-share-bar-label small{font-size:10px}
+ .jcs-spread .publisher-share-peers,.jcs-spread .publisher-share-evidence{grid-template-columns:minmax(0,1fr);gap:18px}
+ .jcs-spread .publisher-share-peer-group a{padding:10px 3px}
  .jcs-spread .spread-basis{padding:15px 18px}
  .jcs-spread .spread-matches{padding:10px 18px}
  .jcs-spread .spread-profile-options{grid-template-columns:repeat(2,minmax(0,1fr))}

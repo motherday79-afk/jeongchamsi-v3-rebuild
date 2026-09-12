@@ -1,5 +1,6 @@
 import { renderPrescriptionReport } from '../views/prescription-visuals.js?v=0.0.31.56';
 import { refreshFontScale, setupFontScaleControl } from './font-scale.js?v=0.0.31.56';
+import { createHomeCompareMotion } from './compare-motion.js?v=0.0.31.150';
 
 export function setupDrawer(root=document){
   const drawer=root.querySelector('[data-drawer]');
@@ -208,46 +209,30 @@ export function setupCageCountdown(root){
  const before=Date.now();fetch('/api/v3/points?clock=1',{credentials:'same-origin'}).then(r=>r.json()).then(x=>{if(Number.isFinite(x.serverNow)){offset=x.serverNow-(before+Date.now())/2;paint();}}).catch(()=>{});paint();const timer=setInterval(()=>{if(!paint())clearInterval(timer);},1000);for(const node of timers)cageTimerIds.set(node,timer);
 }
 const homeCompareBound=new WeakSet();
-const compareMotion=new WeakMap();
-function stopCompareMotion(key){for(const animation of compareMotion.get(key)||[])animation.cancel();compareMotion.delete(key);}
-export function animateCompareSelection(form,slot,index,ready){
- stopCompareMotion(slot);stopCompareMotion(form);
- if(globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
- const play=(list,node,frames,options={})=>{if(node?.animate)list.push(node.animate(frames,{duration:1700,easing:'cubic-bezier(.16,.8,.22,1)',...options}));};
- const person=slot.querySelector('[data-home-compare-preview]'),local=[],shared=[];
- const mobile=globalThis.matchMedia?.('(max-width:600px)').matches,direction=(index===0?-1:1)*(mobile?28:60);
- let effects=form.querySelector('.matchup-effects');
- if(!effects&&form.ownerDocument){effects=form.ownerDocument.createElement('div');effects.className='matchup-effects';effects.setAttribute('aria-hidden','true');effects.innerHTML='<i class="matchup-spot"></i><i class="matchup-streak"></i><i class="matchup-impact"></i>';form.append(effects);}
- if(effects)effects.dataset.side=String(index);
- play(shared,effects?.querySelector('.matchup-spot'),[{opacity:0,transform:'scale(.5)'},{opacity:.85,transform:'scale(1.15)',offset:.28},{opacity:.45,transform:'scale(1)',offset:.65},{opacity:0,transform:'scale(1.3)'}]);
- play(shared,effects?.querySelector('.matchup-streak'),[{opacity:0,transform:`translateX(${direction*3}px) skew(-25deg)`},{opacity:.8,offset:.3},{opacity:0,transform:`translateX(${-direction*2}px) skew(-25deg)`}],{delay:280,duration:650});
- play(local,person,[{opacity:0,transform:`translateX(${direction}px) scale(.88)`},{opacity:1,transform:'translateX(0) scale(1.06)',offset:.7},{opacity:1,transform:'translateX(0) scale(1)'}],{delay:300,duration:800,fill:'backwards'});
- play(local,person?.querySelector?.('div'),[{opacity:0,transform:'translateY(12px)'},{opacity:1,transform:'translateY(0)'}],{delay:700,duration:400,fill:'backwards'});
- compareMotion.set(slot,local);
- if(ready){
-  play(shared,form.querySelector('.matchup-vs'),[{opacity:0,transform:'translate(-50%,-50%) skew(-9deg) scale(2.1)'},{opacity:1,transform:'translate(-50%,-50%) skew(-9deg) scale(.94)',offset:.6},{opacity:1,transform:'translate(-50%,-50%) skew(-9deg) scale(1)'}],{delay:1000,duration:450,fill:'backwards'});
-  play(shared,effects?.querySelector('.matchup-impact'),[{opacity:0,transform:'scale(.2)'},{opacity:.85,offset:.18},{opacity:0,transform:'scale(2.2)'}],{delay:1150,duration:550});
-  play(shared,form.querySelector('[type=submit]'),[{backgroundPosition:'150% 0'},{backgroundPosition:'-50% 0'}],{delay:1250,duration:450});
- }
- compareMotion.set(form,shared);
-}
-
 export function homeCompareRoute(ids){const values=ids.map(id=>String(id||'').trim());return values.length===2&&values.every(Boolean)&&values[0]!==values[1]?'/compare?ids='+encodeURIComponent(values.join(','))+'&run=1':null;}
 export function setupHomeCompare(root=document){
  for(const form of root.querySelectorAll('[data-home-compare]')){
   if(homeCompareBound.has(form))continue;homeCompareBound.add(form);
   const slots=[...form.querySelectorAll('[data-home-compare-slot]')],state=form.querySelector('[data-home-compare-state]'),button=form.querySelector('[type=submit]');
+  const motion=createHomeCompareMotion(form);
   const ids=()=>slots.map(slot=>slot.querySelector('[data-home-compare-id]').value);
   const update=()=>{button.disabled=!homeCompareRoute(ids());const feature=form.querySelector('[data-home-compare-feature]');if(feature)feature.disabled=button.disabled;state.textContent=button.disabled?'비교할 정치인 두 명을 선택해 주세요.':'두 정치인의 비교를 시작할 수 있습니다.';};
-  const clear=slot=>{stopCompareMotion(slot);stopCompareMotion(form);slot.querySelector('[data-home-compare-id]').value='';slot.querySelector('[data-home-compare-preview]').innerHTML='<button type="button" class="home-compare-avatar" data-home-compare-change data-home-compare-open aria-label="정치인 선택"><span aria-hidden="true">＋</span></button><div><b>정치인을 선택하세요</b><small>검색 결과에서 선택</small></div>';};
-  form.addEventListener('click',event=>{const change=event.target.closest('[data-home-compare-change]');if(!change)return;const panel=change.closest('[data-home-compare-slot]').querySelector('[data-home-compare-search-panel]');panel.hidden=change.hasAttribute?.('data-home-compare-open')?false:!panel.hidden;for(const control of change.closest('[data-home-compare-slot]').querySelectorAll('[data-home-compare-change]'))control.setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden){const input=panel.querySelector('[data-home-compare-search]');input.focus();input.select();}});
+  const clear=slot=>{motion.clear(slots.indexOf(slot));slot.querySelector('[data-home-compare-id]').value='';slot.querySelector('[data-home-compare-preview]').innerHTML='<button type="button" class="home-compare-avatar" data-home-compare-change data-home-compare-open aria-label="정치인 선택"><span aria-hidden="true">＋</span></button><div><b>정치인을 선택하세요</b><small>검색 결과에서 선택</small></div>';};
+  const showSearch=(slot,open)=>{const panel=slot.querySelector('[data-home-compare-search-panel]');panel.hidden=!open;for(const control of slot.querySelectorAll('[data-home-compare-change]'))control.setAttribute('aria-expanded',String(open));};
+  form.addEventListener('click',event=>{
+   const change=event.target.closest('[data-home-compare-change]');if(!change)return;
+   const slot=change.closest('[data-home-compare-slot]'),panel=slot.querySelector('[data-home-compare-search-panel]'),open=change.hasAttribute?.('data-home-compare-open')||panel.hidden;
+   for(const peer of slots)showSearch(peer,peer===slot&&open);
+   if(open){const input=panel.querySelector('[data-home-compare-search]');input.focus();input.select();}
+  });
   form.addEventListener('input',event=>{const input=event.target.closest('[data-home-compare-search]');if(!input)return;clear(input.closest('[data-home-compare-slot]'));input.setAttribute('value',input.value);update();});
   form.addEventListener('jcs:politician-selected',event=>{
    const slot=event.target.closest('[data-home-compare-slot]'),item=event.detail?.item;if(!slot||!item)return;
    if(slots.some(other=>other!==slot&&other.querySelector('[data-home-compare-id]').value===String(item.id))){clear(slot);update();state.textContent='서로 다른 정치인을 선택해 주세요.';return;}
+   slot.querySelector('[data-home-compare-id]').value=String(item.id||'');
    const input=slot.querySelector('[data-home-compare-search]');input.setAttribute('value',input.value);
    const src=String(item.photo?.url||item.photo?.localPath||'');
-   slot.querySelector('[data-home-compare-preview]').innerHTML=`<span class="home-compare-avatar" data-politician-avatar><span class="politician-photo-initial">${esc(String(item.name||'?').slice(0,1))}</span>${src?`<img data-politician-photo src="${esc(src)}" alt="" style="object-position:${esc(item.photo?.focus||'50% 28%')}">`:''}</span><div><b>${esc(item.name)}</b><small>${esc([item.party,item.jurisdiction||item.office||item.roleLabel].filter(Boolean).join(' · '))}</small></div>`;setupPoliticianPhotoFallback(slot);const panel=slot.querySelector('[data-home-compare-search-panel]');if(panel)panel.hidden=true;slot.querySelector('[data-home-compare-change]')?.setAttribute('aria-expanded','false');update();animateCompareSelection(form,slot,slots.indexOf(slot),!button.disabled);
+   slot.querySelector('[data-home-compare-preview]').innerHTML=`<span class="home-compare-avatar" data-politician-avatar><span class="politician-photo-initial">${esc(String(item.name||'?').slice(0,1))}</span>${src?`<img data-politician-photo src="${esc(src)}" alt="" style="object-position:${esc(item.photo?.focus||'50% 28%')}">`:''}</span><div><b>${esc(item.name)}</b><small>${esc([item.party,item.jurisdiction||item.office||item.roleLabel].filter(Boolean).join(' · '))}</small></div>`;setupPoliticianPhotoFallback(slot);const panel=slot.querySelector('[data-home-compare-search-panel]');if(panel)panel.hidden=true;slot.querySelector('[data-home-compare-change]')?.setAttribute('aria-expanded','false');update();motion.select(slots.indexOf(slot),item.id);
   });
   form.addEventListener('submit',event=>{event.preventDefault();const route=homeCompareRoute(ids());if(!route){update();return;}window.dispatchEvent(new CustomEvent('jcs:layout-route',{detail:{route}}));});update();
  }
