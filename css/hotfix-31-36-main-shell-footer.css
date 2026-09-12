@@ -429,7 +429,7 @@ body:has(.service-dock),.site-shell:has(.service-dock),.site-shell:has(.service-
 .product-header .product-account-tools{display:flex;align-items:center;gap:12px;margin-left:auto;min-width:0}
 .product-header .product-head-search{width:min(1180px,calc(100% - 24px));margin:0 auto;padding:4px 0 8px;display:flex;justify-content:center}
 .product-header .product-head-search .product-search{max-width:100%;flex:none;margin:0;}
-.product-header .jcs-font-scale-control{flex:none;gap:2px}
+.product-header .jcs-font-scale-control{flex:none;gap:8px}
 .product-header .jcs-font-scale-control>span{position:static;width:auto;height:auto;clip:auto;overflow:visible;margin-right:3px;padding:0}
 .footer-member-count{margin-top:16px;padding-top:12px;border-top:1px solid #e8e6eb;color:#61706b;font-size:12px;text-align:center}
 .footer-member-count b{margin-right:4px;color:#2e203d}
@@ -1533,3 +1533,13 @@ body :is(input,textarea,[contenteditable=""],[contenteditable="true"],[contented
 .product-home-wrap .sidebar-editorial .sidebar-rising-number.is-top,.product-home-wrap .sidebar-more-arrow{color:#753bbd!important}
 .product-home-wrap .sidebar-more-arrow:is(:hover,:focus-visible){background:#f5f0fa!important;color:#753bbd!important;border-color:#c8afe3!important}
 .national-evaluation-page .evaluation-result-grid strong{color:#753bbd}
+
+/* 31.142: tactile font controls; desktop account entry lives in sidebar. */
+.product-header .jcs-font-scale-control button{display:grid;place-items:center;width:34px;height:34px;padding:7px;border:1px solid #d9d2e2;border-radius:9px;background:linear-gradient(#fff,#f2eef6);color:#35293f;box-shadow:0 2px 0 #d7cfe0;transition:background .15s,box-shadow .15s,transform .1s}
+.product-header .jcs-font-scale-control button svg{display:block;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:square}
+.product-header .jcs-font-scale-control button:hover:not(:disabled){border:1px solid #b89bcf;background:#eee5f7;color:#753bbd}
+.product-header .jcs-font-scale-control button:active:not(:disabled){transform:translateY(2px);box-shadow:none}
+.product-header .jcs-font-scale-control button:focus-visible{outline:2px solid #753bbd;outline-offset:3px}
+.product-header .jcs-font-scale-control button:disabled{color:#b4acbd;background:#f7f5f9;box-shadow:0 1px 0 #e4deea;cursor:default}
+@media(min-width:1024.01px){.product-header .product-user-chip{display:none!important}.product-header .jcs-font-scale-control{order:2;margin-left:auto}.product-header .product-account-tools{margin-left:auto;justify-content:flex-end}}
+@media(max-width:560px){.product-header .jcs-font-scale-control{gap:6px}.product-header .jcs-font-scale-control button{width:32px;height:32px;padding:6px}}
