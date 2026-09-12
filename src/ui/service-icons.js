@@ -52,3 +52,18 @@ const MODULE_ACTION_PATHS=Object.freeze({
   academy:ICON_PATHS.academy
 });
 export function moduleActionIconSvg(key=""){return `<svg viewBox="0 0 24 24" aria-hidden="true">${MODULE_ACTION_PATHS[key]||ICON_PATHS.guide}</svg>`;}
+
+// Navigation-only solid glyphs. Shared small utility icons retain their own rendering.
+const NAV_SOLID={
+ now:'<rect x="3" y="18" width="7" height="11" rx="2"/><rect x="12" y="11" width="7" height="18" rx="2"/><rect x="21" y="3" width="7" height="26" rx="2"/>',
+ poll:'<path d="M6 13h20l4 6H2z"/><rect x="3" y="21" width="26" height="9" rx="2"/><rect x="12" y="2" width="12" height="14" rx="2" transform="rotate(18 18 9)"/><path d="m15 8 2 2 4-4" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"/>',
+ itsme:'<path d="M6 2h15v8h7v18a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2m17 0 5 6h-5z"/><path d="M10 22h12M10 26h8M16 12v3m-6 0 2 2m10-2-2 2" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"/>',
+ compare:'<path d="M4 3h10a2 2 0 0 1 2 2v10l-4 3v9H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2"/><path d="M20 6h8a2 2 0 0 1 2 2v20a2 2 0 0 1-2 2H16a2 2 0 0 1-2-2V20l4-3V8a2 2 0 0 1 2-2" fill="#29262e"/><path d="M6 9h6M20 24h6" stroke="white" stroke-width="2.5" stroke-linecap="round"/>',
+ community:'<path d="M3 3h18a4 4 0 0 1 4 4v5H15a6 6 0 0 0-6 6v4l-6 4v-7a4 4 0 0 1-3-4V7a4 4 0 0 1 3-4"/><path d="M16 14h12a4 4 0 0 1 4 4v7a4 4 0 0 1-4 4v3l-5-3h-7a4 4 0 0 1-4-4v-7a4 4 0 0 1 4-4" fill="#29262e"/>',
+ evaluation:'<rect x="5" y="5" width="22" height="25" rx="3"/><rect x="11" y="1" width="10" height="7" rx="2" fill="#29262e"/><path d="m10 18 4 4 8-9" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+ column:'<rect x="5" y="2" width="22" height="28" rx="3"/><path d="M11 9h10M11 15h10M11 21h7" stroke="white" stroke-width="2.5" stroke-linecap="round"/>',
+ academy:'<path d="m1 11 15-8 15 8-15 8zM7 17l9 5 9-5v8c-6 5-12 5-18 0z"/><path d="M29 13v11" stroke="#29262e" stroke-width="2"/>',
+ generation:'<circle cx="11" cy="9" r="5"/><path d="M1 29v-5a10 10 0 0 1 20 0v5z"/><circle cx="24" cy="11" r="4" fill="#29262e"/><path d="M23 29v-5a12 12 0 0 0-3-8c6-2 11 3 11 8v5z" fill="#29262e"/>',
+ trending:'<path d="M17 1c2 8 11 11 11 20a12 12 0 0 1-24 0c0-6 4-11 7-14 0 6 3 7 3 7s5-5 3-13"/><path d="M17 16c1 4 5 5 5 9a6 6 0 0 1-12 0c0-3 3-6 4-7 0 3 2 4 2 4s2-2 1-6" fill="white"/>'
+};
+export function serviceNavIconSvg(key){return NAV_SOLID[key]?`<svg class="service-solid-icon" viewBox="0 0 32 32" aria-hidden="true" fill="currentColor">${NAV_SOLID[key]}</svg>`:serviceIconSvg(key);}
