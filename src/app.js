@@ -6,16 +6,16 @@ import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerPro
 import { setupLayoutInteractions, setupPoliticianPhotoFallback, setupNowCarousel, setupCageCountdown, setupDesktopHomeViewport } from './ui/interactions.js?v=0.0.31.134';
 import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.106';
 import { createContentService, loadNavigationDashboard } from './core/content.js?v=0.0.31.127';
-import { createPoliticianService } from './core/politicians.js?v=0.0.31.106';
+import { createPoliticianService } from './core/politicians.js?v=0.0.31.147';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.126';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.56';
-import * as views from './views/stage1.js?v=0.0.31.146';
+import * as views from './views/stage1.js?v=0.0.31.147';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.56';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.56';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.131';
 import { renderPresidentPage } from './views/president.js?v=0.0.31.107';
-import { renderSearchPage, hasSearchSnapshot } from './views/search-page.js?v=0.0.31.99';
+import { renderSearchPage, hasSearchSnapshot } from './views/search-page.js?v=0.0.31.147';
 import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.31.56';
 import { regionDistrictOptions, regionSubdistrictOptions } from './data/korean-regions.js?v=0.0.31.56';
 
@@ -150,11 +150,14 @@ async function render({preserveScroll=false,refreshHome=false}={}){
   }
   const searchParams=new URLSearchParams(r.split('?')[1]||''),searchTerm=(searchParams.get('q')||'').trim(),mountedSearch=document.querySelector('.search-page[data-search-query]');
   if(p[0]==='search'&&mountedSearch?.dataset.searchQuery===searchTerm&&hasSearchSnapshot(content,searchTerm)){
-    const markup=await renderSearchPage({query:searchTerm,page:searchParams.get('page')||1,politicians,content});
+    const focusRoute=document.activeElement?.getAttribute('data-layout-route'),publisherScroll=mountedSearch.querySelector('.spread-publishers')?.scrollTop||0;
+    mountedSearch.setAttribute('aria-busy','true');
+    const markup=await renderSearchPage({query:searchTerm,page:searchParams.get('page')||1,personId:searchParams.get('person')||'',publisher:searchParams.get('publisher')||'',period:searchParams.get('period')||'latest',politicians,content});
     if(renderId!==renderSequence)return;
     const template=document.createElement('template');template.innerHTML=markup;
-    const next=template.content.querySelector('.search-group'),current=mountedSearch.querySelector('.search-group');
-    if(next&&current){current.replaceWith(next);setupPoliticianPhotoFallback(next);next.scrollIntoView({block:'start',behavior:'instant'});return;}
+    const next=template.content.querySelector('.search-page');
+    if(next){mountedSearch.replaceWith(next);setupPoliticianPhotoFallback(next);const publisherGrid=next.querySelector('.spread-publishers');if(publisherGrid)publisherGrid.scrollTop=publisherScroll;if(focusRoute)[...next.querySelectorAll('[data-layout-route]')].find(node=>node.getAttribute('data-layout-route')===focusRoute)?.focus({preventScroll:true});return;}
+    mountedSearch.removeAttribute('aria-busy');
   }
   if(p[0]==='admin'){const target=document.querySelector('.page-wrap');if(target)target.innerHTML=views.renderAdminLoading(adminRouteState(r).tab);}
   void loadShellInfo();
@@ -200,7 +203,7 @@ async function render({preserveScroll=false,refreshHome=false}={}){
   else if(p[0]==='generation-president') body=await renderGenerationPresident({content,politicians,session,route:r});
   else if(p[0]==='national-evaluation') body=await renderNationalEvaluationPage({content,politicians,session,route:r});
   else if(p[0]==='president') body=renderPresidentPage();
-  else if(p[0]==='search') body=await renderSearchPage({query:new URLSearchParams(r.split('?')[1]||'').get('q')||'',page:new URLSearchParams(r.split('?')[1]||'').get('page')||1,politicians,content});
+  else if(p[0]==='search') body=await renderSearchPage({query:new URLSearchParams(r.split('?')[1]||'').get('q')||'',page:searchParams.get('page')||1,personId:searchParams.get('person')||'',publisher:searchParams.get('publisher')||'',period:searchParams.get('period')||'latest',politicians,content});
   else if(p[0]==='academy') body=await views.renderAcademy(content,session);
   else if(p[0]==='trending')body=renderTrendingPage(await politicians.trending());
   else if(p[0]==='keywords')body=renderKeywordsPage(await politicians.keywords(),new URLSearchParams(r.split('?')[1]||'').get('q')||'');

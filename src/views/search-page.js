@@ -1,33 +1,28 @@
-import { GOVERNMENT_SEED } from '../data/government-seed.js';
-const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-const photo=person=>{const src=person?.photo?.url||person?.photo?.localPath;return src?`<span class="search-person-avatar has-photo" data-politician-avatar style="--photo-position:${esc(person.photo.focus||'50% 28%')}"><span class="politician-photo-initial">${esc(person.name?.slice(0,1)||'?')}</span><img data-politician-photo src="${esc(src)}" alt="" loading="lazy"></span>`:`<span class="search-person-avatar is-empty" data-politician-avatar><span class="politician-photo-initial">${esc(person?.name?.slice(0,1)||'?')}</span></span>`;};
-const matches=(item,term)=>`${item?.title||''} ${item?.summary||''} ${item?.body||''} ${item?.author||''} ${item?.question||''}`.toLocaleLowerCase('ko-KR').includes(term.toLocaleLowerCase('ko-KR'));
-const routeFor=(domain,id)=>domain==='columns'?`/column/${id}`:domain==='community'?`/community/${id}`:`/${domain}/${id}`;
-// Short-lived, service-scoped browser memory. No Redis writes or persisted member data.
-const searchSnapshots=new WeakMap();
-export function hasSearchSnapshot(content,term){const entry=searchSnapshots.get(content)?.get(String(term).trim());return !!entry&&Date.now()-entry.at<120000;}
-async function searchSnapshot(term,politicians,content){
- let cache=searchSnapshots.get(content);if(!cache){cache=new Map();searchSnapshots.set(content,cache);}
- if(hasSearchSnapshot(content,term))return cache.get(term).promise;
- const entry={at:Date.now()};
- entry.promise=Promise.all([politicians.searchAll(term),content.list('columns'),content.list('community'),content.list('itsme'),content.readDomain('polls'),content.readDomain('generation'),content.readDomain('nationalEvaluation')]).then(rows=>{if(rows[0]?.ok===false)throw new Error('SEARCH_LOAD_FAILED');return rows;}).catch(error=>{cache.delete(term);throw error;});
- cache.set(term,entry);while(cache.size>4)cache.delete(cache.keys().next().value);
- return entry.promise;
+import {renderMediaSpread,spreadEsc as esc,spreadRoute} from './media-spread-view.js?v=0.0.31.147';
+const snapshots=new WeakMap();
+const keyOf=params=>JSON.stringify([params.query,params.personId||'',params.publisher||'',params.period==='cumulative'?'cumulative':'latest']);
+export function hasSearchSnapshot(content,term){return [...(snapshots.get(content)?.values()||[])].some(row=>row.query===String(term).trim()&&Date.now()-row.at<120000);}
+async function searchSnapshot(params,politicians,content){
+ let cache=snapshots.get(content);if(!cache){cache=new Map();snapshots.set(content,cache);}const key=keyOf(params),old=cache.get(key);if(old&&Date.now()-old.at<120000)return old.promise;
+ const entry={at:Date.now(),query:params.query};entry.promise=politicians.mediaSpread(params).then(result=>{if(result?.ok!==true)throw new Error('SEARCH_LOAD_FAILED');return result;}).catch(error=>{cache.delete(key);throw error;});cache.set(key,entry);while(cache.size>12)cache.delete(cache.keys().next().value);return entry.promise;
 }
-export async function renderSearchPage({query='',page=1,politicians,content}={}){
-  const term=String(query||'').trim(),pageNumber=Math.max(1,Math.floor(Number(page)||1)),pageSize=30;
-  if(!term)return `<main class="subpage search-page"><section class="page-hero"><span class="eyebrow">SEARCH · INTEGRATED</span><h1>통합검색</h1><p>정치인 이름·정당·지역·정책·게시글을 한 번에 검색합니다.</p></section><section class="content-card"><div class="schedule-empty">검색어를 입력해 주세요</div></section></main>`;
-  let snapshot;
-  try{snapshot=await searchSnapshot(term,politicians,content);}catch{return `<main class="subpage search-page"><section class="content-card"><h1>검색 결과를 불러오지 못했습니다</h1><p>잠시 후 다시 검색해 주세요.</p></section></main>`;}
-  const [allPeople,columns,community,itsme,polls,generation,national]=snapshot;
-  const peopleResult={...allPeople,items:(allPeople.items||[]).slice((pageNumber-1)*pageSize,pageNumber*pageSize)};
-  const people=peopleResult?.items||[],governmentText=[GOVERNMENT_SEED.profile.name,GOVERNMENT_SEED.profile.office,GOVERNMENT_SEED.vision,...GOVERNMENT_SEED.policies,...GOVERNMENT_SEED.leadership.flatMap(item=>[item.name,item.role])].join(' '),presidentMatch=governmentText.includes(term);
-  const pageCount=Math.ceil(Number(peopleResult?.total||0)/pageSize);
-  const pagination=pageCount>1?`<nav class="search-people-pagination" aria-label="정치인 검색 결과 페이지">${Array.from({length:pageCount},(_,i)=>`<a href="/search?q=${encodeURIComponent(term)}&page=${i+1}" data-layout-route="/search?q=${encodeURIComponent(term)}&page=${i+1}" ${pageNumber===i+1?'aria-current="page"':''}>${i+1}</a>`).join('')}</nav>`:'';
-  const peopleSection=`<section class="content-card search-group"><div class="section-title"><h2>정치인</h2><span>${Number(peopleResult?.total??people.length)}명</span></div><div class="search-person-grid">${people.map(person=>`<button type="button" data-layout-route="/person/${esc(person.id)}">${photo(person)}<span><b>${esc(person.name)}</b><small>${esc([person.party,person.jurisdiction,person.office].filter(Boolean).join(' · '))}</small></span></button>`).join('')||'<div class="schedule-empty">일치하는 정치인이 없습니다</div>'}</div>${pagination}</section>`;
-  const presidentSection=presidentMatch?`<section class="content-card search-group search-president-result"><div class="section-title"><h2>대통령 · 정부</h2><span>1건</span></div><button type="button" data-layout-route="/president"><span class="search-president-mark">P</span><span><b>${esc(GOVERNMENT_SEED.profile.name)} 대통령</b><small>${esc(GOVERNMENT_SEED.profile.office)} · 정부 구성과 국정 정보</small></span><em>대통령 페이지 →</em></button></section>`:'';
-  const groups=[['COLUMN','columns',columns],['IT’S ME','itsme',itsme],['정뮤니티','community',community]].map(([label,domain,items])=>{const found=(items||[]).filter(item=>item.published!==false&&matches(item,term));return `<section class="content-card search-group"><div class="section-title"><h2>${label}</h2><span>${found.length}건</span></div><div class="search-content-list">${found.slice(0,5).map(item=>`<button type="button" data-layout-route="${esc(routeFor(domain,item.id))}"><b>${esc(item.title)}</b><p>${esc(item.summary||item.body||'')}</p></button>`).join('')||'<div class="schedule-empty">관련 결과가 없습니다</div>'}</div></section>`;}).join('');
-  const pollItems=(polls?.items||[]).filter(item=>item.published!==false&&matches(item,term)),generationMatch=(generation?.candidates||[]).some(id=>(allPeople.items||[]).some(person=>person.id===id))||matches(generation,term),evaluationIds=Object.values(national?.slots||{}).map(slot=>slot?.subjectId),evaluationMatch=(allPeople.items||[]).some(person=>evaluationIds.includes(person.id));
-  const participation=`<section class="content-card search-group"><div class="section-title"><h2>시민 참여 데이터</h2><span>${pollItems.length+Number(generationMatch)+Number(evaluationMatch)}건</span></div><div class="search-participation-grid">${pollItems.map(item=>`<button data-layout-route="/poll?pollId=${esc(item.id)}"><b>시민 설문</b><span>${esc(item.question||item.title)}</span></button>`).join('')}${generationMatch?'<button data-layout-route="/generation-president"><b>세대의 선택</b><span>대통령 모의투표 결과</span></button>':''}${evaluationMatch?'<button data-layout-route="/national-evaluation"><b>전국 평가제</b><span>정참시민 평가 결과</span></button>':''}</div></section>`;
-  return `<main class="subpage search-page" data-search-query="${esc(term)}"><section class="page-hero"><span class="eyebrow">SEARCH · INTEGRATED</span><h1>통합검색</h1><p>검색어: <b>${esc(term)}</b></p></section>${peopleSection}${presidentSection}${groups}${participation}</main>`;
+async function matchingPosts(query,content){
+ const groups=await Promise.all([['IT’S ME','itsme'],['COLUMN','columns'],['정뮤니티','community']].map(async([label,domain])=>{
+  const items=await content.list(domain),found=(Array.isArray(items)?items:[]).filter(item=>item.published!==false&&[item.title,item.summary,item.body,item.author].some(value=>String(value||'').toLocaleLowerCase('ko-KR').includes(query.toLocaleLowerCase('ko-KR'))));
+  if(!found.length)return '';
+  return `<section class="content-card search-group"><div class="section-title"><h2>${label}</h2><span>${found.length}건</span></div><div class="search-content-list">${found.slice(0,10).map(item=>{const route=`/${domain==='columns'?'column':domain}/${encodeURIComponent(item.id)}`;return `<a href="${esc(route)}" data-layout-route="${esc(route)}"><b>${esc(item.title)}</b><p>${esc(item.summary||String(item.body||'').slice(0,140))}</p></a>`;}).join('')}</div></section>`;
+ }));return groups.join('');
+}
+export async function renderSearchPage({query='',page=1,personId='',publisher='',period='latest',politicians,content}={}){
+ const term=String(query||'').trim(),params={query:term,personId,publisher,period:period==='cumulative'?'cumulative':'latest',page};
+ const hero=`<header class="spread-intro"><span class="spread-kicker">JCS SPREAD</span><h1>정참 시선</h1><p>정치인을 검색하고, 언론이 누구를 어떻게 다루는지 살펴보세요.</p></header>`;
+ if(!term)return `<main class="subpage search-page jcs-spread">${hero}</main>`;
+ try{
+  const data=await searchSnapshot(params,politicians,content);
+  if(data.matches.length||data.target.kind!=='none')return `<main class="subpage search-page jcs-spread" data-search-query="${esc(term)}">${renderMediaSpread(data,params)}</main>`;
+  const posts=await matchingPosts(term,content);
+  return `<main class="subpage search-page jcs-spread" data-search-query="${esc(term)}">${hero}<p class="spread-query">‘${esc(term)}’ 검색 결과</p>${posts||'<div class="content-card spread-empty"><h2>일치하는 결과가 없습니다</h2><p>정치인 이름이나 정당 이름으로 다시 검색해 주세요.</p></div>'}</main>`;
+ }catch{
+  const retry=spreadRoute(params);return `<main class="subpage search-page jcs-spread" data-search-query="${esc(term)}">${hero}<div class="content-card spread-empty" role="status"><h2>검색 결과를 불러오지 못했습니다</h2><p>잠시 후 다시 시도해 주세요.</p><a href="${esc(retry)}" data-layout-route="${esc(retry)}">다시 불러오기</a></div></main>`;
+ }
 }

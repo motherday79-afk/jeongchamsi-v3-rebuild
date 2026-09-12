@@ -1,3 +1,4 @@
+import { createMediaSpreadService } from '../lib/media-spread-service.js';
 import { castGenerationVote } from '../src/core/participation-model.js';
 import { APP_RELEASE } from '../src/core/release.js';
 import { createCommunityService, communityStats } from '../lib/community-service.js';
@@ -89,6 +90,10 @@ async function handleMigration(req,res,route){
 
 export async function handlePoliticians(req,res,command,url,intelligence){
   if(req.method!=='GET')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
+  if(url.searchParams.get('media')==='1'){
+    const result=await createMediaSpreadService({command}).search({query:String(url.searchParams.get('q')||'').slice(0,120),personId:String(url.searchParams.get('person')||''),publisher:String(url.searchParams.get('publisher')||'').slice(0,100),period:url.searchParams.get('period')});
+    return json(res,200,result);
+  }
   if(url.searchParams.has('ids')){
     const ids=[...new Set(url.searchParams.get('ids').split(',').filter(Boolean))].slice(0,100);
     const [photos,...groups]=await Promise.all([readPoliticianPhotos(command),...POLITICIAN_TYPES.map(type=>readPoliticianType(command,type))]);
