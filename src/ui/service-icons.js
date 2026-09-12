@@ -55,6 +55,15 @@ export function moduleActionIconSvg(key=""){return `<svg viewBox="0 0 24 24" ari
 
 // Navigation-only solid glyphs. Shared small utility icons retain their own rendering.
 const NAV_SOLID={
+ president:'<path d="m2 12 14-9 14 9zM4 27h24v3H4zM7 14h4v11H7zm7 0h4v11h-4zm7 0h4v11h-4z"/>',
+ news:'<rect x="3" y="4" width="22" height="25" rx="3"/><path d="M27 10h4v16a3 3 0 0 1-3 3h-1z" fill="#29262e"/><path d="M8 10h12M8 16h12M8 22h8" stroke="white" stroke-width="2"/>',
+ keywords:'<path d="M5 3h16l10 13-15 15L3 18V5z"/><circle cx="10" cy="10" r="3" fill="white"/>',
+ inquiry:'<path d="M6 3h20a4 4 0 0 1 4 4v15a4 4 0 0 1-4 4H12l-8 5v-6a4 4 0 0 1-2-3V7a4 4 0 0 1 4-4"/><path d="M12 11a4 4 0 0 1 8 0c0 4-4 3-4 7" stroke="white" stroke-width="2.5" fill="none"/><circle cx="16" cy="22" r="1.5" fill="white"/>',
+ cheer:'<path d="M16 29 3 16C-5 5 9-2 16 7 23-2 37 5 29 16z"/>',
+ donate:'<rect x="2" y="7" width="28" height="20" rx="4"/><circle cx="16" cy="17" r="6" fill="white"/><path d="M5 12h3M24 22h3" stroke="white" stroke-width="2"/>',
+ shop:'<path d="M5 3h22l4 10H1zM3 16h26v14H3z"/><path d="M13 21h7v9h-7z" fill="white"/><path d="M2 14h28" stroke="white" stroke-width="2"/>',
+ requestPolitician:'<circle cx="12" cy="9" r="6"/><path d="M1 29v-5a11 11 0 0 1 15-10l-3 15z"/><circle cx="23" cy="21" r="6" fill="none" stroke="#29262e" stroke-width="3"/><path d="m27 26 4 5" stroke="#29262e" stroke-width="3"/>',
+ partners:'<path d="M11 2h10v6h-3V5h-4v3h-3z"/><rect x="2" y="8" width="28" height="22" rx="3"/><path d="M2 17h28" stroke="white" stroke-width="2"/><rect x="13" y="14" width="6" height="7" rx="1" fill="white"/>',
  now:'<rect x="3" y="18" width="7" height="11" rx="2"/><rect x="12" y="11" width="7" height="18" rx="2"/><rect x="21" y="3" width="7" height="26" rx="2"/>',
  poll:'<path d="M6 13h20l4 6H2z"/><rect x="3" y="21" width="26" height="9" rx="2"/><rect x="12" y="2" width="12" height="14" rx="2" transform="rotate(18 18 9)"/><path d="m15 8 2 2 4-4" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"/>',
  itsme:'<path d="M6 2h15v8h7v18a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2m17 0 5 6h-5z"/><path d="M10 22h12M10 26h8M16 12v3m-6 0 2 2m10-2-2 2" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"/>',

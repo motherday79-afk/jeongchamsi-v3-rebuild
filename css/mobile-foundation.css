@@ -28,8 +28,8 @@
   /* Mobile personal area appears before the main content. */
   .mobile-utility{display:grid;width:100%;min-width:0;gap:10px;grid-column:1/-1}
   .mobile-login,.mobile-participation{width:100%;min-width:0;max-width:100%}
-  .mobile-login{background:#fff;border:1px solid #e4e9e7;border-radius:16px;box-shadow:none}
-  .mobile-participation{display:block;padding:16px;background:#fff;border:1px solid #e4e9e7;border-radius:18px}
+  .mobile-login{background:#fff;border:1px solid #e6e4e9;border-radius:16px;box-shadow:none}
+  .mobile-participation{display:block;padding:16px;background:#fff;border:1px solid #e6e4e9;border-radius:18px}
   .mobile-participation .side-head{margin-bottom:10px}
 
   /* Header and live bar stay fluid; no device-specific widths. */
@@ -94,7 +94,7 @@
   #poll .poll-vote-panel{min-width:0}
   #poll .poll-options button{width:100%;min-width:0;grid-template-columns:72px minmax(0,1fr) 36px;gap:8px}
   #national-eval .national-eval-layout{grid-template-columns:minmax(0,1fr);gap:12px;padding:15px}
-  #national-eval .eval-score{border-left:0;border-top:1px solid #e6ece9;padding-top:12px;text-align:left}
+  #national-eval .eval-score{border-left:0;border-top:1px solid #e9e6ec;padding-top:12px;text-align:left}
   #generation-president .generation-feature{grid-template-columns:minmax(0,1fr);gap:10px}
   #generation-president .generation-intro{padding:17px}
   #generation-president .generation-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}

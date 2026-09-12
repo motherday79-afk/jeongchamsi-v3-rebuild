@@ -1,7 +1,7 @@
 /* JCS 0.0.31.9 · final cascade overrides */
 .jcs-dx-age-row header b,.jcs-dx-age-row header strong{position:static!important;inset:auto!important;transform:none!important}
 .jcs-dx-demographic-chart .jcs-dx-age-row{position:relative!important;display:grid!important;grid-template-columns:72px minmax(0,1fr)!important;grid-template-rows:auto!important;align-items:center!important;gap:9px!important;width:100%!important;height:auto!important}
-.jcs-dx-demographic-chart .jcs-dx-age-total{position:relative!important;display:flex!important;height:24px!important;min-width:30px;overflow:hidden;border-radius:999px;background:#e8eeed}
+.jcs-dx-demographic-chart .jcs-dx-age-total{position:relative!important;display:flex!important;height:24px!important;min-width:30px;overflow:hidden;border-radius:999px;background:#ebe8ee}
 .jcs-dx-demographic-chart .jcs-dx-age-total .is-male,.jcs-dx-demographic-chart .jcs-dx-age-total .is-female{position:static!important;inset:auto!important;display:grid!important;min-width:34px;min-height:0!important;place-items:center;border-radius:0!important;transform:none!important;color:#fff;font-size:9px!important;font-weight:900}
 .jcs-dx-support-orbit{position:relative!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;gap:14px;max-width:640px;height:auto!important;min-height:190px;padding:14px;margin:auto;transform:none!important}
 .jcs-dx-support-orbit>div{position:relative!important;inset:auto!important;display:grid!important;width:min(150px,100%)!important;aspect-ratio:1;height:auto!important;place-items:center;align-content:center;justify-self:center;border:0!important;border-radius:50%;transform:none!important;box-shadow:0 14px 32px rgba(20,58,68,.14)!important}

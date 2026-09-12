@@ -5,9 +5,9 @@
   --ps-muted:#70777a;
   --ps-bg:#f5f6f7;
   --ps-paper:#ffffff;
-  --ps-brand:#168b80;
-  --ps-brand2:#0f7169;
-  --ps-mint:#eaf7f4;
+  --ps-brand:#753bbd;
+  --ps-brand2:#753bbd;
+  --ps-mint:#f0eaf7;
   --ps-blue:#315fc4;
   --ps-blue-soft:#eef3ff;
   --ps-yellow:#f0b846;
@@ -22,8 +22,8 @@
   --jc-navy-soft:#eff1fa;
   --jc-orange:#ed963e;
   --jc-orange-soft:#fff3e7;
-  --jc-teal:#16a99d;
-  --jc-teal-soft:#eaf8f6;
+  --jc-teal:#753bbd;
+  --jc-teal-soft:#f1eaf8;
   --jc-green:#5c954d;
   --jc-green-soft:#eef6eb;
   --jc-ink:#182126;
@@ -32,9 +32,9 @@
 /* Neutral brand surfaces — no single political hue owns the page */
 body{background:#f4f6f7;color:var(--ps-ink)}
 .product-header,.product-service-bar{background:#fff}
-.product-wordmark b{color:#00b894}
-.product-primary-nav a:hover,.product-service-inner>span{color:#00b894}
-.product-search{background:#f6f7f7;border-color:#e0e3e5}
+.product-wordmark b{color:#753bbd}
+.product-primary-nav a:hover,.product-service-inner>span{color:#753bbd}
+.product-search{background:#f6f6f7;border-color:#e0e3e5}
 .product-menu:hover,.product-account-tools button:hover{background:#f4f5f6}
 
 /* Hero: neutral authority with the spectrum appearing in controlled accents */
@@ -45,7 +45,7 @@ body{background:#f4f6f7;color:var(--ps-ink)}
 .product-hero-kicker em,.product-hero-proof{color:#c9d5d9}
 
 .live-dot{background:var(--jc-teal);box-shadow:0 0 0 5px rgba(22,169,157,.11)}
-.hero-live-head em{background:var(--jc-teal-soft);color:#00b894}
+.hero-live-head em{background:var(--jc-teal-soft);color:#753bbd}
 .hero-rank-stack button:first-child .hero-rank-no{color:var(--jc-blue)}
 .hero-rank-stack button:nth-child(2) .hero-rank-no{color:var(--jc-red)}
 .hero-rank-stack button:nth-child(3) .hero-rank-no{color:var(--jc-orange)}
@@ -55,13 +55,13 @@ body{background:#f4f6f7;color:var(--ps-ink)}
 
 /* Service launcher: six services, six restrained accents */
 .product-launcher{background:#fff}
-.launcher-card{background:#fafbfb;border-color:#e6e9ea}
+.launcher-card{background:#fafafb;border-color:#e6e9ea}
 .launcher-now{background:var(--jc-blue-soft);border-color:#dce5fb}
 .launcher-now .launcher-no,.launcher-now .launcher-cue{color:var(--jc-blue)}
 .launcher-choice{background:var(--jc-red-soft);border-color:#f5dadd}
 .launcher-choice .launcher-no,.launcher-choice .launcher-cue{color:var(--jc-red)}
-.launcher-itsme{background:var(--jc-teal-soft);border-color:#d3eeea}
-.launcher-itsme .launcher-no,.launcher-itsme .launcher-cue{color:#00b894}
+.launcher-itsme{background:var(--jc-teal-soft);border-color:#e0d3ee}
+.launcher-itsme .launcher-no,.launcher-itsme .launcher-cue{color:#753bbd}
 .product-launcher-grid .launcher-card:nth-child(4){background:var(--jc-orange-soft);border-color:#f2e0ca}
 .product-launcher-grid .launcher-card:nth-child(4) .launcher-no,.product-launcher-grid .launcher-card:nth-child(4) .launcher-cue{color:#c87627}
 .product-launcher-grid .launcher-card:nth-child(5){background:var(--jc-navy-soft);border-color:#dfe3f3}
@@ -70,14 +70,14 @@ body{background:#f4f6f7;color:var(--ps-ink)}
 .product-launcher-grid .launcher-card:nth-child(6) .launcher-no,.product-launcher-grid .launcher-card:nth-child(6) .launcher-cue{color:#4f833f}
 
 /* Main modules — color is a navigation aid, not decoration */
-.eyebrow{color:#00b894}
+.eyebrow{color:#753bbd}
 
 #poll{background:var(--jc-red-soft);}
 
 #poll .poll-options em{background:var(--jc-red)}
 
 
-#itsme .itsme-card:nth-child(1){background:var(--jc-teal-soft);border-color:#d2ece8}
+#itsme .itsme-card:nth-child(1){background:var(--jc-teal-soft);border-color:#dfd2ec}
 #itsme .itsme-card:nth-child(2){background:#fff}
 #itsme .itsme-card:nth-child(3){background:var(--jc-orange-soft);border-color:#f1dfca}
 #itsme .itsme-card:nth-child(4){background:#fff}
@@ -111,18 +111,18 @@ body{background:#f4f6f7;color:var(--ps-ink)}
 .login-card{background:#fff;border-color:#e3e6e8;color:var(--ps-ink);box-shadow:0 10px 28px rgba(25,34,38,.04)}
 .login-card b{color:var(--ps-ink)}
 .login-card p{color:#747b7e}
-.login-card button{background:#087f74;color:#fff}
-.login-card button:hover{background:#076f66}
+.login-card button{background:#753bbd;color:#fff}
+.login-card button:hover{background:#753bbd}
 .keyword-grid span:nth-child(6n+1){background:var(--jc-blue-soft);color:#365aa9}
 .keyword-grid span:nth-child(6n+2){background:var(--jc-red-soft);color:#b94750}
 .keyword-grid span:nth-child(6n+3){background:var(--jc-orange-soft);color:#ae6d2f}
-.keyword-grid span:nth-child(6n+4){background:var(--jc-teal-soft);color:#00b894}
+.keyword-grid span:nth-child(6n+4){background:var(--jc-teal-soft);color:#753bbd}
 .keyword-grid span:nth-child(6n+5){background:var(--jc-navy-soft);color:#4a5c9d}
 .keyword-grid span:nth-child(6n){background:var(--jc-green-soft);color:#5c7d52}
 
 
 /* keep interactive green as Jeongchamsi's own utility color, not a political signal */
-a,.more-btn{--jc-link:#087f74}
+a,.more-btn{--jc-link:#753bbd}
 
 /* JEONGCHAMSI alpha6.0.36.2 — COLOR CLEANUP HOTFIX
    Layout/spacing/behavior untouched. Only color hierarchy is adjusted. */
@@ -155,7 +155,7 @@ a,.more-btn{--jc-link:#087f74}
   border-color:#e5e8ea;
 }
 .product-launcher .launcher-itsme .launcher-no,
-.product-launcher .launcher-itsme .launcher-cue{color:#00b894}
+.product-launcher .launcher-itsme .launcher-cue{color:#753bbd}
 .product-launcher .launcher-generation .launcher-no,
 .product-launcher .launcher-generation .launcher-cue,
 .product-launcher-grid .launcher-card:nth-child(5) .launcher-no,
@@ -500,8 +500,8 @@ a,.more-btn{--jc-link:#087f74}
   box-shadow:none;
 }
 #generation-president .generation-mark{
-  background:#eef6f3;
-  color:#00b894;
+  background:#f2eef6;
+  color:#753bbd;
 }
 #generation-president .generation-intro button{
   background:var(--ps-blue);
@@ -561,13 +561,13 @@ a,.more-btn{--jc-link:#087f74}
    Same-role secondary actions use the same quiet ghost-button language. */
 #generation-president .generation-intro .ghost-btn{
   background:#fff;
-  border:1px solid #dfe7e4;
+  border:1px solid #e3dfe7;
   color:var(--text);
   box-shadow:none;
 }
 #generation-president .generation-intro .ghost-btn:hover:not(:disabled){
   border-color:#b7d9d0;
-  background:#f5fbf9;
+  background:#f8f5fb;
   color:var(--green);
 }
 
@@ -612,7 +612,7 @@ a,.more-btn{--jc-link:#087f74}
    Scope lock: National Evaluation + Compare + NOW Rank only. */
 
 /* NATIONAL EVALUATION — brand mint in the label/title signature, color only on the score. */
-#national-eval .eyebrow{color:#00b894}
+#national-eval .eyebrow{color:#753bbd}
 #national-eval .module-header h2{
   display:inline-block;
   position:relative;
@@ -636,7 +636,7 @@ a,.more-btn{--jc-link:#087f74}
 #national-eval .eval-score strong{color:#568447}
 
 /* COMPARE — neutral shell; spectrum belongs to the four data dimensions only. */
-#compare .eyebrow{color:#00b894}
+#compare .eyebrow{color:#753bbd}
 #compare .compare-layout{
   background:#fff;
   border-color:#e3e7e9;
@@ -696,7 +696,7 @@ a,.more-btn{--jc-link:#087f74}
 
 
 /* alpha6.0.36.16 — representative badge showcase */
-.participation-badge-main{display:grid;grid-template-columns:58px minmax(0,1fr);gap:12px;align-items:center;padding:11px 0}.side-representative-jewel{width:56px;height:56px;display:grid;place-items:center}.side-representative-jewel .badge-gem{width:54px;height:54px}.side-representative-jewel.badge-gem-empty{border:1px dashed #cfd8d4;border-radius:15px;background:#f7f9f8;color:#8b9893;font-size:25px}.participation-badge-main>div b{font-size:14px}.participation-badge-main>div p{margin-top:4px;color:#707c77;font-size:10px}.badge-home-jewels button{align-items:center}.badge-home-jewels button>.badge-gem{width:28px;height:28px;margin:0 auto 5px}.badge-home-jewels button>b{font-size:10px}.badge-home-jewels button>small{font-size:8px}
+.participation-badge-main{display:grid;grid-template-columns:58px minmax(0,1fr);gap:12px;align-items:center;padding:11px 0}.side-representative-jewel{width:56px;height:56px;display:grid;place-items:center}.side-representative-jewel .badge-gem{width:54px;height:54px}.side-representative-jewel.badge-gem-empty{border:1px dashed #cfd8d4;border-radius:15px;background:#f8f7f9;color:#8b9893;font-size:25px}.participation-badge-main>div b{font-size:14px}.participation-badge-main>div p{margin-top:4px;color:#707c77;font-size:10px}.badge-home-jewels button{align-items:center}.badge-home-jewels button>.badge-gem{width:28px;height:28px;margin:0 auto 5px}.badge-home-jewels button>b{font-size:10px}.badge-home-jewels button>small{font-size:8px}
 
 /* hero size only: same visual language, roughly 17% less vertical mass */
 @media(min-width:821px){.product-home-wrap .product-hero{min-height:390px;padding:34px 40px;gap:28px}.product-home-wrap .product-hero-kicker{margin-bottom:16px}.product-home-wrap .product-hero-copy>p{margin-top:14px}.product-home-wrap .product-hero-actions{margin-top:20px}.product-home-wrap .product-hero-proof{margin-top:20px}.product-home-wrap .product-hero-live{padding:17px}.product-home-wrap .hero-rank-stack button{min-height:58px}.product-home-wrap .hero-poll-mini{margin-top:11px;padding:13px 15px}}
@@ -716,7 +716,7 @@ a,.more-btn{--jc-link:#087f74}
 /* Compare: search result click immediately becomes the selected candidate. */
 .compare-picker-quick .compare-person-quick-picker{position:relative;min-width:0}
 .compare-picker-quick .compare-person-quick-picker>input[type="search"]{
-  width:100%;height:46px;border:1px solid #dfe7e4;border-radius:10px;
+  width:100%;height:46px;border:1px solid #e3dfe7;border-radius:10px;
   background:#fff;padding:0 12px;font:inherit;color:#182126;
 }
 .compare-picker-quick .compare-person-quick-picker>input[type="search"]:focus{
@@ -769,10 +769,10 @@ a,.more-btn{--jc-link:#087f74}
    JEONGCHAMSI alpha6.0.36.18 — LIVE BAR / AUTH / GENERATION TOP15
    ========================================================= */
 /* Header second row becomes a compact community/status bar. */
-.live-community-bar{height:36px;border-top:1px solid #f0f2f1;background:#fff;overflow:visible}
+.live-community-bar{height:36px;border-top:1px solid #f1f0f2;background:#fff;overflow:visible}
 .live-community-inner{position:relative;width:min(1180px,calc(100% - 32px));height:100%;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:20px}
 .live-community-count{display:flex;align-items:baseline;gap:3px;white-space:nowrap;color:#606b67;font-size:12px}
-.live-community-count b{color:#17211d;font-size:13px;font-weight:950;font-variant-numeric:tabular-nums}
+.live-community-count b{color:#1c1721;font-size:13px;font-weight:950;font-variant-numeric:tabular-nums}
 .live-community-actions{position:relative;margin-left:auto;}
 .live-community-cta{position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-end;gap:6px;color:#46534e;font-size:12px;font-weight:850;opacity:0;transform:translateY(7px);pointer-events:none;transition:opacity .28s ease,transform .28s ease,color .16s ease}
 .live-community-cta.is-active{opacity:1;transform:translateY(0);pointer-events:auto}
@@ -800,7 +800,7 @@ a,.more-btn{--jc-link:#087f74}
 .generation-top15-row{display:grid;grid-template-columns:34px 52px minmax(0,1fr) minmax(180px,32%);align-items:center;gap:11px;min-height:68px;padding:7px 12px;border:1px solid #e5e9eb;border-radius:12px;background:#fff;cursor:pointer;transition:border-color .15s ease,transform .15s ease}
 .generation-top15-row:hover{border-color:#cbd7e8;}
 .generation-top15-rank{color:#7b858b;font-size:12px;font-weight:950;text-align:center}
-.generation-top15-photo{width:48px;height:48px;border-radius:50%;background:linear-gradient(145deg,#e7efec,#dce9e5);border:1px solid #d9e4e0;background-position:center;background-size:cover}
+.generation-top15-photo{width:48px;height:48px;border-radius:50%;background:linear-gradient(145deg,#ebe7ef,#e2dce9);border:1px solid #d9e4e0;background-position:center;background-size:cover}
 .generation-top15-person b{display:block;color:#172126;font-size:14px}.generation-top15-person small{display:block;margin-top:4px;color:#778188;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .generation-top15-result i{display:block;height:7px;overflow:hidden;border-radius:999px;background:#e6ebf5}.generation-top15-result i em{display:block;height:100%;border-radius:inherit;background:var(--ps-blue)}.generation-top15-result small{display:block;margin-top:6px;color:#5f6c74;font-size:11px;font-variant-numeric:tabular-nums}
 .generation-top15-empty{min-height:190px}
@@ -810,11 +810,11 @@ a,.more-btn{--jc-link:#087f74}
 /* 0.36.22 · hero participation hub */
 .product-home-wrap .product-hero-participation .product-hero-actions a{height:48px;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;border-radius:13px;font-size:13px;font-weight:900;text-decoration:none}
 .product-home-wrap .product-hero-participation .hero-participation-hub{display:grid;align-self:stretch;}
-.product-home-wrap .product-hero-participation .hero-hub-card{width:100%;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;border:1px solid #e7ecea;border-radius:16px;background:#fff;text-align:left;cursor:pointer;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+.product-home-wrap .product-hero-participation .hero-hub-card{width:100%;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;border:1px solid #eae7ec;border-radius:16px;background:#fff;text-align:left;cursor:pointer;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
 .product-home-wrap .product-hero-participation .hero-hub-card:hover{border-color:#b9dcd2;box-shadow:0 8px 22px rgba(23,42,36,.08)}
-.product-home-wrap .product-hero-participation .hero-hub-label{font-weight:950;color:#00b894}
+.product-home-wrap .product-hero-participation .hero-hub-label{font-weight:950;color:#753bbd}
 .product-home-wrap .product-hero-participation .hero-hub-partners .hero-hub-label{color:#8a5d08}
-.product-home-wrap .product-hero-participation .hero-hub-card strong{display:block;margin-top:6px;color:#17231f;line-height:1.35;letter-spacing:-.35px}
+.product-home-wrap .product-hero-participation .hero-hub-card strong{display:block;margin-top:6px;color:#1d1723;line-height:1.35;letter-spacing:-.35px}
 .product-home-wrap .product-hero-participation .hero-hub-card p{margin:5px 0 0;color:#76827e;font-size:11px;line-height:1.5}
 .product-home-wrap .product-hero-participation .hero-hub-card em{margin-top:9px;color:#44524d;font-size:10px;font-style:normal;font-weight:900}
 .product-home-wrap .product-hero-participation .product-hero-actions{align-items:center}
