@@ -20,3 +20,13 @@ test('query and publisher text are escaped and API errors are retryable',async()
  let count=0;s.politicians.mediaSpread=async()=>{count++;return {ok:false};};
  const bad=await renderSearchPage({...s,query:'failure'});assert.match(bad,/다시/);await renderSearchPage({...s,query:'failure'});assert.equal(count,2);
 });
+
+test('searched-person monthly position appears between the profile and existing publisher controls',async()=>{
+ const people=Array.from({length:4},(_,i)=>({id:`person-${i}`,name:`인물${i}`,type:'assembly',party:'정당'}));
+ const monthly=buildMediaIndex(people.map((person,i)=>({id:person.id,input:{collectedAt:new Date(at).toISOString(),searchAds:{volume:{pc:100+i*100,mobile:900+i*900}},news:{periodCounts:[{label:'30D',value:40-i*10}],coverage:[{date:'2026-09-12',collected:true}],items:[{title:person.name+' 주거 정책 협약',source:'연합뉴스',publishedAt:'2026-09-11T10:00:00Z',url:`https://news.example/${i}`}]}}})),people);
+ const html=await renderSearchPage({query:people[0].name,content:{},politicians:{mediaSpread:async params=>analyzeMediaIndex(monthly,{...params,now:at})}});
+ assert.match(html,/인물0의 월간/);assert.match(html,/1,000/);
+ const profile=html.indexOf('class="spread-target"'),attention=html.indexOf('class="attention-panel'),controls=html.indexOf('class="spread-toolbar"'),directory=html.indexOf('class="spread-directory"');
+ assert.ok(profile>=0&&attention>profile&&controls>attention&&directory>controls);
+ assert.match(html,/최신순/);assert.match(html,/누적순/);assert.match(html,/연합뉴스/);
+});

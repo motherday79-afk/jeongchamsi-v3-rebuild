@@ -28,3 +28,20 @@ test('old publisher index is rebuilt from the same published inputs without coll
  assert.equal(result.selected.name,'연합뉴스');assert(!result.publishers.some(row=>row.name==='다음뉴스'));
  assert(db.calls.some(row=>row[0]==='MGET'&&row.includes(K.draft('existing',profile.id))));
 });
+
+test('monthly attention survives the persisted public cache and warm navigation without exposing private inputs',async()=>{
+ const {createMediaSpreadService}=await load(),db=storage(),now=Date.parse('2026-09-12T12:00:00Z');
+ const people=Array.from({length:4},(_,i)=>({id:`attention-${i}`,name:`검색인물${i}`,type:'assembly'}));
+ db.values.set(K.publicPointer,'attention-public');
+ for(let i=0;i<4;i++){
+  const row={id:people[i].id,input:{collectedAt:new Date(now).toISOString(),searchAds:{volume:{pc:(i+1)*100,mobile:(i+1)*900}},news:{periodCounts:[{label:'30D',value:40-i*10}],coverage:[{date:'2026-09-12',collected:true}],items:[]}},prescriptions:[{private:'ADMIN_SECRET'}]};
+  db.values.set(K.draft('attention-public',row.id),encodeStored(row));
+ }
+ db.values.set(K.mediaIndex('attention-public'),encodeStored({revision:'',index:{version:2,people,publishers:[],articles:[],issues:[],coverage:{}}}));
+ const service=createMediaSpreadService({command:db.command,scope:'attention-first-'+Math.random(),profiles:people,now:()=>now});
+ const first=await service.search({query:people[0].name});assert.ok(first.attention);assert.equal(first.attention.target.searchRank,4);assert.equal(first.attention.target.newsRank,1);
+ const reads=db.calls.filter(row=>row[0]==='MGET').length;
+ const next=await service.search({query:people[0].name,period:'cumulative'});assert.deepEqual(next.attention,first.attention);assert.equal(db.calls.filter(row=>row[0]==='MGET').length,reads);
+ const persisted=await createMediaSpreadService({command:db.command,scope:'attention-new-process-'+Math.random(),profiles:people,now:()=>now}).search({query:people[0].name});
+ assert.deepEqual(persisted.attention,first.attention);assert.equal(db.calls.filter(row=>row[0]==='MGET').length,reads);assert(!JSON.stringify(persisted).includes('ADMIN_SECRET'));
+});

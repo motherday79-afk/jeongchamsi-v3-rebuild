@@ -1,4 +1,4 @@
-import {renderMediaSpread,spreadEsc as esc,spreadRoute} from './media-spread-view.js?v=0.0.31.148';
+import {renderMediaSpread,spreadEsc as esc,spreadRoute} from './media-spread-view.js?v=0.0.31.149';
 const snapshots=new WeakMap();
 const keyOf=params=>JSON.stringify([params.query,params.personId||'',params.publisher||'',params.period==='cumulative'?'cumulative':'latest']);
 export function hasSearchSnapshot(content,term){return [...(snapshots.get(content)?.values()||[])].some(row=>row.query===String(term).trim()&&Date.now()-row.at<120000);}

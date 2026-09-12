@@ -15,6 +15,17 @@ const credentials={
 };
 const NEWS_NOW=Date.parse('2026-09-03T00:00:00Z');
 
+test('a related keyword is never substituted for the searched politician name',async()=>{
+ const fetchImpl=async()=>({ok:true,json:async()=>({keywordList:[{relKeyword:'김민석 관련상품',monthlyPcQcCnt:50000,monthlyMobileQcCnt:100000}]})});
+ await assert.rejects(fetchNaverKeywordVolume({id:'p1',name:'김민석'},{fetchImpl,env:credentials}),error=>error.code==='NAVER_KEYWORD_RESULT_EMPTY');
+});
+
+test('missing monthly source values stay unknown instead of turning into zero',async()=>{
+ const fetchImpl=async()=>({ok:true,json:async()=>({keywordList:[{relKeyword:'김민석',monthlyPcQcCnt:null,monthlyMobileQcCnt:100}]})});
+ const result=await fetchNaverKeywordVolume({id:'p1',name:'김민석'},{fetchImpl,env:credentials});
+ assert.equal(result.volume.pc,null);assert.equal(result.volume.total,null);
+});
+
 test('Naver signature matches the documented HMAC-SHA256 Base64 contract',()=>{
   assert.equal(createNaverSignature({timestamp:'1700000000000',method:'GET',uri:'/keywordstool',secret:'secret-key'}),'W36UoKa4A2YA0CeiPcIkr6EEjdpEfLZmO+/k+2kP8CY=');
 });

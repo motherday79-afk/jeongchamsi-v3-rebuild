@@ -1,0 +1,91 @@
+/* Monthly search and news attention card. Scoped to the JCS SPREAD search view. */
+.jcs-spread .attention-panel{--attention-purple:#6d359f;--attention-purple-soft:#f6f0fb;--attention-gold:#ad8240;--attention-ink:#29232f;--attention-muted:#776f7c;--attention-line:#e9e3ec;background:#fff;border-top:1px solid var(--attention-line);border-bottom:1px solid var(--attention-line);color:var(--attention-ink);min-width:0;overflow:hidden}
+.jcs-spread .attention-panel *{box-sizing:border-box}
+.jcs-spread .attention-panel a{color:inherit;text-decoration:none}
+.jcs-spread .attention-panel :is(a,summary):focus-visible{outline:2px solid var(--attention-purple);outline-offset:3px}
+.jcs-spread .attention-header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;padding:25px 28px 18px}
+.jcs-spread .attention-header>div{min-width:0}
+.jcs-spread .attention-kicker,.jcs-spread .attention-related header span{display:block;color:var(--attention-gold);font-size:9px;font-weight:750;letter-spacing:1.5px}
+.jcs-spread .attention-header h2{color:var(--attention-ink);font-size:20px;font-weight:720;letter-spacing:-.45px;line-height:1.35;margin:5px 0 0}
+.jcs-spread .attention-header>p{color:#665d6d;font-size:11px;line-height:1.5;margin:0;text-align:right;white-space:nowrap}
+.jcs-spread .attention-header>p small{color:#918896;display:block;font-size:10px;margin-top:2px}
+.jcs-spread .attention-layout{display:grid;grid-template-columns:minmax(250px,.84fr) minmax(380px,1.16fr);gap:30px;padding:0 28px 24px;min-width:0}
+.jcs-spread .attention-pending .attention-layout{grid-template-columns:minmax(0,1fr)}
+.jcs-spread .attention-story{align-self:center;min-width:0}
+.jcs-spread .attention-headline{border-left:3px solid var(--attention-gold);color:#3e3447;font-size:16px;font-weight:640;letter-spacing:-.25px;line-height:1.55;margin:0 0 20px;padding:2px 0 2px 13px;overflow-wrap:anywhere}
+.jcs-spread .attention-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--attention-line);border:1px solid var(--attention-line);border-radius:12px;margin:0;overflow:hidden}
+.jcs-spread .attention-metric{background:#fff;min-width:0;padding:13px 14px 12px}
+.jcs-spread .attention-metric dt{color:var(--attention-muted);font-size:10px;font-weight:650;margin:0 0 4px}
+.jcs-spread .attention-metric dd{align-items:flex-start;display:flex;flex-direction:column;gap:2px;margin:0;min-width:0}
+.jcs-spread .attention-metric dd strong{color:var(--attention-ink);font-size:clamp(18px,2vw,22px);font-variant-numeric:tabular-nums;font-weight:760;letter-spacing:-.5px;line-height:1.2;max-width:100%;overflow-wrap:anywhere}
+.jcs-spread .attention-metric dd strong em{color:#817587;font-size:10px;font-style:normal;font-weight:550;letter-spacing:0;margin-left:3px;white-space:nowrap}
+.jcs-spread .attention-metric dd span{color:var(--attention-purple);font-size:11px;font-weight:700;white-space:nowrap}
+.jcs-spread .attention-metric.is-news dd span{color:#8a6329}
+.jcs-spread .attention-metric small{color:#908791;display:block;font-size:9px;line-height:1.45;margin-top:4px;overflow-wrap:anywhere}
+.jcs-spread .attention-dates{display:flex;flex-wrap:wrap;gap:5px 14px;color:#8a818d;font-size:9px;margin-top:9px}
+.jcs-spread .attention-dates b{color:#655b69;font-weight:600}
+.jcs-spread .attention-insufficient{background:var(--attention-purple-soft);border-radius:8px;color:#67576f;font-size:11px;line-height:1.65;margin:14px 0 0;padding:10px 12px}
+.jcs-spread .attention-chart{background:#fcfbfd;border:1px solid var(--attention-line);border-radius:14px;margin:0;min-width:0;padding:8px 10px 7px}
+.jcs-spread .attention-chart svg{display:block;height:auto;max-height:244px;overflow:visible;width:100%}
+.jcs-spread .attention-chart-grid line{stroke:#eae5ed;stroke-width:1}
+.jcs-spread .attention-chart-grid line:nth-child(2),.jcs-spread .attention-chart-grid line:nth-child(5){stroke:#d8cedf;stroke-dasharray:4 5}
+.jcs-spread .attention-chart-quadrants{fill:#aaa1ad;font-size:8px;letter-spacing:.2px}
+.jcs-spread .attention-point-peer{fill:#9d90a6;opacity:.35}
+.jcs-spread .attention-point-ring{fill:var(--attention-gold);stroke:#fff;stroke-width:2}
+.jcs-spread .attention-point-core{fill:var(--attention-purple)}
+.jcs-spread .attention-target-label{fill:#4d266f;font-size:10px;font-weight:750;paint-order:stroke;stroke:#fcfbfd;stroke-linejoin:round;stroke-width:4px}
+.jcs-spread .attention-chart-axis{fill:#706677;font-size:8.5px;font-weight:600}
+.jcs-spread .attention-chart figcaption{color:#8b828f;font-size:9px;line-height:1.5;margin:0 8px 3px;text-align:right}
+.jcs-spread .attention-related{border-top:1px solid var(--attention-line);padding:20px 28px 22px}
+.jcs-spread .attention-related header{align-items:end;display:flex;gap:12px;margin-bottom:12px}
+.jcs-spread .attention-related h3{font-size:15px;line-height:1.35;margin:0}
+.jcs-spread .attention-related>div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.jcs-spread .attention-peer{border:1px solid var(--attention-line);border-radius:10px;display:grid;grid-template-columns:minmax(0,1fr) auto;min-width:0;overflow:hidden;padding:12px 13px 0}
+.jcs-spread .attention-peer>p{color:#8a6329;font-size:9px;grid-column:1/-1;line-height:1.45;margin:0 0 8px;overflow-wrap:anywhere}
+.jcs-spread .attention-peer-profile{display:flex;flex-direction:column;justify-content:center;min-height:44px;min-width:0;padding-right:8px}
+.jcs-spread .attention-peer-profile strong{font-size:13px;line-height:1.35;overflow-wrap:anywhere}
+.jcs-spread .attention-peer-profile span{color:var(--attention-muted);font-size:9px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.jcs-spread .attention-peer dl{align-self:center;display:flex;gap:9px;margin:0}
+.jcs-spread .attention-peer dl div{text-align:right}
+.jcs-spread .attention-peer dt{color:#958c99;font-size:8px}
+.jcs-spread .attention-peer dd{color:#5d3a79;font-size:10px;font-weight:700;margin:1px 0 0;white-space:nowrap}
+.jcs-spread .attention-compare-link{align-items:center;border-top:1px solid var(--attention-line);color:var(--attention-purple);display:flex;font-size:10px;font-weight:650;grid-column:1/-1;justify-content:space-between;margin-top:8px;min-height:44px}
+.jcs-spread .attention-peer-profile:hover,.jcs-spread .attention-compare-link:hover{color:#54247e}
+.jcs-spread .attention-basis{background:#fcfbfd;border-top:1px solid var(--attention-line);padding:8px 28px 10px}
+.jcs-spread .attention-basis summary{color:#756b79;cursor:pointer;font-size:10px;min-height:36px;padding:10px 0}
+.jcs-spread .attention-basis>div{color:#817786;font-size:10px;line-height:1.75;max-width:830px;padding:0 0 8px}
+.jcs-spread .attention-basis p{margin:4px 0}
+.jcs-spread .attention-basis b{color:#5e5067;font-weight:650}
+@media(max-width:900px){
+ .jcs-spread .attention-layout{gap:20px;grid-template-columns:minmax(230px,.75fr) minmax(340px,1.25fr)}
+ .jcs-spread .attention-related>div{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:720px){
+ .jcs-spread .attention-header{align-items:flex-start;padding:22px 18px 16px}
+ .jcs-spread .attention-layout{grid-template-columns:minmax(0,1fr);padding:0 18px 20px}
+ .jcs-spread .attention-chart svg{max-height:none}
+ .jcs-spread .attention-related{padding:19px 18px 20px}
+ .jcs-spread .attention-basis{padding-left:18px;padding-right:18px}
+}
+@media(max-width:480px){
+ .jcs-spread .attention-header{display:block}
+ .jcs-spread .attention-header h2{font-size:18px}
+ .jcs-spread .attention-header>p{margin-top:9px;text-align:left;white-space:normal}
+ .jcs-spread .attention-headline{font-size:14px;margin-bottom:15px}
+ .jcs-spread .attention-metric{padding:11px}
+ .jcs-spread .attention-metric dd{gap:1px}
+ .jcs-spread .attention-metric dd strong{font-size:19px}
+ .jcs-spread .attention-chart{padding:5px 2px}
+ .jcs-spread .attention-chart-axis{font-size:16px}
+ .jcs-spread .attention-target-label{font-size:17px}
+ .jcs-spread .attention-chart-quadrants{display:inline;font-size:13px}
+ .jcs-spread .attention-related>div{grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:350px){
+ .jcs-spread .attention-layout{padding-left:14px;padding-right:14px}
+ .jcs-spread .attention-header,.jcs-spread .attention-related{padding-left:14px;padding-right:14px}
+ .jcs-spread .attention-basis{padding-left:14px;padding-right:14px}
+ .jcs-spread .attention-peer{grid-template-columns:minmax(0,1fr)}
+ .jcs-spread .attention-peer dl{justify-self:start;margin-top:5px;text-align:left}
+ .jcs-spread .attention-peer dl div{text-align:left}
+}
