@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { diagnosticDestination, observeTapEvents, setupTapDiagnostics, formatTapDiagnosticRecord } from '../src/ui/tap-diagnostics.js';
+import { diagnosticDestination, observeTapEvents, setupTapDiagnostics, formatTapDiagnosticRecord, createCopyRestrictionProbe } from '../src/ui/tap-diagnostics.js';
+import { setupCopyRestrictions } from '../src/ui/interactions.js';
 
 const base='https://www.jeongchamsi.com/';
 test('reports internal destinations without recording searches or credentials',()=>{
@@ -16,6 +17,8 @@ test('reports internal destinations without recording searches or credentials',(
 class Node extends EventTarget {
   constructor(tag,attrs={},parent=null){super();this.nodeType=1;this.tagName=tag.toUpperCase();this.attrs=attrs;this.parentElement=parent;this.classList=(attrs.class||'').split(' ').filter(Boolean);this.attributes=Object.keys(attrs).map(name=>({name}));this.open=false;}
   getAttribute(name){return this.attrs[name]??null;}
+  setAttribute(name,value){this.attrs[name]=String(value);}
+  removeAttribute(name){delete this.attrs[name];}
   closest(selector){for(let node=this;node;node=node.parentElement){if(selector==='a[href],area[href]'&&['A','AREA'].includes(node.tagName)&&node.attrs.href!=null)return node;if(selector==='[data-layout-route]'&&node.attrs['data-layout-route']!=null)return node;if(selector==='[data-jcs-tap-diagnostics]'&&node.attrs['data-jcs-tap-diagnostics']!=null)return node;if(selector==='details'&&node.tagName==='DETAILS')return node;}return null;}
 }
 function harness(){
@@ -72,4 +75,27 @@ test('a cancelled touch still exposes the link and overlap in the visible report
  h.fire('pointercancel',mail,{clientX:80,clientY:300,pointerType:'touch'});
  for(const row of h.rows){const report=formatTapDiagnosticRecord(row);assert.ok(report.includes('mailto:[주소 생략]'));assert.ok(report.includes('/person/metropolitan-001'));assert.ok(!report.includes('private@example.com'));}
  h.stop();
+});
+test('the probe changes the existing context-menu restriction only while enabled',()=>{
+ const doc=new EventTarget(),app=new Node('div'),summary=new Node('summary',{},app),probe=createCopyRestrictionProbe(app);
+ // This boundary double resolves the existing attribute selector against the
+ // actual app attributes; the real restriction handler decides cancellation.
+ summary.closest=selector=>selector.includes('[data-allow-copy]')&&app.getAttribute('data-allow-copy')!==null?app:null;
+ setupCopyRestrictions(doc);
+ const menu=()=>{const event=new Event('contextmenu',{cancelable:true});Object.defineProperty(event,'target',{value:summary});doc.dispatchEvent(event);return event.defaultPrevented;};
+ assert.equal(menu(),true);
+ assert.equal(probe.set(true),true);assert.equal(probe.enabled(),true);assert.equal(menu(),false);
+ probe.set(false);assert.equal(probe.enabled(),false);assert.equal(menu(),true);
+ probe.set(true);probe.restore();assert.equal(menu(),true);assert.equal(app.getAttribute('data-allow-copy'),null);
+});
+test('closing the probe preserves a pre-existing copy exception',()=>{
+ const app=new Node('div',{'data-allow-copy':'original'}),probe=createCopyRestrictionProbe(app);
+ probe.set(true);probe.restore();assert.equal(app.getAttribute('data-allow-copy'),'original');
+});
+test('observes context-menu cancellation without changing it',async()=>{
+ const h=harness(),summary=new Node('summary');
+ h.doc.addEventListener('contextmenu',event=>event.preventDefault());
+ const event=h.fire('contextmenu',summary);await new Promise(resolve=>setTimeout(resolve,0));
+ assert.equal(event.defaultPrevented,true);
+ assert.ok(h.rows.some(row=>row.type==='contextmenu-end'&&row.prevented));h.stop();
 });

@@ -1,5 +1,6 @@
-// Opt-in, local-only observation. Never cancel a page event, open a URL,
-// wrap browser APIs, or send a report automatically.
+// Opt-in, local-only observation. Observers never cancel a page event, open
+// a URL, wrap browser APIs or send a report. The explicit probe below can
+// temporarily use the site's existing copy exception, then restore it.
 export function diagnosticDestination(raw,base){
   if(!raw)return '';
   try{
@@ -34,30 +35,35 @@ export function observeTapEvents(doc,win,onRecord){
       emit({id,type:event.type,...describeElement(target,base),point:lastPoint,pointer:event.pointerType||'',hitStack,...(event.type==='toggle'?{open:!!target.open}:{})});
       // A new task observes the completed event dispatch, including handlers
       // that run later during bubbling and the native details toggle.
-      if(event.type==='click')setTimeout(()=>emit({id,type:'click-end',prevented:event.defaultPrevented}),0);
+      if(event.type==='click'||event.type==='contextmenu')setTimeout(()=>emit({id,type:event.type+'-end',prevented:event.defaultPrevented}),0);
     }catch{/* Only collect evidence that this browser can expose. */}
   };
-  for(const type of ['pointerdown','pointerup','pointercancel','click','toggle'])bind(doc,type,observe);
+  for(const type of ['pointerdown','pointerup','pointercancel','click','contextmenu','toggle'])bind(doc,type,observe);
   bind(win,'jcs:layout-route',event=>emit({type:'route',route:diagnosticDestination(event.detail?.route,base)}));
   for(const type of ['popstate','hashchange','pageshow','pagehide'])bind(win,type,()=>emit({type}));
   return ()=>{active=false;for(const [target,type,handler,options] of bindings)target.removeEventListener(type,handler,options);};
 }
 
 export function formatTapDiagnosticRecord(row){
-    const lines=[`${row.id?'#'+row.id+' ':''}${row.type} · ${row.page}`];
+    const lines=[`${row.id?'#'+row.id+' ':''}${row.type} · ${row.page}${row.condition?' · '+row.condition:''}`];
     if(row.element)lines.push(`대상 ${row.element}${row.pointer?' ('+row.pointer+')':''}`);
-    if(['click','pointerdown','pointerup','pointercancel'].includes(row.type)){
+    if(['click','pointerdown','pointerup','pointercancel','contextmenu'].includes(row.type)){
       lines.push(`링크 ${row.link||'없음'} | 경로 ${row.route||'없음'}`);
       const hits=row.hitStack?.filter((hit,i,all)=>all.findIndex(other=>other.element===hit.element&&other.link===hit.link&&other.route===hit.route)===i).slice(0,4)||[];
       for(const hit of hits)lines.push(`겹침 ${hit.element} ${hit.link||hit.route||''}`);
     }
     if(row.type==='route')lines.push(`요청 ${row.route||'없음'}`);
-    if(row.type==='click-end')lines.push(`기본 동작 취소 ${row.prevented?'예':'아니오'}`);
+    if(row.type==='click-end'||row.type==='contextmenu-end')lines.push(`기본 동작 취소 ${row.prevented?'예':'아니오'}`);
     if(row.type==='toggle')lines.push(`펼침 ${row.open?'예':'아니오'}`);
     return lines.join('\n');
   }
 
 const panels=new WeakMap();
+export function createCopyRestrictionProbe(app){
+  const previous=app?.getAttribute('data-allow-copy')??null;let enabled=false;
+  const restore=()=>{if(!app||!enabled)return;if(previous===null)app.removeAttribute('data-allow-copy');else app.setAttribute('data-allow-copy',previous);enabled=false;};
+  return {set:value=>{if(!app)return false;if(value){app.setAttribute('data-allow-copy','');enabled=true;}else restore();return true;},restore,enabled:()=>enabled};
+}
 export function setupTapDiagnostics(doc=document,win=window){
   if(new URLSearchParams(win.location.search).get('jcs_tap_debug')!=='1')return null;
   if(panels.has(doc))return panels.get(doc);
@@ -73,18 +79,24 @@ export function setupTapDiagnostics(doc=document,win=window){
     .panel{margin-bottom:6px;padding:12px;border:1px solid #b9bac2;border-radius:10px;background:#fff;box-shadow:0 5px 24px #0003;pointer-events:auto}
     [hidden]{display:none!important}h2{font-size:15px;margin:0 0 5px}p{margin:4px 0 9px;font-size:12px;color:#4a515b}
     pre{font:11px/1.55 ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere;max-height:36vh;overflow:auto;margin:8px 0;-webkit-user-select:text;user-select:text}
-    .actions{display:flex;gap:6px}.notice{font-size:11px;margin-top:6px;color:#505762}
-  </style><section class="panel" hidden><h2>정참시 터치 진단</h2><p>연결 앱 창을 닫은 뒤 이 결과를 캡처해 주세요.</p><pre data-allow-copy></pre><div class="actions"><button type="button" data-copy>결과 복사</button><button type="button" data-stop>진단 종료</button></div><div class="notice">이 기기 안에서만 기록합니다. 원인 확인용이며 수정 완료 표시는 아닙니다.</div></section><div class="bar"><button type="button" data-toggle aria-expanded="false">터치 진단 · <span class="count">0</span></button></div>`;
-  const panel=shadow.querySelector('.panel'),output=shadow.querySelector('pre'),toggle=shadow.querySelector('[data-toggle]'),count=shadow.querySelector('.count'),copy=shadow.querySelector('[data-copy]');
+    .actions{display:flex;flex-wrap:wrap;gap:6px}.notice{font-size:11px;margin-top:6px;color:#505762}
+    [data-probe]{width:100%;text-align:left;margin-bottom:5px;background:#f4f0fb}[data-probe][aria-pressed=true]{border-color:#753bbd}
+  </style><section class="panel" hidden><h2>정참시 터치 진단 R2</h2><p>원래 설정으로 한 번 확인한 뒤, 아래 시험을 켜고 같은 버튼을 다시 눌러 주세요.</p><button type="button" data-probe aria-pressed="false">복사 제한 제외 테스트 시작</button><pre data-allow-copy></pre><div class="actions"><button type="button" data-copy>결과 복사</button><button type="button" data-stop>진단 종료</button></div><div class="notice">시험은 현재 페이지에만 적용됩니다. 종료하면 원래 설정으로 돌아갑니다.</div></section><div class="bar"><button type="button" data-toggle aria-expanded="false">터치 진단 R2</button></div>`;
+  const panel=shadow.querySelector('.panel'),output=shadow.querySelector('pre'),toggle=shadow.querySelector('[data-toggle]'),copy=shadow.querySelector('[data-copy]'),probeButton=shadow.querySelector('[data-probe]');
+  const probe=createCopyRestrictionProbe(doc.getElementById('app'));
   const rows=[],browser=(win.navigator?.userAgent||'').match(/(?:SamsungBrowser|Chrome|Version|Firefox)\/[\d.]+/g)?.join(' ')||'브라우저 정보 없음';
-  const heading=`JCS TAP 20260913\n${browser}\n화면 ${win.innerWidth}×${win.innerHeight}`;
+  const heading=`JCS TAP 20260913 R2\n${browser}\n화면 ${win.innerWidth}×${win.innerHeight}`;
 
   let total=0;
-  const repaint=()=>{output.textContent=heading+'\n\n'+(rows.length?[...rows].reverse().map(formatTapDiagnosticRecord).join('\n\n'):'아직 클릭 기록이 없습니다. 문제 버튼을 눌러 주세요.');};
-  const stop=observeTapEvents(doc,win,row=>{total++;rows.push(row);if(rows.length>20)rows.shift();count.textContent=String(total);repaint();});
-  const close=()=>{stop();host.remove();panels.delete(doc);};
+  const condition=()=>probe.enabled()?'복사 제한 제외':'원래 설정';
+  const repaint=()=>{output.textContent=heading+'\n현재 '+condition()+' · 기록 '+total+'\n\n'+(rows.length?[...rows].reverse().map(formatTapDiagnosticRecord).join('\n\n'):'아직 클릭 기록이 없습니다. 문제 버튼을 눌러 주세요.');};
+  // Record in memory only. Do not mutate the DOM during a real page touch;
+  // render the evidence when the user explicitly opens/copies the panel.
+  const stop=observeTapEvents(doc,win,row=>{total++;rows.push({...row,condition:condition()});if(rows.length>20)rows.shift();});
+  const close=()=>{stop();probe.restore();host.remove();panels.delete(doc);};
   toggle.addEventListener('click',()=>{panel.hidden=!panel.hidden;toggle.setAttribute('aria-expanded',String(!panel.hidden));repaint();});
   shadow.querySelector('[data-stop]').addEventListener('click',close);
-  copy.addEventListener('click',async()=>{try{await win.navigator.clipboard.writeText(output.textContent);copy.textContent='복사 완료';}catch{copy.textContent='화면을 캡처해 주세요';}});
+  probeButton.addEventListener('click',()=>{if(!probe.set(!probe.enabled())){probeButton.textContent='페이지를 불러온 뒤 다시 시도해 주세요';return;}probeButton.setAttribute('aria-pressed',String(probe.enabled()));probeButton.textContent=probe.enabled()?'원래 복사 제한으로 복원':'복사 제한 제외 테스트 시작';repaint();panel.hidden=true;toggle.setAttribute('aria-expanded','false');});
+  copy.addEventListener('click',async()=>{repaint();try{await win.navigator.clipboard.writeText(output.textContent);copy.textContent='복사 완료';}catch{copy.textContent='화면을 캡처해 주세요';}});
   doc.body.append(host);repaint();panels.set(doc,host);return host;
 }
