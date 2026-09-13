@@ -14,6 +14,7 @@ export function setupDrawer(root=document){
   root.addEventListener('keydown',event=>{if(event.key==='Escape'&&!drawer.hidden)close();});
 }
 export function nowRankRangeLabel(page,pageSize,total){const count=Math.max(0,Number(total)||0),size=Math.max(1,Number(pageSize)||1),start=Math.min(count,Math.max(0,Number(page)||0)*size)+1,end=Math.min(count,start+size-1);return count?`${start}–${end} / ${count}`:'0 / 0';}
+const nowRankTracksBound=new WeakSet();
 export function setupNowCarousel(root=document){
   const box=root.querySelector('[data-now-rank-carousel]');if(!box)return;
   for(const set of box.querySelectorAll('[data-now-rank-set]')){
@@ -21,7 +22,10 @@ export function setupNowCarousel(root=document){
     const desktopSize=Number(set.dataset.pageSize)||10,total=Number(set.dataset.total)||pages.reduce((sum,row)=>sum+row.children.length,0),isMobile=()=>!globalThis.document?.documentElement?.classList.contains('desktop-home-fixed')&&globalThis.matchMedia?.('(max-width:1024px)')?.matches===true;
     const paint=()=>{const mobile=isMobile();if(mobile){pages.forEach(page=>{page.hidden=false;[...page.children].forEach(card=>{card.hidden=false;});});set.dataset.page='0';return;}const containerIndex=Math.floor(startIndex/desktopSize);pages.forEach((page,index)=>{page.hidden=index!==containerIndex;[...page.children].forEach(card=>{card.hidden=false;});});set.dataset.page=String(containerIndex);const desktopStatus=set.querySelector('[data-now-rank-status="desktop"]');if(desktopStatus)desktopStatus.textContent=nowRankRangeLabel(containerIndex,desktopSize,total);};
     const track=set.querySelector('.now-rank-pages');
-    if(track&&!track.dataset.freeScrollReady){
+    // Cached HTML retains data attributes, but not event listeners. Track live
+    // nodes so Back-restored tracks receive their swipe/click guard again.
+    if(track&&!nowRankTracksBound.has(track)){
+      nowRankTracksBound.add(track);
       track.dataset.freeScrollReady='true';let origin=null,moved=false,blockUntil=0;
       track.addEventListener('pointerdown',event=>{origin={x:event.clientX,y:event.clientY};moved=false;},{passive:true});
       track.addEventListener('pointermove',event=>{if(origin&&Math.hypot(event.clientX-origin.x,event.clientY-origin.y)>8)moved=true;},{passive:true});
@@ -179,9 +183,10 @@ export function setupPoliticianAutocomplete(root=document,search=null){
     results.addEventListener('click',event=>{const button=event.target.closest('[data-politician-suggestion]');if(button)select(rows.find(item=>String(item.id)===button.dataset.politicianSuggestion));});
   }
 }
+const detail47Bound=new WeakSet();
 export function setupDetail47Interactions(root=document){
  for(const block of root.querySelectorAll('.jcs-local-47')){
-  if(block.dataset.detail47Ready==='true')continue;block.dataset.detail47Ready='true';
+  if(detail47Bound.has(block))continue;detail47Bound.add(block);block.dataset.detail47Ready='true';
   block.addEventListener('click',event=>{const button=event.target.closest('[data-life-topic]');if(!button)return;const index=button.dataset.lifeTopic;
    block.querySelectorAll('[data-life-topic]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
    block.querySelectorAll('[data-life-evidence]').forEach(item=>{item.hidden=item.dataset.lifeEvidence!==index;});
@@ -189,7 +194,7 @@ export function setupDetail47Interactions(root=document){
   });
  }
  for(const block of root.querySelectorAll('.jcs-lifecycle-47')){
-  if(block.dataset.detail47Ready==='true')continue;block.dataset.detail47Ready='true';
+  if(detail47Bound.has(block))continue;detail47Bound.add(block);block.dataset.detail47Ready='true';
   block.querySelector('[data-life-select]')?.addEventListener('change',event=>{block.querySelectorAll('[data-life-panel]').forEach(panel=>{panel.hidden=panel.dataset.lifePanel!==event.target.value;});});
   const select=event=>{const point=event.target.closest('[data-life-day]');if(!point)return;if(event.type==='keydown'&&!['Enter',' '].includes(event.key))return;if(event.type==='keydown')event.preventDefault();const panel=point.closest('[data-life-panel]');panel.querySelector('.jcs-life-day-detail').textContent=point.dataset.lifeDay;panel.querySelectorAll('[data-life-day]').forEach(item=>item.setAttribute('stroke-width',item===point?'3':'1.6'));};
   block.addEventListener('click',select);block.addEventListener('keydown',select);
