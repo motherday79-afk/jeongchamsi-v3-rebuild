@@ -5,13 +5,13 @@ import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-
 import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.150';
 import { setupLayoutInteractions, setupPoliticianPhotoFallback, setupNowCarousel, setupCageCountdown, setupDesktopHomeViewport } from './ui/interactions.js?v=0.0.31.151';
 import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.106';
-import { createContentService, loadNavigationDashboard } from './core/content.js?v=0.0.31.127';
+import { createContentService, loadNavigationDashboard, loadPersonNavigation } from './core/content.js?v=0.0.31.153';
 import { createPoliticianService } from './core/politicians.js?v=0.0.31.147';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.126';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.148';
-import * as views from './views/stage1.js?v=0.0.31.152';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.56';
+import * as views from './views/stage1.js?v=0.0.31.153';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.153';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.56';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.131';
 import { renderPresidentPage } from './views/president.js?v=0.0.31.107';
@@ -161,14 +161,16 @@ async function render({preserveScroll=false,refreshHome=false}={}){
   }
   if(p[0]==='admin'){const target=document.querySelector('.page-wrap');if(target)target.innerHTML=views.renderAdminLoading(adminRouteState(r).tab);}
   void loadShellInfo();
-  const session=await auth.session();
+  const personData=p[0]==='person'?await loadPersonNavigation(p[1]||'',auth,content,politicians):null;
+  const session=personData?personData.session:await auth.session();
+  if(renderId!==renderSequence)return;
   const badgeStatusPromise=session.authenticated&&p[0]!=='admin'
     ? auth.recordBadgeVisit().then(result=>result?.status||auth.badgeStatus()).catch(()=>null)
     : Promise.resolve(null);
   const wantsWallet=session.authenticated&&(!p.length||p[0]==='mypage'&&!['activity','badges'].includes(p[1]));
   const walletPromise=wantsWallet?content.myWallet().catch(()=>({ok:false,error:'LOAD_FAILED'})):Promise.resolve(null);
   const summaryPromise=!p.length&&session.authenticated?content.memberSummary().catch(()=>({ok:false,error:'LOAD_FAILED'})):Promise.resolve(null);
-  const [badgeStatus,dashboard]=await Promise.all([p[0]==='mypage'?badgeStatusPromise:Promise.resolve(null),loadNavigationDashboard(p,session,content)]);
+  const [badgeStatus,dashboard]=await Promise.all([p[0]==='mypage'?badgeStatusPromise:Promise.resolve(null),personData?personData.dashboard:loadNavigationDashboard(p,session,content)]);
   if(p[0]==='mypage'&&wantsWallet)dashboard.pointResult=await walletPromise;
   let body='';
   if(!p.length){
@@ -208,7 +210,7 @@ async function render({preserveScroll=false,refreshHome=false}={}){
   else if(p[0]==='trending')body=renderTrendingPage(await politicians.trending());
   else if(p[0]==='keywords')body=renderKeywordsPage(await politicians.keywords(),new URLSearchParams(r.split('?')[1]||'').get('q')||'');
   else if(p[0]==='now') body=await renderPoliticianDirectory(politicians,r);
-  else if(p[0]==='person') body=await renderPoliticianDetail(p[1]||'',politicians,session,dashboard);
+  else if(p[0]==='person') body=await renderPoliticianDetail(p[1]||'',politicians,session,dashboard,personData.detail);
   else if(p[0]==='compare') body=await renderPoliticianCompare(politicians,r,session);
   else if(p[0]==='request-politician'){const result=session.authenticated?await content.listPoliticianRequests().catch(()=>({items:[]})):{items:[]};body=views.renderPoliticianRequest({session,requests:result.items||[]});}
   else if(p[0]==='partners'){const result=session.user?.role==='admin'?await content.listPartnerApplications().catch(()=>({items:[]})):{items:[]};body=views.renderPartners({session,applications:result.items||[]});}

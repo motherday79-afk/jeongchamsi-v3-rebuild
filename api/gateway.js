@@ -1,4 +1,5 @@
 import { createMediaSpreadService } from '../lib/media-spread-service.js';
+import { createRequestReadScope } from '../lib/request-read-scope.js';
 import { castGenerationVote } from '../src/core/participation-model.js';
 import { APP_RELEASE } from '../src/core/release.js';
 import { createCommunityService, communityStats } from '../lib/community-service.js';
@@ -100,9 +101,11 @@ export async function handlePoliticians(req,res,command,url,intelligence){
     const wanted=new Set(ids),items=groups.flat().filter(person=>wanted.has(person.id)).map(person=>({id:person.id,name:person.name,party:person.party,jurisdiction:person.jurisdiction,office:person.office,roleLabel:person.roleLabel,photo:photos[person.id]||null}));
     return json(res,200,{ok:true,items});
   }
-  const id=String(url.searchParams.get('id')||req.query?.id||'').trim(),query=String(url.searchParams.get('q')||req.query?.q||'').trim(),ranking=String(url.searchParams.get('ranking')||req.query?.ranking||'').trim(),photos=await readPoliticianPhotos(command);
+  command=createRequestReadScope(command);
+  intelligence=intelligence||createIntelligenceService({command});
+  const id=String(url.searchParams.get('id')||req.query?.id||'').trim(),query=String(url.searchParams.get('q')||req.query?.q||'').trim(),ranking=String(url.searchParams.get('ranking')||req.query?.ranking||'').trim();
   if(id){
-    const [item,report,user]=await Promise.all([getPolitician(command,id),intelligence.getPublicIntelligence(id),currentUser(req,command)]);
+    const [item,report,user,photos]=await Promise.all([getPolitician(command,id),intelligence.getPublicIntelligence(id),currentUser(req,command),readPoliticianPhotos(command)]);
     if(!item)return json(res,404,{ok:false,error:'POLITICIAN_NOT_FOUND'});
     const tier=accessTierForUser(user),scope=String(url.searchParams.get('view')||req.query?.view||'')==='compare'?'compare':'detail';
     const legacyNews=Array.isArray(report?.news)?report.news.map(row=>({title:row.title,source:row.source,url:row.url,publishedAt:row.publishedAt||row.date})):[];
@@ -114,6 +117,7 @@ export async function handlePoliticians(req,res,command,url,intelligence){
     }
     return json(res,200,{ok:true,accessTier:tier,item:{...item,photo:photos[id]||null},intelligence:projected});
   }
+  const photos=await readPoliticianPhotos(command);
   if(ranking==='trending'||url.searchParams.has('keywords')){
     const published=await intelligence.getPublicRankings({keywords:url.searchParams.has('keywords')});if(!published)return json(res,200,{ok:true,items:[],total:0,ready:false});
     const snapshot=url.searchParams.get('snapshot');if(snapshot&&snapshot!==published.snapshot)return json(res,409,{ok:false,error:'RANKING_UPDATED'});
@@ -469,7 +473,7 @@ export default async function handler(req,res){
     if(route==='content')return handleContent(req,res,command,url);
     if(route==='home/banner'&&req.method==='GET'){const service=createHomeBannerService({command}),[sidebar,hero,featuredCompare]=await Promise.all([service.get(),service.get('hero'),service.getCompare()]);return json(res,200,{ok:true,banner:{...(sidebar||{}),hero,featuredCompare:featuredCompare?{ids:featuredCompare.ids}:null}});}
     if(route==='site/footer-info'&&req.method==='GET')return json(res,200,{ok:true,info:await createSiteSettingsService({command}).get()});
-    if(route==='politicians')return handlePoliticians(req,res,command,url,createIntelligenceService({command}));
+    if(route==='politicians')return handlePoliticians(req,res,command,url);
     if(route==='action')return handleAction(req,res,command);
     if(route==='stats'){const users=await listUsers(command);return json(res,200,{ok:true,members:users.length});}
     if(route.startsWith('admin/')){const handled=await handleAdmin(req,res,route,command);if(handled!==false)return handled;}

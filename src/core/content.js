@@ -93,6 +93,15 @@ function createLocalContentService(store){
 }
 export function createContentService(store=null){return store?createLocalContentService(store):createRemoteContentService();}
 
+// Start the protected detail API immediately. The API still authorizes its own
+// response; session/favorite UI data no longer delays the expensive request.
+export async function loadPersonNavigation(id,auth,content,politicians){
+ const detail=politicians.get(id).catch(()=>({ok:false,error:'POLITICIAN_REQUEST_FAILED'}));
+ const session=await auth.session();
+ const [dashboard,result]=await Promise.all([loadNavigationDashboard(['person',id],session,content),detail]);
+ return {session,dashboard,detail:result};
+}
+
 // Navigation loads only the member data consumed by its destination.
 export async function loadNavigationDashboard(parts,session,content){
  const empty={favoriteKeys:[],authoredPosts:[],favoritePosts:[],favoritePeople:[]};
