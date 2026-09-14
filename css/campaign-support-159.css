@@ -1,0 +1,32 @@
+/* Campaign recipient information and reported funding snapshot. */
+#jcs-campaign-directory .campaign-progress-compact{margin:.65rem 0;font-size:.76rem;font-weight:750}
+#jcs-campaign-directory .campaign-progress-compact b{display:inline-block;margin-right:.25rem;padding:.12rem .35rem;background:#e3c58b;color:#493b26;font-size:.64rem;letter-spacing:.08em}
+#jcs-campaign-directory .jcd-feature .campaign-progress-compact{color:#f3e5bd}
+#jcs-campaign-directory .jcd-item .campaign-progress-compact{color:#6b527d}
+#jcs-campaign-preview .campaign-support{--support-purple:#753bbd;--support-gold:#c3922f;margin-top:clamp(2rem,6vw,5rem);padding:clamp(1.25rem,4vw,2.5rem);border:1px solid #9b7bb2;background:linear-gradient(145deg,#2f183f,#4b285f);color:#fff}
+#jcs-campaign-preview .campaign-support h2{margin:.5rem 0 1.25rem;color:#fff}
+#jcs-campaign-preview .campaign-recipient,#jcs-campaign-preview .campaign-account{display:grid;gap:.35rem;margin:1rem 0;padding:1rem;border:1px solid #e7deea;background:#fff;color:#30243b}
+#jcs-campaign-preview .campaign-recipient span,#jcs-campaign-preview .campaign-account span,#jcs-campaign-preview .campaign-account small{color:#716779;font-size:.78rem}
+#jcs-campaign-preview .campaign-recipient strong,#jcs-campaign-preview .campaign-account strong{color:#30243b;font-size:1.05rem}
+#jcs-campaign-preview .campaign-recipient a,#jcs-campaign-preview .campaign-funding-source{color:#e3c58b;font-size:.8rem;font-weight:800}
+#jcs-campaign-preview .campaign-recipient a{color:#65388c}
+#jcs-campaign-preview .campaign-account{grid-template-columns:minmax(0,1fr) auto;align-items:center}
+#jcs-campaign-preview .campaign-account>*:not(button){grid-column:1}
+#jcs-campaign-preview .campaign-account button{grid-column:2;grid-row:1/4;padding:.65rem .9rem;border:1px solid #c3922f;border-radius:999px;background:#fff8e8;color:#6c4d12;font-weight:850;cursor:pointer}
+#jcs-campaign-preview .campaign-support-actions{display:flex;flex-wrap:wrap;gap:.6rem;margin:1rem 0}
+#jcs-campaign-preview .campaign-support-actions :is(a,button){padding:.7rem 1rem;border:1px solid #e3c58b;border-radius:999px;background:#c3922f;color:#2f2237;font:inherit;font-weight:850;text-decoration:none}
+#jcs-campaign-preview .campaign-support-actions button:disabled{border-color:#cfc7d3;background:#e9e5eb;color:#655b69;cursor:not-allowed}
+#jcs-campaign-preview .campaign-support-instructions,#jcs-campaign-preview .campaign-demo-warning,#jcs-campaign-preview .campaign-support .jcs-direct-note{color:#f0e9f3;line-height:1.65}
+#jcs-campaign-preview .campaign-demo-warning{padding:.75rem;border-left:3px solid #e3c58b;background:#3a204a;color:#f6e6b8;font-weight:800}
+#jcs-campaign-preview .campaign-progress{margin:1.25rem 0;padding:1rem;border:1px solid #e7deea;background:#fff;color:#30243b}
+#jcs-campaign-preview .campaign-progress-head,#jcs-campaign-preview .campaign-progress-values{display:flex;align-items:baseline;justify-content:space-between;gap:1rem}
+#jcs-campaign-preview .campaign-progress-head b,#jcs-campaign-preview .campaign-progress-values strong{color:#30243b}
+#jcs-campaign-preview .campaign-progress-head span,#jcs-campaign-preview .campaign-progress-values span,#jcs-campaign-preview .campaign-progress>p{color:#716779;font-size:.78rem}
+#jcs-campaign-preview .campaign-progress-values{margin:.65rem 0}
+#jcs-campaign-preview .campaign-progress-values strong{color:#30243b;font-size:1.35rem}
+#jcs-campaign-preview .campaign-progress-values b{color:#8b651d}
+#jcs-campaign-preview .campaign-progress-meter{height:.55rem;overflow:hidden;border-radius:999px;background:#e9e4ec}
+#jcs-campaign-preview .campaign-progress-meter i{display:block;width:var(--campaign-progress);height:100%;background:linear-gradient(90deg,#753bbd,#c3922f)}
+#jcs-campaign-preview .campaign-support.is-demo{border-style:dashed}
+#jcs-campaign-preview .campaign-support.is-archive .campaign-progress{margin-top:.5rem}
+@media(max-width:600px){#jcs-campaign-preview .campaign-account{grid-template-columns:1fr}#jcs-campaign-preview .campaign-account button{grid-column:1;grid-row:auto;justify-self:start}#jcs-campaign-preview .campaign-progress-head,#jcs-campaign-preview .campaign-progress-values{align-items:flex-start;flex-direction:column;gap:.3rem}}

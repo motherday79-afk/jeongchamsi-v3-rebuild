@@ -1,5 +1,5 @@
-import { renderCampaignBoard, renderCampaignDetail } from '../views/campaign-pages.js?v=0.0.31.158';
-import { renderCampaignEditor } from '../views/campaign-editor.js?v=0.0.31.158';
+import { renderCampaignBoard, renderCampaignDetail } from '../views/campaign-pages.js?v=0.0.31.159';
+import { renderCampaignEditor } from '../views/campaign-editor.js?v=0.0.31.159';
 
 export async function loadCampaignPage({parts=[],searchParams=new URLSearchParams(),session={},client}={}){
   const admin=session?.authenticated===true&&session.user?.role==='admin';

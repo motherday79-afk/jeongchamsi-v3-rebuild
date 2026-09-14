@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { campaignState, normalizeCampaignContent, prepareCampaignMutation, publicCampaign, campaignSummary } from '../src/core/campaign-model.js';
-import { createCampaignService } from '../lib/campaign-service.js';
+import { createCampaignService, CAMPAIGN_KEYS } from '../lib/campaign-service.js';
 
 const clock=()=>Date.parse('2026-10-15T12:00:00+09:00');
 const content={headline:'비어 있는 집에,',accentLine:'다시 시작을.',intro:'현장의 정책 이야기',name:'실제 등록 인물',photoUrl:'https://images.example.org/portrait.webp',topic:'지역 재생',startDate:'2026-10-01',endDate:'2026-10-31',whyBody:'이 정책을 살펴보는 이유',storyBody:'현장에서 시작한 이야기',policyTitle:'공간을 다시 활용합니다.',policies:[{title:'현장 조사',body:'주민의 필요를 확인합니다.'}],productionRelation:'editorial',featured:true};
@@ -38,11 +38,11 @@ test('publication validates real calendar days, required content and policy rows
   assert.throws(()=>prepareCampaignMutation(null,{...content,policies:[]},{operation:'publish',version:0,now:clock(),id:'new'}),/CAMPAIGN_POLICY_REQUIRED/);
   assert.throws(()=>prepareCampaignMutation(null,{...content,name:''},{operation:'publish',version:0,now:clock(),id:'new'}),/CAMPAIGN_REQUIRED/);
 });
-test('stored content rejects executable URLs and cannot smuggle funding or sample flags',()=>{
+test('stored content rejects executable URLs and cannot smuggle sample flags',()=>{
   assert.throws(()=>normalizeCampaignContent({...content,photoUrl:'javascript:alert(1)'}),/CAMPAIGN_URL_INVALID/);
   assert.throws(()=>normalizeCampaignContent({...content,videoUrl:'https://untrusted.example/video'}),/CAMPAIGN_VIDEO_INVALID/);
   const safe=normalizeCampaignContent({...content,support:{officialUrl:'https://fake.example'},demo:true});
-  assert.equal(safe.support,undefined);assert.equal(safe.demo,undefined);
+  assert.equal(safe.support.officialUrl,'https://fake.example');assert.equal(safe.support.public,false);assert.equal(safe.demo,undefined);
 });
 test('public projection excludes draft text, author information and internal revisions',()=>{
   const result=publicCampaign({...published,updatedBy:'private-admin',draft:{...content,headline:'PRIVATE_DRAFT'},history:['secret']},clock());
@@ -92,7 +92,7 @@ test('bundled examples default to one feature and four cards with complete conte
  const all=[result.featured,...result.items];assert.deepEqual(all.map(x=>x.exampleNumber),[1,2,3,4,5]);
  assert.deepEqual(all.reduce((m,x)=>(m[x.category]=(m[x.category]||0)+1,m),{}),{culture:2,politics:2,business:1});
  const politics=await service.list(null,{category:'politics'});assert.equal(politics.counts.current,2);
- for(const row of all){const detail=(await service.get(row.id,null)).item;assert.equal(detail.isExample,true);assert.equal(detail.personId,'');assert.equal(detail.policies.length,3);assert.ok(detail.whyBody&&detail.storyBody&&detail.needsBody);assert.equal(detail.support,undefined);}
+ for(const row of all){const detail=(await service.get(row.id,null)).item;assert.equal(detail.isExample,true);assert.equal(detail.personId,'');assert.equal(detail.policies.length,3);assert.ok(detail.whyBody&&detail.storyBody&&detail.needsBody);assert.equal(detail.support.demo,true);assert.equal(detail.funding.demo,true);}
 });
 
 test('example overrides stay hidden and publishing does not allocate an official number',async()=>{
@@ -109,4 +109,17 @@ test('manage category filtering uses the editable draft and projects example mar
  const service=createCampaignService({examples:false,command:async()=>[JSON.stringify(campaignSummary(override,clock(),true))],now:clock});
  const culture=await service.list({id:'a',role:'admin'},{view:'manage',category:'culture'});assert.equal(culture.items[0].isExample,true);assert.equal(culture.items[0].exampleNumber,1);
  const politics=await service.list({id:'a',role:'admin'},{view:'manage',category:'politics'});assert.equal(politics.items.length,0);
+});
+
+test('persisted private index reconstructs compact real funding for featured, cards, and archive',async()=>{
+ const records=new Map(),index=new Map();let sequence=0;
+ const command=async args=>{if(args[0]==='GET')return records.get(args[1])||null;if(args[0]==='HVALS')return [...index.values()];if(args[0]==='EVAL'){const key=args[3],operation=args[8],record=JSON.parse(args[9]),summary=JSON.parse(args[10]);if(operation==='publish'&&record.number==null){record.number=++sequence;summary.number=record.number;}const raw=JSON.stringify(record);records.set(key,raw);index.set(record.id,JSON.stringify(summary));return JSON.stringify({ok:true,item:record});}return null;};
+ const service=createCampaignService({command,examples:false,now:clock}),admin={id:'admin',role:'admin'};
+ const support={recipientName:'실제 단체',bankName:'실제은행',accountNumber:'111-222',accountHolder:'실제 단체',sourceUrl:'https://recipient.example/source',public:true,verified:true};
+ const funding={goalKrw:1000,raisedKrw:1250,supporterCount:2,asOf:'2026-10-14',sourceUrl:'https://recipient.example/report',public:true};
+ const publish=async(id,input)=>service.save(admin,{id:'',version:0,operation:'publish',input:{...content,...input}}).then(result=>{const oldId=result.item.id;if(oldId!==id){const raw=records.get(CAMPAIGN_KEYS.item(oldId));records.delete(CAMPAIGN_KEYS.item(oldId));records.set(CAMPAIGN_KEYS.item(id),raw);const summary=index.get(oldId);index.delete(oldId);index.set(id,summary.replace(`"id":"${oldId}"`,`"id":"${id}"`));}return result;});
+ await publish('featured',{featured:true,support,funding});await publish('general',{featured:false,funding:{...funding,raisedKrw:0,supporterCount:null}});await publish('private',{featured:false,funding:{...funding,public:false}});await publish('archive',{featured:false,endDate:'2026-10-14',funding});
+ const current=await service.list(null);assert.deepEqual(current.featured.funding,{goalKrw:1000,raisedKrw:1250,supporterCount:2,asOf:'2026-10-14'});assert.deepEqual(current.items.find(row=>row.id==='general').funding,{goalKrw:1000,raisedKrw:0,supporterCount:null,asOf:'2026-10-14'});assert.equal(current.items.find(row=>row.id==='private').funding,undefined);
+ const archive=await service.list(null,{view:'archive'});assert.deepEqual(archive.items[0].funding,{goalKrw:1000,raisedKrw:1250,supporterCount:2,asOf:'2026-10-14'});
+ assert.doesNotMatch(JSON.stringify({current,archive}),/recipient\.example|111-222|실제은행|accountNumber|sourceUrl/);
 });

@@ -1,0 +1,11 @@
+{
+  "ready": true,
+  "task1Specification": "PASS",
+  "task1Quality": "PASS",
+  "task2Specification": "PASS (static)",
+  "task2Quality": "PASS (static)",
+  "finalReview": "PASS",
+  "R1": "Resolved in one final fix wave; persisted real funding retains internal eligibility metadata, public list remains compact",
+  "openImportantFindings": 0,
+  "browserVerified": false
+}

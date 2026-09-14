@@ -1,0 +1,21 @@
+{
+  "logoSha256": "4d0922dc35204aa27260f35a05c4ed4f1aa5e5a871e5657de39f83b446a58e9e",
+  "logoBytes": 500216,
+  "originalPixelDimensions": [
+    1536,
+    1024
+  ],
+  "originalPngExactCopy": true,
+  "existingAssetsUnchanged": 44,
+  "logoSurfaces": [
+    "header",
+    "search",
+    "footer",
+    "loading",
+    "favicon",
+    "apple-touch-icon",
+    "open-graph",
+    "twitter-card"
+  ],
+  "navigation": "campaign in primary, generation in more; routes retained"
+}

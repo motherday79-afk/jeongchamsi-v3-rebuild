@@ -1,0 +1,175 @@
+{
+  "method": "Static authored desktop campaign CSS cascade; no browser, no raster rendering",
+  "checks": [
+    {
+      "case": "board",
+      "class": "campaign-progress-compact",
+      "tag": "p",
+      "text": "DEMO 380,000원 모금 · 목표 1,000,000원 · 38%",
+      "color": "#f3e5bd",
+      "minContrast": 13.82
+    },
+    {
+      "case": "board",
+      "class": "campaign-progress-compact",
+      "tag": "p",
+      "text": "DEMO 1,340,000원 모금 · 목표 2,000,000원 · 67%",
+      "color": "#6b527d",
+      "minContrast": 6.71
+    },
+    {
+      "case": "board",
+      "class": "campaign-progress-compact",
+      "tag": "p",
+      "text": "DEMO 720,000원 모금 · 목표 3,000,000원 · 24%",
+      "color": "#6b527d",
+      "minContrast": 6.71
+    },
+    {
+      "case": "board",
+      "class": "campaign-progress-compact",
+      "tag": "p",
+      "text": "DEMO 3,280,000원 모금 · 목표 4,000,000원 · 82%",
+      "color": "#6b527d",
+      "minContrast": 6.71
+    },
+    {
+      "case": "board",
+      "class": "campaign-progress-compact",
+      "tag": "p",
+      "text": "DEMO 5,600,000원 모금 · 목표 5,000,000원 · 112%",
+      "color": "#6b527d",
+      "minContrast": 6.71
+    },
+    {
+      "case": "detail",
+      "class": "",
+      "tag": "h2",
+      "text": "이 제안에 공감하셨나요?",
+      "color": "#fff",
+      "minContrast": 11.88
+    },
+    {
+      "case": "detail",
+      "class": "",
+      "tag": "strong",
+      "text": "검사용 단체",
+      "color": "#30243b",
+      "minContrast": 14.57
+    },
+    {
+      "case": "detail",
+      "class": "",
+      "tag": "strong",
+      "text": "검사용-번호",
+      "color": "#30243b",
+      "minContrast": 14.57
+    },
+    {
+      "case": "detail",
+      "class": "",
+      "tag": "a",
+      "text": "수령인 공식 안내에서 후원하기",
+      "color": "#2f2237",
+      "minContrast": 5.32
+    },
+    {
+      "case": "detail",
+      "class": "",
+      "tag": "b",
+      "text": "공개된 모금 현황",
+      "color": "#30243b",
+      "minContrast": 14.57
+    },
+    {
+      "case": "detail",
+      "class": "",
+      "tag": "strong",
+      "text": "1,230,000원",
+      "color": "#30243b",
+      "minContrast": 14.57
+    },
+    {
+      "case": "detail",
+      "class": "",
+      "tag": "b",
+      "text": "123%",
+      "color": "#8b651d",
+      "minContrast": 5.28
+    },
+    {
+      "case": "demo",
+      "class": "",
+      "tag": "h2",
+      "text": "이 제안에 공감하셨나요?",
+      "color": "#fff",
+      "minContrast": 11.88
+    },
+    {
+      "case": "demo",
+      "class": "campaign-demo-warning",
+      "tag": "p",
+      "text": "화면 설명을 위한 허구의 DEMO입니다. 실제로 송금하거나 후원할 수 없습니다.",
+      "color": "#f6e6b8",
+      "minContrast": 11.4
+    },
+    {
+      "case": "demo",
+      "class": "",
+      "tag": "strong",
+      "text": "DEMO 수령 단체 1",
+      "color": "#30243b",
+      "minContrast": 14.57
+    },
+    {
+      "case": "demo",
+      "class": "",
+      "tag": "strong",
+      "text": "예시-계좌번호",
+      "color": "#30243b",
+      "minContrast": 14.57
+    },
+    {
+      "case": "demo",
+      "class": "",
+      "tag": "b",
+      "text": "DEMO 모금 현황",
+      "color": "#30243b",
+      "minContrast": 14.57
+    },
+    {
+      "case": "demo",
+      "class": "",
+      "tag": "strong",
+      "text": "380,000원",
+      "color": "#30243b",
+      "minContrast": 14.57
+    },
+    {
+      "case": "demo",
+      "class": "",
+      "tag": "b",
+      "text": "38%",
+      "color": "#8b651d",
+      "minContrast": 5.28
+    },
+    {
+      "case": "demo",
+      "class": "",
+      "tag": "button",
+      "text": "후원하기 · 사용 불가",
+      "color": "#655b69",
+      "minContrast": 5.19
+    },
+    {
+      "case": "demo",
+      "class": "",
+      "tag": "button",
+      "text": "QR · 사용 불가",
+      "color": "#655b69",
+      "minContrast": 5.19
+    }
+  ],
+  "skippedSelectors": [],
+  "failures": []
+}

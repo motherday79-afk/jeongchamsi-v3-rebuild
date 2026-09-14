@@ -1,0 +1,5 @@
+/* The directory renderer shares jcs-icon with detail; constrain SVG intrinsic size. */
+#jcs-campaign-directory .jcs-icon{display:block;width:15px;height:15px;min-width:15px;flex:none}
+#jcs-campaign-directory :is(.jcd-feature-cta,.jcd-item-link){word-break:keep-all;overflow-wrap:normal;flex-shrink:0}
+#jcs-campaign-directory .jcd-cta-copy{display:block;flex:none;line-height:1.5}
+#jcs-campaign-directory .jcd-cta-copy>span{display:block;white-space:nowrap;word-break:keep-all;overflow-wrap:normal}

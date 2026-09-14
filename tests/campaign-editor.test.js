@@ -89,7 +89,8 @@ test('campaign editor renders escaped draft values and campaign-only controls fo
   assert.match(html,/name="sources\[0\]\.url"[^>]*value="https:\/\/example.com"/);
   assert.match(html,/name="featured"[^>]*checked/);
   assert.match(html,/대표 캠페인은 캠페인 게시판 안에서만/);
-  assert.doesNotMatch(html,/data-(?:home-)?banner|name="(?:bank|account|funding|payment)/);
+  assert.doesNotMatch(html,/data-(?:home-)?banner|name="payment/);
+  assert.match(html,/name="support\.accountNumber"/);assert.match(html,/name="funding\.raisedKrw"/);
 });
 
 test('scheduled publication returns to management and ended records retain Hide without End',()=>{

@@ -3,9 +3,9 @@ export const SERVICE_CATALOG = Object.freeze([
   { key:"poll", tone:"red", label:"시민들의 선택", shortLabel:"시민선택", description:"오늘의 쟁점에 직접 한 표", href:"/poll", launcher:true },
   { key:"itsme", tone:"teal", label:"IT’S ME", shortLabel:"IT’S ME", description:"내가 만드는 정책 제안", href:"/itsme", launcher:true },
   { key:"compare", tone:"orange", label:"정치인 비교분석", shortLabel:"비교분석", description:"두 사람을 같은 기준으로 비교", href:"/compare", launcher:true },
-  { key:"generation", tone:"navy", label:"세대의 선택, 대통령", shortLabel:"세대별 대통령", description:"세대별 모의투표 결과", href:"/generation-president", launcher:true },
+  { key:"campaign", tone:"gold", label:"정참시 CAMPAIGN", shortLabel:"캠페인", description:"사람과 프로젝트의 가능성을 발견합니다", href:"/campaigns", launcher:true },
   { key:"community", tone:"green", label:"정뮤니티", shortLabel:"정뮤니티", description:"지금 시민들이 하는 말", href:"/community", launcher:true },
-  { key:"campaign", tone:"gold", label:"정참시 CAMPAIGN", shortLabel:"캠페인", description:"정책과 정치의 가능성을 발견합니다", href:"/campaigns", launcher:false },
+  { key:"generation", tone:"navy", label:"세대의 선택, 대통령", shortLabel:"세대별 대통령", description:"세대별 모의투표 결과", href:"/generation-president", launcher:false },
   { key:"president", tone:"gold", label:"대통령", shortLabel:"대통령", description:"대통령 정보와 기록", href:"/president", launcher:false },
   { key:"news", tone:"red", label:"정참시 NEWS", shortLabel:"NEWS", description:"정치 뉴스 모아보기", href:"/news", launcher:false },
   { key:"evaluation", tone:"teal", label:"정참시민 전국 평가제", shortLabel:"전국 평가제", description:"정참시민 정치인 평가", href:"/national-evaluation", launcher:false },
@@ -55,17 +55,17 @@ const MODULE_ACTION_PATHS=Object.freeze({
 });
 export function moduleActionIconSvg(key=""){if(NAV_SOLID[key])return serviceNavIconSvg(key);return `<svg viewBox="0 0 24 24" aria-hidden="true">${MODULE_ACTION_PATHS[key]||ICON_PATHS.guide}</svg>`;}
 
-// One material system for the brand mark and service glyphs. IDs are unique per SVG.
+// Material system for service glyphs. The approved brand PNG is used separately. IDs are unique per SVG.
 const materialSequence=Symbol.for('jcs.material.sequence');
 if(!Object.prototype.hasOwnProperty.call(globalThis,materialSequence))Object.defineProperty(globalThis,materialSequence,{value:0,writable:true});
 function materialPaint(){
  const id=`jcs-material-${++globalThis[materialSequence]}`;
  return {purple:`url(#${id}-p)`,gold:`url(#${id}-g)`,defs:`<defs><linearGradient id="${id}-p" x1="0" y1="0" x2=".7" y2="1"><stop stop-color="#c5a6ed"/><stop offset=".25" stop-color="#9962d0"/><stop offset=".46" stop-color="#753bbd"/><stop offset=".53" stop-color="#57258b"/><stop offset=".83" stop-color="#773daf"/><stop offset="1" stop-color="#48206f"/></linearGradient><linearGradient id="${id}-g" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#f6e6b5"/><stop offset=".27" stop-color="#d7b365"/><stop offset=".46" stop-color="#f3db99"/><stop offset=".55" stop-color="#b2863f"/><stop offset="1" stop-color="#ddbf78"/></linearGradient></defs>`};
 }
+export const BRAND_LOGO_URL='/assets/brand/jcs-gold-159.png';
 export function brandMarkSvg(className=''){
- const paint=materialPaint(),ray='M247 57 Q256 40 265 57 L277 163 C280 178 270 187 256 187 C242 187 232 178 235 163 Z';
- const paths=Array.from({length:8},(_,i)=>`<path d="${ray}" transform="rotate(${i*45} 256 256)" fill="${i===1||i===5?paint.gold:paint.purple}"/>`).join('');
- return `<svg class="${className} jcs-brand-material" viewBox="0 0 512 512" aria-hidden="true">${paint.defs}${paths}</svg>`;
+ const safeClass=String(className).replace(/[^a-zA-Z0-9_ -]/g,'');
+ return `<img class="${safeClass} jcs-brand-material" src="${BRAND_LOGO_URL}" width="1536" height="1024" alt="" aria-hidden="true" decoding="async">`;
 }
 // Gold is assigned to each glyph's distinguishing part, rather than a frame around it.
 const NAV_SOLID={
