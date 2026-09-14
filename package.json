@@ -9,5 +9,8 @@
     "@vercel/blob": "^2.8.0",
     "redis": "^5.8.2"
   },
-  "version": "0.0.31"
+  "version": "0.0.31",
+  "devDependencies": {
+    "@vercel/nft": "1.11.0"
+  }
 }

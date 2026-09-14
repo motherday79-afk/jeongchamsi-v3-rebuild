@@ -1,4 +1,5 @@
-import { CAGE_TITLE_WIDTHS, CAGE_TITLE_BOUNDS, CAGE_TITLE_X_BOUNDS } from '../data/cage-brush-metrics.js?v=0.0.31.160';
+// Also imported by the API: keep shared dependency paths traceable by Vercel.
+import { CAGE_TITLE_WIDTHS, CAGE_TITLE_BOUNDS, CAGE_TITLE_X_BOUNDS } from '../data/cage-brush-metrics.js';
 import { CAGE_TITLE_WIDTHS as LEGACY_WIDTHS, CAGE_TITLE_BOUNDS as LEGACY_BOUNDS } from '../data/cage-title-metrics.js';
 export const CAGE_BRUSH_SKEW=22;
 export const CAGE_BRUSH_TRACKING=-.028;

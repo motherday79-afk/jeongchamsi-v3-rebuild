@@ -1,4 +1,4 @@
-import { cageTitleGeometry,cageBrushGeometry,CAGE_BRUSH_SKEW,CAGE_BRUSH_TRACKING } from '../core/cage-title-layout.js?v=0.0.31.160';
+import { cageTitleGeometry,cageBrushGeometry,CAGE_BRUSH_SKEW,CAGE_BRUSH_TRACKING } from '../core/cage-title-layout.js?v=0.0.31.162';
 import { CAGE_TITLE_WIDTHS } from '../data/cage-brush-metrics.js?v=0.0.31.160';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
