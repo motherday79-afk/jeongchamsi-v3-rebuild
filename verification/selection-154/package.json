@@ -1,0 +1,1 @@
+{"private":true,"type":"module","scripts":{"test":"node --test mobile-selection.test.mjs"},"devDependencies":{"css-mediaquery":"0.1.2","jsdom":"26.1.0","rrweb-cssom":"0.8.0"}}

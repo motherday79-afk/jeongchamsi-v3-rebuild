@@ -1414,6 +1414,12 @@ body:has(.product-home-wrap .home-balanced-layout) .footer-brand>b{color:#202124
 .product-home-wrap #compare .home-compare-matchup .home-compare-footer .matchup-feature:disabled{color:#737b86}
 /* 31.128: compact match-up, full-width generation portraits and selection policy. */
 body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+/* 31.154: R2 on-device reversal isolated body selection suppression as the
+   mobile tap trigger. Cover touch input at every width, including an unfolded
+   Fold or a device with a mouse. Keep the existing mouse-only desktop policy. */
+@media (any-pointer:coarse),(hover:none){
+ body{-webkit-user-select:text;user-select:text}
+}
 body :is(input,textarea,[contenteditable=""],[contenteditable="true"],[contenteditable="plaintext-only"],[data-allow-copy],.point-bank,.donation-bank,a[href^="mailto:"],a[href^="tel:"]),body :is([contenteditable=""],[contenteditable="true"],[contenteditable="plaintext-only"],[data-allow-copy],.point-bank,.donation-bank) *{-webkit-user-select:text!important;user-select:text!important;-webkit-touch-callout:default!important}
 .product-home-wrap #poll .choice-ballot-result b,.poll-board-page .poll-board-options label>b,.poll-board-page .poll-archive-body li>b{color:#753bbd!important}
 .product-home-wrap #compare .home-compare-matchup{display:grid;grid-template-rows:25px 130px 65px;gap:5px;height:252px;box-sizing:border-box;padding:10px 20px}
