@@ -1,0 +1,107 @@
+✖ a null optional banner cannot prevent the guest homepage from rendering (2.057517ms)
+✖ an administrator can register a banner when no banner is configured (0.543882ms)
+✖ the real index entry exits loading with empty banner response (143.910117ms)
+✖ the real index entry exits loading with failed banner response (132.076769ms)
+✔ the real index entry exits loading with configured banner response (125.722948ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 1
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 522.583232
+
+✖ failing tests:
+
+test at tests/home-startup.test.js:8:1
+✖ a null optional banner cannot prevent the guest homepage from rendering (2.057517ms)
+  TypeError: Cannot read properties of null (reading 'alt')
+      at homeBanner (file:///workspace/scratch/b627f5328562/qa161/source-155/src/layout/home-layout.js:103:208)
+      at sideColumn (file:///workspace/scratch/b627f5328562/qa161/source-155/src/layout/home-layout.js:123:124)
+      at renderHomeLayout (file:///workspace/scratch/b627f5328562/qa161/source-155/src/layout/home-layout.js:153:497)
+      at TestContext.<anonymous> (file:///workspace/scratch/b627f5328562/qa161/source-155/tests/home-startup.test.js:9:15)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+
+test at tests/home-startup.test.js:14:1
+✖ an administrator can register a banner when no banner is configured (0.543882ms)
+  TypeError: Cannot read properties of null (reading 'alt')
+      at homeBanner (file:///workspace/scratch/b627f5328562/qa161/source-155/src/layout/home-layout.js:103:208)
+      at sideColumn (file:///workspace/scratch/b627f5328562/qa161/source-155/src/layout/home-layout.js:123:124)
+      at renderHomeLayout (file:///workspace/scratch/b627f5328562/qa161/source-155/src/layout/home-layout.js:153:497)
+      at TestContext.<anonymous> (file:///workspace/scratch/b627f5328562/qa161/source-155/tests/home-startup.test.js:15:15)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+
+test at tests/home-startup.test.js:23:2
+✖ the real index entry exits loading with empty banner response (143.910117ms)
+  AssertionError [ERR_ASSERTION]: file:///workspace/scratch/b627f5328562/qa161/source-155/src/layout/home-layout.js?v=0.0.31.160:103
+   const alt=restyle?(hero?'화성특례시 영화상영 페스티벌 · 영상공모하러 바로가기':'정참시 유튜브 곧 오픈. 정치를 더 가까이, 시민과 함께. 라이브를 통해 정참시의 다양한 메뉴를 활용한 정보 전달. 정치 정보와 흐름을 쉽고 빠르게 만나보세요. 핵심 이슈 쉽게 · 다양한 시각 깊게 · 시민과 함께 더 가까이. 정참시 유튜브 바로가기'):banner.alt||'정참시 배너';
+                                                                                                                                                                                                                 ^
+  
+  TypeError: Cannot read properties of null (reading 'alt')
+      at homeBanner (file:///workspace/scratch/b627f5328562/qa161/source-155/src/layout/home-layout.js?v=0.0.31.160:103:208)
+      at sideColumn (file:///workspace/scratch/b627f5328562/qa161/source-155/src/layout/home-layout.js?v=0.0.31.160:123:124)
+      at renderHomeLayout (file:///workspace/scratch/b627f5328562/qa161/source-155/src/layout/home-layout.js?v=0.0.31.160:153:497)
+      at render (file:///workspace/scratch/b627f5328562/qa161/source-155/src/app.js?v=0.0.31.160:200:44)
+      at async file:///workspace/scratch/b627f5328562/qa161/source-155/src/app.js?v=0.0.31.160:463:1
+  
+  Node.js v24.19.0
+  
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/b627f5328562/qa161/source-155/tests/home-startup.test.js:25:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/home-startup.test.js:23:2
+✖ the real index entry exits loading with failed banner response (132.076769ms)
+  AssertionError [ERR_ASSERTION]: file:///workspace/scratch/b627f5328562/qa161/source-155/src/layout/home-layout.js?v=0.0.31.160:103
+   const alt=restyle?(hero?'화성특례시 영화상영 페스티벌 · 영상공모하러 바로가기':'정참시 유튜브 곧 오픈. 정치를 더 가까이, 시민과 함께. 라이브를 통해 정참시의 다양한 메뉴를 활용한 정보 전달. 정치 정보와 흐름을 쉽고 빠르게 만나보세요. 핵심 이슈 쉽게 · 다양한 시각 깊게 · 시민과 함께 더 가까이. 정참시 유튜브 바로가기'):banner.alt||'정참시 배너';
+                                                                                                                                                                                                                 ^
+  
+  TypeError: Cannot read properties of null (reading 'alt')
+      at homeBanner (file:///workspace/scratch/b627f5328562/qa161/source-155/src/layout/home-layout.js?v=0.0.31.160:103:208)
+      at sideColumn (file:///workspace/scratch/b627f5328562/qa161/source-155/src/layout/home-layout.js?v=0.0.31.160:123:124)
+      at renderHomeLayout (file:///workspace/scratch/b627f5328562/qa161/source-155/src/layout/home-layout.js?v=0.0.31.160:153:497)
+      at render (file:///workspace/scratch/b627f5328562/qa161/source-155/src/app.js?v=0.0.31.160:200:44)
+      at async file:///workspace/scratch/b627f5328562/qa161/source-155/src/app.js?v=0.0.31.160:463:1
+  
+  Node.js v24.19.0
+  
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/b627f5328562/qa161/source-155/tests/home-startup.test.js:25:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

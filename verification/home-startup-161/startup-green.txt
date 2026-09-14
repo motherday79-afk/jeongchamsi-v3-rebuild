@@ -1,0 +1,13 @@
+✔ a null optional banner cannot prevent the guest homepage from rendering (5.476331ms)
+✔ an administrator can register a banner when no banner is configured (3.08398ms)
+✔ the real index entry exits loading with empty banner response (209.897676ms)
+✔ the real index entry exits loading with failed banner response (243.487238ms)
+✔ the real index entry exits loading with configured banner response (138.551204ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 720.27768

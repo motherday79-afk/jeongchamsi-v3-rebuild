@@ -1,0 +1,42 @@
+{
+  "release": "JCS_0_0_31_161",
+  "patchBase": "JCS_0_0_31_160",
+  "rootCause": "Optional banner null was dereferenced at homeBanner alt before the homepage could replace initial loading.",
+  "fix": "Optional chaining for absent banner alt; no layout/design changes.",
+  "reproductionBefore": {
+    "tests": 5,
+    "pass": 1,
+    "fail": 4,
+    "error": "Cannot read properties of null (reading 'alt')"
+  },
+  "startupCases": [
+    "guest null banner",
+    "admin registration with null banner",
+    "actual index startup with null banner",
+    "actual index startup with503banner response",
+    "actual index startup with configured banner"
+  ],
+  "tests": {
+    "total": 239,
+    "passed": 239,
+    "failed": 0
+  },
+  "changedJavaScriptSyntaxChecks": [
+    "src/app.js",
+    "src/core/release.js",
+    "src/layout/home-layout.js",
+    "src/views/community-ui.js",
+    "src/views/search-discovery.js",
+    "src/views/search-page.js",
+    "src/views/stage1.js",
+    "tests/home-startup.test.js"
+  ],
+  "sourceImportsResolve": 69,
+  "preservedFileCount": 139,
+  "allPreviousAssetsDataApiLibAndStylesByteIdentical": true,
+  "onlyBehaviorChangeIsOptionalBannerRead": true,
+  "realBrowserVerified": false,
+  "liveSiteApiNotVerified": true,
+  "productionDeployed": false,
+  "testMethod": "Node executes actual index entry and imports with deterministic read-only HTTP fixtures and an in-memory DOM boundary; not a browser preview."
+}
