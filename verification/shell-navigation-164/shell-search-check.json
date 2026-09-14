@@ -1,0 +1,878 @@
+{
+  "method": "Authored CSS cascade checks only; no browser layout or animation-frame measurement",
+  "screens": [
+    {
+      "viewport": 320,
+      "reducedMotion": false,
+      "checks": [
+        {
+          "selector": ".header-brand-home",
+          "property": "min-height",
+          "value": "48px"
+        },
+        {
+          "selector": ".header-brand-home",
+          "property": "gap",
+          "value": "0"
+        },
+        {
+          "selector": ".header-brand-slogan",
+          "property": "color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "height",
+          "value": "48px"
+        },
+        {
+          "selector": ".footer-brand",
+          "property": "align-items",
+          "value": "center"
+        },
+        {
+          "selector": ".footer-brand-wordmark",
+          "property": "align-items",
+          "value": "center"
+        },
+        {
+          "selector": ".footer-brand-name",
+          "property": "color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-brand-name",
+          "property": "-webkit-text-fill-color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "grid-column",
+          "value": "1 / -1"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "margin",
+          "value": "0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "border",
+          "value": "0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "padding",
+          "value": "2px 0 0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "text-align",
+          "value": "left"
+        },
+        {
+          "selector": ".sidebar-live-dot",
+          "property": "animation",
+          "value": "jcs-sidebar-beat-164 1.8s ease-in-out infinite"
+        },
+        {
+          "selector": ".loading-brand-icon",
+          "property": "animation",
+          "value": "jcs-logo-loading-164 2.4s linear infinite"
+        }
+      ],
+      "uncompiledSelectors": 31
+    },
+    {
+      "viewport": 320,
+      "reducedMotion": true,
+      "checks": [
+        {
+          "selector": ".header-brand-home",
+          "property": "min-height",
+          "value": "48px"
+        },
+        {
+          "selector": ".header-brand-home",
+          "property": "gap",
+          "value": "0"
+        },
+        {
+          "selector": ".header-brand-slogan",
+          "property": "color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "height",
+          "value": "48px"
+        },
+        {
+          "selector": ".footer-brand",
+          "property": "align-items",
+          "value": "center"
+        },
+        {
+          "selector": ".footer-brand-wordmark",
+          "property": "align-items",
+          "value": "center"
+        },
+        {
+          "selector": ".footer-brand-name",
+          "property": "color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-brand-name",
+          "property": "-webkit-text-fill-color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "grid-column",
+          "value": "1 / -1"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "margin",
+          "value": "0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "border",
+          "value": "0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "padding",
+          "value": "2px 0 0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "text-align",
+          "value": "left"
+        },
+        {
+          "selector": ".sidebar-live-dot",
+          "property": "animation",
+          "value": "none"
+        },
+        {
+          "selector": ".loading-brand-icon",
+          "property": "animation",
+          "value": "none"
+        }
+      ],
+      "uncompiledSelectors": 31
+    },
+    {
+      "viewport": 390,
+      "reducedMotion": false,
+      "checks": [
+        {
+          "selector": ".header-brand-home",
+          "property": "min-height",
+          "value": "48px"
+        },
+        {
+          "selector": ".header-brand-home",
+          "property": "gap",
+          "value": "0"
+        },
+        {
+          "selector": ".header-brand-slogan",
+          "property": "color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "height",
+          "value": "48px"
+        },
+        {
+          "selector": ".footer-brand",
+          "property": "align-items",
+          "value": "center"
+        },
+        {
+          "selector": ".footer-brand-wordmark",
+          "property": "align-items",
+          "value": "center"
+        },
+        {
+          "selector": ".footer-brand-name",
+          "property": "color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-brand-name",
+          "property": "-webkit-text-fill-color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "grid-column",
+          "value": "1 / -1"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "margin",
+          "value": "0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "border",
+          "value": "0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "padding",
+          "value": "2px 0 0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "text-align",
+          "value": "left"
+        },
+        {
+          "selector": ".sidebar-live-dot",
+          "property": "animation",
+          "value": "jcs-sidebar-beat-164 1.8s ease-in-out infinite"
+        },
+        {
+          "selector": ".loading-brand-icon",
+          "property": "animation",
+          "value": "jcs-logo-loading-164 2.4s linear infinite"
+        }
+      ],
+      "uncompiledSelectors": 31
+    },
+    {
+      "viewport": 390,
+      "reducedMotion": true,
+      "checks": [
+        {
+          "selector": ".header-brand-home",
+          "property": "min-height",
+          "value": "48px"
+        },
+        {
+          "selector": ".header-brand-home",
+          "property": "gap",
+          "value": "0"
+        },
+        {
+          "selector": ".header-brand-slogan",
+          "property": "color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "height",
+          "value": "48px"
+        },
+        {
+          "selector": ".footer-brand",
+          "property": "align-items",
+          "value": "center"
+        },
+        {
+          "selector": ".footer-brand-wordmark",
+          "property": "align-items",
+          "value": "center"
+        },
+        {
+          "selector": ".footer-brand-name",
+          "property": "color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-brand-name",
+          "property": "-webkit-text-fill-color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "grid-column",
+          "value": "1 / -1"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "margin",
+          "value": "0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "border",
+          "value": "0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "padding",
+          "value": "2px 0 0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "text-align",
+          "value": "left"
+        },
+        {
+          "selector": ".sidebar-live-dot",
+          "property": "animation",
+          "value": "none"
+        },
+        {
+          "selector": ".loading-brand-icon",
+          "property": "animation",
+          "value": "none"
+        }
+      ],
+      "uncompiledSelectors": 31
+    },
+    {
+      "viewport": 768,
+      "reducedMotion": false,
+      "checks": [
+        {
+          "selector": ".header-brand-home",
+          "property": "min-height",
+          "value": "48px"
+        },
+        {
+          "selector": ".header-brand-home",
+          "property": "gap",
+          "value": "0"
+        },
+        {
+          "selector": ".header-brand-slogan",
+          "property": "color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "height",
+          "value": "48px"
+        },
+        {
+          "selector": ".footer-brand",
+          "property": "align-items",
+          "value": "center"
+        },
+        {
+          "selector": ".footer-brand-wordmark",
+          "property": "align-items",
+          "value": "center"
+        },
+        {
+          "selector": ".footer-brand-name",
+          "property": "color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-brand-name",
+          "property": "-webkit-text-fill-color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "grid-column",
+          "value": "1 / -1"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "margin",
+          "value": "0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "border",
+          "value": "0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "padding",
+          "value": "2px 0 0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "text-align",
+          "value": "left"
+        },
+        {
+          "selector": ".sidebar-live-dot",
+          "property": "animation",
+          "value": "jcs-sidebar-beat-164 1.8s ease-in-out infinite"
+        },
+        {
+          "selector": ".loading-brand-icon",
+          "property": "animation",
+          "value": "jcs-logo-loading-164 2.4s linear infinite"
+        }
+      ],
+      "uncompiledSelectors": 29
+    },
+    {
+      "viewport": 768,
+      "reducedMotion": true,
+      "checks": [
+        {
+          "selector": ".header-brand-home",
+          "property": "min-height",
+          "value": "48px"
+        },
+        {
+          "selector": ".header-brand-home",
+          "property": "gap",
+          "value": "0"
+        },
+        {
+          "selector": ".header-brand-slogan",
+          "property": "color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "height",
+          "value": "48px"
+        },
+        {
+          "selector": ".footer-brand",
+          "property": "align-items",
+          "value": "center"
+        },
+        {
+          "selector": ".footer-brand-wordmark",
+          "property": "align-items",
+          "value": "center"
+        },
+        {
+          "selector": ".footer-brand-name",
+          "property": "color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-brand-name",
+          "property": "-webkit-text-fill-color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "grid-column",
+          "value": "1 / -1"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "margin",
+          "value": "0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "border",
+          "value": "0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "padding",
+          "value": "2px 0 0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "text-align",
+          "value": "left"
+        },
+        {
+          "selector": ".sidebar-live-dot",
+          "property": "animation",
+          "value": "none"
+        },
+        {
+          "selector": ".loading-brand-icon",
+          "property": "animation",
+          "value": "none"
+        }
+      ],
+      "uncompiledSelectors": 29
+    },
+    {
+      "viewport": 1280,
+      "reducedMotion": false,
+      "checks": [
+        {
+          "selector": ".header-brand-home",
+          "property": "min-height",
+          "value": "48px"
+        },
+        {
+          "selector": ".header-brand-home",
+          "property": "gap",
+          "value": "0"
+        },
+        {
+          "selector": ".header-brand-slogan",
+          "property": "color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "height",
+          "value": "48px"
+        },
+        {
+          "selector": ".footer-brand",
+          "property": "align-items",
+          "value": "center"
+        },
+        {
+          "selector": ".footer-brand-wordmark",
+          "property": "align-items",
+          "value": "center"
+        },
+        {
+          "selector": ".footer-brand-name",
+          "property": "color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-brand-name",
+          "property": "-webkit-text-fill-color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "grid-column",
+          "value": "1 / -1"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "margin",
+          "value": "0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "border",
+          "value": "0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "padding",
+          "value": "2px 0 0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "text-align",
+          "value": "left"
+        },
+        {
+          "selector": ".sidebar-live-dot",
+          "property": "animation",
+          "value": "jcs-sidebar-beat-164 1.8s ease-in-out infinite"
+        },
+        {
+          "selector": ".loading-brand-icon",
+          "property": "animation",
+          "value": "jcs-logo-loading-164 2.4s linear infinite"
+        }
+      ],
+      "uncompiledSelectors": 25
+    },
+    {
+      "viewport": 1280,
+      "reducedMotion": true,
+      "checks": [
+        {
+          "selector": ".header-brand-home",
+          "property": "min-height",
+          "value": "48px"
+        },
+        {
+          "selector": ".header-brand-home",
+          "property": "gap",
+          "value": "0"
+        },
+        {
+          "selector": ".header-brand-slogan",
+          "property": "color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "height",
+          "value": "48px"
+        },
+        {
+          "selector": ".footer-brand",
+          "property": "align-items",
+          "value": "center"
+        },
+        {
+          "selector": ".footer-brand-wordmark",
+          "property": "align-items",
+          "value": "center"
+        },
+        {
+          "selector": ".footer-brand-name",
+          "property": "color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-brand-name",
+          "property": "-webkit-text-fill-color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "grid-column",
+          "value": "1 / -1"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "margin",
+          "value": "0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "border",
+          "value": "0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "padding",
+          "value": "2px 0 0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "text-align",
+          "value": "left"
+        },
+        {
+          "selector": ".sidebar-live-dot",
+          "property": "animation",
+          "value": "none"
+        },
+        {
+          "selector": ".loading-brand-icon",
+          "property": "animation",
+          "value": "none"
+        }
+      ],
+      "uncompiledSelectors": 25
+    },
+    {
+      "viewport": 1920,
+      "reducedMotion": false,
+      "checks": [
+        {
+          "selector": ".header-brand-home",
+          "property": "min-height",
+          "value": "48px"
+        },
+        {
+          "selector": ".header-brand-home",
+          "property": "gap",
+          "value": "0"
+        },
+        {
+          "selector": ".header-brand-slogan",
+          "property": "color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "height",
+          "value": "48px"
+        },
+        {
+          "selector": ".footer-brand",
+          "property": "align-items",
+          "value": "center"
+        },
+        {
+          "selector": ".footer-brand-wordmark",
+          "property": "align-items",
+          "value": "center"
+        },
+        {
+          "selector": ".footer-brand-name",
+          "property": "color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-brand-name",
+          "property": "-webkit-text-fill-color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "grid-column",
+          "value": "1 / -1"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "margin",
+          "value": "0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "border",
+          "value": "0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "padding",
+          "value": "2px 0 0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "text-align",
+          "value": "left"
+        },
+        {
+          "selector": ".sidebar-live-dot",
+          "property": "animation",
+          "value": "jcs-sidebar-beat-164 1.8s ease-in-out infinite"
+        },
+        {
+          "selector": ".loading-brand-icon",
+          "property": "animation",
+          "value": "jcs-logo-loading-164 2.4s linear infinite"
+        }
+      ],
+      "uncompiledSelectors": 25
+    },
+    {
+      "viewport": 1920,
+      "reducedMotion": true,
+      "checks": [
+        {
+          "selector": ".header-brand-home",
+          "property": "min-height",
+          "value": "48px"
+        },
+        {
+          "selector": ".header-brand-home",
+          "property": "gap",
+          "value": "0"
+        },
+        {
+          "selector": ".header-brand-slogan",
+          "property": "color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "height",
+          "value": "48px"
+        },
+        {
+          "selector": ".footer-brand",
+          "property": "align-items",
+          "value": "center"
+        },
+        {
+          "selector": ".footer-brand-wordmark",
+          "property": "align-items",
+          "value": "center"
+        },
+        {
+          "selector": ".footer-brand-name",
+          "property": "color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-brand-name",
+          "property": "-webkit-text-fill-color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "grid-column",
+          "value": "1 / -1"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "margin",
+          "value": "0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "border",
+          "value": "0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "padding",
+          "value": "2px 0 0"
+        },
+        {
+          "selector": ".footer-member-count",
+          "property": "text-align",
+          "value": "left"
+        },
+        {
+          "selector": ".sidebar-live-dot",
+          "property": "animation",
+          "value": "none"
+        },
+        {
+          "selector": ".loading-brand-icon",
+          "property": "animation",
+          "value": "none"
+        }
+      ],
+      "uncompiledSelectors": 25
+    }
+  ],
+  "footerLogoOriginal": true,
+  "existingAssetsAndDataUnchanged": 55,
+  "logoSha256": "4d0922dc35204aa27260f35a05c4ed4f1aa5e5a871e5657de39f83b446a58e9e"
+}

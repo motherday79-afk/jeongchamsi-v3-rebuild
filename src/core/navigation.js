@@ -42,23 +42,26 @@ export async function sharePost({domain,id,title='정참시 게시글'},capabili
 }
 
 export function createNavigation({window,readSnapshot,restoreSnapshot,rebind,onRoute}){
-  const snapshots=new Map();let skipNextRecord=false;
+  const snapshots=new Map();let skipNextRecord=false,committedRoute=null;
   const currentRoute=()=>routeFromLocation(window.location);
   const stateFor=(route,previous={})=>({...(previous||{}),[NAV_FLAG]:true,key:previous?.key||key(),route,x:Number(previous?.x||0),y:Number(previous?.y||0)});
   const state=()=>stateFor(currentRoute(),window.history.state?.[NAV_FLAG]?window.history.state:{});
   const record=()=>{
     const current={...state(),route:currentRoute(),x:Number(window.scrollX||0),y:Number(window.scrollY||0)};
-    const markup=readSnapshot?.();if(markup&&!skipNextRecord)snapshots.set(current.key,{markup,route:current.route,x:current.x,y:current.y});skipNextRecord=false;
+    const markup=readSnapshot?.();if(markup&&!skipNextRecord&&committedRoute===current.route)snapshots.set(current.key,{markup,route:current.route,x:current.x,y:current.y});skipNextRecord=false;
     window.history.replaceState(current,'',routePath(current.route));
     return current;
   };
-  const cacheCurrent=()=>record();
+  // Only the completed render can claim the currently displayed route.
+  const cacheCurrent=()=>{committedRoute=currentRoute();return record();};
   const handlePop=event=>{
     const current=stateFor(currentRoute(),event?.state?.[NAV_FLAG]?event.state:{});
     if(!event?.state?.[NAV_FLAG])window.history.replaceState(current,'',routePath(current.route));
     const cached=snapshots.get(current.key);
-    if(cached){
+    committedRoute=null;
+    if(cached&&cached.route===currentRoute()){
       restoreSnapshot?.(cached.markup);rebind?.();
+      committedRoute=currentRoute();
       (window.requestAnimationFrame||((fn)=>fn()))(()=>window.scrollTo(Number(cached.x||0),Number(cached.y||0)));
       return true;
     }
@@ -69,6 +72,7 @@ export function createNavigation({window,readSnapshot,restoreSnapshot,rebind,onR
     const target=String(route||'/').startsWith('/')?String(route||'/'):`/${route}`;
     if(decodeRoute(target)===currentRoute())return;
     record();
+    committedRoute=null;
     const next=stateFor(target,{});
     window.history.pushState(next,'',target);
     onRoute?.(target,{restored:false,preserveScroll:false});

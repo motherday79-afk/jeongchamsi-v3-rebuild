@@ -22,7 +22,7 @@ test('effect anchors independently follow actual avatar centers relative to the 
 
 // DOM and WAAPI are browser boundaries. Promises are completed explicitly so a
 // stale animation can finish after cancellation, just as an already-queued task can.
-function stage({reduced=false,waapi=true,initialize=true}={}){
+function stage({reduced=false,waapi=true,initialize=true,selected=[]}={}){
  const animations=[],pageListeners=new Map(),mediaListeners=new Map();
  const node=(name)=>({name,dataset:{},hidden:false,isConnected:true,children:[],attrs:{},style:{values:{},setProperty(key,value){this.values[key]=value;}},
   setAttribute(key,value){this.attrs[key]=String(value);},
@@ -41,6 +41,7 @@ function stage({reduced=false,waapi=true,initialize=true}={}){
  let observerCallback,disconnected=false;
  class Observer{constructor(fn){observerCallback=fn;}observe(){}disconnect(){disconnected=true;}}
  form.ownerDocument={createElement:()=>effects,documentElement:{}};
+ slots.forEach((slot,index)=>{slot.queries['[data-home-compare-id]']={value:selected[index]||''};});
  const controller=initialize?createHomeCompareMotion(form,{matchMedia:()=>media,MutationObserver:Observer,eventTarget:{addEventListener:(key,fn)=>pageListeners.set(key,fn),removeEventListener:key=>pageListeners.delete(key)}}):null;
  const flush=async()=>{for(let i=0;i<12;i++)await Promise.resolve();};
  const active=()=>animations.filter(a=>!a.done&&!a.canceled);
@@ -192,16 +193,16 @@ test('the rendered home stage starts with empty IDs and VS hidden before JavaScr
 });
 
 function picker(){
- const s=stage({initialize:false}),handlers={},state={textContent:''},submit={disabled:true};
+ const s=stage({initialize:false}),handlers={},listenerCounts={},state={textContent:''},submit={disabled:true};
  const changes=s.slots.map(()=>({attrs:{},setAttribute(key,value){this.attrs[key]=value;},hasAttribute:()=>false}));
  const inputs=s.slots.map(slot=>({value:'',attrs:{},focus(){this.focused=true;},select(){this.selected=true;},setAttribute(key,value){this.attrs[key]=value;},closest:selector=>selector==='[data-home-compare-search]'?inputs[s.slots.indexOf(slot)]:slot}));
  const ids=s.slots.map(()=>({value:''})),panels=s.slots.map((_,index)=>({hidden:true,querySelector:()=>inputs[index]}));
  s.slots.forEach((slot,index)=>{changes[index].closest=()=>slot;slot.lists={'[data-home-compare-change]':[changes[index]]};Object.assign(slot.queries,{'[data-home-compare-id]':ids[index],'[data-home-compare-search]':inputs[index],'[data-home-compare-search-panel]':panels[index],'[data-home-compare-change]':changes[index]});});
  Object.assign(s.form.queries,{'[data-home-compare-state]':state,'[type=submit]':submit});
- s.form.addEventListener=(name,handler)=>{handlers[name]=handler;};
+ s.form.addEventListener=(name,handler)=>{handlers[name]=handler;listenerCounts[name]=(listenerCounts[name]||0)+1;};
  setupHomeCompare({querySelectorAll:()=>[s.form]});
  const select=(index,id)=>{ids[index].value=id;inputs[index].value=`이름 ${id}`;handlers['jcs:politician-selected']({target:inputs[index],detail:{item:{id,name:`이름 ${id}`,party:'정당'}}});};
- return {...s,handlers,state,submit,ids,inputs,panels,select,open:index=>handlers.click({target:{closest:()=>changes[index]}})};
+ return {...s,handlers,listenerCounts,state,submit,ids,inputs,panels,select,open:index=>handlers.click({target:{closest:()=>changes[index]}})};
 }
 
 test('picker selections enable and submit the current pair while both arrivals are still moving',t=>{
@@ -237,6 +238,35 @@ test('opening a picker focuses search and closes the other floating panel',()=>{
  const s=picker();s.open(0);assert.equal(s.panels[0].hidden,false);assert.equal(s.inputs[0].focused,true);
  s.open(1);assert.deepEqual(s.panels.map(panel=>panel.hidden),[true,false]);assert.equal(s.inputs[1].selected,true);
  s.open(1);assert.deepEqual(s.panels.map(panel=>panel.hidden),[true,true]);
+});
+
+test('a detached cached comparison resumes its selected pair and accepts later changes',async()=>{
+ const s=stage({selected:['a','b']});
+ assert.equal(s.vs.hidden,false,'history-restored selections must already be ready');
+ for(let cycle=0;cycle<3;cycle++){
+  await s.detach();assert.equal(s.pageListeners.size,0);
+  s.form.isConnected=true;s.controller.resume();
+  assert.equal(s.vs.hidden,false);assert.equal(s.form.dataset.comparePhase,'ready');
+  assert.equal(s.pageListeners.size,2);assert.equal(s.mediaListeners.size,1);
+  s.controller.select(0,'replacement-'+cycle);
+  assert.equal(s.slots[0].dataset.compareArrival,'falling');
+  await s.land(0);await s.finish();await s.finish();
+ }
+});
+
+test('cached home picker reconnects motion without duplicating form listeners or losing search',async()=>{
+ const s=picker();s.select(0,'a');s.select(1,'b');
+ s.form.isConnected=false;
+ // A selection completing after route departure must retire its controller.
+ s.select(0,'c');await s.flush();
+ s.form.isConnected=true;
+ setupHomeCompare({querySelectorAll:()=>[s.form]});
+ s.open(0);assert.equal(s.panels[0].hidden,false);assert.equal(s.inputs[0].focused,true);
+ s.select(0,'d');
+ assert.equal(s.slots[0].dataset.compareArrival,'falling');
+ assert.ok(s.active().some(animation=>animation.node===s.person(0)),'the resumed controller must start an actual arrival');
+ assert.equal(s.submit.disabled,false);assert.equal(s.ids[1].value,'b');
+ assert.ok(Object.values(s.listenerCounts).every(count=>count===1));
 });
 
 

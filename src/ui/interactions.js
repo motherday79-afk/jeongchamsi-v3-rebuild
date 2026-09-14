@@ -1,6 +1,6 @@
 import { renderPrescriptionReport } from '../views/prescription-visuals.js?v=0.0.31.56';
 import { refreshFontScale, setupFontScaleControl } from './font-scale.js?v=0.0.31.56';
-import { createHomeCompareMotion } from './compare-motion.js?v=0.0.31.158';
+import { createHomeCompareMotion } from './compare-motion.js?v=0.0.31.164';
 
 export function setupDrawer(root=document){
   const drawer=root.querySelector('[data-drawer]');
@@ -214,14 +214,15 @@ export function setupCageCountdown(root){
  const paint=()=>{let connected=false;for(const node of timers){if(!node.isConnected)continue;connected=true;const left=Math.max(0,Math.ceil((Number(node.dataset.cageEnds)-Date.now()-offset)/1000));node.textContent=left?`남은 시간 ${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}`:'참여 종료';node.classList.toggle('is-ended',!left);if(!left){const page=node.closest('[data-cage-id]'),join=page?.querySelector('.jc-join-box');if(join&&!join.dataset.closed){join.dataset.closed='true';join.textContent='케이지가 종료되었습니다. 최종 결과와 참여 기록을 확인할 수 있습니다.';}page?.querySelectorAll('form[data-stage-form=comment] button[type=submit]').forEach(b=>b.disabled=true);}}return connected;};
  const before=Date.now();fetch('/api/v3/points?clock=1',{credentials:'same-origin'}).then(r=>r.json()).then(x=>{if(Number.isFinite(x.serverNow)){offset=x.serverNow-(before+Date.now())/2;paint();}}).catch(()=>{});paint();const timer=setInterval(()=>{if(!paint())clearInterval(timer);},1000);for(const node of timers)cageTimerIds.set(node,timer);
 }
-const homeCompareBound=new WeakSet();
+const homeCompareBound=new WeakMap();
 export function homeCompareRoute(ids){const values=ids.map(id=>String(id||'').trim());return values.length===2&&values.every(Boolean)&&values[0]!==values[1]?'/compare?ids='+encodeURIComponent(values.join(','))+'&run=1':null;}
 export function setupHomeCompare(root=document){
  for(const form of root.querySelectorAll('[data-home-compare]')){
-  if(homeCompareBound.has(form))continue;homeCompareBound.add(form);
+  const reconnect=homeCompareBound.get(form);if(reconnect){reconnect();continue;}
   const slots=[...form.querySelectorAll('[data-home-compare-slot]')],state=form.querySelector('[data-home-compare-state]'),button=form.querySelector('[type=submit]');
   const motion=createHomeCompareMotion(form);
   const ids=()=>slots.map(slot=>slot.querySelector('[data-home-compare-id]').value);
+  homeCompareBound.set(form,()=>motion.resume(ids()));
   const update=()=>{button.disabled=!homeCompareRoute(ids());const feature=form.querySelector('[data-home-compare-feature]');if(feature)feature.disabled=button.disabled;state.textContent=button.disabled?'비교할 정치인 두 명을 선택해 주세요.':'두 정치인의 비교를 시작할 수 있습니다.';};
   const clear=slot=>{motion.clear(slots.indexOf(slot));slot.querySelector('[data-home-compare-id]').value='';slot.querySelector('[data-home-compare-preview]').innerHTML='<button type="button" class="home-compare-avatar" data-home-compare-change data-home-compare-open aria-label="정치인 선택"><span aria-hidden="true">＋</span></button><div><b>정치인을 선택하세요</b><small>검색 결과에서 선택</small></div>';};
   const showSearch=(slot,open)=>{const panel=slot.querySelector('[data-home-compare-search-panel]');panel.hidden=!open;for(const control of slot.querySelectorAll('[data-home-compare-change]'))control.setAttribute('aria-expanded',String(open));};

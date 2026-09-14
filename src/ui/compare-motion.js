@@ -40,10 +40,12 @@ export function createHomeCompareMotion(form,{
  eventTarget=globalThis
 }={}){
  const slots=[...form.querySelectorAll('[data-home-compare-slot]')],vs=form.querySelector('.matchup-vs');
+ // A history snapshot carries decoration, but no live controller owns it.
+ for(const previous of form.querySelectorAll('.matchup-impact-stage'))previous.remove();
  const effects=form.ownerDocument?.createElement('div');
  if(effects){effects.className='matchup-impact-stage';effects.setAttribute('aria-hidden','true');effects.innerHTML=effectMarkup;form.append(effects);}
  const impacts=[...effects?.querySelectorAll('.matchup-impact-side')||[]];
- const sides=slots.map((slot,index)=>({slot,person:slot.querySelector('[data-home-compare-preview]'),impact:impacts[index],id:'',phase:'empty',token:0,animations:new Set()}));
+ const sides=slots.map((slot,index)=>({slot,person:slot.querySelector('[data-home-compare-preview]'),impact:impacts[index],id:String(slot.querySelector('[data-home-compare-id]')?.value||''),phase:'empty',token:0,animations:new Set()}));
  const shared=new Set(),preference=matchMedia?.('(prefers-reduced-motion: reduce)');
  let sequence=0,disposed=false,observer,sizeObserver;
  const refreshAnchors=()=>measureCompareAnchors(form,sides);
@@ -168,11 +170,21 @@ export function createHomeCompareMotion(form,{
  // A bfcache page remains interactive when restored; settle its work instead of
  // disposing the controller that the browser will bring back with that page.
  const onPageHide=event=>event?.persisted?settleInstantly():destroy();
- resetCollision();sides.forEach(side=>setPhase(side,'empty'));
- preference?.addEventListener?.('change',onPreference);eventTarget?.addEventListener?.('pagehide',onPageHide);
- eventTarget?.addEventListener?.('resize',refreshAnchors);
- if(MutationObserver&&form.ownerDocument?.documentElement){observer=new MutationObserver(records=>{if(form.isConnected===false)destroy();else if(records?.some(record=>slots.some(slot=>slot.contains?.(record.target))))refreshAnchors();});observer.observe(form.ownerDocument.documentElement,{childList:true,subtree:true});}
- if(ResizeObserver){sizeObserver=new ResizeObserver(refreshAnchors);sizeObserver.observe(form);for(const side of sides)sizeObserver.observe(side.slot);}
+ function connect(){
+  preference?.addEventListener?.('change',onPreference);eventTarget?.addEventListener?.('pagehide',onPageHide);
+  eventTarget?.addEventListener?.('resize',refreshAnchors);
+  if(MutationObserver&&form.ownerDocument?.documentElement){observer=new MutationObserver(records=>{if(form.isConnected===false)destroy();else if(records?.some(record=>slots.some(slot=>slot.contains?.(record.target))))refreshAnchors();});observer.observe(form.ownerDocument.documentElement,{childList:true,subtree:true});}
+  if(ResizeObserver){sizeObserver=new ResizeObserver(refreshAnchors);sizeObserver.observe(form);for(const side of sides)sizeObserver.observe(side.slot);}
+ }
+ function resume(ids=null){
+  if(form.isConnected===false)return;
+  if(!disposed){refreshAnchors();return;}
+  disposed=false;
+  if(ids)sides.forEach((side,index)=>{side.id=String(ids[index]||'');});
+  if(effects)form.append(effects);
+  settleInstantly();connect();refreshAnchors();
+ }
+ settleInstantly();connect();
  refreshAnchors();
- return {select,clear,destroy,refreshAnchors};
+ return {select,clear,destroy,resume,refreshAnchors};
 }
