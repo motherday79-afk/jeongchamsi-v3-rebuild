@@ -1,4 +1,4 @@
-import { authorIdentity, postMenu, sharedPost, sharedWrite, communityBoard, cageDetail } from './community-ui.js?v=0.0.31.155';
+import { authorIdentity, postMenu, sharedPost, sharedWrite, communityBoard, cageDetail } from './community-ui.js?v=0.0.31.156';
 import { BADGE_CATALOG, badgeByKey, renderBadge } from '../data/badge-catalog.js?v=0.0.31.155';
 import { regionProvinceOptions, regionDistrictOptions, regionSubdistrictOptions } from '../data/korean-regions.js?v=0.0.31.56';
 

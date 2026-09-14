@@ -1,0 +1,37 @@
+{
+  "release": "JCS_0_0_31_156",
+  "patchBase": "JCS_0_0_31_155",
+  "tests": {
+    "total": 123,
+    "passed": 123,
+    "failed": 0
+  },
+  "badgeAssetsAndCatalogUnchangedFrom155": true,
+  "apiAndBackendUnchangedFrom155": true,
+  "support": {
+    "left": "/about",
+    "right": "/points?view=support",
+    "ratio": "50:50",
+    "heightPx": 80
+  },
+  "cage": {
+    "aspectRatio": "2:1",
+    "wholeCardLink": true,
+    "imageIncludesCTA": true,
+    "dynamicCounts": "real selected cage post counts; 0/0 for no participation",
+    "title": "published title; matching approved title keeps original hand lettering, changed titles use bundled brush font",
+    "longTitles": "maximum two visible lines, shortened with ellipsis when necessary; full title remains in accessible name and tooltip",
+    "adminSettings": "in cage detail, authenticated administrators only",
+    "saveBackRegression": "passed"
+  },
+  "designSourceSha256": "2ccd41d4ed14dfec959b9fb17e05e191f283c7bc6023ce4ac4723258729bd54b",
+  "staticVisualProofs": [
+    "approved title with 67/33",
+    "changed title with 25/75",
+    "long title with 0/0",
+    "one-sided participation with 0/100"
+  ],
+  "staticVisualMethod": "production SVG output with the bundled font glyphs outlined for local inspection; not browser screenshots",
+  "browserVerification": "not performed: local preview URLs were blocked by browser security policy",
+  "independentCodeReview": "no remaining critical or important findings after Back-cache fix"
+}

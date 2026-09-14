@@ -1,3 +1,4 @@
+import { renderCageBanner } from '../ui/home-cage-banner.js';
 import { GENERATION_AGES, participationDisplay, demoLabel } from '../core/participation-model.js?v=0.0.31.79';
 import { SERVICE_CATALOG, moduleActionIconSvg, serviceIconSvg, serviceNavIconSvg } from '../ui/service-icons.js?v=0.0.31.144';
 import { badgeByKey, renderBadge } from '../data/badge-catalog.js?v=0.0.31.155';
@@ -117,7 +118,7 @@ function sidebarKeywords(items=[]){
  const rows=(Array.isArray(items)?items:[]).slice(0,10);
  return `<section class="side-card side-keywords sidebar-editorial"><header class="sidebar-editorial-head"><div><h2><span class="sidebar-keyword-mark" aria-hidden="true">#</span>정참시 키워드</h2><p>최근 뉴스에서 많이 언급된 단어</p></div>${sidebarArrow('/keywords','정참시 키워드 전체보기')}</header><div class="sidebar-keyword-grid">${rows.map((item,index)=>`<a class="sidebar-keyword-item${index<3?' is-top':''}" href="/keywords?q=${encodeURIComponent(item.key)}" data-layout-route="/keywords?q=${encodeURIComponent(item.key)}"><b>${index+1}</b><span>${esc(item.label||item.key)}</span></a>`).join('')||'<p class="sidebar-editorial-empty">게시된 키워드가 없습니다.</p>'}</div><small class="sidebar-keyword-source">게시된 뉴스 집계 기준</small></section>`;
 }
-function supportBridge(){return `<section class="side-support-bridge" aria-label="정참시 후원과 응원"><div class="support-campaign-copy" aria-hidden="true"><strong>정참시 후원 · 응원</strong><small>함께하는 마음이 더 나은 내일로</small></div><a href="/points?view=support" data-layout-route="/points?view=support" class="support-bridge-link" aria-label="정참시 후원하기" title="정참시 후원하기"></a><a href="/about" data-layout-route="/about" class="support-bridge-link" aria-label="정참시 응원하기" title="정참시 응원하기"></a></section>`;}
+export function supportBridge(){return `<section class="side-support-bridge" aria-label="정참시 응원과 후원"><a href="/about" data-layout-route="/about" class="support-bridge-link support-bridge-cheer" aria-label="정참시 응원하기"><span class="support-bridge-arrow" aria-hidden="true">←</span><strong>정참시 응원하기</strong></a><a href="/points?view=support" data-layout-route="/points?view=support" class="support-bridge-link support-bridge-donate" aria-label="정참시 후원하기"><strong>후원하기</strong><span class="support-bridge-arrow" aria-hidden="true">→</span></a></section>`;}
 
 function sideColumn(data,session){return `<aside class="side-column">${participationCard(data.badgeStatus,false,session)}${homeBanner(data.homeBanner,session)}${supportBridge()}${renderHomeCage(data.communityData,session)}<section class="side-card side-recent"><div class="side-head"><b>최근 본 정치인</b><span class="side-action" data-layout-route="/mypage/recent">전체</span></div><div class="recent-visual-grid">${recentPoliticians(data.recentPoliticians)}</div></section>${sidebarRising(data.trending)}${sidebarNews(data.newsPosts)}${sidebarKeywords(data.keywords)}</aside>`;}
 
@@ -140,8 +141,11 @@ export function cageArena(share,active,metric="게시글"){
 
 export function renderHomeCage(data={},session={}){
  const cages=(data.items||[]).filter(x=>x.published!==false&&!x.deleted&&x.cageEnabled&&!x.cageParentId).sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
- const item=cages.find(x=>String(x.id)===String(data.featuredCageId))||cages[0],stats=data.cageStats?.[item?.id]||{},posts=stats.posts||{},comments=stats.comments||{},blue=Number(posts.progressive||0),red=Number(posts.conservative||0),total=blue+red,share=total?Math.round(blue*100/total):0,commentTotal=Number(comments.progressive||0)+Number(comments.conservative||0);
- return `<section class="home-cage-preview${total?'':' is-empty'}"><header><b><i>● LIVE</i> 케이지</b>${item?.cageEndsAt?`<span class="cage-countdown" data-cage-ends="${Number(item.cageEndsAt)}">시간 확인 중</span>`:''}${session.user?.role==='admin'?'<button type="button" data-layout-route="/admin?tab=participation" aria-label="케이지 미리보기 설정">⚙</button>':''}</header><button class="home-cage-entry" type="button" data-layout-route="${item?'/community/'+esc(item.id):'/community'}"><span class="home-cage-title-row" title="게시글 기준 · ${total}글 · ${commentTotal}댓글"><strong>${esc(item?.title||'다음 케이지를 준비 중입니다')}</strong><span class="home-cage-enter">${item?'케이지 참전':'커뮤니티 보기'}</span></span>${cageArena(share,total>0)}</button></section>`;
+ const item=cages.find(x=>String(x.id)===String(data.featuredCageId))||cages[0],posts=data.cageStats?.[item?.id]?.posts||{};
+ const count=n=>Number.isFinite(Number(n))?Math.max(0,Number(n)):0,blue=count(posts.progressive),red=count(posts.conservative),total=blue+red;
+ const title=item?.title||'다음 케이지를 준비 중입니다',route=item?'/community/'+encodeURIComponent(item.id):'/community',share=total?Math.round(blue*100/total):0;
+ const score=total?`게시글 참여 비율 진보 ${share}%, 보수 ${100-share}%`:'참여 전 · 집계 없음';
+ return `<a class="home-cage-preview${total?'':' is-empty'}" href="${esc(route)}" data-layout-route="${esc(route)}" aria-label="${esc(title)} · ${score} · ${item?'케이지 참전하기':'커뮤니티 보기'}" title="${esc(title)}">${renderCageBanner({title,blue,red})}${item?.cageEndsAt?`<span class="cage-countdown" data-cage-ends="${Number(item.cageEndsAt)}">시간 확인 중</span>`:''}</a>`;
 }
 
 export function renderHomeLayout(data){

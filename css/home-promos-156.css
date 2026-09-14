@@ -1,0 +1,32 @@
+/* Approved 2026-09-14 CAGE artwork and 50:50 support banner. */
+@font-face{font-family:'JCS Cage Brush';src:url('/assets/fonts/EastSeaDokdo-Regular.woff') format('woff');font-style:normal;font-weight:400;font-display:swap}
+.product-home-wrap .home-balanced-layout .home-cage-preview{
+ position:relative;display:block;box-sizing:border-box;width:100%;height:auto;min-height:0;aspect-ratio:2/1;
+ padding:0;margin:0;overflow:hidden;border:0;border-radius:12px;background:#090d18;color:#fff;text-decoration:none;
+ cursor:pointer;isolation:isolate;transform:none!important;
+}
+.product-home-wrap .home-balanced-layout .home-cage-preview .cage-promo-art{display:block;width:100%;height:auto;aspect-ratio:2/1;overflow:hidden;pointer-events:none}
+.product-home-wrap .home-balanced-layout .home-cage-preview .cage-countdown{position:absolute;top:5%;right:3%;max-width:22%;padding:2px 5px;border-radius:4px;background:#060a14bf;color:#ffe4a0;font-size:9px;line-height:1.25;pointer-events:none}
+.product-home-wrap .home-balanced-layout .home-cage-preview:focus-visible{outline:3px solid #ddb65f;outline-offset:3px}
+.product-home-wrap .home-balanced-layout .side-support-bridge{
+ display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);width:100%;height:80px;border:0;border-radius:9px;
+ background:#251034 url('/assets/banners/support-purple-gold-156.webp') center 80%/cover no-repeat;
+}
+.product-home-wrap .home-balanced-layout .side-support-bridge .support-bridge-link{
+ display:flex;align-items:center;justify-content:center;gap:7px;box-sizing:border-box;min-width:0;width:100%;height:100%;padding:8px;
+ border:0;text-decoration:none;background:transparent;transform:none!important;text-align:center;
+}
+.product-home-wrap .home-balanced-layout .side-support-bridge .support-bridge-link strong{font-size:15px;font-weight:800;line-height:1.4;letter-spacing:-.6px;white-space:nowrap}
+.product-home-wrap .home-balanced-layout .side-support-bridge .support-bridge-cheer{color:#fff6df;text-shadow:0 1px 5px #080211,0 0 12px #19062a}
+.product-home-wrap .home-balanced-layout .side-support-bridge .support-bridge-donate{color:#301439;text-shadow:0 1px 2px #ffe8b9}
+.product-home-wrap .home-balanced-layout .side-support-bridge .support-bridge-arrow{flex:none;font-size:21px;line-height:1}
+.product-home-wrap .home-balanced-layout .side-support-bridge .support-bridge-link:hover{background:#ffffff12}
+.product-home-wrap .home-balanced-layout .side-support-bridge .support-bridge-link:focus-visible{outline:2px solid #fff0bd;outline-offset:-4px;background:#ffffff12}
+.cage-home-settings{margin:14px 0 0;padding:12px 14px;border:1px solid #d8c795;border-radius:10px;background:#fffcf4;color:#392a41}
+.cage-home-settings>summary{font-size:13px;font-weight:700;cursor:pointer}
+.cage-home-settings form{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:10px;margin-top:12px}
+.cage-home-settings label{display:grid;gap:6px;font-size:12px}
+.cage-home-settings select{width:100%;min-width:0;padding:9px;border:1px solid #d8c795;border-radius:7px;background:#fff;color:#392a41;font:inherit}
+.cage-home-settings button{padding:10px 14px;border:1px solid #cda950;border-radius:7px;background:#f5e5b6;color:#392a41;font-weight:700;cursor:pointer}
+.cage-home-settings [data-form-state]{grid-column:1/-1;font-size:12px}
+@media(max-width:380px){.product-home-wrap .home-balanced-layout .side-support-bridge .support-bridge-link{gap:4px;padding:6px}.product-home-wrap .home-balanced-layout .side-support-bridge .support-bridge-link strong{font-size:13px}.product-home-wrap .home-balanced-layout .side-support-bridge .support-bridge-arrow{font-size:18px}.cage-home-settings form{grid-template-columns:1fr}}
