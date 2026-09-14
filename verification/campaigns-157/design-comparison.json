@@ -1,0 +1,26 @@
+{
+  "protectedFileCount": 51,
+  "shellAndHomeOnlyCacheVersionChanges": true,
+  "cssDeclarationComparisons": 1114,
+  "expectedPrototypeImageRemovals": [
+    [
+      [
+        "",
+        "#jcs-campaign-directory"
+      ],
+      "--jcd-atlas",
+      "Prototype-only embedded sample photo atlas",
+      null
+    ],
+    [
+      [
+        "",
+        "#jcs-campaign-directory .jcd-portrait"
+      ],
+      "background-image",
+      "var(--jcd-atlas)",
+      null
+    ]
+  ],
+  "unexpectedDesignChanges": []
+}

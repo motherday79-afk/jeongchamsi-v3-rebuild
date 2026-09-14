@@ -1,6 +1,6 @@
 import { renderCageBanner } from '../ui/home-cage-banner.js';
 import { GENERATION_AGES, participationDisplay, demoLabel } from '../core/participation-model.js?v=0.0.31.79';
-import { SERVICE_CATALOG, moduleActionIconSvg, serviceIconSvg, serviceNavIconSvg } from '../ui/service-icons.js?v=0.0.31.144';
+import { SERVICE_CATALOG, moduleActionIconSvg, serviceIconSvg, serviceNavIconSvg } from '../ui/service-icons.js?v=0.0.31.157';
 import { badgeByKey, renderBadge } from '../data/badge-catalog.js?v=0.0.31.155';
 
 const partyClass=(party='')=>party.includes('더불어')?'party-democratic':party.includes('국민의힘')?'party-peoplepower':party.includes('개혁신당')?'party-reform':party.includes('조국혁신당')?'party-innovation':party.includes('진보당')?'party-progressive':party.includes('기본소득당')?'party-basicincome':party.includes('사회민주당')?'party-socialdemocratic':party.includes('공석')?'party-vacant':'party-independent';

@@ -5,6 +5,7 @@ export const SERVICE_CATALOG = Object.freeze([
   { key:"compare", tone:"orange", label:"정치인 비교분석", shortLabel:"비교분석", description:"두 사람을 같은 기준으로 비교", href:"/compare", launcher:true },
   { key:"generation", tone:"navy", label:"세대의 선택, 대통령", shortLabel:"세대별 대통령", description:"세대별 모의투표 결과", href:"/generation-president", launcher:true },
   { key:"community", tone:"green", label:"정뮤니티", shortLabel:"정뮤니티", description:"지금 시민들이 하는 말", href:"/community", launcher:true },
+  { key:"campaign", tone:"gold", label:"정참시 CAMPAIGN", shortLabel:"캠페인", description:"정책과 정치의 가능성을 발견합니다", href:"/campaigns", launcher:false },
   { key:"president", tone:"gold", label:"대통령", shortLabel:"대통령", description:"대통령 정보와 기록", href:"/president", launcher:false },
   { key:"news", tone:"red", label:"정참시 NEWS", shortLabel:"NEWS", description:"정치 뉴스 모아보기", href:"/news", launcher:false },
   { key:"evaluation", tone:"teal", label:"정참시민 전국 평가제", shortLabel:"전국 평가제", description:"정참시민 정치인 평가", href:"/national-evaluation", launcher:false },
@@ -14,6 +15,7 @@ export const SERVICE_CATALOG = Object.freeze([
   { key:"trending", tone:"blue", label:"실시간 급상승 정치인", shortLabel:"급상승 정치인", description:"주목도가 빠르게 오른 정치인", href:"/trending", launcher:false }
 ]);
 const ICON_PATHS=Object.freeze({
+ campaign:`<path d="M5 3h9l5 5v13H5zM14 3v5h5M8 12h4M8 16h7"/><path d="m17 10 1 2 2 1-2 1-1 2-1-2-2-1 2-1z"/>`,
  inquiry:`<path d="M4 4h16v12H9l-5 4V4Z"/><path d="M9 8a3 3 0 0 1 6 0c0 2-3 2-3 4M12 14h.01"/>`,
  cheer:`<path d="M12 20 4.8 13a4.7 4.7 0 0 1 6.6-6.7l.6.6.6-.6a4.7 4.7 0 0 1 6.6 6.7L12 20Z"/><path d="M12 2v1M3 4l1 1M21 4l-1 1"/>`,
  donate:`<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M6 9h4M6 13h3M14 15l2 1 3-4M6 16h3"/>`,
@@ -67,6 +69,7 @@ export function brandMarkSvg(className=''){
 }
 // Gold is assigned to each glyph's distinguishing part, rather than a frame around it.
 const NAV_SOLID={
+ campaign:'<path d="M6 2h14v8h7v18a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2m16 0 5 6h-5z"/><path d="M9 15h7M9 21h7M9 26h11" stroke="#f7efff" stroke-width="2" stroke-linecap="round"/><path data-gold d="m24 11 2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/>',
  president:'<path data-gold d="m2 11 14-8 14 8zM3 28h26v2H3z"/><path d="M4 13h24v3H4zM6 17h4v9H6zm8 0h4v9h-4zm8 0h4v9h-4z"/>',
  news:'<rect x="3" y="3" width="22" height="26" rx="3"/><path data-gold d="M27 10h4v16a3 3 0 0 1-3 3h-1z"/><rect data-gold x="8" y="8" width="12" height="5" rx="1"/><path d="M8 18h12M8 23h8" stroke="#f7efff" stroke-width="2"/>',
  keywords:'<path d="M5 3h16l10 13-15 15L3 18V5z"/><circle cx="10" cy="10" r="2.5" fill="#fff"/><path data-gold d="m19 13 2 2-9 9-2-2z"/>',

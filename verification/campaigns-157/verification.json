@@ -1,0 +1,83 @@
+{
+  "release": "JCS_0_0_31_157",
+  "patchBase": "JCS_0_0_31_156",
+  "tests": {
+    "total": 176,
+    "passed": 176,
+    "failed": 0
+  },
+  "changedJsSyntaxCount": 23,
+  "scope": [
+    "CAMPAIGN board and archive",
+    "CAMPAIGN detail",
+    "more-menu icon and routes",
+    "minimal authenticated administrator editor and persistence"
+  ],
+  "bannerImagesOrIntegrationChanged": false,
+  "protectedExistingAssetsUnchanged": 51,
+  "mainAndShellStructureUnchanged": true,
+  "approvedDesignSources": [
+    {
+      "filename": "jcs-campaign-directory.html",
+      "sha256": "cd773b061ce20185b9573c423dfa0f226418738c60b26056077f6cd79cc78110"
+    },
+    {
+      "filename": "jcs-campaign-preview-readable.html",
+      "sha256": "4fb70f6c0abbfdd3c27b9af50613dc199d2504aa8c43ec00e7cc5787c57806c8"
+    }
+  ],
+  "staticDesignComparison": {
+    "protectedFileCount": 51,
+    "shellAndHomeOnlyCacheVersionChanges": true,
+    "cssDeclarationComparisons": 1114,
+    "expectedPrototypeImageRemovals": [
+      [
+        [
+          "",
+          "#jcs-campaign-directory"
+        ],
+        "--jcd-atlas",
+        "Prototype-only embedded sample photo atlas",
+        null
+      ],
+      [
+        [
+          "",
+          "#jcs-campaign-directory .jcd-portrait"
+        ],
+        "background-image",
+        "var(--jcd-atlas)",
+        null
+      ]
+    ],
+    "unexpectedDesignChanges": []
+  },
+  "dataSafety": {
+    "campaignNamespace": "jcsr2:campaigns:v1:",
+    "existingDataReset": false,
+    "fictionalProductionSeeds": false,
+    "draftPublicSeparation": true,
+    "administratorOnlyMutations": true,
+    "compareAndSwap": true,
+    "immutablePublicationNumber": true,
+    "publicationHistory": true,
+    "archiveOnKoreanEndOfDay": true
+  },
+  "luaVerification": {
+    "productionScriptExecuted": true,
+    "method": "texlua with local Redis primitive and cjson metadata adapters",
+    "liveRedisUsed": false,
+    "checks": [
+      "draft/public separation",
+      "number allocation",
+      "empty JSON arrays",
+      "published revision snapshots",
+      "stale version and concurrent CAS conflict",
+      "end and hide",
+      "unpublished draft deletion"
+    ]
+  },
+  "browserVerification": "Not performed: local preview blocked by browser security policy. Static source comparison and event harnesses do not substitute for real device verification.",
+  "productionDeploymentPerformed": false,
+  "independentReview": "No remaining Critical or Important findings after async editor and autocomplete fixes."
+}

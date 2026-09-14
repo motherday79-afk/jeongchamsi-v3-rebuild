@@ -1,4 +1,6 @@
 import { createMediaSpreadService } from '../lib/media-spread-service.js';
+import { createCampaignService } from '../lib/campaign-service.js';
+import { campaignRequest } from '../lib/campaign-http.js';
 import { createRequestReadScope } from '../lib/request-read-scope.js';
 import { castGenerationVote } from '../src/core/participation-model.js';
 import { APP_RELEASE } from '../src/core/release.js';
@@ -436,6 +438,11 @@ export default async function handler(req,res){
   try{
     if(route.startsWith('migration/'))return handleMigration(req,res,route);
     const command=rebuildRedisCommand();
+    if(route==='campaigns'){
+      const protectedRequest=req.method!=='GET'||url.searchParams.get('edit')==='1'||url.searchParams.get('view')==='manage';
+      const result=await campaignRequest(req,{service:createCampaignService({command}),user:protectedRequest?await currentUser(req,command):null,url});
+      return json(res,result.status,result.data);
+    }
     if(route.startsWith('user/')){const handled=await handleUser(req,res,route,command,url);if(handled!==false)return handled;}
     if(route==='inquiries'){
       const service=createInquiryService({command}),user=await currentUser(req,command);

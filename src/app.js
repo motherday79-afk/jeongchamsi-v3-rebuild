@@ -1,16 +1,19 @@
+import { createCampaignClient } from './core/campaign-client.js?v=0.0.31.157';
+import { loadCampaignPage } from './core/campaign-routing.js?v=0.0.31.157';
+import { bindCampaignInteractions } from './ui/campaign-interactions.js?v=0.0.31.157';
 import { refreshFontScale } from './ui/font-scale.js?v=0.0.31.56';
-import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.156';
+import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.157';
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.56';
-import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.152';
-import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.156';
-import { setupLayoutInteractions, setupPoliticianPhotoFallback, setupNowCarousel, setupCageCountdown, setupDesktopHomeViewport } from './ui/interactions.js?v=0.0.31.151';
+import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.157';
+import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.157';
+import { setupLayoutInteractions, setupPoliticianPhotoFallback, setupNowCarousel, setupCageCountdown, setupDesktopHomeViewport } from './ui/interactions.js?v=0.0.31.157';
 import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.106';
 import { createContentService, loadNavigationDashboard, loadPersonNavigation } from './core/content.js?v=0.0.31.153';
 import { createPoliticianService } from './core/politicians.js?v=0.0.31.147';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.126';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.148';
-import * as views from './views/stage1.js?v=0.0.31.156';
+import * as views from './views/stage1.js?v=0.0.31.157';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.153';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.56';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.131';
@@ -25,6 +28,7 @@ renderInitialLoading(app);
 const auth=createAuthService();
 const content=createContentService();
 const politicians=createPoliticianService();
+const campaigns=createCampaignClient();
 
 async function updatePoliticianPhotoStorageStatus(){
   const status=document.querySelector('[data-photo-storage-status]');
@@ -193,6 +197,7 @@ async function render({preserveScroll=false,refreshHome=false}={}){
     const home={...HOME_FIXTURE,trending:trendingResult.items||[],keywords:keywordResult.items||[],memberCount,columns,community,communityData:content.peekDomain('community')||{items:community},itsmePosts,newsPosts,polls,generation:generationView,nationalEvaluation:nationalEvaluationView,academy,rank,homeBanner,recentPoliticians:loadRecentPoliticians(),session,badgeStatus};
     body=`<div class="product-home-wrap">${renderHomeLayout(home)}</div>`;
   } else if(p[0]==='points') body=renderPointShop(await content.points(),session,new URLSearchParams(r.split('?')[1]||'').get('view')==='support'?'support':'shop');
+  else if(p[0]==='campaigns') body=await loadCampaignPage({parts:p,searchParams,session,client:campaigns});
   else if(p[0]==='shop') body=p[1]==='request'?renderGoodsRequest(session,r):p[1]?renderCheerProduct(p[1]):renderCheerCatalog();
   else if(p[0]==='about') body=views.renderAbout();
   else if(p[0]==='support') body=renderPointShop(await content.points(),session,'support');
@@ -254,8 +259,13 @@ async function render({preserveScroll=false,refreshHome=false}={}){
   if(p[0]==='admin')queueMicrotask(resumeAdminIntelligence);
 }
 
-navigation=createNavigation({window,readSnapshot:()=>app.innerHTML,restoreSnapshot:markup=>{app.innerHTML=markup;if(document.querySelector('.product-home-wrap')&&homeSnapshot)homeSnapshot.node=app.firstElementChild;},rebind:()=>{++renderSequence;const cachedRoute=parts(route());if(['mypage','points'].includes(cachedRoute[0]))queueMicrotask(()=>void render({preserveScroll:true}));else if(!cachedRoute.length)void refreshCachedMemberSummary();setupLayoutInteractions(document,{politicianSearch:(query,limit)=>politicians.search(query,limit)});setupMemberBadgeManagers();if(document.querySelector('.jc55'))queueMicrotask(()=>void render({preserveScroll:true}));if(pipelineActive())queueMicrotask(resumeAdminIntelligence);},onRoute:(_route,options)=>void render(options)});
+navigation=createNavigation({window,readSnapshot:()=>app.innerHTML,restoreSnapshot:markup=>{app.innerHTML=markup;if(document.querySelector('.product-home-wrap')&&homeSnapshot)homeSnapshot.node=app.firstElementChild;},rebind:()=>{++renderSequence;const cachedRoute=parts(route());if(['mypage','points','campaigns'].includes(cachedRoute[0]))queueMicrotask(()=>void render({preserveScroll:true}));else if(!cachedRoute.length)void refreshCachedMemberSummary();setupLayoutInteractions(document,{politicianSearch:(query,limit)=>politicians.search(query,limit)});setupMemberBadgeManagers();if(document.querySelector('.jc55'))queueMicrotask(()=>void render({preserveScroll:true}));if(pipelineActive())queueMicrotask(resumeAdminIntelligence);},onRoute:(_route,options)=>void render(options)});
 navigation.start();
+bindCampaignInteractions(document,{client:campaigns,onSaved:async(_result,targetRoute)=>{
+  navigation.clearCache();
+  // The editor updates its own version after draft saves; preserve unsent input and focus.
+  if(targetRoute){if(targetRoute===route())await render({preserveScroll:true});else navigation.navigate(targetRoute);}
+}});
 window.addEventListener('jcs:layout-route',event=>navigation.navigate(event.detail?.route||'/'));
 window.addEventListener('jcs:layout-search',event=>navigation.navigate(`/search?q=${encodeURIComponent(String(event.detail?.query||'').trim())}`));
 document.addEventListener('change',event=>{
