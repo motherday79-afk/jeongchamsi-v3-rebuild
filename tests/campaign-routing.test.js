@@ -26,3 +26,4 @@ test('load failures stay readable and do not expose backend exception details',a
   const html=await loadCampaignPage({parts:['campaigns','one'],client});
   assert.match(html,/다시 시도/);assert.doesNotMatch(html,/redis-password-secret/);
 });
+test('category filter is combined with the current view and page',async()=>{const calls=[];const client={list:async options=>(calls.push(options),{ok:true,items:[],counts:{}})};await loadCampaignPage({parts:['campaigns'],searchParams:new URLSearchParams('category=business&page=3'),client});assert.deepEqual(calls,[{view:'current',page:'3',category:'business'}]);});

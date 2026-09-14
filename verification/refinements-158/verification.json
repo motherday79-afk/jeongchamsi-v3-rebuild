@@ -1,0 +1,61 @@
+{
+  "release": "JCS_0_0_31_158",
+  "patchBase": "JCS_0_0_31_157",
+  "tests": {
+    "total": 211,
+    "passed": 211,
+    "failed": 0
+  },
+  "changedJsSyntaxCount": 33,
+  "scope": [
+    "manual cage title line break and emphasis with preview",
+    "white 80px 50:50 support bridge",
+    "avatar-centered compare ground effect and select button",
+    "campaign politics/culture/business filters and editor",
+    "five fictional examples, two politics/two culture/one business"
+  ],
+  "mainCampaignAdBannerIntegrationChanged": false,
+  "protectedExistingAssetsAndStylesUnchanged": 53,
+  "siteShellStructureUnchanged": true,
+  "approvedPortraitsReusedWithoutRasterEdits": true,
+  "dataSafety": {
+    "existingDataReset": false,
+    "bundledFictionalExamples": 5,
+    "realPoliticianDirectoryModified": false,
+    "exampleMetadataServerOwned": true,
+    "officialNumberSequenceExcludesExamples": true,
+    "administratorOnlyMutations": true,
+    "compareAndSwap": true,
+    "noPaymentOrDonationCollection": true
+  },
+  "luaVerification": {
+    "productionScriptExecuted": true,
+    "method": "texlua with local Redis primitive and cjson metadata adapters",
+    "liveRedisUsed": false,
+    "checks": [
+      "draft/public separation",
+      "official number allocation",
+      "virtual-example save CAS and independent numbering",
+      "durable example hide",
+      "empty JSON arrays",
+      "published revision snapshots",
+      "stale version and concurrent CAS conflict",
+      "end and hide",
+      "unpublished draft deletion"
+    ]
+  },
+  "browserVerification": "Not performed: local preview blocked by browser security policy. Static source/geometry and event harnesses do not substitute for real device verification.",
+  "productionDeploymentPerformed": false,
+  "independentReview": {
+    "ready": true,
+    "criticalFindings": 0,
+    "importantFindings": 0,
+    "taskReviews": {
+      "home": "PASS",
+      "cage": "PASS; whitespace observation retracted as false positive",
+      "campaign": "PASS after portrait mapping, SVG sizing and archive route fixes"
+    },
+    "wholeRelease": "PASS; integration source ready for packaging",
+    "browserVerified": false
+  }
+}

@@ -4,12 +4,13 @@ import { campaignRequest } from '../lib/campaign-http.js';
 import { createCampaignService } from '../lib/campaign-service.js';
 const url=query=>new URL('/api/v3/campaigns'+query,'https://www.jeongchamsi.com');
 const admin={id:'a',role:'admin'};
-test('HTTP dispatch forwards list, public detail and protected edit separately',async()=>{
+test('HTTP dispatch forwards default and explicit-category lists, public detail and protected edit separately',async()=>{
  const calls=[];const service={list:async(...args)=>{calls.push(['list',...args]);return {ok:true};},get:async(...args)=>{calls.push(['get',...args]);return {ok:true};}};
  await campaignRequest({method:'GET'},{service,url:url('?view=archive&page=2')});
+ await campaignRequest({method:'GET'},{service,url:url('?view=current&page=3&category=culture')});
  await campaignRequest({method:'GET'},{service,url:url('?id=one')});
  await campaignRequest({method:'GET'},{service,user:admin,url:url('?id=one&edit=1')});
- assert.deepEqual(calls,[['list',null,{view:'archive',page:'2'}],['get','one',null,{edit:false}],['get','one',admin,{edit:true}]]);
+ assert.deepEqual(calls,[['list',null,{view:'archive',page:'2',category:'all'}],['list',null,{view:'current',page:'3',category:'culture'}],['get','one',null,{edit:false}],['get','one',admin,{edit:true}]]);
 });
 test('HTTP mutation rejects cross-origin writes before storage and keeps conflict status',async()=>{
  let called=false;const service={save:async()=>{called=true;throw new Error('CAMPAIGN_CONFLICT');}};

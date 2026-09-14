@@ -1,0 +1,12 @@
+{
+  "ready": true,
+  "criticalFindings": 0,
+  "importantFindings": 0,
+  "taskReviews": {
+    "home": "PASS",
+    "cage": "PASS; whitespace observation retracted as false positive",
+    "campaign": "PASS after portrait mapping, SVG sizing and archive route fixes"
+  },
+  "wholeRelease": "PASS; integration source ready for packaging",
+  "browserVerified": false
+}

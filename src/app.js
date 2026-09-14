@@ -1,19 +1,20 @@
-import { createCampaignClient } from './core/campaign-client.js?v=0.0.31.157';
-import { loadCampaignPage } from './core/campaign-routing.js?v=0.0.31.157';
-import { bindCampaignInteractions } from './ui/campaign-interactions.js?v=0.0.31.157';
+import { bindCageTitleEditors } from './ui/cage-title-editor.js?v=0.0.31.158';
+import { createCampaignClient } from './core/campaign-client.js?v=0.0.31.158';
+import { loadCampaignPage } from './core/campaign-routing.js?v=0.0.31.158';
+import { bindCampaignInteractions } from './ui/campaign-interactions.js?v=0.0.31.158';
 import { refreshFontScale } from './ui/font-scale.js?v=0.0.31.56';
-import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.157';
+import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.158';
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.56';
 import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.157';
-import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.157';
-import { setupLayoutInteractions, setupPoliticianPhotoFallback, setupNowCarousel, setupCageCountdown, setupDesktopHomeViewport } from './ui/interactions.js?v=0.0.31.157';
-import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.106';
+import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.158';
+import { setupLayoutInteractions, setupPoliticianPhotoFallback, setupNowCarousel, setupCageCountdown, setupDesktopHomeViewport } from './ui/interactions.js?v=0.0.31.158';
+import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.158';
 import { createContentService, loadNavigationDashboard, loadPersonNavigation } from './core/content.js?v=0.0.31.153';
 import { createPoliticianService } from './core/politicians.js?v=0.0.31.147';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.126';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.148';
-import * as views from './views/stage1.js?v=0.0.31.157';
+import * as views from './views/stage1.js?v=0.0.31.158';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.153';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.56';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.131';
@@ -261,6 +262,7 @@ async function render({preserveScroll=false,refreshHome=false}={}){
 
 navigation=createNavigation({window,readSnapshot:()=>app.innerHTML,restoreSnapshot:markup=>{app.innerHTML=markup;if(document.querySelector('.product-home-wrap')&&homeSnapshot)homeSnapshot.node=app.firstElementChild;},rebind:()=>{++renderSequence;const cachedRoute=parts(route());if(['mypage','points','campaigns'].includes(cachedRoute[0]))queueMicrotask(()=>void render({preserveScroll:true}));else if(!cachedRoute.length)void refreshCachedMemberSummary();setupLayoutInteractions(document,{politicianSearch:(query,limit)=>politicians.search(query,limit)});setupMemberBadgeManagers();if(document.querySelector('.jc55'))queueMicrotask(()=>void render({preserveScroll:true}));if(pipelineActive())queueMicrotask(resumeAdminIntelligence);},onRoute:(_route,options)=>void render(options)});
 navigation.start();
+bindCageTitleEditors(document);
 bindCampaignInteractions(document,{client:campaigns,onSaved:async(_result,targetRoute)=>{
   navigation.clearCache();
   // The editor updates its own version after draft saves; preserve unsent input and focus.
@@ -322,7 +324,7 @@ document.addEventListener('submit',async event=>{
   const demoForm=event.target.closest('[data-participation-demo]');
   if(demoForm){event.preventDefault();const counts={},state=demoForm.querySelector('[data-form-state]'),button=demoForm.querySelector('button[type="submit"]');for(const field of demoForm.querySelectorAll('[data-demo-key]')){const age=field.dataset.demoAge,key=field.dataset.demoKey;if(age){counts[age]??={};counts[age][key]=Number(field.value);}else counts[key]=Number(field.value);}button.disabled=true;try{const result=await content.editParticipation(demoForm.dataset.domain,demoForm.dataset.postId,{enabled:demoForm.elements.enabled.checked,counts},'demo');if(result.ok)await render({preserveScroll:true});else state.textContent=result.error==='INVALID_DEMO_COUNT'?'0부터 100,000,000까지의 정수를 입력해 주세요.':result.error||'저장하지 못했습니다.';}catch{state.textContent='저장하지 못했습니다. 다시 시도해 주세요.';}finally{button.disabled=false;}return;}
   const cageForm=event.target.closest('[data-home-cage-form]');
-  if(cageForm){event.preventDefault();const state=cageForm.querySelector('[data-form-state]');try{const result=await auth.saveHomeCage(String(new FormData(cageForm).get('id')||''));if(result.ok)navigation?.clearCache();state.textContent=result.ok?'메인 미리보기를 저장했습니다.':result.error||'저장하지 못했습니다.';}catch{state.textContent='저장하지 못했습니다.';}return;}
+  if(cageForm){event.preventDefault();const state=cageForm.querySelector('[data-form-state]');try{const data=new FormData(cageForm),titleLayout=data.get('cageTitleId')?{cageId:String(data.get('cageTitleId')),title:String(data.get('cageTitleSource')||''),enabled:data.get('cageTitleEnabled')==='on',breakAt:Number(data.get('cageTitleBreak')||0),emphasis:String(data.get('cageTitleEmphasis')||'equal')}:undefined,result=await auth.saveHomeCage(String(data.get('id')||''),titleLayout);if(result.ok)navigation?.clearCache();state.textContent=result.ok?'메인 미리보기를 저장했습니다.':({CAGE_TITLE_CHANGED:'제목이 변경되었습니다. 새로고침 후 다시 설정해 주세요.',CAGE_TITLE_TOO_LONG:'제목이 너무 깁니다. 줄바꿈 위치를 조정해 주세요.',CAGE_TITLE_BREAK_INVALID:'줄바꿈 위치를 확인해 주세요.'})[result.error]||'설정을 저장하지 못했습니다.';}catch{state.textContent='저장하지 못했습니다.';}return;}
   const participationEdit=event.target.closest('[data-participation-edit]');
   if(participationEdit){event.preventDefault();if(participationEdit.dataset.saving)return;const operation=event.submitter?.value||'edit';if(operation==='delete'&&!window.confirm('이 게시물을 삭제하시겠습니까?'))return;participationEdit.dataset.saving='true';const state=participationEdit.querySelector('[data-form-state]');try{const fd=new FormData(participationEdit),input=Object.fromEntries(fd);input.optionLabels=fd.getAll('optionLabels');if(operation==='edit'&&participationEdit.dataset.participationEdit==='polls')input.optionImages=await pollOptionImages(participationEdit,input.optionLabels.length);const result=await content.editParticipation(participationEdit.dataset.participationEdit,participationEdit.dataset.postId,input,operation);if(result.ok)await render({preserveScroll:true});else state.textContent=result.error||'저장하지 못했습니다.';}catch(error){state.textContent=error.message||'이미지를 저장하지 못했습니다.';}finally{delete participationEdit.dataset.saving;}return;}
   const participationAdmin=event.target.closest('[data-participation-admin-form]');

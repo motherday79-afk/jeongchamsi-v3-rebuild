@@ -1,4 +1,5 @@
-import { cageArena } from '../layout/home-layout.js?v=0.0.31.157';
+import { renderCageTitleEditor } from '../ui/cage-title-editor.js?v=0.0.31.158';
+import { cageArena } from '../layout/home-layout.js?v=0.0.31.158';
 import { badgeByKey, renderBadge } from '../data/badge-catalog.js?v=0.0.31.155';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const date=v=>{const d=new Date(v);return Number.isNaN(d.getTime())?'':d.toLocaleString('ko-KR',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false});};
@@ -86,7 +87,7 @@ export function renderCagePosts(items,rootId,page=1){
 function cageHomeSettings(data,session){
  if(!session?.authenticated||session.user?.role!=='admin')return '';
  const cages=(data.items||[]).filter(x=>x.published!==false&&!x.deleted&&x.cageEnabled&&!x.cageParentId).sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
- return `<details class="cage-home-settings"><summary>메인 케이지 설정 · 관리자</summary><form data-home-cage-form><label>메인에 표시할 케이지<select name="id"><option value="">최신 케이지 자동 선택</option>${cages.map(x=>`<option value="${esc(x.id)}" ${String(data.featuredCageId)===String(x.id)?'selected':''}>${esc(x.title)}</option>`).join('')}</select></label><button type="submit">설정 저장</button><span data-form-state role="status" aria-live="polite"></span></form></details>`;
+ return `<details class="cage-home-settings"><summary>메인 케이지 설정 · 관리자</summary><form data-home-cage-form><label>메인에 표시할 케이지<select name="id"><option value="">최신 케이지 자동 선택</option>${cages.map(x=>`<option value="${esc(x.id)}" ${String(data.featuredCageId)===String(x.id)?'selected':''}>${esc(x.title)}</option>`).join('')}</select></label>${renderCageTitleEditor(cages,data.featuredCageId,data.cageTitleLayouts,data.cageStats)}<button type="submit">설정 저장</button><span data-form-state role="status" aria-live="polite"></span></form></details>`;
 }
 
 export async function cageDetail(item,content,session={},dashboard={},url=''){

@@ -4,23 +4,38 @@ import fs from 'node:fs';
 import { setupHomeCompare } from '../src/ui/interactions.js';
 import { renderHomeLayout } from '../src/layout/home-layout.js';
 import { HOME_FIXTURE } from '../src/fixtures/home.js';
-import { createHomeCompareMotion } from '../src/ui/compare-motion.js';
+import { createHomeCompareMotion, measureCompareAnchors } from '../src/ui/compare-motion.js';
+
+test('effect anchors independently follow actual avatar centers relative to the form',()=>{
+ const values=[];
+ const form={getBoundingClientRect:()=>({left:100,top:40})};
+ const sides=[
+  {avatar:{getBoundingClientRect:()=>({left:132,top:73,width:62,height:64})},impact:{style:{setProperty:(key,value)=>values.push([0,key,value])}}},
+  {avatar:{getBoundingClientRect:()=>({left:406,top:61,width:78,height:90})},impact:{style:{setProperty:(key,value)=>values.push([1,key,value])}}}
+ ];
+ measureCompareAnchors(form,sides);
+ assert.deepEqual(values,[
+  [0,'--matchup-anchor-x','63px'],[0,'--matchup-anchor-y','97px'],
+  [1,'--matchup-anchor-x','345px'],[1,'--matchup-anchor-y','111px']
+ ]);
+});
 
 // DOM and WAAPI are browser boundaries. Promises are completed explicitly so a
 // stale animation can finish after cancellation, just as an already-queued task can.
 function stage({reduced=false,waapi=true,initialize=true}={}){
  const animations=[],pageListeners=new Map(),mediaListeners=new Map();
- const node=(name)=>({name,dataset:{},hidden:false,isConnected:true,children:[],attrs:{},
+ const node=(name)=>({name,dataset:{},hidden:false,isConnected:true,children:[],attrs:{},style:{values:{},setProperty(key,value){this.values[key]=value;}},
   setAttribute(key,value){this.attrs[key]=String(value);},
   append(child){this.children.push(child);},remove(){this.removed=true;},
   querySelector(selector){return this.queries?.[selector]||null;},
   querySelectorAll(selector){return this.lists?.[selector]||[];},
   ...(waapi?{animate(frames,options){let finish,reject;const finished=new Promise((resolve,no)=>{finish=resolve;reject=no;});const animation={node:this,frames,options,finished,done:false,canceled:false,finish(){this.done=true;finish();},cancel(){this.canceled=true;reject(new Error('canceled'));}};animations.push(animation);return animation;}}:{})
  });
- const slots=[0,1].map(index=>{const slot=node(`slot${index}`);slot.queries={'[data-home-compare-preview]':node(`person${index}`)};return slot;});
+ const avatarRects=[{left:40,top:28,width:78,height:90},{left:310,top:28,width:78,height:90}];
+ const slots=[0,1].map(index=>{const slot=node(`slot${index}`),avatar=node(`avatar${index}`);avatar.getBoundingClientRect=()=>avatarRects[index];slot.queries={'[data-home-compare-preview]':node(`person${index}`),'.home-compare-avatar':avatar};return slot;});
  const sides=[0,1].map(index=>{const side=node(`impact${index}`);side.queries=Object.fromEntries(['.matchup-cracks','.matchup-crack-lines','.matchup-shock-ring','.matchup-dust'].map(key=>[key,node(`${key}${index}`)]));side.lists={'.matchup-debris':Array.from({length:6},(_,i)=>node(`debris${index}-${i}`))};return side;});
  const effects=node('effects');effects.lists={'.matchup-impact-side':sides};effects.queries=Object.fromEntries(['.matchup-energy-left','.matchup-energy-right','.matchup-collision-core','.matchup-collision-ring'].map(key=>[key,node(key)]));
- const vs=node('vs'),form=node('form');
+ const vs=node('vs'),form=node('form');form.getBoundingClientRect=()=>({left:10,top:8});
  form.queries={'.matchup-vs':vs};form.lists={'[data-home-compare-slot]':slots};
  const media={matches:reduced,addEventListener:(key,fn)=>mediaListeners.set(key,fn),removeEventListener:(key)=>mediaListeners.delete(key)};
  let observerCallback,disconnected=false;
@@ -32,11 +47,40 @@ function stage({reduced=false,waapi=true,initialize=true}={}){
  const finish=async(predicate=()=>true)=>{for(const a of active().filter(predicate))a.finish();await flush();};
  const person=index=>slots[index].queries['[data-home-compare-preview]'];
  const land=async(index)=>{await finish(a=>a.node===person(index));await finish(a=>a.node===person(index)||a.node.name.endsWith(String(index))||a.node.name.startsWith(`debris${index}-`));};
- return {form,slots,vs,effects,sides,controller,animations,active,finish,flush,person,land,pageListeners,mediaListeners,
+ return {form,slots,vs,effects,sides,controller,animations,active,finish,flush,person,land,pageListeners,mediaListeners,avatarRects,
   reduce(){media.matches=true;mediaListeners.get('change')?.();},
   async detach(){form.isConnected=false;observerCallback?.();await flush();},
   disconnected:()=>disconnected};
 }
+
+test('anchors refresh after resize and again when a profile is selected',()=>{
+ const s=stage();
+ assert.deepEqual(s.sides.map(side=>side.style.values['--matchup-anchor-x']),['69px','339px']);
+ s.avatarRects[0]={left:22,top:36,width:62,height:64};
+ s.pageListeners.get('resize')();
+ assert.deepEqual(s.sides[0].style.values,{'--matchup-anchor-x':'43px','--matchup-anchor-y':'92px'});
+ s.avatarRects[1]={left:238,top:36,width:62,height:64};s.controller.select(1,'new-profile');
+ assert.deepEqual(s.sides[1].style.values,{'--matchup-anchor-x':'259px','--matchup-anchor-y':'92px'});
+});
+
+test('replaced avatar nodes drive anchors and selection-button center after selection',()=>{
+ const s=stage({reduced:true});
+ const slot=s.slots[0];slot.getBoundingClientRect=()=>({left:30,top:20});
+ const old=slot.queries['.home-compare-avatar'];old.getBoundingClientRect=()=>({left:0,top:0,width:0,height:0});
+ slot.queries['.home-compare-avatar']={getBoundingClientRect:()=>({left:90,top:40,width:78,height:90})};
+ s.controller.select(0,'replacement');
+ assert.equal(s.sides[0].style.values['--matchup-anchor-x'],'119px');
+ assert.equal(slot.style.values['--matchup-avatar-x'],'99px');
+ s.pageListeners.get('resize')();
+ assert.equal(s.sides[0].style.values['--matchup-anchor-x'],'119px');
+});
+
+test('layout offsets keep the landing anchor stationary during transformed animations',()=>{
+ const values={},form={getBoundingClientRect:()=>({left:100,top:50})},slot={offsetLeft:20,offsetTop:15,offsetWidth:300,offsetHeight:150,offsetParent:form,style:{setProperty:(key,v)=>values[key]=v}};
+ const avatar={offsetLeft:32,offsetTop:10,offsetWidth:78,offsetHeight:90,offsetParent:slot,getBoundingClientRect:()=>({left:-900,top:-900,width:5,height:5})};slot.querySelector=()=>avatar;
+ measureCompareAnchors(form,[{slot,impact:{style:{setProperty:(key,v)=>values[key]=v}}}]);
+ assert.deepEqual(values,{'--matchup-anchor-x':'91px','--matchup-anchor-y':'115px','--matchup-avatar-x':'71px'});
+});
 
 test('an empty stage and a single landed politician never reveal VS',async()=>{
  const s=stage();assert.equal(s.vs.hidden,true);assert.equal(s.active().length,0);

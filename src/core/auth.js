@@ -39,7 +39,7 @@ function createRemoteAuthService(){
     async resetMemberPassword(id,temporaryPassword){return request('admin/users',{method:'PATCH',body:JSON.stringify({operation:'password-reset',id,temporaryPassword})});},
     async exportMembers(){const x=await request('admin/users');return x.ok?x.users:[];},
     async participationSettings(){return request('admin/participation');},
-    async saveHomeCage(id){return request('admin/home-cage',{method:'POST',body:JSON.stringify({id})});},
+    async saveHomeCage(id,titleLayout){return request('admin/home-cage',{method:'POST',body:JSON.stringify({id,titleLayout})});},
     async adminSummary(){return request('admin/summary');},
     async intelligenceStatus(){return request('admin/intelligence/status');},
     async intelligenceCollectStart(){return request('admin/intelligence/collect/start',{method:'POST',body:'{}'});},

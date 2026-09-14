@@ -12,9 +12,31 @@ const groundMarkup=`<svg class="matchup-cracks" viewBox="0 0 280 100" preserveAs
 const energyMarkup=side=>`<svg class="matchup-energy matchup-energy-${side}" viewBox="0 0 300 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><g${side==='right'?' transform="translate(300 0) scale(-1 1)"':''}><path class="matchup-energy-body" d="M0 35 76 43 58 29 146 46 124 28 213 48 199 34 300 50 215 66 231 53 147 71 165 54 60 70 83 56 0 66Z"/><path class="matchup-energy-filament" d="m0 50 82 2-15-12 103 15-19-15 70 13 79-3"/></g></svg>`;
 const effectMarkup=`<div class="matchup-impact-arena">${[0,1].map(index=>`<div class="matchup-impact-side" data-side="${index}" data-phase="empty">${groundMarkup}</div>`).join('')}</div><div class="matchup-convergence">${energyMarkup('left')}${energyMarkup('right')}<i class="matchup-collision-core"></i><i class="matchup-collision-ring"></i></div>`;
 
+// offset geometry ignores the arrival animation's translate/scale transforms.
+function layoutBounds(node,form){
+ let x=0,y=0,current=node;
+ while(current&&current!==form&&Number.isFinite(current.offsetLeft)&&Number.isFinite(current.offsetTop)){
+  x+=current.offsetLeft;y+=current.offsetTop;current=current.offsetParent;
+ }
+ if(current===form&&Number.isFinite(node.offsetWidth)&&Number.isFinite(node.offsetHeight))return {left:x,top:y,width:node.offsetWidth,height:node.offsetHeight};
+ const stage=form?.getBoundingClientRect?.(),rect=node?.getBoundingClientRect?.();
+ return stage&&rect?{left:rect.left-stage.left,top:rect.top-stage.top,width:rect.width,height:rect.height}:null;
+}
+export function measureCompareAnchors(form,sides){
+ for(const side of sides){
+  const avatar=side.slot?.querySelector?.('.home-compare-avatar')||side.avatar,rect=layoutBounds(avatar,form);
+  if(!rect||rect.width<=0||!side.impact?.style)continue;
+  const center=rect.left+rect.width/2;
+  side.impact.style.setProperty('--matchup-anchor-x',`${center}px`);
+  side.impact.style.setProperty('--matchup-anchor-y',`${rect.top+rect.height}px`);
+  const slot=layoutBounds(side.slot,form);if(slot&&side.slot?.style)side.slot.style.setProperty('--matchup-avatar-x',`${center-slot.left}px`);
+ }
+}
+
 export function createHomeCompareMotion(form,{
  matchMedia=globalThis.matchMedia?.bind(globalThis),
  MutationObserver=globalThis.MutationObserver,
+ ResizeObserver=globalThis.ResizeObserver,
  eventTarget=globalThis
 }={}){
  const slots=[...form.querySelectorAll('[data-home-compare-slot]')],vs=form.querySelector('.matchup-vs');
@@ -23,7 +45,8 @@ export function createHomeCompareMotion(form,{
  const impacts=[...effects?.querySelectorAll('.matchup-impact-side')||[]];
  const sides=slots.map((slot,index)=>({slot,person:slot.querySelector('[data-home-compare-preview]'),impact:impacts[index],id:'',phase:'empty',token:0,animations:new Set()}));
  const shared=new Set(),preference=matchMedia?.('(prefers-reduced-motion: reduce)');
- let sequence=0,disposed=false,observer;
+ let sequence=0,disposed=false,observer,sizeObserver;
+ const refreshAnchors=()=>measureCompareAnchors(form,sides);
  const still=()=>preference?.matches||sides.some(side=>typeof side.person?.animate!=='function');
  const cancel=animations=>{for(const animation of animations)animation.cancel();animations.clear();};
  const setPhase=(side,phase)=>{side.phase=phase;side.slot.dataset.compareArrival=phase;if(side.impact)side.impact.dataset.phase=phase;};
@@ -130,14 +153,15 @@ export function createHomeCompareMotion(form,{
  function select(index,id){
   const side=sides[index],identity=String(id||'').trim();if(!side||!current())return;
   if(!identity){clear(index);return;}if(side.id===identity)return;
-  ++side.token;cancel(side.animations);resetCollision();side.id=identity;
+  ++side.token;cancel(side.animations);resetCollision();side.id=identity;refreshAnchors();
   if(still()){setPhase(side,'landed');void converge();return;}
   setPhase(side,'falling');void arrive(side,index);
  }
  function destroy(){
   if(disposed)return;disposed=true;resetCollision();
   for(const side of sides){++side.token;cancel(side.animations);}
-  observer?.disconnect();preference?.removeEventListener?.('change',onPreference);
+  observer?.disconnect();sizeObserver?.disconnect();preference?.removeEventListener?.('change',onPreference);
+  eventTarget?.removeEventListener?.('resize',refreshAnchors);
   eventTarget?.removeEventListener?.('pagehide',onPageHide);effects?.remove();
  }
  const onPreference=()=>{if(preference?.matches&&current())settleInstantly();};
@@ -146,6 +170,9 @@ export function createHomeCompareMotion(form,{
  const onPageHide=event=>event?.persisted?settleInstantly():destroy();
  resetCollision();sides.forEach(side=>setPhase(side,'empty'));
  preference?.addEventListener?.('change',onPreference);eventTarget?.addEventListener?.('pagehide',onPageHide);
- if(MutationObserver&&form.ownerDocument?.documentElement){observer=new MutationObserver(()=>{if(form.isConnected===false)destroy();});observer.observe(form.ownerDocument.documentElement,{childList:true,subtree:true});}
- return {select,clear,destroy};
+ eventTarget?.addEventListener?.('resize',refreshAnchors);
+ if(MutationObserver&&form.ownerDocument?.documentElement){observer=new MutationObserver(records=>{if(form.isConnected===false)destroy();else if(records?.some(record=>slots.some(slot=>slot.contains?.(record.target))))refreshAnchors();});observer.observe(form.ownerDocument.documentElement,{childList:true,subtree:true});}
+ if(ResizeObserver){sizeObserver=new ResizeObserver(refreshAnchors);sizeObserver.observe(form);for(const side of sides)sizeObserver.observe(side.slot);}
+ refreshAnchors();
+ return {select,clear,destroy,refreshAnchors};
 }

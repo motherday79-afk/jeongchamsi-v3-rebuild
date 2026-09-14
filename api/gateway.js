@@ -350,7 +350,7 @@ async function handleAdmin(req,res,route,command){
     const domains=['polls','generation','nationalEvaluation','community'],rows=await Promise.all(domains.map(async d=>[d,await readDomain(command,d,{items:[]})]));return json(res,200,{ok:true,data:Object.fromEntries(rows)});
   }
   if(route==='admin/home-cage'&&req.method==='POST'){
-    try{const result=await createCommunityService({command}).featureCage(String(bodyOf(req).id||''),user);return json(res,200,result);}catch(error){return json(res,error.status||400,{ok:false,error:error.message});}
+    try{const result=await createCommunityService({command}).featureCage(String(bodyOf(req).id||''),user,{titleLayout:bodyOf(req).titleLayout});return json(res,200,result);}catch(error){return json(res,error.status||400,{ok:false,error:error.message});}
   }
   if(route==='admin/participation'&&req.method==='POST'){
     const body=bodyOf(req),domain=String(body.domain||'');if(!['polls','generation','nationalEvaluation'].includes(domain))return json(res,400,{ok:false,error:'INVALID_PARTICIPATION_DOMAIN'});

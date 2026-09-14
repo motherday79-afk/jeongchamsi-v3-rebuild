@@ -1,0 +1,11 @@
+.cage-home-settings .cage-title-editor{grid-column:1/-1;min-width:0;border-top:1px solid #e6dbed;padding-top:14px}
+.cage-home-settings .cage-title-check{display:flex;align-items:center;gap:8px;font-weight:650}
+.cage-home-settings .cage-title-options{display:grid;grid-template-columns:minmax(0,1fr) 140px;gap:12px;margin-top:12px}
+.cage-home-settings .cage-title-options label{min-width:0}
+.cage-home-settings .cage-title-help{font-size:12px;color:#685674;line-height:1.6;margin:10px 0}
+.cage-home-settings [data-cage-title-error]{font-size:12px;color:#983d49;line-height:1.5}
+.cage-home-settings [data-cage-title-error]:empty{display:none}
+.cage-home-settings [data-cage-title-preview]{width:min(100%,420px);margin:12px auto 0;border-radius:10px;overflow:hidden;background:#10101a}
+.cage-home-settings [data-cage-title-preview] svg{display:block;width:100%;height:auto}
+.cage-home-settings button:disabled{opacity:.5;cursor:not-allowed}
+@media(max-width:520px){.cage-home-settings .cage-title-options{grid-template-columns:1fr}}

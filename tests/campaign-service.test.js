@@ -58,7 +58,7 @@ test('service denies mutations to guests and ordinary members before accessing s
 });
 test('list selects one current feature, filters private records, and archives by Korean date',async()=>{
   const rows=[campaignSummary(published,clock(),true),campaignSummary({...published,id:'two',number:2,published:{...content,featured:false}},clock(),true),campaignSummary({...published,id:'private',visibility:'private'},clock(),true),campaignSummary({...published,id:'past',number:3,published:{...content,endDate:'2026-10-14'}},clock(),true)];
-  const service=createCampaignService({command:async([op])=>{assert.equal(op,'HVALS');return rows.map(JSON.stringify);},now:clock});
+  const service=createCampaignService({examples:false,command:async([op])=>{assert.equal(op,'HVALS');return rows.map(JSON.stringify);},now:clock});
   const current=await service.list(null,{view:'current'});
   assert.equal(current.featured.id,'campaign-one');assert.deepEqual(current.items.map(x=>x.id),['two']);assert.deepEqual(current.counts,{current:2,archive:1});
   const archive=await service.list(null,{view:'archive'});assert.deepEqual(archive.items.map(x=>x.id),['past']);
@@ -67,7 +67,7 @@ test('list selects one current feature, filters private records, and archives by
 
 test('feature stays excluded from later pages while ordinary cards are reachable once',async()=>{
  const rows=Array.from({length:27},(_,index)=>campaignSummary({...published,id:'item-'+index,number:index+1,published:{...content,featured:index===0}},clock(),true));
- const service=createCampaignService({command:async()=>rows.map(JSON.stringify),now:clock});
+ const service=createCampaignService({examples:false,command:async()=>rows.map(JSON.stringify),now:clock});
  const pages=await Promise.all([1,2,3].map(page=>service.list(null,{page})));
  assert.equal(pages[0].featured.id,'item-0');assert.equal(pages[1].featured,null);assert.equal(pages[2].featured,null);
  assert.deepEqual(pages.map(page=>page.items.length),[12,12,2]);assert.deepEqual(pages.map(page=>page.hasMore),[true,true,false]);
@@ -83,4 +83,30 @@ test('photo upload authorizes and validates before passing bytes to storage',asy
  assert.equal(calls.length,0);
  assert.equal((await service.upload({id:'a',role:'admin'},payload)).url,'https://images.example.org/upload.png');
  assert.match(calls[0][0],/^campaigns\/portraits\/.+\.png$/);assert.equal(calls[0][2].contentType,'image/png');
+});
+
+test('bundled examples default to one feature and four cards with complete content and category filtering',async()=>{
+ const service=createCampaignService({command:async args=>args[0]==='GET'?null:[],now:clock});
+ const result=await service.list(null,{view:'current'});
+ assert.equal(result.featured.id,'example-001');assert.equal(result.items.length,4);
+ const all=[result.featured,...result.items];assert.deepEqual(all.map(x=>x.exampleNumber),[1,2,3,4,5]);
+ assert.deepEqual(all.reduce((m,x)=>(m[x.category]=(m[x.category]||0)+1,m),{}),{culture:2,politics:2,business:1});
+ const politics=await service.list(null,{category:'politics'});assert.equal(politics.counts.current,2);
+ for(const row of all){const detail=(await service.get(row.id,null)).item;assert.equal(detail.isExample,true);assert.equal(detail.personId,'');assert.equal(detail.policies.length,3);assert.ok(detail.whyBody&&detail.storyBody&&detail.needsBody);assert.equal(detail.support,undefined);}
+});
+
+test('example overrides stay hidden and publishing does not allocate an official number',async()=>{
+ let raw=null,evalArgs;const command=async args=>{if(args[0]==='GET')return raw;if(args[0]==='EVAL'){evalArgs=args;const record=JSON.parse(args[9]);return JSON.stringify({ok:true,item:record});}return [];};
+ const service=createCampaignService({command,now:clock});
+ const edited=await service.save({id:'admin',role:'admin'},{id:'example-002',version:1,operation:'publish',input:{...content,category:'politics',isExample:false,exampleNumber:99,number:88}});
+ assert.equal(edited.item.isExample,true);assert.equal(edited.item.exampleNumber,2);assert.equal(edited.item.number,null);assert.equal(evalArgs[7],'');assert.equal(evalArgs[8],'publish');
+ raw=JSON.stringify({...edited.item,visibility:'private'});const hidden=await service.get('example-002',{id:'admin',role:'admin'},{edit:true});assert.equal(hidden.item.state,'private');
+ await assert.rejects(service.get('example-002',null,{edit:true}),/ADMIN_REQUIRED/);
+});
+
+test('manage category filtering uses the editable draft and projects example markers',async()=>{
+ const override={...published,id:'example-001',isExample:true,exampleNumber:1,published:{...content,category:'politics'},draft:{...content,category:'culture'}};
+ const service=createCampaignService({examples:false,command:async()=>[JSON.stringify(campaignSummary(override,clock(),true))],now:clock});
+ const culture=await service.list({id:'a',role:'admin'},{view:'manage',category:'culture'});assert.equal(culture.items[0].isExample,true);assert.equal(culture.items[0].exampleNumber,1);
+ const politics=await service.list({id:'a',role:'admin'},{view:'manage',category:'politics'});assert.equal(politics.items.length,0);
 });

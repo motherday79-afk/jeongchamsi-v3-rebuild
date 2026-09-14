@@ -1,0 +1,5 @@
+/* JCS 158 campaign editor category additions. */
+.campaign-editor-page [hidden]{display:none!important}
+.campaign-editor-page .campaign-example-notice{background:#faf7f0;border-left:3px solid #e3c58b;color:#6e6578;font-size:.8rem;margin:0 0 1rem;max-width:none;padding:.65rem .85rem}
+.campaign-editor-page .campaign-field select[data-campaign-category]{font-weight:700}
+.campaign-editor-page [data-campaign-photo-preview]>.campaign-crop{border-radius:14px;display:block;height:auto;max-height:220px;max-width:180px;overflow:hidden;width:100%}

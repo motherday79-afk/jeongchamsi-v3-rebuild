@@ -1,9 +1,10 @@
-import { renderCampaignBoard, renderCampaignDetail } from '../views/campaign-pages.js?v=0.0.31.157';
-import { renderCampaignEditor } from '../views/campaign-editor.js?v=0.0.31.157';
+import { renderCampaignBoard, renderCampaignDetail } from '../views/campaign-pages.js?v=0.0.31.158';
+import { renderCampaignEditor } from '../views/campaign-editor.js?v=0.0.31.158';
 
 export async function loadCampaignPage({parts=[],searchParams=new URLSearchParams(),session={},client}={}){
   const admin=session?.authenticated===true&&session.user?.role==='admin';
   const view=['current','archive','manage'].includes(searchParams.get('view'))?searchParams.get('view'):'current';
+  const category=['politics','culture','business'].includes(searchParams.get('category'))?searchParams.get('category'):'all';
   try{
     if(parts[1]==='write')return renderCampaignEditor(null,session);
     if(parts[2]==='edit'){
@@ -20,9 +21,10 @@ export async function loadCampaignPage({parts=[],searchParams=new URLSearchParam
       throw new Error('LOAD_FAILED');
     }
     if(view==='manage'&&!admin)return renderCampaignBoard(null,session,view);
-    const result=await client.list({view,page:searchParams.get('page')||1});
+    const listOptions={view,page:searchParams.get('page')||1};if(category!=='all')listOptions.category=category;
+    const result=await client.list(listOptions);
     if(!result.ok)throw new Error('LOAD_FAILED');
-    return renderCampaignBoard(result,session,view);
+    return renderCampaignBoard(result,session,view,category);
   }catch{
     return renderCampaignBoard({ok:false,error:'잠시 후 다시 시도해 주세요. 입력 중인 내용이 있다면 창을 닫기 전에 보관해 주세요.'},session,view);
   }

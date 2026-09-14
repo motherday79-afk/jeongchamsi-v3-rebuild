@@ -164,3 +164,32 @@ test('a detached editor save invalidates cache without navigating the active pag
   assert.equal(callback.result.ok,true);assert.equal(callback.route,null);
  }finally{globalThis.FormData=OriginalFormData;}
 });
+
+test('category editor limits political autocomplete and keeps example metadata outside form input',()=>{
+ const admin={authenticated:true,user:{role:'admin'}};
+ const culture=renderCampaignEditor({id:'example-003',version:1,isExample:true,exampleNumber:3,draft:{category:'culture',name:'임하린',organization:'느린무대'}},admin);
+ assert.match(culture,/name="category" data-campaign-category/);assert.match(culture,/EXAMPLE 3/);assert.match(culture,/name="organization"[^>]*value="느린무대"/);assert.doesNotMatch(culture,/name="isExample"|name="exampleNumber"|data-politician-autocomplete/);
+ const politics=renderCampaignEditor({draft:{category:'politics'}},admin);assert.match(politics,/data-politician-autocomplete/);
+ const data=new FormData();data.set('category','business');data.set('name','가상 창업가');data.set('organization','가상 팀');data.set('isExample','true');
+ assert.deepEqual({...campaignInputFromFormData(data),policies:[],sources:[]},{category:'business',headline:'',accentLine:'',intro:'',personId:'',name:'가상 창업가',party:'',office:'',organization:'가상 팀',region:'',photoUrl:'',photoCrop:'',topic:'',startDate:'',endDate:'',whyTitle:'',whyBody:'',selectionReason:'',quote:'',storyBody:'',needsBody:'',policyTitle:'',videoUrl:'',productionRelation:'',productionDisclosure:'',featured:false,policies:[],sources:[]});
+});
+
+test('changing away from politics clears linked identity and disables autocomplete',()=>{
+ const listeners={},attrs=new Set(['data-politician-autocomplete','data-politician-target']);
+ const personId={value:'person-1'},party={value:'가상당'},name={placeholder:'',setAttribute:(k)=>attrs.add(k),removeAttribute:k=>attrs.delete(k)},block={hidden:false};
+ const form={querySelector:s=>s==='[name=personId]'?personId:s==='[name=party]'?party:s==='[name=name]'?name:null,querySelectorAll:s=>s==='[data-campaign-politics-only]'?[block]:[]};
+ const category={value:'culture',matches:s=>s==='[data-campaign-category]',closest:()=>form};
+ const root={addEventListener:(type,fn)=>listeners[type]=fn};bindCampaignInteractions(root,{client:{}});
+ listeners.change({target:{closest:()=>category}});
+ assert.equal(personId.value,'');assert.equal(party.value,'');assert.equal(block.hidden,true);assert.equal(attrs.has('data-politician-autocomplete'),false);assert.equal(name.placeholder,'이름 직접 입력');
+});
+
+test('late political selection cannot mutate a nonpolitical form and both category switches update controls',()=>{
+ const listeners={},attrs=new Set(),personId={value:''},party={value:''},story={textContent:''},policy={textContent:''},block={hidden:false};
+ const name={value:'직접 이름',placeholder:'',nextElementSibling:null,setAttribute:k=>attrs.add(k),removeAttribute:k=>attrs.delete(k),dispatchEvent(){}};
+ const fields={personId,party,name};const form={dataset:{},querySelector:s=>{const m=s.match?.(/\[name=([^\]]+)\]/);return m?fields[m[1]]:s==='[data-campaign-story-label]'?story:s==='[data-campaign-policy-label]'?policy:null;},querySelectorAll:s=>s==='[data-campaign-politics-only]'?[block]:[]};
+ const root={addEventListener:(type,fn)=>listeners[type]=fn,querySelectorAll:()=>[]};bindCampaignInteractions(root,{client:{}});
+ const category={value:'culture',matches:()=>true,closest:()=>form};listeners.change({target:{closest:()=>category}});assert.equal(story.textContent,'작품 · 활동');
+ listeners['jcs:politician-selected']({target:{closest:()=>form},detail:{item:{id:'late',name:'늦은 응답',party:'당'}}});assert.equal(name.value,'직접 이름');assert.equal(personId.value,'');
+ category.value='politics';listeners.change({target:{closest:()=>category}});assert.equal(attrs.has('data-politician-autocomplete'),true);assert.equal(block.hidden,false);assert.equal(story.textContent,'정치인 이야기');assert.equal(policy.textContent,'정책');
+});

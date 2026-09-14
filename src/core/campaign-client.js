@@ -18,7 +18,7 @@ export function createCampaignClient(options={}){
   if(typeof request!=='function')throw new TypeError('fetch is required');
   const read=async query=>responseData(await request(`${endpoint}?${query}`,{credentials:'same-origin',cache:'no-store'}));
   return {
-    list({view='current',page=1}={}){const query=new URLSearchParams({view:String(view),page:String(page)});return read(query.toString());},
+    list({view='current',page=1,category='all'}={}){const query=new URLSearchParams({view:String(view),page:String(page)});if(category!=='all')query.set('category',String(category));return read(query.toString());},
     get(id,{edit=false}={}){const query=new URLSearchParams({id:String(id??'')});if(edit)query.set('edit','1');return read(query.toString());},
     async save({id='',version=0,operation,input}={}){
       return responseData(await request(endpoint,{method:id?'PATCH':'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:String(id??''),version:Number(version)||0,operation,input})}));

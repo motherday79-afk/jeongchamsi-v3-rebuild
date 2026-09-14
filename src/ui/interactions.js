@@ -1,6 +1,6 @@
 import { renderPrescriptionReport } from '../views/prescription-visuals.js?v=0.0.31.56';
 import { refreshFontScale, setupFontScaleControl } from './font-scale.js?v=0.0.31.56';
-import { createHomeCompareMotion } from './compare-motion.js?v=0.0.31.150';
+import { createHomeCompareMotion } from './compare-motion.js?v=0.0.31.158';
 
 export function setupDrawer(root=document){
   const drawer=root.querySelector('[data-drawer]');
@@ -169,15 +169,16 @@ export function politicianSuggestionSelection(mode,item,base=''){
   if(mode==='admin'){const params=new URLSearchParams();params.set('tab','politicians');params.set('q',String(item.name||''));params.set('person',String(item.id||''));return {route:`/admin?${params.toString()}`};}
   return {value:String(item.name||''),targetId:String(item.id||'')};
 }
-const autocompleteBound=new WeakSet();
+const autocompleteBound=new WeakSet(),autocompleteSearches=new WeakMap();
 export function setupPoliticianAutocomplete(root=document,search=null){
+  if(typeof search==='function')autocompleteSearches.set(root,search);else search=autocompleteSearches.get(root);
   if(typeof search!=='function')return;
   for(const input of root.querySelectorAll('[data-politician-autocomplete]')){
     if(autocompleteBound.has(input))continue;autocompleteBound.add(input);input.dataset.autocompleteReady='true';
     const previous=input.nextElementSibling;const results=previous?.classList.contains('politician-autocomplete-results')?previous:document.createElement('div');results.className='politician-autocomplete-results';results.hidden=true;results.innerHTML='';if(results!==previous)input.insertAdjacentElement('afterend',results);let rows=[],active=-1,sequence=0;
     const close=()=>{results.hidden=true;active=-1;};
-    const select=item=>{if(input.disabled){close();return;}const selection=politicianSuggestionSelection(input.dataset.politicianSelectMode||'route',item,input.dataset.politicianBase);if(!selection)return;++sequence;close();if(selection.route){window.dispatchEvent(new CustomEvent('jcs:layout-route',{detail:{route:selection.route}}));return;}input.value=selection.value;const target=input.dataset.politicianTarget?input.closest('form')?.querySelector(input.dataset.politicianTarget):null;if(target)target.value=selection.targetId;input.dispatchEvent(new Event('change',{bubbles:true}));input.dispatchEvent(new CustomEvent('jcs:politician-selected',{bubbles:true,detail:{item}}));};
-    input.addEventListener('input',async()=>{const current=++sequence,term=input.value.trim();if(!term){rows=[];results.innerHTML='';close();return;}rows=await loadPoliticianSuggestions(term,search);if(current!==sequence)return;if(input.disabled){close();return;}results.innerHTML=rows.length?politicianSuggestionMarkup(rows):'<p>검색 결과가 없습니다.</p>';results.hidden=false;setupPoliticianPhotoFallback(results);});
+    const select=item=>{if(input.disabled||input.hasAttribute?.('data-politician-autocomplete')===false){close();return;}const selection=politicianSuggestionSelection(input.dataset.politicianSelectMode||'route',item,input.dataset.politicianBase);if(!selection)return;++sequence;close();if(selection.route){window.dispatchEvent(new CustomEvent('jcs:layout-route',{detail:{route:selection.route}}));return;}input.value=selection.value;const target=input.dataset.politicianTarget?input.closest('form')?.querySelector(input.dataset.politicianTarget):null;if(target)target.value=selection.targetId;input.dispatchEvent(new Event('change',{bubbles:true}));input.dispatchEvent(new CustomEvent('jcs:politician-selected',{bubbles:true,detail:{item}}));};
+    input.addEventListener('input',async()=>{const current=++sequence;if(input.hasAttribute?.('data-politician-autocomplete')===false){rows=[];results.innerHTML='';close();return;}const term=input.value.trim();if(!term){rows=[];results.innerHTML='';close();return;}rows=await loadPoliticianSuggestions(term,search);if(current!==sequence)return;if(input.disabled||input.hasAttribute?.('data-politician-autocomplete')===false){close();return;}results.innerHTML=rows.length?politicianSuggestionMarkup(rows):'<p>검색 결과가 없습니다.</p>';results.hidden=false;setupPoliticianPhotoFallback(results);});
     input.addEventListener('keydown',event=>{if(results.hidden||!rows.length)return;if(event.key==='ArrowDown'||event.key==='ArrowUp'){event.preventDefault();active=(active+(event.key==='ArrowDown'?1:-1)+rows.length)%rows.length;[...results.querySelectorAll('button')].forEach((button,index)=>button.classList.toggle('is-active',index===active));}else if(event.key==='Enter'&&active>=0){event.preventDefault();select(rows[active]);}else if(event.key==='Escape')close();});
     root.addEventListener('pointerdown',event=>{if(event.target!==input&&!results.contains(event.target))close();});
     results.addEventListener('click',event=>{const button=event.target.closest('[data-politician-suggestion]');if(button)select(rows.find(item=>String(item.id)===button.dataset.politicianSuggestion));});

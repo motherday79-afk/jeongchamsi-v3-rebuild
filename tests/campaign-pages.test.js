@@ -138,3 +138,25 @@ test('detail has a routed board backlink, archive notice, and admin edit control
   assert.match(html,/종료된 캠페인의 기록입니다/);
   assert.match(html,/href="\/campaigns\/campaign-1\/edit" data-layout-route="\/campaigns\/campaign-1\/edit"/);
 });
+
+test('example and category presentation uses distinct labels and nonpolitical language',()=>{
+ const example=card({isExample:true,exampleNumber:3,number:null,category:'culture',organization:'가상 예술팀',party:'',whyBody:'이유',storyBody:'활동',policyTitle:'활동',policies:[{title:'작품',body:'설명'}]});
+ const board=renderCampaignBoard({ok:true,featured:example,items:[],counts:{current:1,archive:0}}, {}, 'current', 'culture');
+ assert.match(board,/EXAMPLE 3/);assert.match(board,/문화·예술/);assert.match(board,/category=culture/);assert.match(board,/사람과 프로젝트/);
+ const detail=renderCampaignDetail(example);assert.match(detail,/작품 · 활동/);assert.match(detail,/예시 기간/);assert.match(detail,/허구의 예시/);assert.match(detail,/가상 예술팀/);assert.doesNotMatch(detail,/정당을 보고 사람을 선택/);
+});
+
+test('category survives view changes and pagination',()=>{
+ const html=renderCampaignBoard({ok:true,items:[card({category:'culture'})],counts:{current:15,archive:14},page:2,hasMore:true}, {}, 'current','culture');
+ assert.match(html,/href="\/campaigns\?category=culture&amp;page=1"/);assert.match(html,/href="\/campaigns\?category=culture&amp;page=3"/);assert.match(html,/href="\/campaigns\?view=archive&amp;category=culture"/);
+});
+
+test('example atlas portraits render as inline crops and nonpolitical support is excluded',()=>{
+ const item=card({category:'business',photoUrl:'/assets/campaigns/approved-campaign-0.webp',photoCrop:'atlas-br',storyBody:'사업 이야기',policyTitle:'창업 제안',policies:[{title:'첫 제안',body:'내용'}],support:{public:true,verified:true,officialUrl:'https://support.example',sourceUrl:'https://source.example',associationName:'후원회'}});
+ const html=renderCampaignDetail(item);assert.match(html,/<svg class="campaign-crop atlas-br"/);assert.match(html,/<image href="\/assets\/campaigns\/approved-campaign-0.webp"[^>]*x="-768" y="-512"/);assert.doesNotMatch(html,/class="jcs-support"/);assert.match(html,/기업 · 창업/);assert.doesNotMatch(html,/소개된 정치인|정책을 살펴보고/);
+});
+
+test('filtered archive invitation retains the active category',()=>{
+ const html=renderCampaignBoard({ok:true,featured:card({category:'culture'}),items:[],counts:{current:1,archive:2},page:1,hasMore:false}, {}, 'current','culture');
+ assert.match(html,/class="jcd-archive-link" href="\/campaigns\?view=archive&amp;category=culture"/);
+});
