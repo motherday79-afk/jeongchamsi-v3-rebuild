@@ -7,8 +7,4 @@
 .jcs-font-scale-control button:focus-visible{border:0;background:transparent;outline:2px solid rgba(11,139,115,.2);outline-offset:1px}
 .jcs-font-scale-control button:disabled{color:#aeb8b4;cursor:default}
 .jcs-font-scale-control output{display:none}
-.author-representative-badge .badge-crest{display:inline-flex;width:18px;height:21px;flex:0 0 18px}
-.author-representative-badge .badge-crest svg{display:block;width:18px;height:21px}
-.community-row .author-representative-badge .badge-crest,.column-card .author-representative-badge .badge-crest{width:16px;height:19px;flex-basis:16px}
-.community-row .author-representative-badge .badge-crest svg,.column-card .author-representative-badge .badge-crest svg{width:16px;height:19px}
 @media(max-width:680px){.jcs-font-scale-control>span{position:static;width:auto;height:auto;overflow:visible;clip:auto}.jcs-font-scale-control button{width:34px;height:34px}}

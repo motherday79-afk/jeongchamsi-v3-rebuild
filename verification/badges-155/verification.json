@@ -1,0 +1,26 @@
+{
+  "release": "JCS_0_0_31_155",
+  "base": "JCS_0_0_31_154",
+  "tests": {
+    "total": 118,
+    "passed": 118,
+    "failed": 0
+  },
+  "badgeCount": 56,
+  "spriteSheetCount": 8,
+  "rasterArtworkByteIdenticalToRecovered": true,
+  "catalogRecordsByteIdenticalTo154": true,
+  "apiAndBackendFilesByteIdenticalTo154": true,
+  "squareSizes": {
+    "author": 24,
+    "comment": 22,
+    "collectionDesktop": 88,
+    "collectionMobile": 72,
+    "showcase": 48,
+    "admin": 36
+  },
+  "showcaseSlotHeight": 80,
+  "browserVisualVerification": "not performed: cloud browser URL security policy blocked local preview",
+  "staticReview": "no critical or important findings remaining",
+  "assetVisualCheck": "all 56 rendered from actual sprite/map; preview-floor residue excluded by UI clip only"
+}

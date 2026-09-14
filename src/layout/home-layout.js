@@ -1,11 +1,11 @@
 import { GENERATION_AGES, participationDisplay, demoLabel } from '../core/participation-model.js?v=0.0.31.79';
 import { SERVICE_CATALOG, moduleActionIconSvg, serviceIconSvg, serviceNavIconSvg } from '../ui/service-icons.js?v=0.0.31.144';
-import { badgeByKey, badgeCrestSvg } from '../data/badge-catalog.js';
+import { badgeByKey, renderBadge } from '../data/badge-catalog.js?v=0.0.31.155';
 
 const partyClass=(party='')=>party.includes('더불어')?'party-democratic':party.includes('국민의힘')?'party-peoplepower':party.includes('개혁신당')?'party-reform':party.includes('조국혁신당')?'party-innovation':party.includes('진보당')?'party-progressive':party.includes('기본소득당')?'party-basicincome':party.includes('사회민주당')?'party-socialdemocratic':party.includes('공석')?'party-vacant':'party-independent';
 const partyMark=(party='')=>party.includes('더불어')?'민':party.includes('국민의힘')?'국':party.includes('개혁신당')?'개':party.includes('조국혁신당')?'조':party.includes('진보당')?'진':party.includes('기본소득당')?'기':party.includes('사회민주당')?'사':party.includes('공석')?'공':'무';
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-const authorInline=item=>{const badge=badgeByKey(item?.representativeBadge),admin=['admin','parkmovie'].includes(String(item?.ownerId||''))||['관리자','박감독'].includes(String(item?.author||''));return `<span class="author-identity"><span class="author-nickname">${esc(item?.author||'정참시')}</span>${badge?`<span class="author-representative-badge" title="대표배지 · ${esc(badge.name)}">${badgeCrestSvg(badge.key)}</span>`:''}${admin?'<span class="author-role author-role-admin">ADMIN</span>':''}</span>`;};
+const authorInline=item=>{const badge=badgeByKey(item?.representativeBadge),admin=['admin','parkmovie'].includes(String(item?.ownerId||''))||['관리자','박감독'].includes(String(item?.author||''));return `<span class="author-identity"><span class="author-nickname">${esc(item?.author||'정참시')}</span>${badge?`<span class="author-representative-badge" title="대표배지 · ${esc(badge.name)}">${renderBadge(badge.key)}</span>`:''}${admin?'<span class="author-role author-role-admin">ADMIN</span>':''}</span>`;};
 const publishedItems=data=>(Array.isArray(data?.items)?data.items:[]).filter(item=>item?.published!==false);
 const dateLabel=value=>{if(!value)return '';const date=new Date(value);return Number.isNaN(date.getTime())?'':date.toLocaleDateString('ko-KR');};
 const academyDate=value=>{const match=String(value||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);if(!match)return {date:String(value||'일정'),day:''};const [,year,month,day]=match,week=['일','월','화','수','목','금','토'][new Date(Date.UTC(Number(year),Number(month)-1,Number(day))).getUTCDay()];return {date:`${month}.${day}`,day:week};};
@@ -83,7 +83,7 @@ function recentPoliticians(items=[]){
 }
 
 const emptyBadgeSlot=type=>`<button type="button" class="badge-slot badge-showcase-slot badge-showcase-empty" data-layout-route="/mypage/activity" data-badge-slot="${type}" aria-label="배지 관리로 이동"><i>◇</i><small>${type==='representative'?'대표':'전시'}</small></button>`;
-const filledBadgeSlot=(key,type)=>{const badge=badgeByKey(key);return badge?`<button type="button" class="badge-slot badge-showcase-slot badge-showcase-filled ${type==='representative'?'is-representative':''}" data-layout-route="/mypage/activity" data-badge-slot="${type}" title="${esc(badge.name)}">${badgeCrestSvg(key)}<small>${esc(badge.name)}</small></button>`:emptyBadgeSlot(type);};
+const filledBadgeSlot=(key,type)=>{const badge=badgeByKey(key);return badge?`<button type="button" class="badge-slot badge-showcase-slot badge-showcase-filled ${type==='representative'?'is-representative':''}" data-layout-route="/mypage/activity" data-badge-slot="${type}" title="${esc(badge.name)}">${renderBadge(key)}<small>${esc(badge.name)}</small></button>`:emptyBadgeSlot(type);};
 
 export function renderBadgeShowcase(status={},showMyPage=false,displayName=''){
   status=status||{};

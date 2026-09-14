@@ -1914,7 +1914,7 @@ html.jcv3-touch-ui .footer-view-switch.mobile-toggle{display:inline-flex;positio
   background:#fcfbfd;
   cursor:pointer;
 }
-.badge-home-preview button>span:not(.badge-gem){
+.badge-home-preview button>span:not(.jcs-badge){
   width:28px;
   height:28px;
   display:grid;
@@ -2388,108 +2388,33 @@ html.jcv3-touch-ui .footer-view-switch.mobile-toggle{display:inline-flex;positio
 .drawer-tone-navy .drawer-service-icon{color:#425fbd;background:#f1f4ff;border-color:#dfe5fb}
 .drawer-tone-gold .drawer-service-icon{color:#a77514;background:#fff9e8;border-color:#f1e4bd}
 
-/* jewel badge system: faceted, flat-color, no decorative gradient */
-.badge-gem{display:inline-grid;place-items:center;width:46px;height:46px;flex:none}
-.badge-gem svg{width:100%;height:100%;overflow:visible}
-.badge-gem-shell{stroke:currentColor;stroke-width:1.15;fill:#f3eef8}
-.badge-gem-facet{stroke:none;opacity:.9}
-.badge-gem-facet-a{fill:#e3d7f0}.badge-gem-facet-b{fill:#f3edf9}.badge-gem-facet-c{fill:#d7c6e8}
-.badge-gem-icon{fill:none;stroke:currentColor;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round;transform:scale(.58);transform-origin:12px 12px}
-.badge-gem-standard{color:#753bbd}
 
-
-.badge-jewel-preview>span{display:grid;grid-template-columns:42px 1fr;grid-template-rows:auto auto;align-items:center;column-gap:9px}.badge-jewel-preview .badge-gem{grid-row:1/3;width:38px;height:38px}.badge-jewel-preview b,.badge-jewel-preview small{min-width:0}
+.badge-jewel-preview>span{display:grid;grid-template-columns:42px 1fr;grid-template-rows:auto auto;align-items:center;column-gap:9px}.badge-jewel-preview b,.badge-jewel-preview small{min-width:0}
 .badge-jewel-grid article{display:grid;grid-template-columns:82px minmax(0,1fr);gap:16px;align-items:center;padding:18px}
-.badge-jewel-stage{width:74px;height:74px;display:grid;place-items:center;border-radius:18px;background:#f9f8fa;border:1px solid #eae8ec}.badge-jewel-stage .badge-gem{width:62px;height:62px}
-.badge-jewel-grid article.locked{opacity:.48}.badge-jewel-grid article.locked .badge-gem{filter:grayscale(1)}.badge-jewel-grid article.representative{border-color:#b59bcf;box-shadow:inset 0 0 0 1px #dacce7}
+.badge-jewel-stage{width:74px;height:74px;display:grid;place-items:center;border-radius:18px;background:#f9f8fa;border:1px solid #eae8ec}
+.badge-jewel-grid article.locked{opacity:.48}.badge-jewel-grid article.representative{border-color:#b59bcf;box-shadow:inset 0 0 0 1px #dacce7}
 .badge-jewel-copy small,.badge-jewel-copy b,.badge-jewel-copy p{display:block}.badge-jewel-copy b{margin-top:3px;font-size:15px}.badge-jewel-copy p{margin:6px 0 10px;color:var(--text-2);font-size:12px;line-height:1.5}.badge-representative-btn{min-height:36px;padding:0 11px}.badge-representative-btn.active{border-color:#ae92c9;color:#753bbd;background:#f5f0fa}.badge-locked-label{font-size:11px;color:var(--text-3);font-weight:800}
-.member-badge-admin{grid-column:1/-1;border:1px solid #e6e4e9;border-radius:13px;background:#fbfbfc}.member-badge-admin summary{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:12px 14px;cursor:pointer;list-style:none}.member-badge-admin summary::-webkit-details-marker{display:none}.member-badge-admin summary span{display:grid;gap:2px}.member-badge-admin summary b{font-size:13px}.member-badge-admin summary small,.member-badge-admin summary em{color:var(--text-3);font-size:10px;font-style:normal}.member-badge-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:0 12px 12px}.member-badge-chip{display:grid;grid-template-columns:22px 34px 1fr;align-items:center;gap:7px;padding:8px;border:1px solid #e7e5e9;border-radius:10px;background:#fff}.member-badge-chip input{width:16px;height:16px}.member-badge-chip .badge-gem{width:32px;height:32px}.member-badge-chip span b,.member-badge-chip span small{display:block}.member-badge-chip span b{font-size:11px}.member-badge-chip span small{font-size:9px;color:var(--text-3)}.member-badge-admin .field-help{display:block;padding:0 12px 12px}
+.member-badge-admin{grid-column:1/-1;border:1px solid #e6e4e9;border-radius:13px;background:#fbfbfc}.member-badge-admin summary{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:12px 14px;cursor:pointer;list-style:none}.member-badge-admin summary::-webkit-details-marker{display:none}.member-badge-admin summary span{display:grid;gap:2px}.member-badge-admin summary b{font-size:13px}.member-badge-admin summary small,.member-badge-admin summary em{color:var(--text-3);font-size:10px;font-style:normal}.member-badge-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:0 12px 12px}.member-badge-chip{display:grid;grid-template-columns:22px 34px 1fr;align-items:center;gap:7px;padding:8px;border:1px solid #e7e5e9;border-radius:10px;background:#fff}.member-badge-chip input{width:16px;height:16px}.member-badge-chip span b,.member-badge-chip span small{display:block}.member-badge-chip span b{font-size:11px}.member-badge-chip span small{font-size:9px;color:var(--text-3)}.member-badge-admin .field-help{display:block;padding:0 12px 12px}
 
 /* national evaluation common admin editor */
 .national-admin-editor{margin-top:16px;border:1px solid #e3dfe7;border-radius:15px;background:#fcfbfd;overflow:hidden}.national-admin-editor summary{display:flex;justify-content:space-between;align-items:center;padding:13px 15px;cursor:pointer;list-style:none}.national-admin-editor summary::-webkit-details-marker{display:none}.national-admin-editor summary span{display:grid;gap:2px}.national-admin-editor summary b{font-size:13px}.national-admin-editor summary small{font-size:10px;color:var(--text-3)}.national-admin-editor summary em{font-size:10px;font-style:normal;font-weight:900;color:#753bbd}.national-admin-editor form{padding:0 15px 15px;border-top:1px solid #efedf1}.national-admin-toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:end;padding-top:14px}.national-admin-toolbar label{display:grid;gap:6px;font-size:11px;font-weight:800}.national-admin-toolbar input[type=text]{height:42px;border:1px solid #dce4e1;border-radius:10px;padding:0 11px;background:#fff}.national-admin-toolbar .check{display:flex;align-items:center;gap:7px;min-height:42px}.national-admin-vote-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) 120px;gap:9px;margin-top:12px}.national-admin-vote-grid label{display:grid;gap:5px;font-size:10px;font-weight:800}.national-admin-vote-grid input{height:40px;border:1px solid #dce4e1;border-radius:9px;padding:0 10px;background:#fff}.national-admin-total{display:grid;align-content:center;padding:8px 11px;border-radius:10px;background:#f3eef8}.national-admin-total small{font-size:9px;color:#668078}.national-admin-total b{font-size:16px;color:#753bbd}.national-admin-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px}.national-admin-actions .save-state{font-size:11px;color:var(--text-3)}
-@media(max-width:760px){.member-badge-grid{grid-template-columns:1fr 1fr}.national-admin-toolbar{grid-template-columns:1fr}.national-admin-vote-grid{grid-template-columns:1fr 1fr}.badge-jewel-grid article{grid-template-columns:64px 1fr}.badge-jewel-stage{width:58px;height:58px}.badge-jewel-stage .badge-gem{width:50px;height:50px}}
+@media(max-width:760px){.member-badge-grid{grid-template-columns:1fr 1fr}.national-admin-toolbar{grid-template-columns:1fr}.national-admin-vote-grid{grid-template-columns:1fr 1fr}.badge-jewel-grid article{grid-template-columns:64px 1fr}.badge-jewel-stage{width:58px;height:58px}}
 @media(max-width:480px){.member-badge-grid{grid-template-columns:1fr}.national-admin-vote-grid{grid-template-columns:1fr 1fr}.national-admin-total{grid-column:1/-1}}
 
 
-/* alpha6.0.36.19 — badge rarity/material system */
-.badge-gem-ring{fill:none;stroke:currentColor;stroke-width:.7;opacity:.34}
-
-/* BRONZE — easy-entry participation badges */
-.badge-gem-bronze{color:#85563b}
-.badge-gem-bronze .badge-gem-shell{fill:#f3e5dc;stroke:#85563b}
-.badge-gem-bronze .badge-gem-facet-a{fill:#d49a72}
-.badge-gem-bronze .badge-gem-facet-b{fill:#faeee6}
-.badge-gem-bronze .badge-gem-facet-c{fill:#bf7d55}
-.badge-gem-bronze .badge-gem-ring{stroke:#9a684a;opacity:.32}
-
-/* SILVER — sustained participation */
-.badge-gem-silver{color:#66737a}
-.badge-gem-silver .badge-gem-shell{fill:#eef2f3;stroke:#748087}
-.badge-gem-silver .badge-gem-facet-a{fill:#cbd3d7}
-.badge-gem-silver .badge-gem-facet-b{fill:#fbfafc}
-.badge-gem-silver .badge-gem-facet-c{fill:#b7c1c6}
-.badge-gem-silver .badge-gem-ring{stroke:#7b878d;opacity:.42}
-
-/* GOLD — meaningful achievement. Preserve the current premium gold direction. */
-.badge-gem-gold{color:#8a5d08}
-.badge-gem-gold .badge-gem-shell{fill:#fff2bd;stroke:#94660e}
-.badge-gem-gold .badge-gem-facet-a{fill:#efcc58}
-.badge-gem-gold .badge-gem-facet-b{fill:#fff9dd}
-.badge-gem-gold .badge-gem-facet-c{fill:#dcae35}
-.badge-gem-gold .badge-gem-ring{stroke:#a77413;stroke-width:.82;opacity:.7}
-
-/* PLATINUM — JEONGCHAMSI's own top tier, using the deep brand color. */
-
-
-
-
-
-.badge-gem-platinum .badge-gem-ring{stroke-width:.78;}
-
-
-/* Representative jewel gets a little more presence without enlarging the sidebar card. */
-.side-representative-jewel .badge-gem-gold,
-.side-representative-jewel .badge-gem-platinum{filter:drop-shadow(0 5px 7px rgba(20,42,35,.14))}
 .participation-badge-main>div p{font-weight:800;letter-spacing:.02em}
 
 /* Tier labels follow the material instead of all reading as the same green. */
 .badge-jewel-copy small{color:#68747a}
-.badge-jewel-grid article:has(.badge-gem-bronze) .badge-jewel-copy small{color:#85563b}
-.badge-jewel-grid article:has(.badge-gem-silver) .badge-jewel-copy small{color:#66737a}
-.badge-jewel-grid article:has(.badge-gem-gold) .badge-jewel-copy small{color:#8a5d08}
-.badge-jewel-grid article:has(.badge-gem-platinum) .badge-jewel-copy small{color:#753bbd}
-.badge-jewel-preview>span:has(.badge-gem-bronze) small{color:#85563b}
-.badge-jewel-preview>span:has(.badge-gem-silver) small{color:#66737a}
-.badge-jewel-preview>span:has(.badge-gem-gold) small{color:#8a5d08}
-.badge-jewel-preview>span:has(.badge-gem-platinum) small{color:#753bbd}
-
-
-/* alpha6.0.36.21 — sidebar badge tier color isolation
-   Sidebar preview must never repaint a tier jewel with the brand/platinum tone. */
-.badge-home-jewels button>.badge-gem{
-  border-radius:0;
-  background:transparent;
-}
-.badge-home-jewels button>.badge-gem-bronze{color:#85563b}
-.badge-home-jewels button>.badge-gem-silver{color:#66737a}
-.badge-home-jewels button>.badge-gem-gold{color:#8a5d08}
-.badge-home-jewels button>.badge-gem-platinum{color:#753bbd}
-
 /* 0.36.22 · author badge identity + participation/partner operations */
 .author-identity{display:inline-flex;align-items:center;gap:4px;vertical-align:middle;white-space:nowrap}
 .author-identity .author-nickname{color:inherit;font:inherit}
-.author-representative-badge{display:inline-flex;align-items:center;justify-content:center;line-height:0;vertical-align:middle}
-.author-representative-badge .badge-gem{width:18px;height:18px;flex:0 0 18px}
-.author-representative-badge .badge-gem svg{width:18px;height:18px}
 .author-role{display:inline-flex;align-items:center;height:17px;padding:0 5px;border-radius:999px;font-size:8px;font-style:normal;font-weight:950;letter-spacing:.04em;line-height:1}
 .author-role-partner{background:#eee7f6;color:#753bbd}
 .author-role-admin{background:#f0f2f3;color:#4d5960}
 .article-meta .author-identity,.board-list small .author-identity,.comment-list .author-identity{color:inherit}
 .comment-list b:has(.author-identity){display:inline-flex;align-items:center}
 .column-card .author-identity,.community-row .author-identity{display:inline-flex}
-.community-row .author-representative-badge .badge-gem{width:16px;height:16px;flex-basis:16px}
-.column-card .author-representative-badge .badge-gem{width:18px;height:18px;flex-basis:18px}
-.column-card .author-representative-badge .badge-gem svg{width:18px;height:18px}
 
 .participation-request-page,.partners-page{display:grid;gap:18px}
 .request-compose-card{display:grid;gap:14px}
@@ -2503,21 +2428,20 @@ html.jcv3-touch-ui .footer-view-switch.mobile-toggle{display:inline-flex;positio
 .request-thread-status{padding:5px 8px;border-radius:999px;font-size:10px;font-weight:900}.request-thread-status.status-requested{background:#f3f2f4;color:#6e7874}.request-thread-status.status-reviewing{background:#fff4dc;color:#936716}.request-thread-status.status-completed{background:#f0e8f7;color:#753bbd}
 .request-admin-actions{grid-column:1/-1;display:flex;gap:6px;padding-left:42px}.request-admin-actions button{height:28px;padding:0 9px;border:1px solid #dce5e2;border-radius:8px;background:#fff;color:#596661;font-size:10px;font-weight:800}
 
-.partners-hero{display:flex;gap:18px;align-items:center}.partner-badge-hero{display:inline-flex;flex:0 0 auto}.partner-badge-hero .badge-gem{width:66px;height:66px}
-.partner-approved-banner{display:flex;align-items:center;justify-content:space-between;gap:16px}.partner-approved-banner>div:first-child{display:flex;gap:12px;align-items:center}.partner-approved-banner .badge-gem{width:44px;height:44px}.partner-approved-banner b{font-size:16px}.partner-approved-banner p{margin:4px 0 0;color:#697570;font-size:12px}
+.partners-hero{display:flex;gap:18px;align-items:center}.partner-badge-hero{display:inline-flex;flex:0 0 auto}
+.partner-approved-banner{display:flex;align-items:center;justify-content:space-between;gap:16px}.partner-approved-banner>div:first-child{display:flex;gap:12px;align-items:center}.partner-approved-banner b{font-size:16px}.partner-approved-banner p{margin:4px 0 0;color:#697570;font-size:12px}
 .partner-apply-guide{margin:0 0 16px;color:#65716d;font-size:13px;line-height:1.7}.partner-secret-form{display:grid;gap:14px}.partner-secret-form label{display:grid;gap:7px;font-size:12px;font-weight:900}.partner-secret-form input,.partner-secret-form textarea{border:1px solid #dce5e2;border-radius:11px;padding:11px 12px;font:inherit}.partner-secret-notice{padding:10px 12px;border-radius:10px;background:#f6f5f8;color:#65716d;font-size:11px}
 .partner-application-list{display:grid;gap:10px}.partner-application-card{padding:15px;border:1px solid #e6e2e9;border-radius:14px;background:#fff}.partner-application-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.partner-application-head b{display:block;font-size:14px}.partner-application-head small{display:block;margin-top:4px;color:#87918e;font-size:10px}.partner-application-head>span{padding:5px 8px;border-radius:999px;background:#f3f1f4;color:#67736f;font-size:10px;font-weight:900}.partner-application-card.status-approved .partner-application-head>span{background:#ede4f6;color:#753bbd}.partner-application-card.status-reviewing .partner-application-head>span{background:#fff4dc;color:#936716}
 .partner-secret-message{margin-top:12px;padding:12px;border-radius:11px;background:#f8f7f9}.partner-secret-message>span{color:#6e7975;font-size:10px;font-weight:900}.partner-secret-message p,.partner-review-note p{margin:7px 0 0;white-space:pre-wrap;color:#33403c;font-size:13px;line-height:1.65}.partner-review-note{margin-top:9px;padding:10px 12px;border-left:3px solid #753bbd;background:#f7f4fa}.partner-review-note b{font-size:10px;color:#753bbd}
 .partner-review-controls{display:grid;grid-template-columns:minmax(180px,1fr) auto auto auto;gap:7px;margin-top:12px}.partner-review-controls input{height:34px;border:1px solid #dce5e2;border-radius:9px;padding:0 10px;font-size:11px}.partner-review-controls button{height:34px;border:1px solid #dce5e2;border-radius:9px;background:#fff;color:#596661;font-size:10px;font-weight:900}.partner-review-controls button.approve{border-color:#753bbd;background:#753bbd;color:#fff}
 .participation-admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.participation-admin-grid>section{min-width:0;padding:16px;border:1px solid #e8e5eb;border-radius:14px;background:#fbfbfc}
 
-@media(max-width:820px){.request-comment-form{grid-template-columns:30px 1fr}.request-comment-form .primary-btn,.request-comment-form .save-state{grid-column:2}.partner-approved-banner{align-items:flex-start;flex-direction:column}.partner-review-controls{grid-template-columns:1fr 1fr}.partner-review-controls input{grid-column:1/-1}.participation-admin-grid{grid-template-columns:1fr}.partners-hero{align-items:flex-start}.partner-badge-hero .badge-gem{width:52px;height:52px}}
+@media(max-width:820px){.request-comment-form{grid-template-columns:30px 1fr}.request-comment-form .primary-btn,.request-comment-form .save-state{grid-column:2}.partner-approved-banner{align-items:flex-start;flex-direction:column}.partner-review-controls{grid-template-columns:1fr 1fr}.partner-review-controls input{grid-column:1/-1}.participation-admin-grid{grid-template-columns:1fr}.partners-hero{align-items:flex-start}}
 
 
 /* alpha6.0.36.24 — user-curated four-badge sidebar showcase */
 .badge-showcase-four{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:12px}
 .badge-showcase-four button{position:relative;min-height:82px;padding:15px 3px 7px;border-radius:11px}
-.badge-showcase-four button>.badge-gem{width:31px;height:31px;margin:0 auto 4px}
 .badge-showcase-four button>b{font-size:9px;line-height:1.2}
 .badge-showcase-four button>small{font-size:7px}
 .badge-showcase-four .badge-slot-label{position:absolute;top:4px;left:50%;width:auto;height:auto;transform:translateX(-50%);background:transparent;border-radius:0;color:#7a8782;font-size:7px;font-weight:950;letter-spacing:.06em}
@@ -2538,7 +2462,6 @@ html.jcv3-touch-ui .footer-view-switch.mobile-toggle{display:inline-flex;positio
 /* alpha6.0.36.25 — sidebar badge layout: hero representative + three curated badges */
 .badge-showcase-secondary{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:9px}
 .badge-showcase-secondary button{min-height:70px;padding:8px 5px;border-radius:11px}
-.badge-showcase-secondary button>.badge-gem{width:29px;height:29px;margin:0 auto 4px}
 .badge-showcase-secondary button>b{font-size:9px;line-height:1.2}
 .badge-showcase-secondary button>small{font-size:7px}
 .badge-showcase-secondary .badge-showcase-vacant{min-height:70px;border:1px dashed #e8e5eb;border-radius:11px;background:#fcfcfd}
@@ -2817,22 +2740,6 @@ html.jcv3-touch-ui .jcv3-view-mode-switch{display:flex}
 .badge-tier-platinum .badge-jewel-stage{background:radial-gradient(circle at 34% 24%,#ffffff 0,#eef3ff 42%,#dce6fb 76%,#f8fbff 100%);border-color:#c8d4ee;box-shadow:0 8px 22px rgba(69,88,150,.13),inset 0 1px 0 #fff}
 .badge-tier-black .badge-jewel-stage{background:radial-gradient(circle at 35% 25%,#303941 0,#171c20 42%,#090c0e 100%);border-color:#3a444b;box-shadow:0 9px 24px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.06)}
 
-.badge-gem-platinum{color:#435799;filter:drop-shadow(0 6px 10px rgba(62,79,140,.22))}
-.badge-gem-platinum .badge-gem-halo{fill:none;stroke:#b7c9ff;stroke-width:.58;opacity:.72}
-.badge-gem-platinum .badge-gem-spark{fill:none;stroke:#ffffff;stroke-width:.72;opacity:.95}
-.badge-gem-platinum .badge-gem-shell{fill:#e8eeff;stroke:#6b7db7;stroke-width:1.35}
-.badge-gem-platinum .badge-gem-facet-a{fill:#ffffff}.badge-gem-platinum .badge-gem-facet-b{fill:#c8d5fb}.badge-gem-platinum .badge-gem-facet-c{fill:#93a9df}.badge-gem-platinum .badge-gem-ring{stroke:#ffffff;opacity:.92}.badge-gem-platinum .badge-gem-icon{stroke:#42558f;stroke-width:1.55}
-
-.badge-gem-black{color:#eef2f4;border-radius:50%;background:radial-gradient(circle at 38% 30%,rgba(125,145,161,.22),rgba(18,22,25,.2) 43%,rgba(0,0,0,.45) 100%);filter:drop-shadow(0 7px 10px rgba(0,0,0,.36))}
-.badge-gem-black .badge-gem-halo{fill:none;stroke:#66747d;stroke-width:.7;opacity:.72}
-.badge-gem-black .badge-gem-shell{fill:#0d1114;stroke:#8c9aa3;stroke-width:1.4}
-.badge-gem-black .badge-gem-ring{stroke:#dce5e9;stroke-width:.72;opacity:.56}
-.badge-gem-black .badge-gem-facet-a{fill:#323b42}.badge-gem-black .badge-gem-facet-b{fill:#151b1f}.badge-gem-black .badge-gem-facet-c{fill:#050708}
-.badge-gem-black .badge-gem-icon{stroke:#f6f8f9;stroke-width:1.58}
-.badge-gem-black .badge-gem-crownline{fill:none;stroke:#d5b96d;stroke-width:.72;opacity:.95}
-.badge-gem-black .badge-gem-core{fill:#d9c17b;stroke:#fff0b9;stroke-width:.35;filter:drop-shadow(0 0 2px rgba(255,224,140,.7))}
-.side-representative-jewel .badge-gem-black{filter:drop-shadow(0 6px 10px rgba(0,0,0,.42))}
-
 .member-badge-tier{padding:10px 12px 12px}.member-badge-tier+.member-badge-tier{border-top:1px solid #efedf1}.member-badge-tier-head{display:flex;align-items:center;justify-content:space-between;padding:4px 1px 8px}.member-badge-tier-head b{font-size:10px;letter-spacing:.05em}.member-badge-tier-head span{color:var(--text-3);font-size:9px;font-weight:900}.member-badge-tier .member-badge-grid{padding:0}.member-badge-operator{background:#14191c;border-color:#343d42}.member-badge-operator span b{color:#f4f7f8}.member-badge-operator span small{color:#aab4b9}.member-badge-operator input:disabled{opacity:.75}
 @media(max-width:760px){.badge-tier-section{padding:13px}.badge-tier-head{display:grid;gap:5px}.badge-tier-head p{text-align:left}.badge-tier-head>div{justify-content:space-between}.badge-progress-copy{font-size:10.5px}}
 
@@ -2849,7 +2756,7 @@ html.jcv3-touch-ui .jcv3-view-mode-switch{display:flex}
 .badge-center-tier-head>div{display:flex;gap:9px;align-items:center}.badge-center-tier-head b{font-size:12px;letter-spacing:.045em}.badge-center-tier-head span,.badge-center-tier-head small{font-size:10px;color:#77847f;font-weight:850}
 .badge-center-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
 .badge-center-grid article{display:grid;grid-template-columns:52px 1fr;gap:10px;align-items:center;padding:12px;border:1px solid #e8e5eb;border-radius:12px;background:#fff}
-.badge-center-grid .badge-gem{width:48px;height:48px}.badge-center-grid small,.badge-center-grid b,.badge-center-grid p,.badge-center-grid span{display:block}
+.badge-center-grid small,.badge-center-grid b,.badge-center-grid p,.badge-center-grid span{display:block}
 .badge-center-grid small{font-size:9px;color:#7a8882;font-weight:900}.badge-center-grid b{margin-top:2px;font-size:13px}.badge-center-grid p{margin:4px 0;color:#68766f;font-size:10px;line-height:1.45}
 .badge-center-grid span{font-size:10px;color:#53625c}.badge-center-grid span strong{color:#753bbd;font-size:12px}
 .badge-center-black{background:#111518;border-color:#30383e}.badge-center-black .badge-center-tier-head{border-bottom-color:#2c353a}.badge-center-black .badge-center-tier-head b{color:#f4f7f8}.badge-center-black .badge-center-tier-head span,.badge-center-black .badge-center-tier-head small{color:#a8b2b7}

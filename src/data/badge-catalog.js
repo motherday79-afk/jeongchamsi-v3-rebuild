@@ -1,3 +1,5 @@
+import { BADGE_ART } from './badge-art-map.js';
+
 export const BADGE_CATALOG = Object.freeze([
   { key:"noon-signal", tier:"BRONZE", name:"도시락알리미", mission:"정오 시간대에 정참시를 찾아 활동 기록을 남기면 획득합니다.", kind:"시간 미션" },
   { key:"midnight", tier:"BRONZE", name:"신데렐라", mission:"자정 시간대에 정참시를 찾아 활동 기록을 남기면 획득합니다.", kind:"시간 미션" },
@@ -68,18 +70,15 @@ export const BADGE_CATALOG = Object.freeze([
 export function badgeByKey(key=''){return BADGE_CATALOG.find(item=>item.key===String(key||''))||null;}
 export function badgeKeys(){return BADGE_CATALOG.map(item=>item.key);}
 
-function crestMark(item){
-  const source=String(item?.icon||item?.key||'J').replace(/[^a-z0-9가-힣]/gi,'');
-  return (source[0]||'J').toUpperCase();
-}
+const escapeBadgeHtml=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 
-export function badgeCrestSvg(key='',extraClass=''){
+export function renderBadge(key='',extraClass=''){
   const item=badgeByKey(key);
-  if(!item)return '';
+  const art=item?BADGE_ART[item.key]:null;
+  if(!item||!art)return '';
   const tier=String(item.tier||'BRONZE').toLowerCase();
-  const mark=crestMark(item);
-  return `<span class="badge-crest badge-crest-${tier} ${extraClass}" data-badge-key="${item.key}" role="img" aria-label="${item.name}"><svg viewBox="0 0 72 82" aria-hidden="true"><path class="badge-crest-shadow" d="M36 2 64 14v31c0 17-12 28-28 35C20 73 8 62 8 45V14Z"/><path class="badge-crest-shell" d="M36 4 62 15v29c0 16-11 26-26 33C21 70 10 60 10 44V15Z"/><path class="badge-crest-ring" d="M36 10 56 19v23c0 12-8 21-20 27-12-6-20-15-20-27V19Z"/><path class="badge-crest-facet badge-crest-facet-a" d="m36 4 10 25-10 11-10-11Z"/><path class="badge-crest-facet badge-crest-facet-b" d="M10 15 26 29l10 11-26 4Z"/><path class="badge-crest-facet badge-crest-facet-c" d="m62 15-16 14-10 11 26 4Z"/><circle class="badge-crest-medallion" cx="36" cy="41" r="14"/><text class="badge-crest-mark" x="36" y="47" text-anchor="middle">${mark}</text><path class="badge-crest-crown" d="m25 20 5 3 6-8 6 8 5-3-2 9H27Z"/></svg></span>`;
+  const classes=`jcs-badge jcs-badge--${tier}${extraClass?` ${escapeBadgeHtml(extraClass)}`:''}`;
+  const clip=art.clip?`;--jcs-badge-clip:${art.clip}`:'';
+  const style=`--jcs-badge-sheet:url('${art.sheet}');--jcs-badge-x:${art.column*100/3}%;--jcs-badge-y:${art.row*100}%${clip}`;
+  return `<span class="${classes}" data-badge-key="${escapeBadgeHtml(item.key)}" role="img" aria-label="${escapeBadgeHtml(item.name)}" style="${escapeBadgeHtml(style)}"><span class="jcs-badge-art" aria-hidden="true"></span></span>`;
 }
-
-export const badgeGemSvg=badgeCrestSvg;
-

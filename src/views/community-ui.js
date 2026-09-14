@@ -1,5 +1,5 @@
-import { cageArena } from '../layout/home-layout.js?v=0.0.31.150';
-import { badgeByKey, badgeCrestSvg } from '../data/badge-catalog.js';
+import { cageArena } from '../layout/home-layout.js?v=0.0.31.155';
+import { badgeByKey, renderBadge } from '../data/badge-catalog.js?v=0.0.31.155';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const date=v=>{const d=new Date(v);return Number.isNaN(d.getTime())?'':d.toLocaleString('ko-KR',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false});};
 const route=d=>d==='columns'?'column':d;
@@ -7,7 +7,7 @@ const label=d=>({community:'커뮤니티 X 케이지',itsme:'IT’S ME',columns:
 const body=v=>String(v||'').split(/\n\s*\n/).filter(Boolean).map(s=>`<p>${esc(s).replace(/\n/g,'<br>')}</p>`).join('');
 const image=v=>/^(https:\/\/|\/(?!\/))/i.test(String(v||''))?String(v):'';
 const icon=name=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${({share:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m9 10 6-4M9 14l6 4"/>',zap:'<path d="m13 2-9 12h7l-1 8 10-13h-7l1-7Z"/>',swords:'<path d="m3 3 14 14m-3 3 6-6M21 3 7 17m3 3-6-6M3 3l1 5 4-4-5-1ZM21 3l-1 5-4-4 5-1Z"/>',crown:'<path d="m3 6 5 4 4-7 4 7 5-4-3 14H6L3 6Z"/>',heart:'<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/>',bookmark:'<path d="M5 3h14v18l-7-4-7 4V3Z"/>',list:'<path d="M9 6h12M9 12h12M9 18h12M3 6h1M3 12h1M3 18h1"/>',pencil:'<path d="m16 3 5 5-13 13H3v-5L16 3ZM13 6l5 5"/>',trash:'<path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/>',comment:'<path d="M21 11a9 9 0 0 1-9 9H4l-3 2 1-6a9 9 0 1 1 19-5Z"/>'})[name]||'<path d="m14 6-6 6 6 6"/>'}</svg>`;
-export const authorIdentity=item=>{const badge=badgeByKey(item?.representativeBadge);return `<span class="author-identity"><span class="author-nickname">${esc(item?.author||'정참시')}</span>${badge?`<span class="author-representative-badge" title="대표배지 · ${esc(badge.name)}">${badgeCrestSvg(badge.key)}</span>`:''}</span>`;};
+export const authorIdentity=item=>{const badge=badgeByKey(item?.representativeBadge);return `<span class="author-identity"><span class="author-nickname">${esc(item?.author||'정참시')}</span>${badge?`<span class="author-representative-badge" title="대표배지 · ${esc(badge.name)}">${renderBadge(badge.key)}</span>`:''}</span>`;};
 const canManage=(session,item)=>!!session?.authenticated&&(session.user?.role==='admin'||!!item.ownerId&&String(item.ownerId)===String(session.user?.id));
 const tag=item=>item.pinKind==='notice'?'<span class="jc-tag gold">공지</span>':item.cageEnabled?'<span class="jc-tag gold">케이지</span>':item.camp?`<span class="jc-tag ${item.camp==='progressive'?'blue':'red'}">${item.camp==='progressive'?'진보':'보수'}진영</span>`:'';
 const field=(name,title,value='',large=false)=>`<label class="jc-field"><span>${title}</span>${large?`<textarea name="${name}" ${name==='body'?'required':''}>${esc(value)}</textarea>`:`<input name="${name}" value="${esc(value)}" ${name==='title'?'required maxlength="200"':''}>`}</label>`;

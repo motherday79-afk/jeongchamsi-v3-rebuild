@@ -26,7 +26,6 @@
 .mypage-person-row{justify-content:flex-start}
 .mypage-person-row>span{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:#eee8f3;color:#753bbd;font-weight:900}
 .mypage-badge-row{justify-content:flex-start}
-.mypage-badge-row .badge-crest{width:38px;height:44px;flex:0 0 auto}
 .mypage-empty{margin:12px 0 0;color:#7b8782;font-size:13px}
 .mypage-view-all{border:0;background:transparent;color:#554762;font:inherit;font-size:12px;cursor:pointer}.mypage-view-all span{margin-left:4px;color:#8a9792}
 .mypage-collection-page{max-width:980px;margin:0 auto}.mypage-pagination{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:22px}.mypage-pagination button{min-width:38px;height:38px;border:1px solid #e3dfe7;border-radius:9px;background:#fff;color:#4e5f59;cursor:pointer}.mypage-pagination button[aria-current="page"]{border-color:#173f72;background:#173f72;color:#fff;font-weight:800}
