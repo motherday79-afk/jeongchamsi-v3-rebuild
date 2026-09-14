@@ -1,0 +1,414 @@
+{
+  "method": "Authored CSS selector/cascade checks at320/560/768/1280px, including width media conditions; no browser layout",
+  "screens": [
+    {
+      "viewport": 320,
+      "checks": [
+        {
+          "selector": ".header-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": ".header-brand-icon",
+          "property": "height",
+          "value": "48px"
+        },
+        {
+          "selector": ".search-brand-icon",
+          "property": "width",
+          "value": "44px"
+        },
+        {
+          "selector": ".search-brand-icon",
+          "property": "height",
+          "value": "44px"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "height",
+          "value": "48px"
+        },
+        {
+          "selector": ".search-home",
+          "property": "width",
+          "value": "50px"
+        },
+        {
+          "selector": ".product-search",
+          "property": "grid-template-columns",
+          "value": "50px minmax(0,1fr) 42px"
+        },
+        {
+          "selector": ".product-search",
+          "property": "height",
+          "value": "48px"
+        },
+        {
+          "selector": ".product-search input",
+          "property": "min-width",
+          "value": "0"
+        },
+        {
+          "selector": ".jcd-item",
+          "property": "display",
+          "value": "flex"
+        },
+        {
+          "selector": ".jcd-portrait",
+          "property": "aspect-ratio",
+          "value": "3/2"
+        },
+        {
+          "selector": ".jcd-item-body",
+          "property": "display",
+          "value": "flex"
+        },
+        {
+          "selector": ".jcd-portrait>.campaign-crop",
+          "property": "position",
+          "value": "absolute"
+        },
+        {
+          "selector": ".jcd-item-link .jcs-icon",
+          "property": "width",
+          "value": "15px"
+        },
+        {
+          "selector": ".jcd-item-link .jcs-icon",
+          "property": "height",
+          "value": "15px"
+        },
+        {
+          "selector": ".jcd-cta-copy>span",
+          "property": "white-space",
+          "value": "nowrap"
+        },
+        {
+          "selector": ".search-discovery-campaign-grid",
+          "property": "grid-template-columns",
+          "value": "1fr"
+        },
+        {
+          "selector": ".search-discovery-product-grid",
+          "property": "grid-template-columns",
+          "value": "repeat(2,minmax(0,1fr))"
+        }
+      ],
+      "uncompiledSelectors": 31
+    },
+    {
+      "viewport": 560,
+      "checks": [
+        {
+          "selector": ".header-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": ".header-brand-icon",
+          "property": "height",
+          "value": "48px"
+        },
+        {
+          "selector": ".search-brand-icon",
+          "property": "width",
+          "value": "44px"
+        },
+        {
+          "selector": ".search-brand-icon",
+          "property": "height",
+          "value": "44px"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "height",
+          "value": "48px"
+        },
+        {
+          "selector": ".search-home",
+          "property": "width",
+          "value": "50px"
+        },
+        {
+          "selector": ".product-search",
+          "property": "grid-template-columns",
+          "value": "50px minmax(0,1fr) 42px"
+        },
+        {
+          "selector": ".product-search",
+          "property": "height",
+          "value": "48px"
+        },
+        {
+          "selector": ".product-search input",
+          "property": "min-width",
+          "value": "0"
+        },
+        {
+          "selector": ".jcd-item",
+          "property": "display",
+          "value": "flex"
+        },
+        {
+          "selector": ".jcd-portrait",
+          "property": "aspect-ratio",
+          "value": "3/2"
+        },
+        {
+          "selector": ".jcd-item-body",
+          "property": "display",
+          "value": "flex"
+        },
+        {
+          "selector": ".jcd-portrait>.campaign-crop",
+          "property": "position",
+          "value": "absolute"
+        },
+        {
+          "selector": ".jcd-item-link .jcs-icon",
+          "property": "width",
+          "value": "15px"
+        },
+        {
+          "selector": ".jcd-item-link .jcs-icon",
+          "property": "height",
+          "value": "15px"
+        },
+        {
+          "selector": ".jcd-cta-copy>span",
+          "property": "white-space",
+          "value": "nowrap"
+        },
+        {
+          "selector": ".search-discovery-campaign-grid",
+          "property": "grid-template-columns",
+          "value": "1fr"
+        },
+        {
+          "selector": ".search-discovery-product-grid",
+          "property": "grid-template-columns",
+          "value": "repeat(2,minmax(0,1fr))"
+        }
+      ],
+      "uncompiledSelectors": 31
+    },
+    {
+      "viewport": 768,
+      "checks": [
+        {
+          "selector": ".header-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": ".header-brand-icon",
+          "property": "height",
+          "value": "48px"
+        },
+        {
+          "selector": ".search-brand-icon",
+          "property": "width",
+          "value": "44px"
+        },
+        {
+          "selector": ".search-brand-icon",
+          "property": "height",
+          "value": "44px"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "height",
+          "value": "48px"
+        },
+        {
+          "selector": ".search-home",
+          "property": "width",
+          "value": "50px"
+        },
+        {
+          "selector": ".product-search",
+          "property": "grid-template-columns",
+          "value": "50px minmax(0,1fr) 42px"
+        },
+        {
+          "selector": ".product-search",
+          "property": "height",
+          "value": "50px"
+        },
+        {
+          "selector": ".product-search input",
+          "property": "min-width",
+          "value": "0"
+        },
+        {
+          "selector": ".jcd-item",
+          "property": "display",
+          "value": "flex"
+        },
+        {
+          "selector": ".jcd-portrait",
+          "property": "aspect-ratio",
+          "value": "3/2"
+        },
+        {
+          "selector": ".jcd-item-body",
+          "property": "display",
+          "value": "flex"
+        },
+        {
+          "selector": ".jcd-portrait>.campaign-crop",
+          "property": "position",
+          "value": "absolute"
+        },
+        {
+          "selector": ".jcd-item-link .jcs-icon",
+          "property": "width",
+          "value": "15px"
+        },
+        {
+          "selector": ".jcd-item-link .jcs-icon",
+          "property": "height",
+          "value": "15px"
+        },
+        {
+          "selector": ".jcd-cta-copy>span",
+          "property": "white-space",
+          "value": "nowrap"
+        },
+        {
+          "selector": ".search-discovery-campaign-grid",
+          "property": "grid-template-columns",
+          "value": "repeat(3,minmax(0,1fr))"
+        },
+        {
+          "selector": ".search-discovery-product-grid",
+          "property": "grid-template-columns",
+          "value": "repeat(4,minmax(0,1fr))"
+        }
+      ],
+      "uncompiledSelectors": 29
+    },
+    {
+      "viewport": 1280,
+      "checks": [
+        {
+          "selector": ".header-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": ".header-brand-icon",
+          "property": "height",
+          "value": "48px"
+        },
+        {
+          "selector": ".search-brand-icon",
+          "property": "width",
+          "value": "44px"
+        },
+        {
+          "selector": ".search-brand-icon",
+          "property": "height",
+          "value": "44px"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "height",
+          "value": "48px"
+        },
+        {
+          "selector": ".search-home",
+          "property": "width",
+          "value": "50px"
+        },
+        {
+          "selector": ".product-search",
+          "property": "grid-template-columns",
+          "value": "50px minmax(0,1fr) 42px"
+        },
+        {
+          "selector": ".product-search",
+          "property": "height",
+          "value": "50px"
+        },
+        {
+          "selector": ".product-search input",
+          "property": "min-width",
+          "value": "0"
+        },
+        {
+          "selector": ".jcd-item",
+          "property": "display",
+          "value": "flex"
+        },
+        {
+          "selector": ".jcd-portrait",
+          "property": "aspect-ratio",
+          "value": "3/2"
+        },
+        {
+          "selector": ".jcd-item-body",
+          "property": "display",
+          "value": "flex"
+        },
+        {
+          "selector": ".jcd-portrait>.campaign-crop",
+          "property": "position",
+          "value": "absolute"
+        },
+        {
+          "selector": ".jcd-item-link .jcs-icon",
+          "property": "width",
+          "value": "15px"
+        },
+        {
+          "selector": ".jcd-item-link .jcs-icon",
+          "property": "height",
+          "value": "15px"
+        },
+        {
+          "selector": ".jcd-cta-copy>span",
+          "property": "white-space",
+          "value": "nowrap"
+        },
+        {
+          "selector": ".search-discovery-campaign-grid",
+          "property": "grid-template-columns",
+          "value": "repeat(3,minmax(0,1fr))"
+        },
+        {
+          "selector": ".search-discovery-product-grid",
+          "property": "grid-template-columns",
+          "value": "repeat(4,minmax(0,1fr))"
+        }
+      ],
+      "uncompiledSelectors": 25
+    }
+  ],
+  "campaignCards": 3,
+  "productCards": 4,
+  "uniqueCampaignScope": 1,
+  "existingAssetsAndDataUnchanged": 52,
+  "logoSha256": "4d0922dc35204aa27260f35a05c4ed4f1aa5e5a871e5657de39f83b446a58e9e"
+}

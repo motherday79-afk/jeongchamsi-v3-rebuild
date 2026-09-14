@@ -1,0 +1,32 @@
+✔ approved and changed cage titles both stay editable live lettering (6.992514ms)
+✔ tilted thick title ink fits the original board for every manual emphasis (17.192664ms)
+✔ brush uses exact Rock metrics with exact bundled fallback metrics (24.878946ms)
+✔ saved one-line layout stays one line when the replacement face needs a smaller font size (4.91397ms)
+✔ editor restores a saved layout across whitespace-only title changes (2.132868ms)
+✔ editor previews the same live brush text before manual layout is enabled (0.697228ms)
+✔ changing a break or emphasis select enables manual layout (3.875968ms)
+✔ manual break keeps the chosen wording and line boundary (4.349326ms)
+✔ stored layout cannot follow a different title after the source post changes (0.465569ms)
+✔ spaced titles reject manual breaks inside a word (0.202429ms)
+✔ titles without spaces retain deliberate codepoint break choices (0.364202ms)
+✔ long manual lines are rejected instead of cut or split again (1.497545ms)
+✔ manual geometry fits the approved title board without clipping (3.179668ms)
+✔ cage layout saves through the existing CAS without overwriting concurrent posts (3.700297ms)
+✔ stale title and unprivileged requests cannot change settings (0.963893ms)
+✔ turning manual layout off clears only the selected cage layout (0.724304ms)
+✔ layout target must match the explicitly featured cage (0.388344ms)
+✔ automatic selection rejects a stale layout target after a concurrent newer cage appears (11.801144ms)
+✔ automatic selection saves a layout for the newest eligible root (0.740899ms)
+✔ home cage is one complete link, including the header area, for administrators too (16.0198ms)
+✔ changing the featured cage updates its real title, route and both percentages (1.233714ms)
+✔ empty or unpublished cages never display sample participation numbers (1.244442ms)
+✔ only an administrator can choose the featured cage within the cage detail (15.011358ms)
+✔ saving the main cage then going Back renders the newly selected cage (9.701302ms)
+ℹ tests 24
+ℹ suites 0
+ℹ pass 24
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 511.671692

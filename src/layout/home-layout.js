@@ -1,4 +1,4 @@
-import { renderCageBanner } from '../ui/home-cage-banner.js?v=0.0.31.158';
+import { renderCageBanner } from '../ui/home-cage-banner.js?v=0.0.31.160';
 import { GENERATION_AGES, participationDisplay, demoLabel } from '../core/participation-model.js?v=0.0.31.79';
 import { SERVICE_CATALOG, moduleActionIconSvg, serviceIconSvg, serviceNavIconSvg } from '../ui/service-icons.js?v=0.0.31.159';
 import { badgeByKey, renderBadge } from '../data/badge-catalog.js?v=0.0.31.155';
@@ -184,9 +184,9 @@ const GOODS_PHOTO_CROPS=Object.freeze({
 let goodsCropSequence=0;
 const goodsProductImage=p=>{const [x,y,w,h]=GOODS_PHOTO_CROPS[p.id],src=p.kids?'/assets/shop/kids-111.png':'/assets/shop/goods-approved-111.png',clipId=`jcs-goods-crop-${p.id}-${++goodsCropSequence}`;return `<svg class="goods-product-image" viewBox="${x} ${y} ${w} ${h}" role="img" aria-label="${esc(p.name)} 디자인 시안" preserveAspectRatio="xMidYMid meet" overflow="hidden"><defs><clipPath id="${clipId}" clipPathUnits="userSpaceOnUse"><rect x="${x}" y="${y}" width="${w}" height="${h}"/></clipPath></defs><image href="${src}" x="0" y="0" width="1536" height="1024" clip-path="url(#${clipId})"/></svg>`;};
 
-const cheerArtDefs=()=>`<svg width="0" height="0" aria-hidden="true" class="cheer-art-defs"><defs><image id="jcs-cheer-art" width="1536" height="1024" href="${CHEER_ART}"/></defs></svg>`;
+export const cheerArtDefs=()=>`<svg width="0" height="0" aria-hidden="true" class="cheer-art-defs"><defs><image id="jcs-cheer-art" width="1536" height="1024" href="${CHEER_ART}"/></defs></svg>`;
 const CHEER_CROPS=Object.freeze({'taegeuk':[0,150,350,687],'candle':[375,112,255,725],'blue-wing':[635,90,280,747],'red-shield':[925,165,270,672],'jcs-mint':[1200,130,336,707]});
-const cheerProductImage=p=>{if(p.lines||p.kids)return goodsProductImage(p);const [x,y,w,h]=CHEER_CROPS[p.id];return `<svg class="cheer-product-image" viewBox="${x} ${y} ${w} ${h}" role="img" aria-label="${esc(p.name)} 디자인 시안" preserveAspectRatio="xMidYMid meet" overflow="hidden"><defs><clipPath id="cheer-crop-${p.id}" clipPathUnits="userSpaceOnUse"><rect x="${x}" y="${y}" width="${w}" height="${h}"/></clipPath></defs><g clip-path="url(#cheer-crop-${p.id})"><use href="#jcs-cheer-art"/></g></svg>`;};
+export const cheerProductImage=p=>{if(p.lines||p.kids)return goodsProductImage(p);const [x,y,w,h]=CHEER_CROPS[p.id];return `<svg class="cheer-product-image" viewBox="${x} ${y} ${w} ${h}" role="img" aria-label="${esc(p.name)} 디자인 시안" preserveAspectRatio="xMidYMid meet" overflow="hidden"><defs><clipPath id="cheer-crop-${p.id}" clipPathUnits="userSpaceOnUse"><rect x="${x}" y="${y}" width="${w}" height="${h}"/></clipPath></defs><g clip-path="url(#cheer-crop-${p.id})"><use href="#jcs-cheer-art"/></g></svg>`;};
 
 export function renderCheerShop(){return `<section class="module cheer-shop" id="cheer-shop" data-match-itsme-size>${cheerArtDefs()}<div class="cheer-shop-heading"><div><span class="eyebrow">JCS CHEER SHOP</span><h2>당신의 목소리에 빛을 더하세요</h2></div><a class="cheer-coming cheer-more" href="/shop" data-layout-route="/shop">아이템 더보기</a></div><div class="cheer-product-grid">${CHEER_PRODUCTS.map(p=>`<a class="cheer-product-card" href="/shop/${p.id}" data-layout-route="/shop/${p.id}"><div class="cheer-product-visual">${cheerProductImage(p)}</div><b>${p.name}</b></a>`).join('')}</div></section>`;}
 const CHEER_PREVIEW_NOTICE='해당 페이지는 이해를 돕기 위한 페이지입니다. 실제 제품이 아닙니다.';

@@ -1,0 +1,9 @@
+/* Preserve the supplied PNG while enlarging its three shell placements. */
+.product-header .header-brand-icon.jcs-brand-material{width:48px;height:48px;object-fit:contain;margin:0}
+.product-header .product-head-search .search-brand-icon.jcs-brand-material{width:44px;height:44px;object-fit:contain;margin:0}
+.site-shell .footer-brand-icon.jcs-brand-material{width:48px;height:48px;object-fit:contain;margin:0}
+.product-header .search-home{width:50px;min-width:50px;margin:0}
+.product-header .product-head-search,.product-header .product-search{min-width:0}
+.product-header .product-head-search .product-search{height:50px;grid-template-columns:50px minmax(0,1fr) 42px}
+.product-header .product-head-search .product-search input{min-width:0}
+@media(max-width:560px){.product-header .product-head-search .product-search{height:48px;min-height:48px;grid-template-columns:50px minmax(0,1fr) 42px}.product-header .product-head-search .product-search input{min-width:0;padding-left:4px}}

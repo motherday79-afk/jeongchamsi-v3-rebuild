@@ -1,0 +1,469 @@
+{
+  "release": "JCS_0_0_31_160",
+  "base": "JCS_0_0_31_159",
+  "protectedFiles": [
+    {
+      "path": "api/gateway.js",
+      "sha256": "76123ba1cd96b9ece7e44153b06b217cc5ec5b5d9478e59fc9a5d74f5d855736"
+    },
+    {
+      "path": "api/share.js",
+      "sha256": "84e25b70dedeba8de578e20c32f6ec07b7ed231b7183e15693dbbe06522884b8"
+    },
+    {
+      "path": "assets/badges/metal-155/sheet-01.webp",
+      "sha256": "5bca12530fca282d76fc4cba2a98fab41d37419b0310cb344f7d3cc0b816e7b4"
+    },
+    {
+      "path": "assets/badges/metal-155/sheet-02.webp",
+      "sha256": "eb38b62590440610196e8cd7c03204d871372f2ab5300bc6fd1560b52d0d5d07"
+    },
+    {
+      "path": "assets/badges/metal-155/sheet-03.webp",
+      "sha256": "2e68785dfd175874c7f7ae0eb39641e839411ab7256c10f0032f7d9f728bb17a"
+    },
+    {
+      "path": "assets/badges/metal-155/sheet-04.webp",
+      "sha256": "0d6ed9875a32d458ee86e4f8c43fabc080a8cd2216ad639bfea3677f30680f07"
+    },
+    {
+      "path": "assets/badges/metal-155/sheet-05.webp",
+      "sha256": "86256998562c2235fbbf1ab9f180ec120d56c6c2c0d4faa8bcc520eae90e9894"
+    },
+    {
+      "path": "assets/badges/metal-155/sheet-06.webp",
+      "sha256": "909b58a811c5887563c0c60e274075a53e8125dbddd339340988398b9f269875"
+    },
+    {
+      "path": "assets/badges/metal-155/sheet-07.webp",
+      "sha256": "05ab1cc25ba1285975406bdebefeb9c94ae8826c607992e38fe51795860e74b4"
+    },
+    {
+      "path": "assets/badges/metal-155/sheet-08.webp",
+      "sha256": "96c1685b3561e65d28fa55283c366a3d35d211901bd25d0c4a3f7cb6fb47f7f6"
+    },
+    {
+      "path": "assets/banners/academy-mentor-119.webp",
+      "sha256": "d24251c6a50a99d1db4a4a376297e42fa238a2f64fba85d6292f0209f52844df"
+    },
+    {
+      "path": "assets/banners/cage-approved-156.webp",
+      "sha256": "12da43aab05743e83a4cd3e739e317e43703b33e5142368b0a3d5fd072a6d8cf"
+    },
+    {
+      "path": "assets/banners/cage-template-156.webp",
+      "sha256": "7d0a5eac042e14333c98074faa454b9dcba7b11b3c1e9c53bc5c64c73712035a"
+    },
+    {
+      "path": "assets/banners/citizen-vote-125.webp",
+      "sha256": "3d69e2a3ed966866515e9a22f8bfd9e7121c69e6e57b6f7e5a122d164d0f8958"
+    },
+    {
+      "path": "assets/banners/generation-democratic-137.webp",
+      "sha256": "0b58d0b6194e87ba7d1903b73ce6c71cc440c2610ba00e245c2dc4e14e75aeef"
+    },
+    {
+      "path": "assets/banners/generation-flag-136.webp",
+      "sha256": "00f2f576818f6cf3ea36fe07c9d6f0a6adb07ff1081e718f2a3cc0643c98c351"
+    },
+    {
+      "path": "assets/banners/generation-independent-137.webp",
+      "sha256": "6e1f159970bf34ddcf16fe3ca26994a317dd9062cc880df37654de6b41649127"
+    },
+    {
+      "path": "assets/banners/generation-peoplepower-137.webp",
+      "sha256": "05653d7ca44df320e2c7e46ffe40b86f3a51489329efd59db539baeee310d0a5"
+    },
+    {
+      "path": "assets/banners/hero-mobile-117.webp",
+      "sha256": "84a9b083cc26fe5b574323b821780ef787f2e39afdae9d4ef3b95aaf891470e3"
+    },
+    {
+      "path": "assets/banners/hero-pc-117.webp",
+      "sha256": "e7a7723a1a02dbeec32143ad575e2abbc8d69597bda646210eee748d09323c47"
+    },
+    {
+      "path": "assets/banners/hero-tablet-117.webp",
+      "sha256": "45951ea9156c6e0d0d0dc379b5c27c475728dfbe5ce5faab142655be99de9e88"
+    },
+    {
+      "path": "assets/banners/sidebar-mobile-117.webp",
+      "sha256": "e24dda47c560f71eb33a407b7fade52e9761b07f185260ebe757097c7a239c8b"
+    },
+    {
+      "path": "assets/banners/sidebar-pc-117.webp",
+      "sha256": "34f38cc7523d4f8060840e76c6eb514f1a6390428b205b19facd432f0d2e799e"
+    },
+    {
+      "path": "assets/banners/sidebar-tablet-117.webp",
+      "sha256": "e5e964fc3d21c8543c7bf45c4680df14f5c8a451dbd79d39096a8a6ff971ed87"
+    },
+    {
+      "path": "assets/banners/support-135.webp",
+      "sha256": "b406badced9e18f22085932241c9776011661d13cb7b0d2cdad7496f8c676f04"
+    },
+    {
+      "path": "assets/banners/support-purple-gold-156.webp",
+      "sha256": "b54f6133a7963e7eec7c66ffe67359b59c3e9a19bb8fa1ef566c87db8b844a2d"
+    },
+    {
+      "path": "assets/brand/jcs-gold-159.png",
+      "sha256": "4d0922dc35204aa27260f35a05c4ed4f1aa5e5a871e5657de39f83b446a58e9e"
+    },
+    {
+      "path": "assets/campaigns/approved-campaign-0.webp",
+      "sha256": "3d40dc41ce7baf735e327ab2cd516bdf79c884ef52b9f4150bd58db523033ea7"
+    },
+    {
+      "path": "assets/campaigns/approved-campaign-1.webp",
+      "sha256": "f792b0192072e2eb8735a74b25bc54791a1d5e9202a08419b6addfd198412d90"
+    },
+    {
+      "path": "assets/fonts/EastSeaDokdo-OFL.txt",
+      "sha256": "39de3de5f1873f89bca4af37823ab22e28e88d0d8f7fe2f07e82e9e6e9bf7b70"
+    },
+    {
+      "path": "assets/fonts/EastSeaDokdo-Regular.woff",
+      "sha256": "3548587aa476d0cde2d201b179ee09e470815b6e6b4341098829e7ccefbcece3"
+    },
+    {
+      "path": "assets/proposals/assembly-120.webp",
+      "sha256": "6dbf55d0bd8d9d1d6f33c0f3f0bae3ae97225fb22df50c5f34609b60d70557bf"
+    },
+    {
+      "path": "assets/proposals/assembly-122.webp",
+      "sha256": "58320ef0b47019b62d173fe17c02f66448be3e18f9de6372e01766031e4e21ce"
+    },
+    {
+      "path": "assets/proposals/citizen-120.webp",
+      "sha256": "2d8d685574f086b39745669332726d1a5dabfbf85e570e8693e476b80e146737"
+    },
+    {
+      "path": "assets/proposals/citizen-122.webp",
+      "sha256": "4163e0a7c8ae8f6130e04ba7569288cf8757e630561cc50f7ea8b1fe239cbbc7"
+    },
+    {
+      "path": "assets/proposals/council-120.webp",
+      "sha256": "a5dc463f933d832c41a9dd2ea39c6a2c87cb272189291c5f7782eca656b44de7"
+    },
+    {
+      "path": "assets/proposals/council-122.webp",
+      "sha256": "9b0e30c2d6425334c7834947967d6d925e7425607a052a55528b2c19c334a4ce"
+    },
+    {
+      "path": "assets/proposals/mayor-120.webp",
+      "sha256": "354e95a21f0e3d04d02cd194738ba8cca123b4d2b87440c5c5939cf8ae0e7763"
+    },
+    {
+      "path": "assets/proposals/mayor-122.webp",
+      "sha256": "9f6838aef67bb2a9865e6880811af19ce0086ca2b0c9621d25de893d44f3474f"
+    },
+    {
+      "path": "assets/proposals/minister-120.webp",
+      "sha256": "f3a4e322ca69746ac5795acf38147910b1885082e2860e7f1834312eddeebf09"
+    },
+    {
+      "path": "assets/proposals/minister-122.webp",
+      "sha256": "022161932563223fd76286e705c28c5be8a0c2c771ab8191ce07b2733a416c79"
+    },
+    {
+      "path": "assets/proposals/president-120.webp",
+      "sha256": "141aa6981ba6edf2fc6778ef06cda15e20bef9f3ad85346e815210f940a6deea"
+    },
+    {
+      "path": "assets/proposals/president-122.webp",
+      "sha256": "f3f2e4658e928fa6131302dfbc48e0285fdf3dacc6a9a683e0938e61cf60d49b"
+    },
+    {
+      "path": "assets/shop/family-114.webp",
+      "sha256": "8b1933606dec20003886beeb0c1ebe1e5bf90a3495518ff98a51e3dbbcb6bd40"
+    },
+    {
+      "path": "assets/shop/gathering-114.webp",
+      "sha256": "ddc6a926890de3458fdbe6e977869cc2e18841aeb1ec3c0d007fcc8b781675f6"
+    },
+    {
+      "path": "assets/shop/goods-approved-111.png",
+      "sha256": "ff75e0ecdb4425e0fdc917aaedd1b60c0a4597876134e0a393a57f3878da9b2b"
+    },
+    {
+      "path": "assets/shop/kids-111.png",
+      "sha256": "dbcfe23085d5d5d44cd89d4da62e8e93204378e4be6e0fe0f41a2f27f1c17c4b"
+    },
+    {
+      "path": "css/badges.css",
+      "sha256": "63e59172669e16a844ae2f263f7cf907648cfe48f81efee32fcd218e22507846"
+    },
+    {
+      "path": "css/cage-title-editor-158.css",
+      "sha256": "acac64fd79489a2fa2692bfa5fe1be5c9ba22ecf890262f25c31e6fe02274e60"
+    },
+    {
+      "path": "css/campaign-editor-157.css",
+      "sha256": "91d9f3cd12750fdec0edf895c16bf3f3e856a80a2d2958251274c91da52713f2"
+    },
+    {
+      "path": "css/campaign-editor-158.css",
+      "sha256": "2e6bff209c55694762331ea7ba12c6d0c2a8a4245b0a787eadd95a6c66e8116a"
+    },
+    {
+      "path": "css/campaigns-157.css",
+      "sha256": "eecd72aa7bad41988099eecd50f4209b1e066f49ee1a3fd133ebb1ea2ee93338"
+    },
+    {
+      "path": "css/campaigns-158.css",
+      "sha256": "e56ba83989c726abe05af23c86df2455470980ed9a233df9811aabf7ddbf559b"
+    },
+    {
+      "path": "css/home-promos-156.css",
+      "sha256": "066efffc87810e899d2d92bd652f0d5ebf5ad69601cabe8d980767303ee767c4"
+    },
+    {
+      "path": "css/home-refinements-158.css",
+      "sha256": "0bcbe5bc851765f814a98f964bf01b67be876e714d04972a38eac48545a165e5"
+    },
+    {
+      "path": "lib/admin-politician-service.js",
+      "sha256": "f4e611317bdfc626e9e3ee5093cd96a7bc876ae2b28d4248404e9ddefc39c56e"
+    },
+    {
+      "path": "lib/application-service.js",
+      "sha256": "9075003945ac2064f7b843dfbdaab7797c699670932c9941b91187c9237d2a54"
+    },
+    {
+      "path": "lib/badge-engine.js",
+      "sha256": "d66279f26f8b86463e81ec9936e2228a291dcf161788e32f536317244b4cf8e9"
+    },
+    {
+      "path": "lib/badge-service.js",
+      "sha256": "e7ffbdd520351eb6d1a366435728923ccce5b623c3f49ab86a56e48b25b18dfb"
+    },
+    {
+      "path": "lib/campaign-http.js",
+      "sha256": "827ab968f48ef8ea31894128d6454c07ac914d716952e70f8c8a9068004a6fa9"
+    },
+    {
+      "path": "lib/campaign-service.js",
+      "sha256": "89af0e5027c996a63455bd3365502c8bd9b69f2e057f1b488bea9e3bacdd0de1"
+    },
+    {
+      "path": "lib/community-service.js",
+      "sha256": "ac8b0800bfe47e99cf4878ebcd89f4a0c2094325129662101ee11f23ed6a943e"
+    },
+    {
+      "path": "lib/favorite-service.js",
+      "sha256": "a519586a9010d6b77075bff35306369405fd669b5534b28cbc20c8664a1e1d0c"
+    },
+    {
+      "path": "lib/gallup-public.js",
+      "sha256": "b646c5070c645c5fb0cc5e0909e0567334b81485c64c6aa3a00ed35091d71f3b"
+    },
+    {
+      "path": "lib/google-news.js",
+      "sha256": "3d1c9f212e520aa04abfa5666c1c745521f7a7449e17fd58e2f76dd1c9233e21"
+    },
+    {
+      "path": "lib/home-banner-service.js",
+      "sha256": "8d1768c679145dddef289531af3dc2f5f78acb1502be59feaf9a0738b78aeebe"
+    },
+    {
+      "path": "lib/inquiry-service.js",
+      "sha256": "38ea5f7fc3dd31b2090528119017ea71d84185ba13c5932eb5210843c280d43b"
+    },
+    {
+      "path": "lib/intelligence-access.js",
+      "sha256": "b6ec60de89968f7ffadc9f4fd6c9c901b8dd2601ce9fe6d512cc73712fbfacc4"
+    },
+    {
+      "path": "lib/intelligence-analysis.js",
+      "sha256": "ebaf241e3df1f8890cc4e6dbd113a6d1f5de2f91fb817953ac6924d9d7bb1d19"
+    },
+    {
+      "path": "lib/intelligence-classification.js",
+      "sha256": "0f72e5a6520f20ac92526871e945d03b6c6f1e1d5ab64a96fb26345ebd398638"
+    },
+    {
+      "path": "lib/intelligence-collectors.js",
+      "sha256": "ad4d38106d0774faf996b100a9a506d75b219224f9933a07c49119f46bd14a29"
+    },
+    {
+      "path": "lib/intelligence-consistency.js",
+      "sha256": "8c98e1d07daf32095a311122c162a72e3b8d8634e09c248de2815437beebbca5"
+    },
+    {
+      "path": "lib/intelligence-diagnostics.js",
+      "sha256": "4ce81413fd60dc11daf24e33309a3c39e6be596fd40a6122392154a1c1fa3079"
+    },
+    {
+      "path": "lib/intelligence-events.js",
+      "sha256": "7715eca7875f38e2814374eb68c69e79458fcd4eaf73d397a9f02497e5417685"
+    },
+    {
+      "path": "lib/intelligence-facts.js",
+      "sha256": "b82fabbb3a49d2be0f7e4e256f21a0aee8d4dcb25218181ed4c0db35ccbd2410"
+    },
+    {
+      "path": "lib/intelligence-headlines.js",
+      "sha256": "b3da6ef76927fa9cd48739cf76a9d3654dcd2b355e2301f5f258e430687e591b"
+    },
+    {
+      "path": "lib/intelligence-inference.js",
+      "sha256": "3fdd848405983c1180a0bf47524229ba1958800cb66f4617030bd957bd1574d3"
+    },
+    {
+      "path": "lib/intelligence-keys.js",
+      "sha256": "01cd77135f55b51d42aa6efe1407735b58b1a0a21254f11b1e6554195e3ab829"
+    },
+    {
+      "path": "lib/intelligence-repository.js",
+      "sha256": "9c57d3fd26955fe9e917938e000307dffa76fd7cb65e1b62594b10c51e0d9f29"
+    },
+    {
+      "path": "lib/intelligence-service.js",
+      "sha256": "3dcc01be903fd61720312e5f2027a24ffb4398386b64f839da76e601f9d9f5a3"
+    },
+    {
+      "path": "lib/intelligence-storage.js",
+      "sha256": "66185532633b5e387f7fc3a1b0a887887958da26bddd6736fbc1b8bd3f5c8a23"
+    },
+    {
+      "path": "lib/intelligence-validation.js",
+      "sha256": "8e8018d52d22bf46eb17e70d7dbb5399236f50f73e8764aeb89bfc3c769f5034"
+    },
+    {
+      "path": "lib/media-article-key.js",
+      "sha256": "0138a5cc26aa78882b2923889ee78fbaa9f573d3eb2b7c2b5a4085b19000c400"
+    },
+    {
+      "path": "lib/media-spread-service.js",
+      "sha256": "ce5d8fbd0f2aa2f5411da08ba5bc7a8b83da9fc079589ca487f0bd9c0c717b91"
+    },
+    {
+      "path": "lib/media-spread.js",
+      "sha256": "c0c06dfe22a0b3ca8e3dcd147c6440e8ce34ae961feee6f6ea150aa029c9f621"
+    },
+    {
+      "path": "lib/migration-core.js",
+      "sha256": "d53d04a070f8f73d57be855632b01e1d9ffa0fc700470020ada7cba65e70f730"
+    },
+    {
+      "path": "lib/migration-service.js",
+      "sha256": "a74743a74245ce3a4e9d4d00c438ed6fc46a716766f490e71f76c42f81e5fae6"
+    },
+    {
+      "path": "lib/naver-search-ads.js",
+      "sha256": "db4952a96fe68b307655fc7521d4391508e79d247c8fcf5ece8efacfa1dbdfc6"
+    },
+    {
+      "path": "lib/official-public-data.js",
+      "sha256": "bfb769cb0fec44e3dede7b44afd1964ec7182b4266aee87fcd6952d4567cda57"
+    },
+    {
+      "path": "lib/operational-ranking.js",
+      "sha256": "af29c24eaac1da8404093c33500b6cbde6eb5ecec12f8c47fa1cb031a4d41ac8"
+    },
+    {
+      "path": "lib/participation-admin.js",
+      "sha256": "6a3cee7445d38495a3c2417e220e9062cdecfd9c2c028441cdfca56ddade9bbb"
+    },
+    {
+      "path": "lib/password.js",
+      "sha256": "0e63b11b339008d729f1c1790949be4a4e603354523e8c844ddafc1db1ce358e"
+    },
+    {
+      "path": "lib/politician-photo-service.js",
+      "sha256": "6041d18101dd94a9fb0ba6b6890f3a0034e6e5bc44f575d604dacec5d088d55b"
+    },
+    {
+      "path": "lib/politician-role-updates.js",
+      "sha256": "4b7a2296d2bc2417a8bd277a05676ec93f69f63b2de724a9d80a52149accd362"
+    },
+    {
+      "path": "lib/politician-seed.generated.js",
+      "sha256": "0db97bcd86ebdc0b787b2b76bcbae806bc62e1818fabb2934ac0eb6a06ac0443"
+    },
+    {
+      "path": "lib/politician-store.js",
+      "sha256": "a1297f8b3014055b2cbf0069864b006d83b5fbad23bc95d55b4d0d0c6ece5aa7"
+    },
+    {
+      "path": "lib/publisher-share.js",
+      "sha256": "b7fa381bc3e330711e86adbeb14ab98a41eda560ce33c9b0532f38e1187acffb"
+    },
+    {
+      "path": "lib/rebuild-store.js",
+      "sha256": "2fca1c5bd15e9d984f45881ed1e2ee110384f477e2ccb6aec7394694479012f5"
+    },
+    {
+      "path": "lib/redis-rest.js",
+      "sha256": "20c8f45392884d6920ea9d84a2c7dff27115b99403a55e464b8399ac1cde5b52"
+    },
+    {
+      "path": "lib/request-read-scope.js",
+      "sha256": "138ca88117dd90f47c4c5beed9dc2f0c0de6fd31725fff37877220dfc1678662"
+    },
+    {
+      "path": "lib/search-attention.js",
+      "sha256": "bcb268d71588c2339ff9ed3b8add7c04cdaf0bf548d6ba977af31ea39a33f1da"
+    },
+    {
+      "path": "lib/session.js",
+      "sha256": "7baba3e3a94f61a77069627e9e736e2b4c5cf1e0984cc9a5376dd21f5babeb5d"
+    },
+    {
+      "path": "lib/share-metadata.js",
+      "sha256": "592af38845b5559c9ea9fb2ef000262fe630bef451c7ee882d0a467c08b4a32d"
+    },
+    {
+      "path": "lib/site-settings-service.js",
+      "sha256": "2c1eb326103a7f0b22e143e484ba34820d50b2c8262413b9e01fd0171b564b16"
+    },
+    {
+      "path": "lib/youtube-channel-service.js",
+      "sha256": "11bb6bcb1d59c1dffdcf9890f49b9d4452d3578e418fbabf766661bbed94e0c7"
+    },
+    {
+      "path": "lib/youtube-data.js",
+      "sha256": "1d16a8f512a157ac82309b4ccfeb3c9f3eb4ab762facd1c558045322c6c4830f"
+    },
+    {
+      "path": "src/data/badge-art-map.js",
+      "sha256": "45dc3a166067e07514133b9971efbe572fbcab03c090b9f69ec4cb52cf0d1ee9"
+    },
+    {
+      "path": "src/data/badge-catalog.js",
+      "sha256": "3d7d350638e00614a45061d407e6951a5544ad116a957d37f689de8617685eba"
+    },
+    {
+      "path": "src/data/cage-title-metrics.js",
+      "sha256": "68cc1f4dc806db2c347a008d67b4c45a77d66450d6e75d32355b2a16bb93a34e"
+    },
+    {
+      "path": "src/data/campaign-examples.js",
+      "sha256": "d5cb776aebf77809c46cdaf14aef37083f48eeed54c1bdcb1908d3692b055c07"
+    },
+    {
+      "path": "src/data/government-seed.js",
+      "sha256": "9ab302362cd29620a349cb50c66d86b18086ea221ca7da4d56dc0d64189e1592"
+    },
+    {
+      "path": "src/data/kim-minseok-pilot.js",
+      "sha256": "1c5b5464198ede0d88175828aff2c18107fb3de8b1f6ff3059ce6040c029b0d9"
+    },
+    {
+      "path": "src/data/korean-regions.js",
+      "sha256": "89e50fe8802ca3cd56c16f9f20da74c0a1084d2f10fb7e0192992ac725296bab"
+    }
+  ],
+  "logoSha256": "4d0922dc35204aa27260f35a05c4ed4f1aa5e5a871e5657de39f83b446a58e9e",
+  "changedJavaScriptSyntaxChecks": 16,
+  "changedCssParsed": [
+    "css/brand-160.css",
+    "css/cage-brush-160.css",
+    "css/search-discovery-160.css"
+  ],
+  "relativeImportsResolved": 169,
+  "newStylesLinked": true,
+  "browserVerified": false,
+  "deployed": false
+}

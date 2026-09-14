@@ -1,4 +1,4 @@
-import { renderCampaignBoard, renderCampaignDetail } from '../views/campaign-pages.js?v=0.0.31.159';
+import { renderCampaignBoard, renderCampaignDetail } from '../views/campaign-pages.js?v=0.0.31.160';
 import { renderCampaignEditor } from '../views/campaign-editor.js?v=0.0.31.159';
 
 export async function loadCampaignPage({parts=[],searchParams=new URLSearchParams(),session={},client}={}){

@@ -1,0 +1,17 @@
+SangSangRock OTF / 상상토끼 정묵바위
+Copyright: 상상토끼 폰틀리에 (Sangsangfont)
+
+Authorized distributor and original license text:
+https://www.sandollcloud.com/free-font/825/SangSangRock-OTF
+Publisher page linked by the distributor:
+https://sangsangfont.com/21/?idx=122
+
+The distributor permits personal and commercial work, website embedding and
+redistribution. Paid resale and modification of the font file are prohibited.
+This font is NOT licensed under the SIL OFL. Keep the original binary unchanged.
+Display transformations are applied to text, not written into the font file.
+
+Downloaded original public webfont, without conversion or subsetting:
+https://gcore.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/SangSangRockOTF.woff
+Retrieved 2026-09-15 UTC.
+SHA256: c3f288d4b30ae94b668fe13e7ce1ca7c7aee2b082ab56b2be8e19d83bd8c046f

@@ -28,6 +28,8 @@ function gridCard(item){
   return `<a class="jcd-item" href="${esc(route)}" data-layout-route="${esc(route)}">${photo?`<div class="jcd-portrait">${photo}${exampleLabel(item)}${numberLabel(item.number)?`<span class="jcd-number">${esc(numberLabel(item.number))}</span>`:''}${item.topic?`<span class="jcd-topic">${esc(item.topic)}</span>`:''}</div>`:''}<div class="jcd-item-body"><h3 class="jcd-item-title">${titleOf(item)}</h3>${item.name?`<div class="jcd-name-line"><strong>${esc(item.name)}</strong>${item.party?`<span class="jcd-party">${esc(item.party)}</span>`:''}</div>`:''}${meta?`<span class="jcd-role">${meta}</span>`:''}${renderCampaignProgress({funding:item.funding,compact:true})}<div class="jcd-item-bottom">${dateRange(item)?`<span>${dateRange(item)}</span>`:''}<span class="jcd-item-link"><span class="jcd-cta-copy"><span>이야기</span><span>만나보기</span></span> ${icon('upRight')}</span></div></div></a>`;
 }
 
+export const renderCampaignItemCard=item=>gridCard(item);
+
 function archiveCard(item){
   const route=routeFor(item.id),photo=image(item),meta=[item.name,item.office,item.party,item.region].filter(Boolean).map(esc).join(' · ');
   return `<a class="jcd-record" href="${esc(route)}" data-layout-route="${esc(route)}">${photo?`<div class="jcd-portrait">${photo}</div>`:''}<div class="jcd-record-copy"><div class="jcd-record-meta">${numberLabel(item.number)?`<span>JCS CAMPAIGN ${esc(numberLabel(item.number))}</span>`:''}<span class="jcd-ended">종료</span></div><h3 class="jcd-record-title">${titleOf(item)}</h3>${meta?`<p class="jcd-record-person">${meta}</p>`:''}<span class="jcd-item-link">${dateRange(item)?`${dateRange(item)} · `:''}당시 이야기 읽기 ${icon('upRight')}</span></div></a>`;

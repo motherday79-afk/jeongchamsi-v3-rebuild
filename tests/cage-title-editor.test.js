@@ -9,10 +9,11 @@ test('editor restores a saved layout across whitespace-only title changes',()=>{
  assert.match(html,/name="cageTitleSource" value="주거 정책"/);
 });
 
-test('editor defaults to the approved original art when no manual layout is saved',()=>{
+test('editor previews the same live brush text before manual layout is enabled',()=>{
  const html=renderCageTitleEditor([{id:'one',title:"'인사청문회' 게임을 시작해 볼까?"}],'one');
  assert.doesNotMatch(html,/name="cageTitleEnabled" checked/);
- assert.match(html,/cage-approved-156\.webp/);
+ assert.doesNotMatch(html,/cage-approved-156\.webp/);
+ assert.match(html,/data-cage-title-line="1"[^>]*>&#39;인사청문회&#39;/);
 });
 
 test('changing a break or emphasis select enables manual layout',async()=>{
