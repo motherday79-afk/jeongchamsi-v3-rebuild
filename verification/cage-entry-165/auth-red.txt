@@ -1,0 +1,21 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ '/login'
+- '/login?next=%2Fcommunity%2Fcage-a%3Fcamp%3Dprogressive%26compose%3D1'
+         ^
+
+    at file:///workspace/scratch/2c41bbae2f63/qa165/review-auth-regression.mjs:19:9 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: '/login',
+  expected: '/login?next=%2Fcommunity%2Fcage-a%3Fcamp%3Dprogressive%26compose%3D1',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

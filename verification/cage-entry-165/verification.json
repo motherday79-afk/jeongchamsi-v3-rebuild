@@ -1,0 +1,45 @@
+{
+  "release": "JCS_0_0_31_165",
+  "patchBase": "JCS_0_0_31_164",
+  "tests": {
+    "total": 259,
+    "passed": 259,
+    "failed": 0
+  },
+  "cssCascadeChecks": 2050,
+  "cssWidthConditions": 5,
+  "reducedMotionConditions": [
+    false,
+    true
+  ],
+  "syntaxChecks": [
+    "src/app.js",
+    "src/core/cage-entry.js",
+    "src/core/release.js",
+    "src/layout/home-layout.js",
+    "src/layout/site-shell.js",
+    "src/ui/cage-title-editor.js",
+    "src/ui/campaign-interactions.js",
+    "src/ui/home-cage-banner.js",
+    "src/ui/interactions.js",
+    "src/views/community-ui.js",
+    "src/views/search-discovery.js",
+    "src/views/search-page.js",
+    "src/views/stage1.js"
+  ],
+  "protectedFilesUnchanged": 144,
+  "existingAssetsDataApiLibCssAndDependenciesUnchanged": true,
+  "serverPackageRegressionPassed": true,
+  "entryRegressionsFailedBeforeAndPassedAfter": true,
+  "authRetryRegressionFailedBeforeAndPassedAfter": true,
+  "topLeftHomeLinkPreserved": true,
+  "searchLogoReloadsCurrentPage": true,
+  "cageHalfLinks": "progressive / conservative",
+  "cssConditions": 50,
+  "hoverCapableCssSimulation": true,
+  "productionDataChanged": false,
+  "liveApiOrDbVerified": false,
+  "deployed": false,
+  "realBrowserVerified": false,
+  "limitation": "Unit/in-memory DOM tests and CSS cascade checks; no actual browser layout or animation-frame verification."
+}

@@ -1,4 +1,5 @@
-import { renderCageBanner } from '../ui/home-cage-banner.js?v=0.0.31.163';
+import { cageComposeRoute, isCageClosed } from '../core/cage-entry.js?v=0.0.31.165';
+import { renderCageBanner } from '../ui/home-cage-banner.js?v=0.0.31.165';
 import { GENERATION_AGES, participationDisplay, demoLabel } from '../core/participation-model.js?v=0.0.31.79';
 import { SERVICE_CATALOG, moduleActionIconSvg, serviceIconSvg, serviceNavIconSvg } from '../ui/service-icons.js?v=0.0.31.159';
 import { badgeByKey, renderBadge } from '../data/badge-catalog.js?v=0.0.31.155';
@@ -145,7 +146,10 @@ export function renderHomeCage(data={},session={}){
  const count=n=>Number.isFinite(Number(n))?Math.max(0,Number(n)):0,blue=count(posts.progressive),red=count(posts.conservative),total=blue+red;
  const title=item?.title||'다음 케이지를 준비 중입니다',route=item?'/community/'+encodeURIComponent(item.id):'/community',share=total?Math.round(blue*100/total):0;
  const score=total?`게시글 참여 비율 진보 ${share}%, 보수 ${100-share}%`:'참여 전 · 집계 없음';
- return `<a class="home-cage-preview${total?'':' is-empty'}" href="${esc(route)}" data-layout-route="${esc(route)}" aria-label="${esc(title)} · ${score} · ${item?'케이지 참전하기':'커뮤니티 보기'}" title="${esc(title)}">${renderCageBanner({title,blue,red,titleLayout:data.cageTitleLayouts?.[item?.id]})}${item?.cageEndsAt?`<span class="cage-countdown" data-cage-ends="${Number(item.cageEndsAt)}">시간 확인 중</span>`:''}</a>`;
+ const art=renderCageBanner({title,blue,red,titleLayout:data.cageTitleLayouts?.[item?.id]}),timer=item?.cageEndsAt?`<span class="cage-countdown" data-cage-ends="${Number(item.cageEndsAt)}">시간 확인 중</span>`:'';
+ if(!item||isCageClosed(item))return `<a class="home-cage-preview${total?'':' is-empty'}" href="${esc(route)}" data-layout-route="${esc(route)}" aria-label="${esc(title)} · ${score} · ${item?'종료된 케이지 보기':'커뮤니티 보기'}" title="${esc(title)}">${art}${timer}</a>`;
+ const half=(camp,name,percent)=>{const entry=cageComposeRoute(item.id,camp);return `<a class="cage-camp-entry cage-camp-entry--${camp}" href="${esc(entry)}" data-layout-route="${esc(entry)}" aria-label="${esc(title)} · ${name}진영 ${percent}% · 의견 쓰기" title="${name}진영으로 글쓰기"></a>`;};
+ return `<div class="home-cage-preview${total?'':' is-empty'}" role="group" aria-label="${esc(title)} · ${score}" title="${esc(title)}">${half('progressive','진보',share)}${half('conservative','보수',total?100-share:0)}${art}${timer}</div>`;
 }
 
 export function renderHomeLayout(data){

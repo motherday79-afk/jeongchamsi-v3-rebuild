@@ -41,7 +41,7 @@ test('rebinding the same live track neither duplicates guards nor blocks ordinar
 });
 test('a restored internal card still emits only its internal route',t=>{
   const root=node(),card=node({layoutRoute:'/person/metropolitan-001'}),events=[];
-  card.closest=()=>card;
+  card.closest=selector=>selector==='[data-layout-route]'?card:null;
   const previous=Object.getOwnPropertyDescriptor(globalThis,'window');
   globalThis.window={dispatchEvent:event=>events.push(event)};
   t.after(()=>{if(previous)Object.defineProperty(globalThis,'window',previous);else delete globalThis.window;});
@@ -61,4 +61,17 @@ test('restored lifecycle select switches the visible panel',()=>{
   root.lists['.jcs-lifecycle-47']=[block];block.queries['[data-life-select]']=select;block.lists['[data-life-panel]']=[first,second];
   setupDetail47Interactions(root);select.value='7D';select.fire('change');
   assert.equal(first.hidden,true);assert.equal(second.hidden,false);
+});
+
+test('search logo reloads the current page once after navigation rebinding',t=>{
+ const root=node(),logo=node(),events=[];let reloads=0;
+ logo.closest=selector=>selector==='[data-page-reload]'?logo:null;
+ const previous=Object.getOwnPropertyDescriptor(globalThis,'window');
+ globalThis.window={location:{pathname:'/search',search:'?q=test',reload(){reloads++;}},dispatchEvent:event=>events.push(event)};
+ t.after(()=>{if(previous)Object.defineProperty(globalThis,'window',previous);else delete globalThis.window;});
+ setupLayoutNavigation(root);setupLayoutNavigation(root);
+ const event=root.fire('click',{target:logo});
+ assert.equal(event.prevented,true);assert.equal(reloads,1);assert.equal(events.length,0);
+ assert.equal(globalThis.window.location.pathname,'/search');
+ assert.equal(globalThis.window.location.search,'?q=test');
 });

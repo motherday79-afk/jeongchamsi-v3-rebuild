@@ -1,4 +1,4 @@
-import {KIDS_PRODUCTS,cheerArtDefs,cheerProductImage} from '../layout/home-layout.js?v=0.0.31.163';
+import {KIDS_PRODUCTS,cheerArtDefs,cheerProductImage} from '../layout/home-layout.js?v=0.0.31.165';
 import {renderCampaignItemCard} from './campaign-pages.js?v=0.0.31.160';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));

@@ -1,0 +1,45 @@
+✔ approved and changed cage titles both stay editable live lettering (2.807946ms)
+✔ tilted thick title ink fits the original board for every manual emphasis (8.914088ms)
+✔ brush uses exact Rock metrics with exact bundled fallback metrics (1.215904ms)
+✔ saved one-line layout stays one line when the replacement face needs a smaller font size (1.424174ms)
+✔ sidebar progressive route opens the checked camp and enabled writer (22.6124ms)
+✔ guest keeps progressive through the login link without a writable form (0.769574ms)
+✔ sidebar conservative route opens the checked camp and enabled writer (0.902224ms)
+✔ guest keeps conservative through the login link without a writable form (0.616757ms)
+✔ ordinary or invalid entry retains manual camp selection:  (0.616411ms)
+✔ ordinary or invalid entry retains manual camp selection: ?camp=progressive (0.606732ms)
+✔ ordinary or invalid entry retains manual camp selection: ?camp=unknown&compose=1 (0.518328ms)
+✔ ordinary or invalid entry retains manual camp selection: ?camp=conservative&compose=0 (1.766493ms)
+✔ an ended cage links to its record and never opens a writable form (0.900807ms)
+✔ search logo is a non-submit reload button while the top-left slogan remains Home (0.52722ms)
+✔ login returns only to a valid cage composer, preserving both camp choices (0.638839ms)
+✔ successful login executes the actual application redirect with the selected camp (6.693386ms)
+✔ direct entry focuses the opinion title or guest login, never an ordinary/disabled writer (3.957192ms)
+✔ saving a direct-entry opinion submits the selected camp and consumes composer parameters (3.639012ms)
+✔ failed opinion submission keeps the chosen camp and does not navigate or reset (1.175053ms)
+✔ manual break keeps the chosen wording and line boundary (5.538657ms)
+✔ stored layout cannot follow a different title after the source post changes (0.811939ms)
+✔ spaced titles reject manual breaks inside a word (0.333325ms)
+✔ titles without spaces retain deliberate codepoint break choices (0.577095ms)
+✔ long manual lines are rejected instead of cut or split again (2.074743ms)
+✔ manual geometry fits the approved title board without clipping (3.806017ms)
+✔ home cage has two camp links over the same approved banner, for administrators too (8.949098ms)
+✔ changing the featured cage updates its real title, route and both percentages (1.143497ms)
+✔ empty or unpublished cages never display sample participation numbers (0.570438ms)
+✔ only an administrator can choose the featured cage within the cage detail (15.466018ms)
+✔ saving the main cage then going Back renders the newly selected cage (8.152525ms)
+✔ fresh NOW track suppresses navigation at the end of a drag (2.401646ms)
+✔ restored NOW track suppresses navigation at the end of a drag (0.627003ms)
+✔ rebinding the same live track neither duplicates guards nor blocks ordinary taps (0.40723ms)
+✔ a restored internal card still emits only its internal route (1.851868ms)
+✔ restored local-topic buttons update evidence instead of keeping stale selection (0.599278ms)
+✔ restored lifecycle select switches the visible panel (0.609891ms)
+✔ search logo reloads the current page once after navigation rebinding (0.66208ms)
+ℹ tests 37
+ℹ suites 0
+ℹ pass 37
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 210.298275

@@ -1,0 +1,28 @@
+/* The supplied search mark keeps its dimensions; this is now a reload button. */
+.product-header .product-head-search button.search-home{width:50px;min-width:50px;display:flex;align-items:center;justify-content:center;padding:0;border:0;background:transparent;box-shadow:none;cursor:pointer;flex-shrink:0}
+.product-header button.search-home:focus-visible{outline:2px solid #8a54c5;outline-offset:2px;border-radius:8px}
+
+/* Two full-height hit areas share the original 2:1 artwork and CTA. */
+.product-home-wrap .home-balanced-layout .home-cage-preview>.cage-camp-entry{position:absolute;top:0;bottom:0;width:50%;height:100%;box-sizing:border-box;z-index:2;display:block;margin:0;padding:0;border:0;background:transparent;box-shadow:none;border-radius:0;cursor:pointer;text-decoration:none;transform:none!important}
+.product-home-wrap .home-balanced-layout .home-cage-preview>.cage-camp-entry--progressive{left:0;right:auto}
+.product-home-wrap .home-balanced-layout .home-cage-preview>.cage-camp-entry--conservative{right:0;left:auto}
+.product-home-wrap .home-balanced-layout .home-cage-preview>.cage-camp-entry:focus-visible{outline:2px solid #f8d991;outline-offset:-3px}
+/* Older sidebar rules suppress all animations: opt in only the selected score board. */
+.home-cage-preview .cage-readout{pointer-events:none;filter:brightness(1)}
+.home-cage-preview .cage-camp-entry--progressive:focus-visible~.cage-promo-art .cage-readout--progressive,
+.home-cage-preview .cage-camp-entry--conservative:focus-visible~.cage-promo-art .cage-readout--conservative{animation:jcs-cage-choice-165 1.2s ease-in-out infinite!important}
+@media(hover:hover){
+ .home-cage-preview .cage-camp-entry--progressive:hover~.cage-promo-art .cage-readout--progressive,
+ .home-cage-preview .cage-camp-entry--conservative:hover~.cage-promo-art .cage-readout--conservative{animation:jcs-cage-choice-165 1.2s ease-in-out infinite!important}
+}
+@keyframes jcs-cage-choice-165{0%,100%{filter:brightness(1)}50%{filter:brightness(1.7)}}
+.jc-join-box[data-cage-compose-entry]{scroll-margin-block:24px}
+@media(prefers-reduced-motion:reduce){
+ .product-home-wrap .home-balanced-layout .home-cage-preview .cage-promo-art .cage-readout{animation:none!important}
+ .home-cage-preview .cage-camp-entry--progressive:focus-visible~.cage-promo-art .cage-readout--progressive,
+ .home-cage-preview .cage-camp-entry--conservative:focus-visible~.cage-promo-art .cage-readout--conservative{filter:brightness(1.4)}
+}
+@media(hover:hover) and (prefers-reduced-motion:reduce){
+ .home-cage-preview .cage-camp-entry--progressive:hover~.cage-promo-art .cage-readout--progressive,
+ .home-cage-preview .cage-camp-entry--conservative:hover~.cage-promo-art .cage-readout--conservative{filter:brightness(1.4)}
+}

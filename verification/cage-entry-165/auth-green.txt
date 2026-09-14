@@ -1,0 +1,2 @@
+{"camp":"progressive","intended":"/community/cage-a?camp=progressive&compose=1","actualRoutes":["/community/cage-a?camp=progressive&compose=1"],"result":"Failed login preserves the intended camp; retry reaches its composer."}
+{"camp":"conservative","intended":"/community/cage-a?camp=conservative&compose=1","actualRoutes":["/community/cage-a?camp=conservative&compose=1"],"result":"Failed login preserves the intended camp; retry reaches its composer."}

@@ -1,0 +1,246 @@
+✖ sidebar progressive route opens the checked camp and enabled writer (6.155106ms)
+✖ guest keeps progressive through the login link without a writable form (16.286749ms)
+✖ sidebar conservative route opens the checked camp and enabled writer (0.970332ms)
+✖ guest keeps conservative through the login link without a writable form (0.962634ms)
+✔ ordinary or invalid entry retains manual camp selection:  (0.883296ms)
+✔ ordinary or invalid entry retains manual camp selection: ?camp=progressive (0.572955ms)
+✔ ordinary or invalid entry retains manual camp selection: ?camp=unknown&compose=1 (0.657388ms)
+✔ ordinary or invalid entry retains manual camp selection: ?camp=conservative&compose=0 (0.599597ms)
+✖ an ended cage links to its record and never opens a writable form (1.345713ms)
+✖ search logo is a non-submit reload button while the top-left slogan remains Home (0.506727ms)
+✖ home cage has two camp links over the same approved banner, for administrators too (9.011934ms)
+✖ changing the featured cage updates its real title, route and both percentages (2.339159ms)
+✔ empty or unpublished cages never display sample participation numbers (0.501737ms)
+✔ only an administrator can choose the featured cage within the cage detail (14.034403ms)
+✖ saving the main cage then going Back renders the newly selected cage (12.964037ms)
+✔ fresh NOW track suppresses navigation at the end of a drag (1.674903ms)
+✔ restored NOW track suppresses navigation at the end of a drag (0.445964ms)
+✔ rebinding the same live track neither duplicates guards nor blocks ordinary taps (0.341546ms)
+✔ a restored internal card still emits only its internal route (1.302099ms)
+✔ restored local-topic buttons update evidence instead of keeping stale selection (0.365028ms)
+✔ restored lifecycle select switches the visible panel (0.438339ms)
+✖ search logo reloads the current page once after navigation rebinding (1.327243ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 12
+ℹ fail 10
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 191.834819
+
+✖ failing tests:
+
+test at tests/cage-entry.test.js:12:2
+✖ sidebar progressive route opens the checked camp and enabled writer (6.155106ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(route)
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/b627f5328562/qa161/source-155/tests/cage-entry.test.js:15:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/cage-entry.test.js:23:2
+✖ guest keeps progressive through the login link without a writable form (16.286749ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + null
+  - '/community/cage-a?camp=progressive&compose=1'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/b627f5328562/qa161/source-155/tests/cage-entry.test.js:26:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: null,
+    expected: '/community/cage-a?camp=progressive&compose=1',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/cage-entry.test.js:12:2
+✖ sidebar conservative route opens the checked camp and enabled writer (0.970332ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(route)
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/b627f5328562/qa161/source-155/tests/cage-entry.test.js:15:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/cage-entry.test.js:23:2
+✖ guest keeps conservative through the login link without a writable form (0.962634ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + null
+  - '/community/cage-a?camp=conservative&compose=1'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/b627f5328562/qa161/source-155/tests/cage-entry.test.js:26:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: null,
+    expected: '/community/cage-a?camp=conservative&compose=1',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/cage-entry.test.js:37:1
+✖ an ended cage links to its record and never opens a writable form (1.345713ms)
+  AssertionError [ERR_ASSERTION]: The input was expected to not match the regular expression /data-stage-form="board"|data-cage-compose-entry/. Input:
+  
+  '<section class="jc-join-box"><form data-stage-form="board" data-domain="community"><input type="hidden" name="cageParentId" value="cage-a"><div class="jc-join-label">어느 진영에 힘을 보태시겠어요?</div><div class="jc-camp-choice"><label><input type="radio" name="camp" value="progressive" required><span>진보진영 힘보태기</span></label><label><input type="radio" name="camp" value="conservative" required><span>보수진영 힘보태기</span></label></div><div class="jc-cage-write"><small>진영을 선택한 뒤 의견을 작성해 주세요.</small><button class="jc-primary" type="button" data-jc-compose disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 3 5 5-13 13H3v-5L16 3ZM13 6l5 5"/></svg>의견 쓰기</button></div><div data-cage-fields hidden><fieldset data-camp-body disabled><label class="jc-field"><span>의견 제목</span><input name="title" value="" required maxlength="200"></label><label class="jc-field"><span>내용</span><textarea name="body" required></textarea></label><div class="jc-editor-bottom"><button class="jc-primary" type="submit">의견 등록</button></div></fieldset></div><span data-form-state role="status"></span></form></section>'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/b627f5328562/qa161/source-155/tests/cage-entry.test.js:43:9)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '<section class="jc-join-box"><form data-stage-form="board" data-domain="community"><input type="hidden" name="cageParentId" value="cage-a"><div class="jc-join-label">어느 진영에 힘을 보태시겠어요?</div><div class="jc-camp-choice"><label><input type="radio" name="camp" value="progressive" required><span>진보진영 힘보태기</span></label><label><input type="radio" name="camp" value="conservative" required><span>보수진영 힘보태기</span></label></div><div class="jc-cage-write"><small>진영을 선택한 뒤 의견을 작성해 주세요.</small><button class="jc-primary" type="button" data-jc-compose disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 3 5 5-13 13H3v-5L16 3ZM13 6l5 5"/></svg>의견 쓰기</button></div><div data-cage-fields hidden><fieldset data-camp-body disabled><label class="jc-field"><span>의견 제목</span><input name="title" value="" required maxlength="200"></label><label class="jc-field"><span>내용</span><textarea name="body" required></textarea></label><div class="jc-editor-bottom"><button class="jc-primary" type="submit">의견 등록</button></div></fieldset></div><span data-form-state role="status"></span></form></section>',
+    expected: /data-stage-form="board"|data-cage-compose-entry/,
+    operator: 'doesNotMatch',
+    diff: 'simple'
+  }
+
+test at tests/cage-entry.test.js:46:1
+✖ search logo is a non-submit reload button while the top-left slogan remains Home (0.506727ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /<button type="button" class="search-home" data-page-reload/. Input:
+  
+  '<header class="site-header product-header"><div class="product-head-main"><a class="header-brand-home" href="/" data-layout-route="/" aria-label="정참시 홈"><span class="header-brand-slogan">정치에 참여할 시간</span></a><div class="product-account-tools"><div class="jcs-font-scale-control" data-font-scale-control data-font-scale="0" role="group" aria-label="페이지 글자 크기"><button type="button" data-font-scale-decrease aria-label="글자 크기 줄이기" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5h16v3H4z"/></svg></button><button type="button" data-font-scale-increase aria-label="글자 크기 키우기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 4h3v6.5H20v3h-6.5V20h-3v-6.5H4v-3h6.5z"/></svg></button></div><button class="product-login-chip" type="button" data-layout-route="/login">로그인</button></div></div><div class="product-head-search"><form class="product-search product-search-expanded" data-layout-search><a class="search-home" href="/" data-layout-route="/" aria-label="정참시 홈"><img class="search-brand-icon jcs-brand-material" src="/assets/brand/jcs-gold-159.png" width="1536" height="1024" alt="" aria-hidden="true" decoding="async"></a><input name="q" type="search" enterkeyhint="search" aria-label="통합 검색" placeholder="정치인, 정당, 이슈를 검색하세요" autocomplete="off" data-politician-autocomplete data-politician-select-mode="route"></form></div></header>'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/b627f5328562/qa161/source-155/tests/cage-entry.test.js:48:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '<header class="site-header product-header"><div class="product-head-main"><a class="header-brand-home" href="/" data-layout-route="/" aria-label="정참시 홈"><span class="header-brand-slogan">정치에 참여할 시간</span></a><div class="product-account-tools"><div class="jcs-font-scale-control" data-font-scale-control data-font-scale="0" role="group" aria-label="페이지 글자 크기"><button type="button" data-font-scale-decrease aria-label="글자 크기 줄이기" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5h16v3H4z"/></svg></button><button type="button" data-font-scale-increase aria-label="글자 크기 키우기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 4h3v6.5H20v3h-6.5V20h-3v-6.5H4v-3h6.5z"/></svg></button></div><button class="product-login-chip" type="button" data-layout-route="/login">로그인</button></div></div><div class="product-head-search"><form class="product-search product-search-expanded" data-layout-search><a class="search-home" href="/" data-layout-route="/" aria-label="정참시 홈"><img class="search-brand-icon jcs-brand-material" src="/assets/brand/jcs-gold-159.png" width="1536" height="1024" alt="" aria-hidden="true" decoding="async"></a><input name="q" type="search" enterkeyhint="search" aria-label="통합 검색" placeholder="정치인, 정당, 이슈를 검색하세요" autocomplete="off" data-politician-autocomplete data-politician-select-mode="route"></form></div></header>',
+    expected: /<button type="button" class="search-home" data-page-reload/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/home-promos.test.js:10:1
+✖ home cage has two camp links over the same approved banner, for administrators too (9.011934ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^<div\b[^>]*class="home-cage-preview/. Input:
+  
+  '<a class="home-cage-preview" href="/community/old" data-layout-route="/community/old" aria-label="&#39;인사청문회&#39; 게임을 시작해 볼까? · 게시글 참여 비율 진보 67%, 보수 33% · 케이지 참전하기" title="&#39;인사청문회&#39; 게임을 시작해 볼까?"><svg class="cage-promo-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1774 887" aria-hidden="true" focusable="false">\n' +
+    ' <defs><pattern id="cage-promo-1-grain" width="94" height="81" patternUnits="userSpaceOnUse"><rect width="94" height="81" fill="white"/><path d="M15 4l-2 28 1-2 3-25z M54 18l-4 49 2-6 4-41z M78 2l-1 16 2-5z M27 49l-3 26 2-8 2-15z" fill="black" opacity=".18"/></pattern><mask id="cage-promo-1-grain-mask" maskUnits="userSpaceOnUse" x="-1000" y="0" width="2000" height="450"><rect x="-1000" y="0" width="2000" height="450" fill="url(#cage-promo-1-grain)"/></mask><clipPath id="cage-promo-1-title"><rect x="390" y="84" width="1015" height="282"/></clipPath><linearGradient id="cage-promo-1-ink" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffdf6"/><stop offset=".55" stop-color="#fff7dd"/><stop offset=".8" stop-color="#f4d28a"/><stop offset="1" stop-color="#c88b36"/></linearGradient><filter id="cage-promo-1-brush" x="-5%" y="-10%" width="110%" height="125%"><feTurbulence type="fractalNoise" baseFrequency=".055 .22" numOctaves="2" seed="8" result="grain"/><feDisplacementMap in="SourceGraphic" in2="grain" scale=".5" xChannelSelector="R" yChannelSelector="G" result="ink"/><feDropShadow in="ink" dx="1" dy="1.5" stdDeviation=".5" flood-color="#352009" flood-opacity=".95"/></filter></defs>\n' +
+    ' <image href="/assets/banners/cage-template-156.webp" width="1774" height="887"/>\n' +
+    ' <g clip-path="url(#cage-promo-1-title)"><g class="cage-promo-title" filter="url(#cage-promo-1-brush)" mask="url(#cage-promo-1-grain-mask)" fill="url(#cage-promo-1-ink)" stroke="#fff1c9" stroke-width=".6" stroke-linejoin="round" paint-order="stroke fill" font-family="JCS Cage Rock,JCS Cage Brush,cursive" font-weight="400" text-anchor="start" style="font-kerning:none;font-variant-ligatures:none" transform="translate(897.5 0) skewX(-4)"><text transform="scale(1.00000 1)" data-cage-title-line="1" x="-318.91" y="222.48" font-size="145.42" letter-spacing="1.75">&#39;인사청문회&#39;</text><text transform="scale(1.00000 1)" data-cage-title-line="2" x="-396.41" y="339.04" font-size="106.64" letter-spacing="1.28">게임을 시작해 볼까?</text></g></g>\n' +
+    ' <g fill="#f1fcff" stroke="#def9ff" stroke-width="1" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" transform="translate(132 563) skewY(14)"><text x="78" y="111" font-size="118" textLength="156" lengthAdjust="spacingAndGlyphs">67%</text></g>\n' +
+    ' <g fill="#fff7f1" stroke="#fff0eb" stroke-width="1" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" transform="translate(1477 615) skewY(-14)"><text x="77" y="108" font-size="118" textLength="154" lengthAdjust="spacingAndGlyphs">33%</text></g>\n' +
+    ' </svg></a>'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/b627f5328562/qa161/source-155/tests/home-promos.test.js:12:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '<a class="home-cage-preview" href="/community/old" data-layout-route="/community/old" aria-label="&#39;인사청문회&#39; 게임을 시작해 볼까? · 게시글 참여 비율 진보 67%, 보수 33% · 케이지 참전하기" title="&#39;인사청문회&#39; 게임을 시작해 볼까?"><svg class="cage-promo-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1774 887" aria-hidden="true" focusable="false">\n <defs><pattern id="cage-promo-1-grain" width="94" height="81" patternUnits="userSpaceOnUse"><rect width="94" height="81" fill="white"/><path d="M15 4l-2 28 1-2 3-25z M54 18l-4 49 2-6 4-41z M78 2l-1 16 2-5z M27 49l-3 26 2-8 2-15z" fill="black" opacity=".18"/></pattern><mask id="cage-promo-1-grain-mask" maskUnits="userSpaceOnUse" x="-1000" y="0" width="2000" height="450"><rect x="-1000" y="0" width="2000" height="450" fill="url(#cage-promo-1-grain)"/></mask><clipPath id="cage-promo-1-title"><rect x="390" y="84" width="1015" height="282"/></clipPath><linearGradient id="cage-promo-1-ink" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffdf6"/><stop offset=".55" stop-color="#fff7dd"/><stop offset=".8" stop-color="#f4d28a"/><stop offset="1" stop-color="#c88b36"/></linearGradient><filter id="cage-promo-1-brush" x="-5%" y="-10%" width="110%" height="125%"><feTurbulence type="fractalNoise" baseFrequency=".055 .22" numOctaves="2" seed="8" result="grain"/><feDisplacementMap in="SourceGraphic" in2="grain" scale=".5" xChannelSelector="R" yChannelSelector="G" result="ink"/><feDropShadow in="ink" dx="1" dy="1.5" stdDeviation=".5" flood-color="#352009" flood-opacity=".95"/></filter></defs>\n <image href="/assets/banners/cage-template-156.webp" width="1774" height="887"/>\n <g clip-path="url(#cage-promo-1-title)"><g class="cage-promo-title" filter="url(#cage-promo-1-brush)" mask="url(#cage-promo-1-grain-mask)" fill="url(#cage-promo-1-ink)" stroke="#fff1c9" stroke-width=".6" stroke-linejoin="round" paint-order="stroke fill" font-family="JCS Cage Rock,JCS Cage Brush,cursive" font-weight="400" text-anchor="start" style="font-kerning:none;font-variant-ligatures:none" transform="translate(897.5 0) skewX(-4)"><text transform="scale(1.00000 1)" data-cage-title-line="1" x="-318.91" y="222.48" font-size="145.42" letter-spacing="1.75">&#39;인사청문회&#39;</text><text transform="scale(1.00000 1)" data-cage-title-line="2" x="-396.41" y="339.04" font-size="106.64" letter-spacing="1.28">게임을 시작해 볼까?</text></g></g>\n <g fill="#f1fcff" stroke="#def9ff" stroke-width="1" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" transform="translate(132 563) skewY(14)"><text x="78" y="111" font-size="118" textLength="156" lengthAdjust="spacingAndGlyphs">67%</text></g>\n <g fill="#fff7f1" stroke="#fff0eb" stroke-width="1" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" transform="translate(1477 615) skewY(-14)"><text x="77" y="108" font-size="118" textLength="154" lengthAdjust="spacingAndGlyphs">33%</text></g>\n </svg></a>',
+    expected: /^<div\b[^>]*class="home-cage-preview/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/home-promos.test.js:20:1
+✖ changing the featured cage updates its real title, route and both percentages (2.339159ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /href="\/community\/new\?camp=progressive&amp;compose=1"/. Input:
+  
+  '<a class="home-cage-preview" href="/community/new" data-layout-route="/community/new" aria-label="새 의제 &lt;script&gt; &amp; 시민 의견 · 게시글 참여 비율 진보 0%, 보수 100% · 케이지 참전하기" title="새 의제 &lt;script&gt; &amp; 시민 의견"><svg class="cage-promo-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1774 887" aria-hidden="true" focusable="false">\n' +
+    ' <defs><pattern id="cage-promo-3-grain" width="94" height="81" patternUnits="userSpaceOnUse"><rect width="94" height="81" fill="white"/><path d="M15 4l-2 28 1-2 3-25z M54 18l-4 49 2-6 4-41z M78 2l-1 16 2-5z M27 49l-3 26 2-8 2-15z" fill="black" opacity=".18"/></pattern><mask id="cage-promo-3-grain-mask" maskUnits="userSpaceOnUse" x="-1000" y="0" width="2000" height="450"><rect x="-1000" y="0" width="2000" height="450" fill="url(#cage-promo-3-grain)"/></mask><clipPath id="cage-promo-3-title"><rect x="390" y="84" width="1015" height="282"/></clipPath><linearGradient id="cage-promo-3-ink" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffdf6"/><stop offset=".55" stop-color="#fff7dd"/><stop offset=".8" stop-color="#f4d28a"/><stop offset="1" stop-color="#c88b36"/></linearGradient><filter id="cage-promo-3-brush" x="-5%" y="-10%" width="110%" height="125%"><feTurbulence type="fractalNoise" baseFrequency=".055 .22" numOctaves="2" seed="8" result="grain"/><feDisplacementMap in="SourceGraphic" in2="grain" scale=".5" xChannelSelector="R" yChannelSelector="G" result="ink"/><feDropShadow in="ink" dx="1" dy="1.5" stdDeviation=".5" flood-color="#352009" flood-opacity=".95"/></filter></defs>\n' +
+    ' <image href="/assets/banners/cage-template-156.webp" width="1774" height="887"/>\n' +
+    ' <g clip-path="url(#cage-promo-3-title)"><g class="cage-promo-title" filter="url(#cage-promo-3-brush)" mask="url(#cage-promo-3-grain-mask)" fill="url(#cage-promo-3-ink)" stroke="#fff1c9" stroke-width=".6" stroke-linejoin="round" paint-order="stroke fill" font-family="JCS Cage Rock,JCS Cage Brush,cursive" font-weight="400" text-anchor="start" style="font-kerning:none;font-variant-ligatures:none" transform="translate(897.5 0) skewX(-4)"><text transform="scale(1.00000 1)" data-cage-title-line="1" x="-434.08" y="195.62" font-size="134.96" letter-spacing="1.62">새 의제 &lt;script&gt;</text><text transform="scale(1.00000 1)" data-cage-title-line="2" x="-272.07" y="341.05" font-size="134.96" letter-spacing="1.62">&amp; 시민 의견</text></g></g>\n' +
+    ' <g fill="#f1fcff" stroke="#def9ff" stroke-width="1" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" transform="translate(132 563) skewY(14)"><text x="78" y="111" font-size="118" textLength="156" lengthAdjust="spacingAndGlyphs">0%</text></g>\n' +
+    ' <g fill="#fff7f1" stroke="#fff0eb" stroke-width="1" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" transform="translate(1477 615) skewY(-14)"><text x="77" y="108" font-size="118" textLength="154" lengthAdjust="spacingAndGlyphs">100%</text></g>\n' +
+    ' </svg></a>'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/b627f5328562/qa161/source-155/tests/home-promos.test.js:23:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '<a class="home-cage-preview" href="/community/new" data-layout-route="/community/new" aria-label="새 의제 &lt;script&gt; &amp; 시민 의견 · 게시글 참여 비율 진보 0%, 보수 100% · 케이지 참전하기" title="새 의제 &lt;script&gt; &amp; 시민 의견"><svg class="cage-promo-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1774 887" aria-hidden="true" focusable="false">\n <defs><pattern id="cage-promo-3-grain" width="94" height="81" patternUnits="userSpaceOnUse"><rect width="94" height="81" fill="white"/><path d="M15 4l-2 28 1-2 3-25z M54 18l-4 49 2-6 4-41z M78 2l-1 16 2-5z M27 49l-3 26 2-8 2-15z" fill="black" opacity=".18"/></pattern><mask id="cage-promo-3-grain-mask" maskUnits="userSpaceOnUse" x="-1000" y="0" width="2000" height="450"><rect x="-1000" y="0" width="2000" height="450" fill="url(#cage-promo-3-grain)"/></mask><clipPath id="cage-promo-3-title"><rect x="390" y="84" width="1015" height="282"/></clipPath><linearGradient id="cage-promo-3-ink" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffdf6"/><stop offset=".55" stop-color="#fff7dd"/><stop offset=".8" stop-color="#f4d28a"/><stop offset="1" stop-color="#c88b36"/></linearGradient><filter id="cage-promo-3-brush" x="-5%" y="-10%" width="110%" height="125%"><feTurbulence type="fractalNoise" baseFrequency=".055 .22" numOctaves="2" seed="8" result="grain"/><feDisplacementMap in="SourceGraphic" in2="grain" scale=".5" xChannelSelector="R" yChannelSelector="G" result="ink"/><feDropShadow in="ink" dx="1" dy="1.5" stdDeviation=".5" flood-color="#352009" flood-opacity=".95"/></filter></defs>\n <image href="/assets/banners/cage-template-156.webp" width="1774" height="887"/>\n <g clip-path="url(#cage-promo-3-title)"><g class="cage-promo-title" filter="url(#cage-promo-3-brush)" mask="url(#cage-promo-3-grain-mask)" fill="url(#cage-promo-3-ink)" stroke="#fff1c9" stroke-width=".6" stroke-linejoin="round" paint-order="stroke fill" font-family="JCS Cage Rock,JCS Cage Brush,cursive" font-weight="400" text-anchor="start" style="font-kerning:none;font-variant-ligatures:none" transform="translate(897.5 0) skewX(-4)"><text transform="scale(1.00000 1)" data-cage-title-line="1" x="-434.08" y="195.62" font-size="134.96" letter-spacing="1.62">새 의제 &lt;script&gt;</text><text transform="scale(1.00000 1)" data-cage-title-line="2" x="-272.07" y="341.05" font-size="134.96" letter-spacing="1.62">&amp; 시민 의견</text></g></g>\n <g fill="#f1fcff" stroke="#def9ff" stroke-width="1" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" transform="translate(132 563) skewY(14)"><text x="78" y="111" font-size="118" textLength="156" lengthAdjust="spacingAndGlyphs">0%</text></g>\n <g fill="#fff7f1" stroke="#fff0eb" stroke-width="1" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" transform="translate(1477 615) skewY(-14)"><text x="77" y="108" font-size="118" textLength="154" lengthAdjust="spacingAndGlyphs">100%</text></g>\n </svg></a>',
+    expected: /href="\/community\/new\?camp=progressive&amp;compose=1"/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/home-promos.test.js:49:1
+✖ saving the main cage then going Back renders the newly selected cage (12.964037ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /href="\/community\/new\?camp=progressive&amp;compose=1"/. Input:
+  
+  '<a class="home-cage-preview" href="/community/new" data-layout-route="/community/new" aria-label="새 의제 &lt;script&gt; &amp; 시민 의견 · 게시글 참여 비율 진보 0%, 보수 100% · 케이지 참전하기" title="새 의제 &lt;script&gt; &amp; 시민 의견"><svg class="cage-promo-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1774 887" aria-hidden="true" focusable="false">\n' +
+    ' <defs><pattern id="cage-promo-8-grain" width="94" height="81" patternUnits="userSpaceOnUse"><rect width="94" height="81" fill="white"/><path d="M15 4l-2 28 1-2 3-25z M54 18l-4 49 2-6 4-41z M78 2l-1 16 2-5z M27 49l-3 26 2-8 2-15z" fill="black" opacity=".18"/></pattern><mask id="cage-promo-8-grain-mask" maskUnits="userSpaceOnUse" x="-1000" y="0" width="2000" height="450"><rect x="-1000" y="0" width="2000" height="450" fill="url(#cage-promo-8-grain)"/></mask><clipPath id="cage-promo-8-title"><rect x="390" y="84" width="1015" height="282"/></clipPath><linearGradient id="cage-promo-8-ink" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffdf6"/><stop offset=".55" stop-color="#fff7dd"/><stop offset=".8" stop-color="#f4d28a"/><stop offset="1" stop-color="#c88b36"/></linearGradient><filter id="cage-promo-8-brush" x="-5%" y="-10%" width="110%" height="125%"><feTurbulence type="fractalNoise" baseFrequency=".055 .22" numOctaves="2" seed="8" result="grain"/><feDisplacementMap in="SourceGraphic" in2="grain" scale=".5" xChannelSelector="R" yChannelSelector="G" result="ink"/><feDropShadow in="ink" dx="1" dy="1.5" stdDeviation=".5" flood-color="#352009" flood-opacity=".95"/></filter></defs>\n' +
+    ' <image href="/assets/banners/cage-template-156.webp" width="1774" height="887"/>\n' +
+    ' <g clip-path="url(#cage-promo-8-title)"><g class="cage-promo-title" filter="url(#cage-promo-8-brush)" mask="url(#cage-promo-8-grain-mask)" fill="url(#cage-promo-8-ink)" stroke="#fff1c9" stroke-width=".6" stroke-linejoin="round" paint-order="stroke fill" font-family="JCS Cage Rock,JCS Cage Brush,cursive" font-weight="400" text-anchor="start" style="font-kerning:none;font-variant-ligatures:none" transform="translate(897.5 0) skewX(-4)"><text transform="scale(1.00000 1)" data-cage-title-line="1" x="-434.08" y="195.62" font-size="134.96" letter-spacing="1.62">새 의제 &lt;script&gt;</text><text transform="scale(1.00000 1)" data-cage-title-line="2" x="-272.07" y="341.05" font-size="134.96" letter-spacing="1.62">&amp; 시민 의견</text></g></g>\n' +
+    ' <g fill="#f1fcff" stroke="#def9ff" stroke-width="1" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" transform="translate(132 563) skewY(14)"><text x="78" y="111" font-size="118" textLength="156" lengthAdjust="spacingAndGlyphs">0%</text></g>\n' +
+    ' <g fill="#fff7f1" stroke="#fff0eb" stroke-width="1" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" transform="translate(1477 615) skewY(-14)"><text x="77" y="108" font-size="118" textLength="154" lengthAdjust="spacingAndGlyphs">100%</text></g>\n' +
+    ' </svg></a>'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/b627f5328562/qa161/source-155/tests/home-promos.test.js:63:9)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '<a class="home-cage-preview" href="/community/new" data-layout-route="/community/new" aria-label="새 의제 &lt;script&gt; &amp; 시민 의견 · 게시글 참여 비율 진보 0%, 보수 100% · 케이지 참전하기" title="새 의제 &lt;script&gt; &amp; 시민 의견"><svg class="cage-promo-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1774 887" aria-hidden="true" focusable="false">\n <defs><pattern id="cage-promo-8-grain" width="94" height="81" patternUnits="userSpaceOnUse"><rect width="94" height="81" fill="white"/><path d="M15 4l-2 28 1-2 3-25z M54 18l-4 49 2-6 4-41z M78 2l-1 16 2-5z M27 49l-3 26 2-8 2-15z" fill="black" opacity=".18"/></pattern><mask id="cage-promo-8-grain-mask" maskUnits="userSpaceOnUse" x="-1000" y="0" width="2000" height="450"><rect x="-1000" y="0" width="2000" height="450" fill="url(#cage-promo-8-grain)"/></mask><clipPath id="cage-promo-8-title"><rect x="390" y="84" width="1015" height="282"/></clipPath><linearGradient id="cage-promo-8-ink" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffdf6"/><stop offset=".55" stop-color="#fff7dd"/><stop offset=".8" stop-color="#f4d28a"/><stop offset="1" stop-color="#c88b36"/></linearGradient><filter id="cage-promo-8-brush" x="-5%" y="-10%" width="110%" height="125%"><feTurbulence type="fractalNoise" baseFrequency=".055 .22" numOctaves="2" seed="8" result="grain"/><feDisplacementMap in="SourceGraphic" in2="grain" scale=".5" xChannelSelector="R" yChannelSelector="G" result="ink"/><feDropShadow in="ink" dx="1" dy="1.5" stdDeviation=".5" flood-color="#352009" flood-opacity=".95"/></filter></defs>\n <image href="/assets/banners/cage-template-156.webp" width="1774" height="887"/>\n <g clip-path="url(#cage-promo-8-title)"><g class="cage-promo-title" filter="url(#cage-promo-8-brush)" mask="url(#cage-promo-8-grain-mask)" fill="url(#cage-promo-8-ink)" stroke="#fff1c9" stroke-width=".6" stroke-linejoin="round" paint-order="stroke fill" font-family="JCS Cage Rock,JCS Cage Brush,cursive" font-weight="400" text-anchor="start" style="font-kerning:none;font-variant-ligatures:none" transform="translate(897.5 0) skewX(-4)"><text transform="scale(1.00000 1)" data-cage-title-line="1" x="-434.08" y="195.62" font-size="134.96" letter-spacing="1.62">새 의제 &lt;script&gt;</text><text transform="scale(1.00000 1)" data-cage-title-line="2" x="-272.07" y="341.05" font-size="134.96" letter-spacing="1.62">&amp; 시민 의견</text></g></g>\n <g fill="#f1fcff" stroke="#def9ff" stroke-width="1" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" transform="translate(132 563) skewY(14)"><text x="78" y="111" font-size="118" textLength="156" lengthAdjust="spacingAndGlyphs">0%</text></g>\n <g fill="#fff7f1" stroke="#fff0eb" stroke-width="1" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" transform="translate(1477 615) skewY(-14)"><text x="77" y="108" font-size="118" textLength="154" lengthAdjust="spacingAndGlyphs">100%</text></g>\n </svg></a>',
+    expected: /href="\/community\/new\?camp=progressive&amp;compose=1"/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/navigation-restore-interactions.test.js:66:1
+✖ search logo reloads the current page once after navigation rebinding (1.327243ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - true
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/b627f5328562/qa161/source-155/tests/navigation-restore-interactions.test.js:74:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
