@@ -1,9 +1,10 @@
 // Also imported by the API: keep shared dependency paths traceable by Vercel.
 import { CAGE_TITLE_WIDTHS, CAGE_TITLE_BOUNDS, CAGE_TITLE_X_BOUNDS } from '../data/cage-brush-metrics.js';
 import { CAGE_TITLE_WIDTHS as LEGACY_WIDTHS, CAGE_TITLE_BOUNDS as LEGACY_BOUNDS } from '../data/cage-title-metrics.js';
-export const CAGE_BRUSH_SKEW=22;
-export const CAGE_BRUSH_TRACKING=-.028;
-export const CAGE_BRUSH_WIDTH=1.35;
+// Keep the brush face upright and at its native width for small sidebar text.
+export const CAGE_BRUSH_SKEW=4;
+export const CAGE_BRUSH_TRACKING=.012;
+export const CAGE_BRUSH_WIDTH=1;
 const slant=Math.tan(CAGE_BRUSH_SKEW*Math.PI/180);
 export const normalizeCageTitle=value=>String(value??'').replace(/\s+/g,' ').trim();
 const fail=code=>{throw new Error(code);};

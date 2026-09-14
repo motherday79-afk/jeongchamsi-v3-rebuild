@@ -1,4 +1,4 @@
-import { renderCageBanner } from '../ui/home-cage-banner.js?v=0.0.31.162';
+import { renderCageBanner } from '../ui/home-cage-banner.js?v=0.0.31.163';
 import { GENERATION_AGES, participationDisplay, demoLabel } from '../core/participation-model.js?v=0.0.31.79';
 import { SERVICE_CATALOG, moduleActionIconSvg, serviceIconSvg, serviceNavIconSvg } from '../ui/service-icons.js?v=0.0.31.159';
 import { badgeByKey, renderBadge } from '../data/badge-catalog.js?v=0.0.31.155';

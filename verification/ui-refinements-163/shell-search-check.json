@@ -1,0 +1,717 @@
+{
+  "method": "Authored CSS selector/cascade checks at320/390/560/768/1024/1280/1920px, including width media conditions; no browser layout",
+  "screens": [
+    {
+      "viewport": 320,
+      "checks": [
+        {
+          "selector": ".header-brand-slogan",
+          "property": "color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".header-brand-slogan",
+          "property": "-webkit-text-fill-color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".header-brand-slogan",
+          "property": "width",
+          "value": "max-content"
+        },
+        {
+          "selector": ".header-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": ".search-brand-icon",
+          "property": "width",
+          "value": "44px"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": "#jcs-campaign-directory",
+          "property": "width",
+          "value": "100%"
+        },
+        {
+          "selector": "#jcs-campaign-directory",
+          "property": "max-width",
+          "value": "none"
+        },
+        {
+          "selector": ".jcd-item",
+          "property": "display",
+          "value": "grid"
+        },
+        {
+          "selector": ".jcd-item",
+          "property": "grid-template-columns",
+          "value": "82px minmax(0,1fr)"
+        },
+        {
+          "selector": ".jcd-portrait",
+          "property": "aspect-ratio",
+          "value": "auto"
+        },
+        {
+          "selector": ".jcd-portrait>img",
+          "property": "position",
+          "value": "absolute"
+        },
+        {
+          "selector": ".jcd-portrait>.campaign-crop",
+          "property": "position",
+          "value": "absolute"
+        },
+        {
+          "selector": ".jcd-item-title",
+          "property": "font-size",
+          "value": "15px"
+        },
+        {
+          "selector": ".jcd-cta-copy",
+          "property": "white-space",
+          "value": "nowrap"
+        },
+        {
+          "selector": ".search-discovery-campaign-grid",
+          "property": "grid-template-columns",
+          "value": "1fr"
+        },
+        {
+          "selector": ".search-discovery-product-grid",
+          "property": "grid-template-columns",
+          "value": "repeat(2,minmax(0,1fr))"
+        },
+        {
+          "selector": ".search-discovery-product-art",
+          "property": "height",
+          "value": "86px"
+        },
+        {
+          "selector": ".search-discovery-product-art",
+          "property": "width",
+          "value": "100%"
+        }
+      ],
+      "uncompiledSelectors": 31
+    },
+    {
+      "viewport": 390,
+      "checks": [
+        {
+          "selector": ".header-brand-slogan",
+          "property": "color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".header-brand-slogan",
+          "property": "-webkit-text-fill-color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".header-brand-slogan",
+          "property": "width",
+          "value": "max-content"
+        },
+        {
+          "selector": ".header-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": ".search-brand-icon",
+          "property": "width",
+          "value": "44px"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": "#jcs-campaign-directory",
+          "property": "width",
+          "value": "100%"
+        },
+        {
+          "selector": "#jcs-campaign-directory",
+          "property": "max-width",
+          "value": "none"
+        },
+        {
+          "selector": ".jcd-item",
+          "property": "display",
+          "value": "grid"
+        },
+        {
+          "selector": ".jcd-item",
+          "property": "grid-template-columns",
+          "value": "82px minmax(0,1fr)"
+        },
+        {
+          "selector": ".jcd-portrait",
+          "property": "aspect-ratio",
+          "value": "auto"
+        },
+        {
+          "selector": ".jcd-portrait>img",
+          "property": "position",
+          "value": "absolute"
+        },
+        {
+          "selector": ".jcd-portrait>.campaign-crop",
+          "property": "position",
+          "value": "absolute"
+        },
+        {
+          "selector": ".jcd-item-title",
+          "property": "font-size",
+          "value": "15px"
+        },
+        {
+          "selector": ".jcd-cta-copy",
+          "property": "white-space",
+          "value": "nowrap"
+        },
+        {
+          "selector": ".search-discovery-campaign-grid",
+          "property": "grid-template-columns",
+          "value": "1fr"
+        },
+        {
+          "selector": ".search-discovery-product-grid",
+          "property": "grid-template-columns",
+          "value": "repeat(2,minmax(0,1fr))"
+        },
+        {
+          "selector": ".search-discovery-product-art",
+          "property": "height",
+          "value": "86px"
+        },
+        {
+          "selector": ".search-discovery-product-art",
+          "property": "width",
+          "value": "100%"
+        }
+      ],
+      "uncompiledSelectors": 31
+    },
+    {
+      "viewport": 560,
+      "checks": [
+        {
+          "selector": ".header-brand-slogan",
+          "property": "color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".header-brand-slogan",
+          "property": "-webkit-text-fill-color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".header-brand-slogan",
+          "property": "width",
+          "value": "max-content"
+        },
+        {
+          "selector": ".header-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": ".search-brand-icon",
+          "property": "width",
+          "value": "44px"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": "#jcs-campaign-directory",
+          "property": "width",
+          "value": "100%"
+        },
+        {
+          "selector": "#jcs-campaign-directory",
+          "property": "max-width",
+          "value": "none"
+        },
+        {
+          "selector": ".jcd-item",
+          "property": "display",
+          "value": "grid"
+        },
+        {
+          "selector": ".jcd-item",
+          "property": "grid-template-columns",
+          "value": "104px minmax(0,1fr)"
+        },
+        {
+          "selector": ".jcd-portrait",
+          "property": "aspect-ratio",
+          "value": "auto"
+        },
+        {
+          "selector": ".jcd-portrait>img",
+          "property": "position",
+          "value": "absolute"
+        },
+        {
+          "selector": ".jcd-portrait>.campaign-crop",
+          "property": "position",
+          "value": "absolute"
+        },
+        {
+          "selector": ".jcd-item-title",
+          "property": "font-size",
+          "value": "15px"
+        },
+        {
+          "selector": ".jcd-cta-copy",
+          "property": "white-space",
+          "value": "nowrap"
+        },
+        {
+          "selector": ".search-discovery-campaign-grid",
+          "property": "grid-template-columns",
+          "value": "1fr"
+        },
+        {
+          "selector": ".search-discovery-product-grid",
+          "property": "grid-template-columns",
+          "value": "repeat(2,minmax(0,1fr))"
+        },
+        {
+          "selector": ".search-discovery-product-art",
+          "property": "height",
+          "value": "96px"
+        },
+        {
+          "selector": ".search-discovery-product-art",
+          "property": "width",
+          "value": "76px"
+        }
+      ],
+      "uncompiledSelectors": 31
+    },
+    {
+      "viewport": 768,
+      "checks": [
+        {
+          "selector": ".header-brand-slogan",
+          "property": "color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".header-brand-slogan",
+          "property": "-webkit-text-fill-color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".header-brand-slogan",
+          "property": "width",
+          "value": "max-content"
+        },
+        {
+          "selector": ".header-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": ".search-brand-icon",
+          "property": "width",
+          "value": "44px"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": "#jcs-campaign-directory",
+          "property": "width",
+          "value": "100%"
+        },
+        {
+          "selector": "#jcs-campaign-directory",
+          "property": "max-width",
+          "value": "none"
+        },
+        {
+          "selector": ".jcd-item",
+          "property": "display",
+          "value": "grid"
+        },
+        {
+          "selector": ".jcd-item",
+          "property": "grid-template-columns",
+          "value": "104px minmax(0,1fr)"
+        },
+        {
+          "selector": ".jcd-portrait",
+          "property": "aspect-ratio",
+          "value": "auto"
+        },
+        {
+          "selector": ".jcd-portrait>img",
+          "property": "position",
+          "value": "absolute"
+        },
+        {
+          "selector": ".jcd-portrait>.campaign-crop",
+          "property": "position",
+          "value": "absolute"
+        },
+        {
+          "selector": ".jcd-item-title",
+          "property": "font-size",
+          "value": "15px"
+        },
+        {
+          "selector": ".jcd-cta-copy",
+          "property": "white-space",
+          "value": "nowrap"
+        },
+        {
+          "selector": ".search-discovery-campaign-grid",
+          "property": "grid-template-columns",
+          "value": "1fr"
+        },
+        {
+          "selector": ".search-discovery-product-grid",
+          "property": "grid-template-columns",
+          "value": "repeat(2,minmax(0,1fr))"
+        },
+        {
+          "selector": ".search-discovery-product-art",
+          "property": "height",
+          "value": "96px"
+        },
+        {
+          "selector": ".search-discovery-product-art",
+          "property": "width",
+          "value": "76px"
+        }
+      ],
+      "uncompiledSelectors": 29
+    },
+    {
+      "viewport": 1024,
+      "checks": [
+        {
+          "selector": ".header-brand-slogan",
+          "property": "color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".header-brand-slogan",
+          "property": "-webkit-text-fill-color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".header-brand-slogan",
+          "property": "width",
+          "value": "max-content"
+        },
+        {
+          "selector": ".header-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": ".search-brand-icon",
+          "property": "width",
+          "value": "44px"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": "#jcs-campaign-directory",
+          "property": "width",
+          "value": "100%"
+        },
+        {
+          "selector": "#jcs-campaign-directory",
+          "property": "max-width",
+          "value": "none"
+        },
+        {
+          "selector": ".jcd-item",
+          "property": "display",
+          "value": "grid"
+        },
+        {
+          "selector": ".jcd-item",
+          "property": "grid-template-columns",
+          "value": "100px minmax(0,1fr)"
+        },
+        {
+          "selector": ".jcd-portrait",
+          "property": "aspect-ratio",
+          "value": "auto"
+        },
+        {
+          "selector": ".jcd-portrait>img",
+          "property": "position",
+          "value": "absolute"
+        },
+        {
+          "selector": ".jcd-portrait>.campaign-crop",
+          "property": "position",
+          "value": "absolute"
+        },
+        {
+          "selector": ".jcd-item-title",
+          "property": "font-size",
+          "value": "15px"
+        },
+        {
+          "selector": ".jcd-cta-copy",
+          "property": "white-space",
+          "value": "nowrap"
+        },
+        {
+          "selector": ".search-discovery-campaign-grid",
+          "property": "grid-template-columns",
+          "value": "repeat(3,minmax(0,1fr))"
+        },
+        {
+          "selector": ".search-discovery-product-grid",
+          "property": "grid-template-columns",
+          "value": "repeat(4,minmax(0,1fr))"
+        },
+        {
+          "selector": ".search-discovery-product-art",
+          "property": "height",
+          "value": "96px"
+        },
+        {
+          "selector": ".search-discovery-product-art",
+          "property": "width",
+          "value": "76px"
+        }
+      ],
+      "uncompiledSelectors": 27
+    },
+    {
+      "viewport": 1280,
+      "checks": [
+        {
+          "selector": ".header-brand-slogan",
+          "property": "color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".header-brand-slogan",
+          "property": "-webkit-text-fill-color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".header-brand-slogan",
+          "property": "width",
+          "value": "max-content"
+        },
+        {
+          "selector": ".header-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": ".search-brand-icon",
+          "property": "width",
+          "value": "44px"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": "#jcs-campaign-directory",
+          "property": "width",
+          "value": "100%"
+        },
+        {
+          "selector": "#jcs-campaign-directory",
+          "property": "max-width",
+          "value": "none"
+        },
+        {
+          "selector": ".jcd-item",
+          "property": "display",
+          "value": "grid"
+        },
+        {
+          "selector": ".jcd-item",
+          "property": "grid-template-columns",
+          "value": "100px minmax(0,1fr)"
+        },
+        {
+          "selector": ".jcd-portrait",
+          "property": "aspect-ratio",
+          "value": "auto"
+        },
+        {
+          "selector": ".jcd-portrait>img",
+          "property": "position",
+          "value": "absolute"
+        },
+        {
+          "selector": ".jcd-portrait>.campaign-crop",
+          "property": "position",
+          "value": "absolute"
+        },
+        {
+          "selector": ".jcd-item-title",
+          "property": "font-size",
+          "value": "15px"
+        },
+        {
+          "selector": ".jcd-cta-copy",
+          "property": "white-space",
+          "value": "nowrap"
+        },
+        {
+          "selector": ".search-discovery-campaign-grid",
+          "property": "grid-template-columns",
+          "value": "repeat(3,minmax(0,1fr))"
+        },
+        {
+          "selector": ".search-discovery-product-grid",
+          "property": "grid-template-columns",
+          "value": "repeat(4,minmax(0,1fr))"
+        },
+        {
+          "selector": ".search-discovery-product-art",
+          "property": "height",
+          "value": "96px"
+        },
+        {
+          "selector": ".search-discovery-product-art",
+          "property": "width",
+          "value": "76px"
+        }
+      ],
+      "uncompiledSelectors": 25
+    },
+    {
+      "viewport": 1920,
+      "checks": [
+        {
+          "selector": ".header-brand-slogan",
+          "property": "color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".header-brand-slogan",
+          "property": "-webkit-text-fill-color",
+          "value": "transparent"
+        },
+        {
+          "selector": ".header-brand-slogan",
+          "property": "width",
+          "value": "max-content"
+        },
+        {
+          "selector": ".header-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": ".search-brand-icon",
+          "property": "width",
+          "value": "44px"
+        },
+        {
+          "selector": ".footer-brand-icon",
+          "property": "width",
+          "value": "48px"
+        },
+        {
+          "selector": "#jcs-campaign-directory",
+          "property": "width",
+          "value": "100%"
+        },
+        {
+          "selector": "#jcs-campaign-directory",
+          "property": "max-width",
+          "value": "none"
+        },
+        {
+          "selector": ".jcd-item",
+          "property": "display",
+          "value": "grid"
+        },
+        {
+          "selector": ".jcd-item",
+          "property": "grid-template-columns",
+          "value": "100px minmax(0,1fr)"
+        },
+        {
+          "selector": ".jcd-portrait",
+          "property": "aspect-ratio",
+          "value": "auto"
+        },
+        {
+          "selector": ".jcd-portrait>img",
+          "property": "position",
+          "value": "absolute"
+        },
+        {
+          "selector": ".jcd-portrait>.campaign-crop",
+          "property": "position",
+          "value": "absolute"
+        },
+        {
+          "selector": ".jcd-item-title",
+          "property": "font-size",
+          "value": "15px"
+        },
+        {
+          "selector": ".jcd-cta-copy",
+          "property": "white-space",
+          "value": "nowrap"
+        },
+        {
+          "selector": ".search-discovery-campaign-grid",
+          "property": "grid-template-columns",
+          "value": "repeat(3,minmax(0,1fr))"
+        },
+        {
+          "selector": ".search-discovery-product-grid",
+          "property": "grid-template-columns",
+          "value": "repeat(4,minmax(0,1fr))"
+        },
+        {
+          "selector": ".search-discovery-product-art",
+          "property": "height",
+          "value": "96px"
+        },
+        {
+          "selector": ".search-discovery-product-art",
+          "property": "width",
+          "value": "76px"
+        }
+      ],
+      "uncompiledSelectors": 25
+    }
+  ],
+  "campaignCards": 3,
+  "productCards": 4,
+  "uniqueCampaignScope": 1,
+  "existingAssetsAndDataUnchanged": 55,
+  "logoSha256": "4d0922dc35204aa27260f35a05c4ed4f1aa5e5a871e5657de39f83b446a58e9e"
+}

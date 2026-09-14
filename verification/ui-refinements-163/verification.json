@@ -1,0 +1,33 @@
+{
+  "release": "JCS_0_0_31_163",
+  "patchBase": "JCS_0_0_31_162",
+  "tests": {
+    "total": 240,
+    "passed": 240,
+    "failed": 0
+  },
+  "cssCascadeChecks": 133,
+  "cssWidthConditions": 7,
+  "syntaxChecks": [
+    "src/app.js",
+    "src/core/cage-title-layout.js",
+    "src/core/release.js",
+    "src/layout/home-layout.js",
+    "src/layout/site-shell.js",
+    "src/ui/cage-title-editor.js",
+    "src/ui/home-cage-banner.js",
+    "src/views/community-ui.js",
+    "src/views/search-discovery.js",
+    "src/views/search-page.js",
+    "src/views/stage1.js"
+  ],
+  "protectedFilesUnchanged": 141,
+  "existingAssetsDataApiLibCssAndDependenciesUnchanged": true,
+  "serverPackageRegressionPassed": true,
+  "manualCageLayoutsPreserved": true,
+  "productionDataChanged": false,
+  "liveApiOrDbVerified": false,
+  "deployed": false,
+  "realBrowserVerified": false,
+  "limitation": "CSS declaration/cascade checks are not browser layout or screenshot verification. Existing dynamic Rock font has corrected proportions; no claim of identical handpainted reference glyphs."
+}

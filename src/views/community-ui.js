@@ -1,5 +1,5 @@
-import { renderCageTitleEditor } from '../ui/cage-title-editor.js?v=0.0.31.162';
-import { cageArena } from '../layout/home-layout.js?v=0.0.31.162';
+import { renderCageTitleEditor } from '../ui/cage-title-editor.js?v=0.0.31.163';
+import { cageArena } from '../layout/home-layout.js?v=0.0.31.163';
 import { badgeByKey, renderBadge } from '../data/badge-catalog.js?v=0.0.31.155';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const date=v=>{const d=new Date(v);return Number.isNaN(d.getTime())?'':d.toLocaleString('ko-KR',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false});};

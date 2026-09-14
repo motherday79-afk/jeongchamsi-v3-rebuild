@@ -1,0 +1,38 @@
+✔ approved and changed cage titles both stay editable live lettering (4.885401ms)
+✔ tilted thick title ink fits the original board for every manual emphasis (13.497616ms)
+✔ brush uses exact Rock metrics with exact bundled fallback metrics (1.601907ms)
+✔ saved one-line layout stays one line when the replacement face needs a smaller font size (1.238648ms)
+✔ editor restores a saved layout across whitespace-only title changes (2.785818ms)
+✔ editor previews the same live brush text before manual layout is enabled (1.029973ms)
+✔ changing a break or emphasis select enables manual layout (5.677164ms)
+✔ manual break keeps the chosen wording and line boundary (3.776629ms)
+✔ stored layout cannot follow a different title after the source post changes (0.403135ms)
+✔ spaced titles reject manual breaks inside a word (0.226704ms)
+✔ titles without spaces retain deliberate codepoint break choices (0.314698ms)
+✔ long manual lines are rejected instead of cut or split again (1.402546ms)
+✔ manual geometry fits the approved title board without clipping (2.511644ms)
+✔ cage layout saves through the existing CAS without overwriting concurrent posts (3.668864ms)
+✔ stale title and unprivileged requests cannot change settings (1.076608ms)
+✔ turning manual layout off clears only the selected cage layout (0.693092ms)
+✔ layout target must match the explicitly featured cage (0.389306ms)
+✔ automatic selection rejects a stale layout target after a concurrent newer cage appears (10.885134ms)
+✔ automatic selection saves a layout for the newest eligible root (1.207667ms)
+✔ home cage is one complete link, including the header area, for administrators too (10.053577ms)
+✔ changing the featured cage updates its real title, route and both percentages (2.963642ms)
+✔ empty or unpublished cages never display sample participation numbers (0.559199ms)
+✔ only an administrator can choose the featured cage within the cage detail (14.134799ms)
+✔ saving the main cage then going Back renders the newly selected cage (14.972406ms)
+✔ discovery renders campaign before the canonical four shop products with existing routes and one art definition (6.230403ms)
+✔ campaign discovery keeps featured first, removes duplicates and limits public cards to three (0.828793ms)
+✔ newer same-query campaign load owns the mount when the older request resolves last (0.407821ms)
+✔ campaign failure is nonblocking and a stale route response cannot update the current discovery mount (0.227141ms)
+✔ search page appends discovery after a complete political analysis and also after empty post results (6.039288ms)
+✔ the traced deployment package starts the real gateway and reads stored homepage data (5592.816423ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5832.626226

@@ -1,0 +1,62 @@
+/* One continuous wordmark gradient; the final word finishes in gold. */
+.product-header .header-brand-slogan{display:inline-block;flex:none;width:max-content;color:#753bbd}
+@supports ((background-clip:text) or (-webkit-background-clip:text)){
+  .product-header .header-brand-slogan{background:linear-gradient(90deg,#753bbd 0%,#9255be 34%,#b37c8c 58%,#c69230 80%,#d9ad49 100%);background-clip:text;-webkit-background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+}
+
+/* Search discovery is a compact introduction to the existing full pages. */
+.search-page .search-discovery{gap:18px}
+.search-page .search-discovery-campaigns,.search-page .search-discovery-shop{padding:18px;border-radius:14px}
+.search-page .search-discovery-section-head{gap:12px;margin-bottom:12px}
+.search-page .search-discovery-section-head h2{font-size:22px;line-height:1.4}
+.search-page .search-discovery-section-head p{font-size:11px;margin-bottom:4px}
+.search-page .search-discovery-section-head span{font-size:10px}
+.search-page .search-discovery-section-head>a{font-size:11px}
+.search-page #jcs-campaign-directory.search-discovery-campaign-scope{width:100%;max-width:none;margin:0;font-size:13px;line-height:1.5}
+.search-page .search-discovery-campaign-grid{gap:12px;align-items:start}
+.search-page #jcs-campaign-directory .jcd-item{display:grid;grid-template-columns:100px minmax(0,1fr);align-items:stretch}
+.search-page #jcs-campaign-directory .jcd-portrait{height:auto;min-height:180px;aspect-ratio:auto;overflow:hidden}
+.search-page #jcs-campaign-directory .jcd-portrait>img,.search-page #jcs-campaign-directory .jcd-portrait>.campaign-crop{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;object-position:50% 28%}
+.search-page #jcs-campaign-directory .jcd-portrait>.campaign-example-label{left:6px;top:6px;max-width:calc(100% - 12px);padding:3px 5px;font-size:9px;letter-spacing:.02em}
+.search-page #jcs-campaign-directory .jcd-number{left:6px;top:6px;padding:3px 5px;font-size:10px}
+.search-page #jcs-campaign-directory .jcd-topic{bottom:8px;right:6px;left:6px;max-width:calc(100% - 12px);padding:3px 5px;font-size:10px;text-align:center;word-break:keep-all;overflow-wrap:break-word}
+.search-page #jcs-campaign-directory .jcd-item-body{padding:12px;grid-column:2;min-width:0}
+.search-page #jcs-campaign-directory .jcd-item-title{min-height:0;font-size:15px;line-height:1.45;word-break:keep-all;overflow-wrap:break-word}
+.search-page #jcs-campaign-directory .jcd-name-line{gap:5px;margin-top:9px}
+.search-page #jcs-campaign-directory .jcd-name-line strong{font-size:13px}
+.search-page #jcs-campaign-directory .jcd-party{font-size:10px}
+.search-page #jcs-campaign-directory .jcd-role{font-size:11px;line-height:1.5;word-break:keep-all;overflow-wrap:break-word}
+.search-page #jcs-campaign-directory .campaign-progress-compact{margin:7px 0;font-size:11px;line-height:1.5}
+.search-page #jcs-campaign-directory .jcd-item-bottom{gap:6px;margin-top:9px;padding-top:8px;font-size:10px;flex-wrap:nowrap}
+.search-page #jcs-campaign-directory .jcd-cta-copy{display:flex;gap:3px;white-space:nowrap}
+.search-page #jcs-campaign-directory .jcd-item-link{gap:3px}
+.search-page #jcs-campaign-directory .jcs-icon{width:12px;height:12px;min-width:12px}
+.search-page #jcs-campaign-directory .jcd-item:not(:has(.jcd-portrait)){grid-template-columns:minmax(0,1fr)}
+.search-page #jcs-campaign-directory .jcd-item:not(:has(.jcd-portrait)) .jcd-item-body{grid-column:1}
+
+.search-page .search-discovery-product-grid{gap:10px}
+.search-page .search-discovery-product{grid-template-columns:76px minmax(0,1fr);grid-template-rows:1fr 1fr;column-gap:10px;row-gap:3px;padding:9px;align-items:center}
+.search-page .search-discovery-product-art{grid-row:1 / 3;width:76px;height:96px;aspect-ratio:auto}
+.search-page .search-discovery-product-art svg{display:block;width:100%;height:100%}
+.search-page .search-discovery-product-art small{right:3px;bottom:3px;padding:2px 3px;font-size:8px}
+.search-page .search-discovery-product strong{align-self:end;font-size:13px;line-height:1.45;word-break:keep-all;overflow-wrap:break-word}
+.search-page .search-discovery-product>span{align-self:start;font-size:10px}
+@media(max-width:1000px){
+  .search-page .search-discovery-campaign-grid{grid-template-columns:1fr}
+  .search-page #jcs-campaign-directory .jcd-item{grid-template-columns:104px minmax(0,1fr)}
+  .search-page #jcs-campaign-directory .jcd-portrait{min-height:160px}
+  .search-page .search-discovery-product-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:700px){
+  .search-page .search-discovery-campaigns,.search-page .search-discovery-shop{padding:14px}
+  .search-page .search-discovery-section-head{gap:6px}
+  .search-page .search-discovery-section-head h2{font-size:20px}
+}
+@media(max-width:420px){
+  .search-page #jcs-campaign-directory .jcd-item{grid-template-columns:82px minmax(0,1fr)}
+  .search-page #jcs-campaign-directory .jcd-item-body{padding:10px}
+  .search-page #jcs-campaign-directory .jcd-item-bottom{flex-wrap:wrap}
+  .search-page .search-discovery-product{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto;padding:8px;row-gap:4px}
+  .search-page .search-discovery-product-art{grid-row:auto;width:100%;height:86px}
+  .search-page .search-discovery-product strong,.search-page .search-discovery-product>span{align-self:auto}
+}
