@@ -1,3 +1,4 @@
+import { bindRankingWeights, rankingWeightsReady, updateRunningRankingWeights } from './ui/ranking-weights.js?v=0.0.31.174';
 import { createGroupClient } from './core/group-client.js?v=0.0.31.172';
 import { loadGroupPage, groupLoginReturn } from './core/group-routing.js?v=0.0.31.172';
 import { bindGroupInteractions } from './ui/group-interactions.js?v=0.0.31.171';
@@ -12,13 +13,13 @@ import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.56';
 import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.171';
 import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.172';
 import { focusCageCompose, setupHomeCompare, setupPoliticianAutocomplete, setupLayoutInteractions, setupPoliticianPhotoFallback, setupNowCarousel, setupCageCountdown, setupDesktopHomeViewport } from './ui/interactions.js?v=0.0.31.165';
-import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.158';
+import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.174';
 import { createContentService, loadNavigationDashboard, loadPersonNavigation } from './core/content.js?v=0.0.31.153';
 import { createPoliticianService } from './core/politicians.js?v=0.0.31.147';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.164';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.148';
-import * as views from './views/stage1.js?v=0.0.31.173';
+import * as views from './views/stage1.js?v=0.0.31.174';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.153';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.56';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.131';
@@ -120,6 +121,7 @@ async function shell(body,session,renderId){
 }
 
 function updateIntelligenceProgress(kind,job,message=''){
+  if(kind==='publish')updateRunningRankingWeights(document,job);
   const card=document.querySelector(`[data-intelligence-job="${kind}"]`);if(!card||!job)return;
   const completed=Number(job.completed||0),total=Number(job.total||542),percent=total?Math.min(100,Math.round(completed/total*100)):0;
   card.dataset.jobStatus=job.status||'RUNNING';const bar=card.querySelector('.admin-job-progress i');if(bar)bar.style.width=`${percent}%`;
@@ -129,6 +131,7 @@ function updateIntelligenceProgress(kind,job,message=''){
 
 const pipelineActive=()=>route().split('?')[0]==='/admin'&&adminRouteState(route()).tab==='pipeline';
 async function runAdminIntelligence(kind,resume=false){
+  if(kind==='publish'&&!resume&&!rankingWeightsReady(document))return;
   if(intelligenceRunnerActive)return;let failureMessage='';intelligenceRunnerActive=true;intelligenceAutoResumeGuard.mark(kind);
   const button=document.querySelector(`[data-intelligence-action="${kind}"]`);if(button)button.disabled=true;
   try{
@@ -284,6 +287,7 @@ bindCampaignInteractions(document,{client:campaigns,onSaved:async(_result,target
   // The editor updates its own version after draft saves; preserve unsent input and focus.
   if(targetRoute){if(targetRoute===route())await render({preserveScroll:true});else navigation.navigate(targetRoute);}
 }});
+bindRankingWeights(document,{auth,onSaved:()=>render({preserveScroll:true})});
 window.addEventListener('jcs:layout-route',event=>navigation.navigate(event.detail?.route||'/'));
 window.addEventListener('jcs:layout-search',event=>navigation.navigate(`/search?q=${encodeURIComponent(String(event.detail?.query||'').trim())}`));
 document.addEventListener('change',event=>{

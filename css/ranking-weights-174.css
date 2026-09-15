@@ -1,0 +1,13 @@
+.admin-ranking-weights{margin:18px 0;padding:20px;border:1px solid #e3d9ec;border-radius:14px;background:#fff;color:#30243b}
+.admin-ranking-weights h3{margin:0 0 8px;font-size:18px}
+.admin-ranking-weights p{margin:8px 0;color:#72667d;font-size:13px;line-height:1.7}
+.ranking-weight-status{display:flex;flex-wrap:wrap;gap:10px 22px;margin:16px 0;font-size:12px;color:#72667d}
+.ranking-weight-status b{display:block;margin-top:4px;color:#62358f;font-size:14px}
+.admin-ranking-weights form{display:flex;flex-wrap:wrap;align-items:end;gap:12px}
+.admin-ranking-weights label{display:grid;gap:7px;font-size:13px;font-weight:700}
+.admin-ranking-weights select{min-width:225px;max-width:100%;min-height:42px;padding:8px 12px;border:1px solid #d6c6e2;border-radius:9px;background:#fff;color:#30243b;font:inherit}
+.admin-ranking-weights button{min-height:42px;background:#753bbd;color:#fff}
+.admin-ranking-weights [data-ranking-weights-state]{flex-basis:100%;color:#62358f;font-size:13px;line-height:1.6}
+.admin-ranking-weights :disabled{opacity:.6;cursor:wait}
+.admin-ranking-weights .ranking-weight-help{margin-bottom:0;font-size:12px}
+@media(max-width:560px){.admin-ranking-weights{padding:16px}.admin-ranking-weights label,.admin-ranking-weights select{width:100%;min-width:0}}

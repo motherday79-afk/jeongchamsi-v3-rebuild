@@ -1,0 +1,9 @@
+{
+  "baseline": "JCS_0_0_31_173",
+  "release": "JCS_0_0_31_174",
+  "controlledRecords": 543,
+  "news": 60,
+  "search": 40,
+  "identicalScoresAndRanks": true,
+  "includesTiesAndMissingSignals": true
+}

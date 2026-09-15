@@ -1,0 +1,7 @@
+import { DEFAULT_RANKING_WEIGHTS, NEWS_WEIGHT_OPTIONS, rankingWeightLabel } from '../core/ranking-weights.js?v=0.0.31.174';
+
+export function renderRankingWeights(intelligence={}){
+  const weights=intelligence.rankingWeights??DEFAULT_RANKING_WEIGHTS,live=intelligence.publicRankingWeights;
+  const running=intelligence.publication?.status==='RUNNING'?intelligence.publication.rankingWeights??DEFAULT_RANKING_WEIGHTS:null;
+  return `<section class="admin-ranking-weights"><h3>NOW 순위 반영 비율</h3><p>운영 판단에 따라 뉴스와 검색의 비중을 선택하세요.</p><div class="ranking-weight-status"><span>현재 공개 <b>${live?rankingWeightLabel(live):'게시 전'}</b></span><span>다음 게시 <b>${rankingWeightLabel(weights)}</b></span><span data-ranking-weights-running${running?'':' hidden'}>게시 중 <b>${running?rankingWeightLabel(running):''}</b></span></div><form data-ranking-weights-form data-saved-news="${weights.news}"><label for="ranking-news-weight">뉴스 · 검색 비율<select id="ranking-news-weight" name="news">${NEWS_WEIGHT_OPTIONS.map(news=>`<option value="${news}"${weights.news===news?' selected':''}>${rankingWeightLabel({news,search:100-news})}</option>`).join('')}</select></label><button class="primary-btn" type="submit">비율 저장</button><span data-ranking-weights-state role="status" aria-live="polite"></span></form><p class="ranking-weight-help">저장 후 ‘전체 게시’를 누르면 수집된 자료로 NOW 순위를 다시 계산합니다. 뉴스 비중은 기사 수·매체 수·최신성에 똑같이 나누어 반영합니다. 상세 진단의 항목별 계산식은 별도로 적용됩니다.${running?' 진행 중인 게시는 시작할 때의 비율로 완료됩니다.':''}</p></section>`;
+}

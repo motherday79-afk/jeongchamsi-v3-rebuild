@@ -1,0 +1,30 @@
+{
+  "release": "JCS_0_0_31_174",
+  "baseline": "JCS_0_0_31_173",
+  "changed": [
+    "api/gateway.js",
+    "index.html",
+    "lib/intelligence-keys.js",
+    "lib/intelligence-repository.js",
+    "lib/intelligence-service.js",
+    "lib/operational-ranking.js",
+    "src/app.js",
+    "src/core/auth.js",
+    "src/core/release.js",
+    "src/views/stage1.js"
+  ],
+  "added": [
+    "css/ranking-weights-174.css",
+    "docs/releases/JCS_0_0_31_174.md",
+    "src/core/ranking-weights.js",
+    "src/ui/ranking-weights.js",
+    "src/views/ranking-weights.js",
+    "tests/ranking-weights.test.js",
+    "verification/ranking-weights-174/default-compatibility.json",
+    "verification/ranking-weights-174/patch-manifest.json",
+    "verification/ranking-weights-174/review.md",
+    "verification/ranking-weights-174/tests.txt",
+    "verification/ranking-weights-174/verification.json"
+  ],
+  "removed": []
+}

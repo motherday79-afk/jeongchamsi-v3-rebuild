@@ -42,6 +42,7 @@ function createRemoteAuthService(){
     async saveHomeCage(id,titleLayout){return request('admin/home-cage',{method:'POST',body:JSON.stringify({id,titleLayout})});},
     async adminSummary(){return request('admin/summary');},
     async intelligenceStatus(){return request('admin/intelligence/status');},
+    async intelligenceSaveRankingWeights(input){return request('admin/intelligence/ranking-weights',{method:'PATCH',body:JSON.stringify(input)});},
     async intelligenceCollectStart(){return request('admin/intelligence/collect/start',{method:'POST',body:'{}'});},
     async intelligenceCollectStep(){return request('admin/intelligence/collect/step',{method:'POST',body:'{}'});},
     async intelligenceRetryFailures(){return request('admin/intelligence/collect/retry-failures',{method:'POST',body:'{}'});},
