@@ -35,7 +35,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
-/** The only native screen: the existing website and the original intro. */
+/** The only native screen: the existing website and the approved purple/gold intro. */
 public final class MainActivity extends Activity {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final BackPolicy backPolicy = new BackPolicy(2000);
@@ -49,13 +49,18 @@ public final class MainActivity extends Activity {
     private String failedUrl = BuildConfig.HOME_URL;
     private boolean backPending;
     private boolean destroyed;
+    private StartupGate startup;
+    private String readyScript="false";
+    private boolean startupProbePending, introClosing;
+    private int startupEpoch;
+    private final Runnable startupTick=this::checkStartup;
     private int backRequest;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
         root = new FrameLayout(this);
-        root.setBackgroundColor(Color.WHITE);
+        root.setBackgroundColor(IntroView.BACKGROUND);
         // Protect the website from status bars, display cutouts and the keyboard.
         root.setOnApplyWindowInsetsListener((view, insets) -> {
             if (Build.VERSION.SDK_INT >= 30) {
@@ -83,11 +88,16 @@ public final class MainActivity extends Activity {
         CookieManager.getInstance().setAcceptCookie(true);
         CookieManager.getInstance().setAcceptThirdPartyCookies(web, true);
         web.setWebChromeClient(new WebChromeClient());
+        web.getSettings().setUserAgentString(web.getSettings().getUserAgentString()+" JCSAndroid/1.1.167");
         web.setOnTouchListener((view, event) -> {
-            if (event.getActionMasked() == MotionEvent.ACTION_DOWN) resetExit();
+            // System Back can begin in this WebView, then cancel its touch
+            // stream when the OS claims the edge gesture. ACTION_DOWN must not
+            // erase the first Back. Reset only after a completed content touch.
+            if (event.getActionMasked() == MotionEvent.ACTION_UP) resetExit();
             return false;
         });
         closeLayerScript = readAsset("back-layer.js");
+        readyScript = readAsset("startup-ready.js");
         web.setWebViewClient(new WebViewClient() {
             @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 if (!request.isForMainFrame()) return false;
@@ -97,7 +107,9 @@ public final class MainActivity extends Activity {
                 return routeExternal(Uri.parse(url));
             }
             @Override public void onPageStarted(WebView view, String url, android.graphics.Bitmap icon) {
-                resetExit(); removeError();
+                resetExit(); removeError(); startupEpoch++; startupProbePending=false;
+                if(startup!=null)startup.navigating();
+                if(trusted(Uri.parse(url)))failedUrl=url;
             }
             @Override public void doUpdateVisitedHistory(WebView view, String url, boolean reload) {
                 // Includes history.pushState/popstate used by the actual JCS router.
@@ -107,30 +119,78 @@ public final class MainActivity extends Activity {
                 CookieManager.getInstance().flush();
             }
             @Override public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                if (request.isForMainFrame()) showError(request.getUrl().toString());
+                if (request.isForMainFrame()) startupError(request.getUrl().toString());
+            }
+            @Override public void onReceivedHttpError(WebView view, WebResourceRequest request, android.webkit.WebResourceResponse response) {
+                if(request.isForMainFrame() && response.getStatusCode()>=400) startupError(request.getUrl().toString());
             }
             @Override public void onReceivedSslError(WebView view, SslErrorHandler ssl, SslError error) {
                 ssl.cancel(); // Never bypass HTTPS certificate failures.
-                showError(view.getUrl());
+                startupError(view.getUrl());
             }
         });
         if (Build.VERSION.SDK_INT >= 33) unregisterBack = Api33.register(this, this::handleBack);
         boolean restored = state != null && web.restoreState(state) != null;
+        if (state == null) showBrandedIntro();
+        else contentSystemBars();
         if (!restored) web.loadUrl(BuildConfig.HOME_URL);
-        if (state == null) showOriginalIntro();
         root.requestApplyInsets();
     }
 
-    private void showOriginalIntro() {
-        // This class is the original compiled animation, NOT the compile-only stub.
-        intro = new IntroView(this);
-        root.addView(intro, new FrameLayout.LayoutParams(-1, -1));
-        intro.setOnFinished(() -> handler.post(() -> {
-            if (!destroyed && intro != null) {
-                root.removeView(intro);
-                intro = null;
-            }
-        }));
+    private void showBrandedIntro() {
+        long started=SystemClock.uptimeMillis();
+        startup=new StartupGate(started);
+        intro=new IntroView(this,started);
+        root.addView(intro,new FrameLayout.LayoutParams(-1,-1));
+        handler.post(startupTick);
+    }
+
+    private void checkStartup() {
+        if(destroyed || intro==null || introClosing || startup==null)return;
+        int state=startup.state(SystemClock.uptimeMillis());
+        if(state==StartupGate.ERROR){showError(failedUrl);finishIntro();return;}
+        if(state==StartupGate.CONTENT){finishIntro();return;}
+        intro.showWaiting();
+        handler.postDelayed(startupTick,250);
+        String current=web.getUrl();
+        if(startupProbePending || current==null || !trusted(Uri.parse(current)))return;
+        startupProbePending=true;
+        final int epoch=startupEpoch;
+        web.evaluateJavascript(readyScript,result -> {
+            if(destroyed || intro==null || epoch!=startupEpoch)return;
+            startupProbePending=false;
+            if(!"true".equals(result))return;
+            // DOM-ready can precede a painted frame; wait for WebView's drawing fence.
+            web.postVisualStateCallback(epoch,new WebView.VisualStateCallback(){
+                @Override public void onComplete(long requestId){
+                    if(!destroyed && intro!=null && epoch==startupEpoch && startup!=null)startup.ready();
+                }
+            });
+        });
+    }
+
+    private void startupError(String url){
+        if(url!=null && trusted(Uri.parse(url)))failedUrl=url;
+        if(startup!=null && intro!=null && !introClosing){startup.failed();return;}
+        showError(url);
+    }
+
+    private void finishIntro(){
+        if(intro==null || introClosing)return;
+        introClosing=true;handler.removeCallbacks(startupTick);
+        intro.animate().alpha(0f).setDuration(180).withEndAction(() -> {
+            if(destroyed)return;
+            if(intro!=null){root.removeView(intro);intro=null;}
+            startup=null;introClosing=false;contentSystemBars();
+        }).start();
+    }
+
+    private void contentSystemBars(){
+        root.setBackgroundColor(Color.WHITE);
+        getWindow().setStatusBarColor(Color.WHITE);
+        getWindow().setNavigationBarColor(Color.WHITE);
+        View decor=getWindow().getDecorView();
+        decor.setSystemUiVisibility(decor.getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
     }
 
     private boolean trusted(Uri uri) {
@@ -248,6 +308,7 @@ public final class MainActivity extends Activity {
     @Override protected void onResume() { super.onResume(); if (web != null) web.onResume(); }
     @Override protected void onDestroy() {
         destroyed = true; handler.removeCallbacksAndMessages(null);
+        if(intro!=null)intro.animate().cancel();
         if (unregisterBack != null) unregisterBack.run();
         if (exitToast != null) exitToast.cancel();
         if (web != null) { root.removeView(web); web.stopLoading(); web.destroy(); }

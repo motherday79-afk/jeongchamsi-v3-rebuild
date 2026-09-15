@@ -2,6 +2,7 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
+if ! command -v javac >/dev/null; then javac(){ java -m jdk.compiler/com.sun.tools.javac.Main "$@"; }; fi
 SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
 if [[ -z "$SDK" ]]; then echo 'Android SDK missing. Run the included GitHub Actions workflow.' >&2; exit 2; fi
 BT="$SDK/build-tools/35.0.0"
@@ -12,13 +13,16 @@ if [[ ! -x "$BT/d8" || ! -f "$ANDROID_JAR" ]]; then
   "$MANAGER" 'platforms;android-35' 'build-tools;35.0.0'
 fi
 for TOOL in aapt2 d8 zipalign apksigner; do test -x "$BT/$TOOL"; done
-rm -rf "$ROOT/build"
+rm -rf "$ROOT/build" "$ROOT/dist"
 mkdir -p build/{classes,dex,generated/com/jeongchamsi/preview,test-classes} dist verification
 python3 -m unittest discover -s tests -p 'test_*.py' -v 2>&1 | tee verification/python-tests.txt
 javac -encoding UTF-8 -d build/test-classes src/com/jeongchamsi/preview/BackPolicy.java tests/BackPolicyTest.java
 java -cp build/test-classes com.jeongchamsi.preview.BackPolicyTest | tee verification/back-policy.txt
-node tests/test_back_layer.js | tee verification/back-layer.txt
-python3 tools/dex_tools.py select reference/original-classes3.dex build/original-intro.dex
+node tests/test_back_layer.cjs | tee verification/back-layer.txt
+node tests/test_startup_ready.cjs | tee verification/startup-ready.txt
+javac -encoding UTF-8 -d build/test-classes src/com/jeongchamsi/preview/StartupGate.java src/com/jeongchamsi/preview/IntroTimeline.java tests/StartupTest.java
+java -cp build/test-classes com.jeongchamsi.preview.StartupTest | tee verification/startup.txt
+
 python3 - <<'PY'
 from pathlib import Path
 from urllib.parse import urlparse
@@ -30,7 +34,8 @@ if u.scheme!='https' or not u.hostname or u.username or u.password:
     raise SystemExit('homeUrl must be an HTTPS URL without credentials')
 if not re.fullmatch(r'[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+', cfg['applicationId']):
     raise SystemExit('Invalid applicationId')
-version=100000+int(os.environ.get('GITHUB_RUN_NUMBER','0'))
+version=int(os.environ.get('JCS_VERSION_CODE') or (167000+int(os.environ.get('GITHUB_RUN_NUMBER','0'))))
+if not 1<=version<=2100000000: raise SystemExit('Invalid JCS_VERSION_CODE')
 if cfg['minSdk']!=26 or cfg['targetSdk']!=35 or cfg['buildTools']!='35.0.0':
     raise SystemExit('SDK settings must match this pinned SDK 35 build script')
 ns='http://schemas.android.com/apk/res/android'
@@ -49,16 +54,20 @@ PY
 "$BT/aapt2" link -o build/resources.apk -I "$ANDROID_JAR" \
   --min-sdk-version 26 --target-sdk-version 35 \
   --manifest build/AndroidManifest.xml -A assets build/resources.zip
-mapfile -t SOURCES < <(find src stubs build/generated -name '*.java' -type f | sort)
+mapfile -t SOURCES < <(find src build/generated -name '*.java' -type f | sort)
 # Use the JDK 8 API surface for java.* (including LambdaMetafactory) and Android SDK as classpath.
 # D8 will desugar Java 8 lambdas for minSdk 26. Using android.jar as javac bootclasspath hides
 # java.lang.invoke.LambdaMetafactory and causes javac to fail before D8 runs.
 javac -encoding UTF-8 --release 8 -classpath "$ANDROID_JAR" \
   -d build/classes "${SOURCES[@]}"
-rm build/classes/com/jeongchamsi/preview/IntroView.class
-jar cf build/new-app-classes.jar -C build/classes .
+python3 - <<'JCS_CLASSES'
+from pathlib import Path
+from zipfile import ZipFile,ZIP_DEFLATED
+with ZipFile('build/new-app-classes.jar','w',ZIP_DEFLATED) as z:
+    for p in sorted(Path('build/classes').rglob('*.class')):z.write(p,str(p.relative_to('build/classes')))
+JCS_CLASSES
 "$BT/d8" --release --min-api 26 --lib "$ANDROID_JAR" --output build/dex \
-  build/new-app-classes.jar build/original-intro.dex
+  build/new-app-classes.jar
 python3 tools/dex_tools.py verify-final build/dex/classes.dex verification/runtime-classes.json
 python3 - <<'PY'
 from pathlib import Path
@@ -116,7 +125,7 @@ if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
   {
     echo '## 정참시 APK'
     echo 'Artifacts → jeongchamsi-minimal-apk → ZIP 해제 → jeongchamsi-minimal.apk 설치'
-    echo '원본 인트로 / 8방향 흰색 아이콘 / 이전 화면 복귀 / 첫 화면에서 두 번 뒤로가기'
+    echo '퍼플·골드 인트로 / 승인 골드 로고 아이콘 / 이전 화면 복귀 / 첫 화면에서 두 번 뒤로가기'
     echo '인터넷 권한만 포함. 푸시·Firebase·백그라운드 서비스 없음.'
     echo "Signing mode: $SIGNING_MODE"
     echo '스마트폰 실기 검수는 별도로 필요합니다.'

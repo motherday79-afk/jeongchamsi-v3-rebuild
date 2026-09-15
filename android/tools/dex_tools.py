@@ -123,7 +123,7 @@ def verify_final(path: Path) -> dict:
     dex = Dex(path.read_bytes())
     names = sorted(dex.classes)
     if INTRO not in names:
-        raise ValueError('The original intro is missing')
+        raise ValueError('The purple/gold intro is missing')
     for name in names:
         if not name.startswith('Lcom/jeongchamsi/preview/'):
             raise ValueError('Unexpected runtime dependency: ' + name)
@@ -134,9 +134,9 @@ def verify_final(path: Path) -> dict:
     for needle in bad_strings:
         if any(needle in value for value in dex.strings):
             raise ValueError('Unexpected leftover in final DEX: ' + needle)
-    if len(dex.methods(INTRO)) != 20:
-        raise ValueError('Original intro method count changed')
-    return dict(class_count=len(names), classes=names, original_intro_present=True,
+    if dex.methods(INTRO).get('onDraw(Landroid/graphics/Canvas;)V',{}).get('instruction_bytes',0)<100:
+        raise ValueError('Native intro renderer missing or empty')
+    return dict(class_count=len(names), classes=names, purple_gold_intro_present=True, original_intro_packaged=False,
                 no_push_or_firebase=True, compile_only_stub_absent=True)
 
 

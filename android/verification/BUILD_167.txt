@@ -1,0 +1,35 @@
+test_all_instructions_unchanged (test_intro.IntroPreservationTest.test_all_instructions_unchanged) ... ok
+test_class_and_static_data_unchanged (test_intro.IntroPreservationTest.test_class_and_static_data_unchanged) ... ok
+test_compile_contract (test_intro.IntroPreservationTest.test_compile_contract) ... ok
+test_exact_source (test_intro.IntroPreservationTest.test_exact_source) ... ok
+test_only_intro_defined (test_intro.IntroPreservationTest.test_only_intro_defined) ... ok
+test_real_animation_not_stub (test_intro.IntroPreservationTest.test_real_animation_not_stub) ... ok
+test_selector_reports_approved_method_count (test_intro.IntroPreservationTest.test_selector_reports_approved_method_count) ... ok
+test_tamper_rejected (test_intro.IntroPreservationTest.test_tamper_rejected) ... ok
+test_back_gestures_and_buttons (test_project.ProjectScopeTest.test_back_gestures_and_buttons) ... ok
+test_distinct_install_identity (test_project.ProjectScopeTest.test_distinct_install_identity) ... ok
+test_history_not_replaced_by_home_reload (test_project.ProjectScopeTest.test_history_not_replaced_by_home_reload) ... ok
+test_icon_uses_exact_approved_gold_png (test_project.ProjectScopeTest.test_icon_uses_exact_approved_gold_png) ... ok
+test_manifest_only_internet (test_project.ProjectScopeTest.test_manifest_only_internet) ... ok
+test_only_updated_native_intro_is_compiled (test_project.ProjectScopeTest.test_only_updated_native_intro_is_compiled) ... ok
+test_reference_not_packaged_as_asset (test_project.ProjectScopeTest.test_reference_not_packaged_as_asset) ... ok
+test_xml_is_well_formed (test_project.ProjectScopeTest.test_xml_is_well_formed) ... ok
+test_real_touch_listener_preserves_double_gesture_exit (test_touch_back.TouchBackTest.test_real_touch_listener_preserves_double_gesture_exit) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.480s
+
+OK
+BackPolicy: 12 assertions passed
+Back-layer: 8 assertions passed
+WebView readiness: 8 cases passed
+Startup/animation: 3368 checks passed
+Note: src/com/jeongchamsi/preview/MainActivity.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+{"class_count": 20, "classes": ["Lcom/jeongchamsi/preview/BackPolicy;", "Lcom/jeongchamsi/preview/BuildConfig;", "Lcom/jeongchamsi/preview/IntroTimeline;", "Lcom/jeongchamsi/preview/IntroView;", "Lcom/jeongchamsi/preview/MainActivity$$ExternalSyntheticLambda0;", "Lcom/jeongchamsi/preview/MainActivity$$ExternalSyntheticLambda1;", "Lcom/jeongchamsi/preview/MainActivity$$ExternalSyntheticLambda2;", "Lcom/jeongchamsi/preview/MainActivity$$ExternalSyntheticLambda3;", "Lcom/jeongchamsi/preview/MainActivity$$ExternalSyntheticLambda4;", "Lcom/jeongchamsi/preview/MainActivity$$ExternalSyntheticLambda5;", "Lcom/jeongchamsi/preview/MainActivity$$ExternalSyntheticLambda6;", "Lcom/jeongchamsi/preview/MainActivity$$ExternalSyntheticLambda7;", "Lcom/jeongchamsi/preview/MainActivity$$ExternalSyntheticLambda8;", "Lcom/jeongchamsi/preview/MainActivity$1;", "Lcom/jeongchamsi/preview/MainActivity$2;", "Lcom/jeongchamsi/preview/MainActivity$Api33$$ExternalSyntheticLambda0;", "Lcom/jeongchamsi/preview/MainActivity$Api33$$ExternalSyntheticLambda1;", "Lcom/jeongchamsi/preview/MainActivity$Api33;", "Lcom/jeongchamsi/preview/MainActivity;", "Lcom/jeongchamsi/preview/StartupGate;"], "purple_gold_intro_present": true, "original_intro_packaged": false, "no_push_or_firebase": true, "compile_only_stub_absent": true}
+Generating 3,072 bit RSA key pair and self-signed certificate (SHA256withRSA) with a validity of 10,000 days
+	for: CN=JCS Private Installation Preview
+
+Warning:
+The JKS keystore uses a proprietary format. It is recommended to migrate to PKCS12 which is an industry standard format using "keytool -importkeystore -srckeystore /tmp/tmp.spJP0ALpBD -destkeystore /tmp/tmp.spJP0ALpBD -deststoretype pkcs12".
+::notice::Preview signing: for a later independently rebuilt APK, uninstall this preview first. Use signing secrets for update continuity.

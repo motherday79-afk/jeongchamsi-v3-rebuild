@@ -18,12 +18,19 @@ class ProjectScopeTest(unittest.TestCase):
         cfg = json.loads((ROOT/'config.json').read_text())
         self.assertEqual(cfg['applicationId'],'com.jeongchamsi.minimal')
         self.assertNotEqual(cfg['applicationId'],'com.jeongchamsi.preview')
-        self.assertEqual(cfg['homeUrl'],'https://jeongchamsi-v3-rebuild.vercel.app/')
-    def test_icon_has_eight_white_rays(self):
-        vector = ET.parse(ROOT/'res/drawable/ic_launcher_foreground.xml').getroot()
-        groups = vector.findall('group')
-        self.assertEqual([int(g.get(A+'rotation')) for g in groups],list(range(0,360,45)))
-        self.assertTrue(all(g.find('path').get(A+'fillColor')=='#FFFFFF' for g in groups))
+        self.assertEqual(cfg['homeUrl'],'https://jeongchamsi.com/')
+    def test_icon_uses_exact_approved_gold_png(self):
+        import hashlib
+        gold=ROOT/'res/drawable-nodpi/jcs_gold.png'
+        provenance=json.loads((ROOT/'reference/BRAND167.json').read_text())
+        self.assertEqual(hashlib.sha256(gold.read_bytes()).hexdigest(),provenance['goldLogoSha256'])
+        vector=ET.parse(ROOT/'res/drawable/ic_launcher_foreground.xml').getroot()
+        self.assertEqual(vector.tag,'inset')
+        frac=lambda key:float(vector.get(A+key).strip('%'))/100
+        w=1-frac('insetLeft')-frac('insetRight')
+        h=1-frac('insetTop')-frac('insetBottom')
+        self.assertAlmostEqual(w/h,1536/1024,places=6)
+        self.assertEqual(vector.find('bitmap').get(A+'src'),'@drawable/jcs_gold')
     def test_xml_is_well_formed(self):
         paths = list((ROOT/'res').rglob('*.xml'))
         self.assertGreaterEqual(len(paths),5)
@@ -35,18 +42,18 @@ class ProjectScopeTest(unittest.TestCase):
         self.assertNotIn('loadUrl(',code)
         self.assertNotIn('reload(',code)
         self.assertNotIn('addJavascriptInterface',source)
-    def test_stub_removed_before_d8(self):
-        build = (ROOT/'tools/build.sh').read_text()
-        remove = build.index('rm build/classes/com/jeongchamsi/preview/IntroView.class')
-        merge = build.index('"$BT/d8" --release')
-        self.assertLess(remove,merge)
-        self.assertIn('build/new-app-classes.jar build/original-intro.dex',build)
+    def test_only_updated_native_intro_is_compiled(self):
+        build=(ROOT/'tools/build.sh').read_text()
+        self.assertNotIn('find src stubs',build)
+        self.assertNotIn('build/original-intro.dex',build)
         self.assertIn('verify-final',build)
+        self.assertTrue((ROOT/'src/com/jeongchamsi/preview/IntroView.java').is_file())
     def test_back_gestures_and_buttons(self):
         source = (ROOT/'src/com/jeongchamsi/preview/MainActivity.java').read_text()
         self.assertIn('onBackPressed() { handleBack(); }',source)
         self.assertIn('OnBackInvokedCallback',source)
         self.assertIn('new BackPolicy(2000)',source)
     def test_reference_not_packaged_as_asset(self):
-        self.assertEqual([p.name for p in (ROOT/'assets').iterdir()],['back-layer.js'])
+        self.assertFalse(any(p.suffix=='.dex' for p in (ROOT/'assets').rglob('*')))
+        self.assertTrue((ROOT/'assets/back-layer.js').is_file())
 if __name__ == '__main__': unittest.main()
