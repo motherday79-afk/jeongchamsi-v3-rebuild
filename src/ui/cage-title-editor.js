@@ -1,5 +1,5 @@
-import { normalizeCageTitle,cageBreakOptions,validateCageTitleLayout } from '../core/cage-title-layout.js?v=0.0.31.166';
-import { renderCageBanner } from './home-cage-banner.js?v=0.0.31.166';
+import { normalizeCageTitle,cageBreakOptions,validateCageTitleLayout } from '../core/cage-title-layout.js?v=0.0.31.167';
+import { renderCageBanner } from './home-cage-banner.js?v=0.0.31.167';
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const errorText={CAGE_TITLE_TOO_LONG:'이 줄은 제목 영역에 크게 담기 어렵습니다. 다른 줄바꿈 위치를 선택해 주세요.',CAGE_TITLE_BREAK_INVALID:'줄을 나눌 위치를 선택해 주세요.',CAGE_TITLE_CHANGED:'원문 제목이 변경되었습니다. 최신 제목으로 다시 설정해 주세요.'};
 function fields(record){

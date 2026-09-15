@@ -20,7 +20,7 @@ test('selected title ink fits the original board for every manual emphasis',()=>
   for(const line of cageTitleGeometry(title,layout).lines){
    assert.ok(Number.isFinite(line.projectedWidth));
    assert.ok(line.projectedWidth+8<=1015);
-   assert.ok(line.top-4>=84&&line.bottom+6<=366);
+   assert.ok(line.top>=64&&line.bottom<=349);
   }
  }
 });

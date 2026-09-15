@@ -58,8 +58,9 @@ function releasedLayoutFits(texts,emphasis){
 // reduction only when a changed title exceeds the board; never stretch glyphs.
 export function cageTitleFontGeometry(texts,emphasis='equal'){
  const sizes=texts.length===1?[176]:emphasis==='first'?[145.46667,106.44]:emphasis==='second'?[106.44,145.46667]:[126,126];
- const baselines=texts.length===1?[232]:[223,340];
- const slots=texts.length===1?[[94,356]]:[[94,244],[250,356]];
+ // The cleared top screen runs from y≈48 to 365. Equal 16px inner
+ // margins give the safe ink box [64,349], centered at 206.5.
+ const boardTop=64,boardBottom=349,gap=texts.length>1?28:0;
  const measures=texts.map(text=>{
   let advance=0,left=Infinity,right=-Infinity,low=Infinity,high=-Infinity;
   for(const char of text){
@@ -69,14 +70,14 @@ export function cageTitleFontGeometry(texts,emphasis='equal'){
   }
   return Number.isFinite(left)?{advance,left,right,low,high}:{advance,left:0,right:0,low:0,high:1};
  });
- const scale=Math.min(1,...measures.flatMap((m,i)=>[
-  497.5/Math.max(Math.abs(m.left-m.advance/2),Math.abs(m.right-m.advance/2),.1)/sizes[i],
-  (baselines[i]-slots[i][0])/Math.max(m.high,.1)/sizes[i],
-  m.low<0?(slots[i][1]-baselines[i])/-m.low/sizes[i]:1
- ]));
+ const inkHeight=measures.reduce((sum,m,i)=>sum+(m.high-m.low)*sizes[i],gap);
+ const scale=Math.min(1,(boardBottom-boardTop)/Math.max(inkHeight,.1),...measures.map((m,i)=>995/Math.max(m.right-m.left,.1)/sizes[i]));
+ let top=(boardTop+boardBottom-inkHeight*scale)/2;
  return {emphasis,lines:texts.map((text,i)=>{
-  const m=measures[i],size=sizes[i]*scale,baseline=baselines[i];
-  return {text,size,widthScale:1,baseline,width:m.advance*size,projectedWidth:(m.right-m.left)*size,x:-m.advance*size/2,top:baseline-m.high*size,bottom:baseline-m.low*size};
+  const m=measures[i],size=sizes[i]*scale,baseline=top+m.high*size;
+  const line={text,size,widthScale:1,baseline,width:m.advance*size,projectedWidth:(m.right-m.left)*size,x:-(m.left+m.right)*size/2,top,bottom:baseline-m.low*size};
+  top=line.bottom+gap*scale;
+  return line;
  })};
 }
 function geometry(title,layout){

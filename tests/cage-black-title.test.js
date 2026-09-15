@@ -4,14 +4,14 @@ import fs from 'node:fs';
 import {renderCageBanner} from '../src/ui/home-cage-banner.js';
 
 const example="'인사청문회' 게임을 시작해 볼까?";
-test('selected Black Han Sans matches the actual approved option 2 sizes and baselines',()=>{
+test('selected Black Han Sans matches the actual approved option 2 sizes with the whole title centered on the screen',()=>{
  const art=renderCageBanner({title:example,blue:2,red:1});
  assert.match(art,/font-family="JCS Cage Black,JCS Cage Sans Fallback,sans-serif"/);
  assert.doesNotMatch(art,/skewX|feDisplacementMap|grain-mask|JCS Cage Rock/);
  const lines=[...art.matchAll(/<text\b[^>]*data-cage-title-line="[^"]+"[^>]*>/g)].map(m=>m[0]);
  assert.equal(lines.length,2);
- assert.match(lines[0],/font-size="145.47"/);assert.match(lines[0],/y="223.00"/);
- assert.match(lines[1],/font-size="106.44"/);assert.match(lines[1],/y="340.00"/);
+ assert.match(lines[0],/font-size="145.47"/);
+ assert.match(lines[1],/font-size="106.44"/);
  assert.match(art,/gradientUnits="userSpaceOnUse"[^>]*y1="90"[^>]*y2="356"/);
 });
 

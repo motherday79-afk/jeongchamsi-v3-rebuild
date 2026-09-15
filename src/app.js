@@ -1,13 +1,13 @@
 import { cageLoginReturn } from './core/cage-entry.js?v=0.0.31.165';
-import { bindCageTitleEditors } from './ui/cage-title-editor.js?v=0.0.31.166';
+import { bindCageTitleEditors } from './ui/cage-title-editor.js?v=0.0.31.167';
 import { createCampaignClient } from './core/campaign-client.js?v=0.0.31.158';
 import { loadCampaignPage } from './core/campaign-routing.js?v=0.0.31.160';
 import { bindCampaignInteractions } from './ui/campaign-interactions.js?v=0.0.31.165';
 import { refreshFontScale } from './ui/font-scale.js?v=0.0.31.56';
-import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.166';
+import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.167';
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.56';
-import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.165';
-import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.166';
+import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.167';
+import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.167';
 import { focusCageCompose, setupHomeCompare, setupPoliticianAutocomplete, setupLayoutInteractions, setupPoliticianPhotoFallback, setupNowCarousel, setupCageCountdown, setupDesktopHomeViewport } from './ui/interactions.js?v=0.0.31.165';
 import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.158';
 import { createContentService, loadNavigationDashboard, loadPersonNavigation } from './core/content.js?v=0.0.31.153';
@@ -15,13 +15,13 @@ import { createPoliticianService } from './core/politicians.js?v=0.0.31.147';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.164';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.148';
-import * as views from './views/stage1.js?v=0.0.31.166';
+import * as views from './views/stage1.js?v=0.0.31.167';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.153';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.56';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.131';
 import { renderPresidentPage } from './views/president.js?v=0.0.31.107';
-import { renderSearchPage, hasSearchSnapshot } from './views/search-page.js?v=0.0.31.166';
-import { loadSearchDiscovery } from './views/search-discovery.js?v=0.0.31.166';
+import { renderSearchPage, hasSearchSnapshot } from './views/search-page.js?v=0.0.31.167';
+import { loadSearchDiscovery } from './views/search-discovery.js?v=0.0.31.167';
 import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.31.56';
 import { regionDistrictOptions, regionSubdistrictOptions } from './data/korean-regions.js?v=0.0.31.56';
 
@@ -262,6 +262,7 @@ async function render({preserveScroll=false,refreshHome=false}={}){
   showCageFeedback();
   if(p[0]==='person'){invalidateHome();recordRecentPolitician(document);tunePoliticianNarratives();if(session.user?.role==='admin')void updatePoliticianPhotoStorageStatus();}
   if(!preserveScroll){window.scrollTo(0,0);focusCageCompose(document);if(p[0]==='support'||p[0]==='points'&&new URLSearchParams(r.split('?')[1]||'').get('view')==='support'){const target=document.getElementById('jcs-support');target?.scrollIntoView({block:'start'});target?.querySelector('h2')?.focus({preventScroll:true});}}
+  app.setAttribute('data-jcs-ready','true');
   navigation?.cacheCurrent();
   if(p[0]==='admin')queueMicrotask(resumeAdminIntelligence);
 }

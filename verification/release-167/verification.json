@@ -1,0 +1,16 @@
+{
+  "release": "JCS_0_0_31_167",
+  "base": "JCS_0_0_31_166",
+  "webTestsPassed": 263,
+  "webTestsFailed": 0,
+  "protectedFilesUnchanged": 151,
+  "existingAssetDataApiLibCssDependenciesUnchanged": true,
+  "centerInkY": 206.5,
+  "fontFixtures": 93,
+  "glyphMetricsChecked": 12266,
+  "savedLineBreakCompatibilityCases": 588,
+  "apiSharedImportsQueryFree": true,
+  "realBrowserVerified": false,
+  "productionWrites": false,
+  "deployed": false
+}

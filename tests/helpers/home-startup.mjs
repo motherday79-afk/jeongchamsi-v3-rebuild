@@ -1,7 +1,7 @@
 // Full application execution with an in-memory DOM boundary and deterministic
 // read-only HTTP responses. This is not a browser or a layout test.
 import assert from 'node:assert/strict';
-const renders=[],calls=[],app={get innerHTML(){return renders.at(-1)||''},set innerHTML(value){renders.push(value)},firstElementChild:{}};
+const renders=[],calls=[],attributes={},app={setAttribute(k,v){attributes[k]=v},get innerHTML(){return renders.at(-1)||''},set innerHTML(value){renders.push(value)},firstElementChild:{}};
 const classList={add(){},remove(){},toggle(){},contains(){return false}};
 globalThis.document={getElementById:id=>id==='app'?app:null,querySelector:()=>null,querySelectorAll:()=>[],addEventListener(){},documentElement:{style:{setProperty(){}},classList},body:{classList},activeElement:null};
 globalThis.location=new URL('https://fixture.invalid/');
@@ -28,3 +28,5 @@ assert.match(renders[0],/정참시를 불러오고 있습니다/);
 assert.match(app.innerHTML,/class="site-shell"/);
 assert.match(app.innerHTML,/class="product-home-wrap"/);
 assert.doesNotMatch(app.innerHTML,/정참시를 불러오고 있습니다/);
+
+assert.equal(attributes['data-jcs-ready'],'true');

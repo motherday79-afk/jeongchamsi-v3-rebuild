@@ -1,0 +1,16 @@
+✔ selected Black Han Sans matches the actual approved option 2 sizes with the whole title centered on the screen (1.81395ms)
+✔ LIVE moves between title and VS while original scene and clickable score boards stay in place (0.287183ms)
+✔ fonts are self hosted and Black font bytes are the approved comparison file (0.830514ms)
+✔ approved and changed cage titles both stay editable live lettering (2.440306ms)
+✔ selected title ink fits the original board for every manual emphasis (6.955486ms)
+✔ archived Rock metrics remain unchanged and current renderer uses the selected face (1.664845ms)
+✔ saved one-line layout stays one line when the replacement face needs a smaller font size (1.99932ms)
+✔ one and two lines are centered as a visible ink block inside the top screen (1.479565ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 201.563848

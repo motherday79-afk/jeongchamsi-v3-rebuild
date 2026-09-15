@@ -1,4 +1,4 @@
-import { cageTitleGeometry,cageTitleFontGeometry } from '../core/cage-title-layout.js?v=0.0.31.166';
+import { cageTitleGeometry,cageTitleFontGeometry } from '../core/cage-title-layout.js?v=0.0.31.167';
 import { CAGE_TITLE_WIDTHS } from '../data/cage-black-metrics-166.js?v=0.0.31.166';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
