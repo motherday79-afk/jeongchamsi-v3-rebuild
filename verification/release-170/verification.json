@@ -1,0 +1,15 @@
+{
+  "version": "JCS_0_0_31_170",
+  "webBaseline": "JCS_0_0_31_167",
+  "tests": {
+    "passed": 270,
+    "failed": 0,
+    "newCampaignTests": 7
+  },
+  "imageBytesTotal": 315272,
+  "internalRoute": "/campaigns/example-002",
+  "liveDeployed": false,
+  "physicalDeviceTesting": false,
+  "liveSidebarObserved": "legacy YouTube banner without designVersion: upload",
+  "liveCampaignApi": "direct request timed out; route verified with bundled example service"
+}

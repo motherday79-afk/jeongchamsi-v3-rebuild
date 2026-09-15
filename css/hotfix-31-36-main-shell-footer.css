@@ -33,6 +33,8 @@
 }
 .side-home-banner,.side-keywords,.side-recent,.side-news,.side-rising,.side-participation-account{cursor:default}
 .side-home-banner a{cursor:pointer}
+/* Approved campaign composition stays complete in narrower desktop columns. */
+.product-home-wrap .home-balanced-layout .side-campaign-banner img{object-fit:contain!important;background:#fbf9fe}
 .side-participation-account .participation-account-row button{font-size:calc(var(--fs-meta,12px) - 2px)!important}
 
 .footer.footer-expanded{display:grid;grid-template-columns:auto 1fr;align-items:start;gap:10px 20px;min-height:0;max-width:1180px;margin:0 auto;padding:18px 16px 20px}

@@ -1,0 +1,66 @@
+[
+  {
+    "device": "pc",
+    "file": "assets/banners/campaign-night-transit-pc-170.webp",
+    "dimensions": [
+      420,
+      240
+    ],
+    "bytes": 33534,
+    "sha256": "26f96a247ac16ee392060a28bf18d1d1048ea944d016638d62ed09aa9ae164a4",
+    "approvedSource": "exec-3ed54537-f022-4d1c-b041-bd50bc9b172a.png",
+    "sourceDimensions": [
+      1659,
+      948
+    ],
+    "sourceSha256": "f7fe070593a05f778490d41f5e9c554390389a76ee021d0d519cf64b5a3d20a8"
+  },
+  {
+    "device": "pc-2x",
+    "file": "assets/banners/campaign-night-transit-pc-2x-170.webp",
+    "dimensions": [
+      840,
+      480
+    ],
+    "bytes": 88888,
+    "sha256": "30843891ca23c8f98da8d77208665062ea9c164124ba0e87e05e0446a8855613",
+    "approvedSource": "exec-3ed54537-f022-4d1c-b041-bd50bc9b172a.png",
+    "sourceDimensions": [
+      1659,
+      948
+    ],
+    "sourceSha256": "f7fe070593a05f778490d41f5e9c554390389a76ee021d0d519cf64b5a3d20a8"
+  },
+  {
+    "device": "mobile",
+    "file": "assets/banners/campaign-night-transit-mobile-170.webp",
+    "dimensions": [
+      720,
+      540
+    ],
+    "bytes": 86838,
+    "sha256": "8ddaaa430310a98ef5d4a7ee7656a096504ea5cad2e1d0d9c8f7c21f30f9da17",
+    "approvedSource": "exec-e7df4540-943b-4305-be91-ed7876cb3289.png",
+    "sourceDimensions": [
+      1448,
+      1086
+    ],
+    "sourceSha256": "2a49750d43512c5a986fca178d2355d875f3f29ddb0778c280090a2f917ed939"
+  },
+  {
+    "device": "tablet",
+    "file": "assets/banners/campaign-night-transit-tablet-170.webp",
+    "dimensions": [
+      1200,
+      400
+    ],
+    "bytes": 106012,
+    "sha256": "0762ca67a8536e13a0848847334b37e33b5607028f832b1a1f8f71195ca3383c",
+    "approvedSource": "exec-c0754beb-89cd-48ab-98ab-7f7f32680c25.png",
+    "sourceDimensions": [
+      2172,
+      724
+    ],
+    "sourceSha256": "886e1c6096898339d37d6497be9f90c6c334f47c0d7ef654f18d1547a8e7b8e3"
+  }
+]

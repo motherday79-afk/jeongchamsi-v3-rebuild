@@ -99,10 +99,26 @@ export function renderBadgeShowcase(status={},showMyPage=false,displayName=''){
 function participationCard(status={},mobile=false,session={}){const authenticated=session?.authenticated===true;return `<section class="side-card side-participation side-participation-account participation-card promo-account-card${authenticated?'':' is-guest'}">${authenticated?`<div data-badge-showcase-mount data-badge-mypage="true" data-display-name="${esc(session.user?.nickname||'회원')}">${renderBadgeShowcase(status,true,session.user?.nickname||'회원')}</div><div data-member-summary-mount>${renderMemberSummary()}</div>`:'<div class="account-guest-intro"><b>정치에 참여할 시간</b><p>로그인하고 나의 참여 기록을 모아보세요.</p></div><a class="account-login-button" href="/login" data-layout-route="/login">정참시 로그인</a>'}</section>`;}
 
 function homeBanner(banner={},session={},placement='sidebar'){
- const original=imageUrl(banner?.url),hero=placement==='hero',restyle=!!original&&banner?.designVersion!=='upload',base=`/assets/banners/${hero?'hero':'sidebar'}`;
- const url=restyle?`${base}-pc-117.webp`:original,mobile=restyle?`${base}-mobile-117.webp`:imageUrl(banner?.mobileUrl),tablet=restyle?`${base}-tablet-117.webp`:imageUrl(banner?.tabletUrl),target=imageUrl(banner?.targetUrl),admin=session?.user?.role==='admin',cls=hero?'home-wide-banner':'side-card side-home-banner',edit=`<button type="button" data-home-banner-edit="${placement}">배너 ${url?'변경':'등록'}</button>`;
- const alt=restyle?(hero?'화성특례시 영화상영 페스티벌 · 영상공모하러 바로가기':'정참시 유튜브 곧 오픈. 정치를 더 가까이, 시민과 함께. 라이브를 통해 정참시의 다양한 메뉴를 활용한 정보 전달. 정치 정보와 흐름을 쉽고 빠르게 만나보세요. 핵심 이슈 쉽게 · 다양한 시각 깊게 · 시민과 함께 더 가까이. 정참시 유튜브 바로가기'):banner?.alt||'정참시 배너';
- if(url)return `<section class="${cls}"><a href="${esc(target||'#')}"${target?' target="_blank" rel="noopener noreferrer"':''}><picture>${tablet?`<source media="(hover:none) and (min-width:601px) and (max-width:1024px)" srcset="${esc(tablet)}">`:''}${mobile?`<source media="(max-width:600px), (hover:hover) and (max-width:767px)" srcset="${esc(mobile)}">`:''}<img src="${esc(url)}" alt="${esc(alt)}" loading="lazy" decoding="async"></picture></a>${admin?edit:''}</section>`;
+ const original=imageUrl(banner?.url),hero=placement==='hero',restyle=!!original&&banner?.designVersion!=='upload';
+ // Keep future admin uploads authoritative; only replace the bundled legacy sidebar design.
+ const campaign=!hero&&(!original||banner?.designVersion!=='upload'),base='/assets/banners/campaign-night-transit';
+ const url=campaign?`${base}-pc-170.webp`:restyle?'/assets/banners/hero-pc-117.webp':original;
+ const mobile=campaign?`${base}-mobile-170.webp`:restyle?'/assets/banners/hero-mobile-117.webp':imageUrl(banner?.mobileUrl);
+ const tablet=campaign?`${base}-tablet-170.webp`:restyle?'/assets/banners/hero-tablet-117.webp':imageUrl(banner?.tabletUrl);
+ const target=campaign?'/campaigns/example-002':imageUrl(banner?.targetUrl);
+ let route='';
+ if(target){try{
+   const parsed=new URL(target,'https://www.jeongchamsi.com');
+   if(parsed.protocol==='https:'&&['www.jeongchamsi.com','jeongchamsi.com'].includes(parsed.hostname)&&/^\/campaigns(?:\/|$)/.test(parsed.pathname))route=parsed.pathname+parsed.search+parsed.hash;
+ }catch{}}
+ const admin=session?.user?.role==='admin',cls=hero?'home-wide-banner':`side-card side-home-banner${campaign?' side-campaign-banner':''}`;
+ const edit=`<button type="button" data-home-banner-edit="${placement}">배너 ${url?'변경':'등록'}</button>`;
+ const alt=campaign?'정참시 예시 캠페인 · 한도윤 · 늦은 귀갓길에도, 멈추지 않는 이동을. 막차 이후의 이동도 공공의 문제입니다. 캠페인 이야기 보기':restyle?'화성특례시 영화상영 페스티벌 · 영상공모하러 바로가기':banner?.alt||'정참시 배너';
+ const tabletMedia=campaign?'(min-width:601px) and (max-width:1024px)':'(hover:none) and (min-width:601px) and (max-width:1024px)';
+ const mobileMedia=campaign?'(max-width:600px)':'(max-width:600px), (hover:hover) and (max-width:767px)';
+ const linkAttrs=route?` data-layout-route="${esc(route)}"`:target?' target="_blank" rel="noopener noreferrer"':'';
+ const pcAttrs=campaign?` width="420" height="240" srcset="${base}-pc-170.webp 1x, ${base}-pc-2x-170.webp 2x"`:'';
+ if(url)return `<section class="${cls}"><a href="${esc(route||target||'#')}"${linkAttrs}><picture>${tablet?`<source media="${tabletMedia}" srcset="${esc(tablet)}">`:''}${mobile?`<source media="${mobileMedia}" srcset="${esc(mobile)}">`:''}<img src="${esc(url)}"${pcAttrs} alt="${esc(alt)}" loading="lazy" decoding="async"></picture></a>${admin?edit:''}</section>`;
  return admin?`<section class="${cls} home-banner-empty"><b>${hero?'메인 가로 배너':'메인 사이드 배너'}</b><p>PC ${hero?'832 × 135':'420 × 240'}px · 모바일 ${hero?'720 × 300':'720 × 540'}px · 폴드 펼침·태블릿 ${hero?'1200 × 300':'1200 × 400'}px</p>${edit}</section>`:'';
 }
 
