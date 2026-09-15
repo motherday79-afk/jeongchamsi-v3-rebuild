@@ -1,0 +1,31 @@
+{
+  "release": "JCS_0_0_31_173",
+  "baseline": "JCS_0_0_31_172",
+  "scope": [
+    "campaign directory/current/archive/manage",
+    "campaign detail",
+    "campaign editor"
+  ],
+  "width": "100% of shared page-wrap, same as board pages",
+  "checks": [
+    {
+      "file": "css/campaigns-157.css",
+      "only_root_width_changed": true,
+      "media_queries_unchanged": true
+    },
+    {
+      "file": "css/campaign-editor-157.css",
+      "only_root_width_changed": true,
+      "media_queries_unchanged": true
+    }
+  ],
+  "tests": {
+    "total": 47,
+    "passed": 47,
+    "failed": 0,
+    "skipped": 0
+  },
+  "browser_qa": false,
+  "browser_limit": "Local browser URLs were blocked in the preceding verification; no visual QA is claimed.",
+  "deployed": false
+}

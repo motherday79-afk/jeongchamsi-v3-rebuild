@@ -1,0 +1,19 @@
+{
+  "release": "JCS_0_0_31_173",
+  "baseline": "JCS_0_0_31_172",
+  "changed": [
+    "css/campaign-editor-157.css",
+    "css/campaigns-157.css",
+    "index.html",
+    "src/app.js",
+    "src/core/release.js",
+    "src/views/stage1.js"
+  ],
+  "added": [
+    "docs/releases/JCS_0_0_31_173.md",
+    "verification/campaign-width-173/patch-manifest.json",
+    "verification/campaign-width-173/tests.txt",
+    "verification/campaign-width-173/verification.json"
+  ],
+  "removed": []
+}

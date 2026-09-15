@@ -187,7 +187,7 @@
     @media(prefers-reduced-motion:reduce){#jcs-campaign-preview *{scroll-behavior:auto}}
 
 /* Application integration and data-backed states. */
-#jcs-campaign-directory,#jcs-campaign-preview{width:min(100%,736px);max-width:736px;margin:0 auto;background:#fff}
+#jcs-campaign-directory,#jcs-campaign-preview{width:100%;max-width:100%;min-width:0;margin:0 auto;background:#fff}
 #jcs-campaign-directory .jcd-admin-controls{display:flex;gap:8px;flex-wrap:wrap}
 #jcs-campaign-directory .jcd-admin-link,#jcs-campaign-preview .jcd-admin-link{display:inline-flex;align-items:center;gap:5px;border:1px solid #d9cee2;border-radius:6px;padding:7px 10px;color:#68428d;background:#fff;text-decoration:none;font-size:12px}
 #jcs-campaign-directory .jcd-tab{text-decoration:none}
