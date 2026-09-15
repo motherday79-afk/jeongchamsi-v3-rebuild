@@ -92,7 +92,7 @@ public final class MainActivity extends Activity {
         CookieManager.getInstance().setAcceptCookie(true);
         CookieManager.getInstance().setAcceptThirdPartyCookies(web, true);
         web.setWebChromeClient(new WebChromeClient());
-        web.getSettings().setUserAgentString(web.getSettings().getUserAgentString()+" JCSAndroid/1.1.168");
+        web.getSettings().setUserAgentString(web.getSettings().getUserAgentString()+" JCSAndroid/1.1.169");
         web.setOnTouchListener((view, event) -> {
             // System Back can begin in this WebView, then cancel its touch
             // stream when the OS claims the edge gesture. ACTION_DOWN must not
@@ -355,7 +355,7 @@ public final class MainActivity extends Activity {
         });
         box.addView(browser);
         TextView detail=new TextView(this);
-        detail.setText("앱 1.1.168 · "+code);
+        detail.setText("앱 1.1.169 · "+code);
         detail.setTextColor(Color.GRAY);detail.setTextSize(12);detail.setGravity(Gravity.CENTER);
         box.addView(detail);
         errorPanel = box;

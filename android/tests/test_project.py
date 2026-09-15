@@ -18,7 +18,7 @@ class ProjectScopeTest(unittest.TestCase):
         cfg = json.loads((ROOT/'config.json').read_text())
         self.assertEqual(cfg['applicationId'],'com.jeongchamsi.minimal')
         self.assertNotEqual(cfg['applicationId'],'com.jeongchamsi.preview')
-        self.assertEqual(cfg['homeUrl'],'https://jeongchamsi.com/')
+        self.assertEqual(cfg['homeUrl'],'https://www.jeongchamsi.com/')
     def test_icon_uses_exact_approved_gold_png(self):
         import hashlib
         gold=ROOT/'res/drawable-nodpi/jcs_gold.png'

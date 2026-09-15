@@ -1,7 +1,7 @@
 {
   "applicationId": "com.jeongchamsi.minimal",
-  "homeUrl": "https://jeongchamsi.com/",
-  "versionName": "1.1.168-purple-gold",
+  "homeUrl": "https://www.jeongchamsi.com/",
+  "versionName": "1.1.169-purple-gold",
   "minSdk": 26,
   "targetSdk": 35,
   "buildTools": "35.0.0"

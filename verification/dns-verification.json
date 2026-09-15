@@ -1,0 +1,77 @@
+[
+  {
+    "host": "jeongchamsi.com",
+    "type": "A",
+    "status": 0,
+    "answer": [],
+    "authority": [
+      {
+        "name": "jeongchamsi.com.",
+        "type": 6,
+        "TTL": 1800,
+        "data": "jeongchamsi.com. postmaster.jeongchamsi.com. 20260903 10800 3600 3600000 43200"
+      }
+    ]
+  },
+  {
+    "host": "jeongchamsi.com",
+    "type": "AAAA",
+    "status": 0,
+    "answer": [],
+    "authority": [
+      {
+        "name": "jeongchamsi.com.",
+        "type": 6,
+        "TTL": 1800,
+        "data": "jeongchamsi.com. postmaster.jeongchamsi.com. 20260903 10800 3600 3600000 43200"
+      }
+    ]
+  },
+  {
+    "host": "www.jeongchamsi.com",
+    "type": "A",
+    "status": 0,
+    "answer": [
+      {
+        "name": "www.jeongchamsi.com.",
+        "type": 5,
+        "TTL": 1800,
+        "data": "3b9c4849434812f9.vercel-dns-017.com."
+      },
+      {
+        "name": "3b9c4849434812f9.vercel-dns-017.com.",
+        "type": 1,
+        "TTL": 300,
+        "data": "216.198.79.1"
+      },
+      {
+        "name": "3b9c4849434812f9.vercel-dns-017.com.",
+        "type": 1,
+        "TTL": 300,
+        "data": "64.29.17.1"
+      }
+    ],
+    "authority": []
+  },
+  {
+    "host": "www.jeongchamsi.com",
+    "type": "AAAA",
+    "status": 0,
+    "answer": [
+      {
+        "name": "www.jeongchamsi.com.",
+        "type": 5,
+        "TTL": 1800,
+        "data": "3b9c4849434812f9.vercel-dns-017.com."
+      }
+    ],
+    "authority": [
+      {
+        "name": "vercel-dns-017.com.",
+        "type": 6,
+        "TTL": 900,
+        "data": "ns1.vercel-dns-017.com. awsdns-hostmaster.amazon.com. 1 3600 900 1209600 900"
+      }
+    ]
+  }
+]

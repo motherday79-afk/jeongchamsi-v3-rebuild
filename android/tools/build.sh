@@ -34,7 +34,7 @@ if u.scheme!='https' or not u.hostname or u.username or u.password:
     raise SystemExit('homeUrl must be an HTTPS URL without credentials')
 if not re.fullmatch(r'[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+', cfg['applicationId']):
     raise SystemExit('Invalid applicationId')
-version=int(os.environ.get('JCS_VERSION_CODE') or (168000+int(os.environ.get('GITHUB_RUN_NUMBER','0'))))
+version=int(os.environ.get('JCS_VERSION_CODE') or (169000+int(os.environ.get('GITHUB_RUN_NUMBER','0'))))
 if not 1<=version<=2100000000: raise SystemExit('Invalid JCS_VERSION_CODE')
 if cfg['minSdk']!=26 or cfg['targetSdk']!=35 or cfg['buildTools']!='35.0.0':
     raise SystemExit('SDK settings must match this pinned SDK 35 build script')
