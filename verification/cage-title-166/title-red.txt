@@ -1,0 +1,82 @@
+✖ selected Black Han Sans matches the actual approved option 2 sizes and baselines (8.403084ms)
+✖ LIVE moves between title and VS while original scene and clickable score boards stay in place (1.063107ms)
+✖ fonts are self hosted and Black font bytes are the approved comparison file (0.483365ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 0
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 248.746289
+
+✖ failing tests:
+
+test at tests/cage-black-title.test.js:7:1
+✖ selected Black Han Sans matches the actual approved option 2 sizes and baselines (8.403084ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /font-family="JCS Cage Black,JCS Cage Sans Fallback,sans-serif"/. Input:
+  
+  '<svg class="cage-promo-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1774 887" aria-hidden="true" focusable="false">\n' +
+    ' <defs><clipPath id="cage-promo-1-progressive-board"><polygon points="114,470 291,513 294,742 114,697"/></clipPath><clipPath id="cage-promo-1-conservative-board"><polygon points="1472,509 1633,473 1633,704 1468,744"/></clipPath><pattern id="cage-promo-1-grain" width="94" height="81" patternUnits="userSpaceOnUse"><rect width="94" height="81" fill="white"/><path d="M15 4l-2 28 1-2 3-25z M54 18l-4 49 2-6 4-41z M78 2l-1 16 2-5z M27 49l-3 26 2-8 2-15z" fill="black" opacity=".18"/></pattern><mask id="cage-promo-1-grain-mask" maskUnits="userSpaceOnUse" x="-1000" y="0" width="2000" height="450"><rect x="-1000" y="0" width="2000" height="450" fill="url(#cage-promo-1-grain)"/></mask><clipPath id="cage-promo-1-title"><rect x="390" y="84" width="1015" height="282"/></clipPath><linearGradient id="cage-promo-1-ink" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffdf6"/><stop offset=".55" stop-color="#fff7dd"/><stop offset=".8" stop-color="#f4d28a"/><stop offset="1" stop-color="#c88b36"/></linearGradient><filter id="cage-promo-1-brush" x="-5%" y="-10%" width="110%" height="125%"><feTurbulence type="fractalNoise" baseFrequency=".055 .22" numOctaves="2" seed="8" result="grain"/><feDisplacementMap in="SourceGraphic" in2="grain" scale=".5" xChannelSelector="R" yChannelSelector="G" result="ink"/><feDropShadow in="ink" dx="1" dy="1.5" stdDeviation=".5" flood-color="#352009" flood-opacity=".95"/></filter></defs>\n' +
+    ' <image id="cage-promo-1-template" href="/assets/banners/cage-template-156.webp" width="1774" height="887"/>\n' +
+    ' <g clip-path="url(#cage-promo-1-title)"><g class="cage-promo-title" filter="url(#cage-promo-1-brush)" mask="url(#cage-promo-1-grain-mask)" fill="url(#cage-promo-1-ink)" stroke="#fff1c9" stroke-width=".6" stroke-linejoin="round" paint-order="stroke fill" font-family="JCS Cage Rock,JCS Cage Brush,cursive" font-weight="400" text-anchor="start" style="font-kerning:none;font-variant-ligatures:none" transform="translate(897.5 0) skewX(-4)"><text transform="scale(1.00000 1)" data-cage-title-line="1" x="-318.91" y="222.48" font-size="145.42" letter-spacing="1.75">&#39;인사청문회&#39;</text><text transform="scale(1.00000 1)" data-cage-title-line="2" x="-396.41" y="339.04" font-size="106.64" letter-spacing="1.28">게임을 시작해 볼까?</text></g></g>\n' +
+    ' <g class="cage-readout cage-readout--progressive"><use href="#cage-promo-1-template" clip-path="url(#cage-promo-1-progressive-board)"/><g fill="#f1fcff" stroke="#def9ff" stroke-width="1" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" transform="translate(132 563) skewY(14)"><text x="78" y="111" font-size="118" textLength="156" lengthAdjust="spacingAndGlyphs">67%</text></g></g>\n' +
+    ' <g class="cage-readout cage-readout--conservative"><use href="#cage-promo-1-template" clip-path="url(#cage-promo-1-conservative-board)"/><g fill="#fff7f1" stroke="#fff0eb" stroke-width="1" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" transform="translate(1477 615) skewY(-14)"><text x="77" y="108" font-size="118" textLength="154" lengthAdjust="spacingAndGlyphs">33%</text></g></g>\n' +
+    ' </svg>'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/2c41bbae2f63/qa166/source-165/tests/cage-black-title.test.js:9:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '<svg class="cage-promo-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1774 887" aria-hidden="true" focusable="false">\n <defs><clipPath id="cage-promo-1-progressive-board"><polygon points="114,470 291,513 294,742 114,697"/></clipPath><clipPath id="cage-promo-1-conservative-board"><polygon points="1472,509 1633,473 1633,704 1468,744"/></clipPath><pattern id="cage-promo-1-grain" width="94" height="81" patternUnits="userSpaceOnUse"><rect width="94" height="81" fill="white"/><path d="M15 4l-2 28 1-2 3-25z M54 18l-4 49 2-6 4-41z M78 2l-1 16 2-5z M27 49l-3 26 2-8 2-15z" fill="black" opacity=".18"/></pattern><mask id="cage-promo-1-grain-mask" maskUnits="userSpaceOnUse" x="-1000" y="0" width="2000" height="450"><rect x="-1000" y="0" width="2000" height="450" fill="url(#cage-promo-1-grain)"/></mask><clipPath id="cage-promo-1-title"><rect x="390" y="84" width="1015" height="282"/></clipPath><linearGradient id="cage-promo-1-ink" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffdf6"/><stop offset=".55" stop-color="#fff7dd"/><stop offset=".8" stop-color="#f4d28a"/><stop offset="1" stop-color="#c88b36"/></linearGradient><filter id="cage-promo-1-brush" x="-5%" y="-10%" width="110%" height="125%"><feTurbulence type="fractalNoise" baseFrequency=".055 .22" numOctaves="2" seed="8" result="grain"/><feDisplacementMap in="SourceGraphic" in2="grain" scale=".5" xChannelSelector="R" yChannelSelector="G" result="ink"/><feDropShadow in="ink" dx="1" dy="1.5" stdDeviation=".5" flood-color="#352009" flood-opacity=".95"/></filter></defs>\n <image id="cage-promo-1-template" href="/assets/banners/cage-template-156.webp" width="1774" height="887"/>\n <g clip-path="url(#cage-promo-1-title)"><g class="cage-promo-title" filter="url(#cage-promo-1-brush)" mask="url(#cage-promo-1-grain-mask)" fill="url(#cage-promo-1-ink)" stroke="#fff1c9" stroke-width=".6" stroke-linejoin="round" paint-order="stroke fill" font-family="JCS Cage Rock,JCS Cage Brush,cursive" font-weight="400" text-anchor="start" style="font-kerning:none;font-variant-ligatures:none" transform="translate(897.5 0) skewX(-4)"><text transform="scale(1.00000 1)" data-cage-title-line="1" x="-318.91" y="222.48" font-size="145.42" letter-spacing="1.75">&#39;인사청문회&#39;</text><text transform="scale(1.00000 1)" data-cage-title-line="2" x="-396.41" y="339.04" font-size="106.64" letter-spacing="1.28">게임을 시작해 볼까?</text></g></g>\n <g class="cage-readout cage-readout--progressive"><use href="#cage-promo-1-template" clip-path="url(#cage-promo-1-progressive-board)"/><g fill="#f1fcff" stroke="#def9ff" stroke-width="1" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" transform="translate(132 563) skewY(14)"><text x="78" y="111" font-size="118" textLength="156" lengthAdjust="spacingAndGlyphs">67%</text></g></g>\n <g class="cage-readout cage-readout--conservative"><use href="#cage-promo-1-template" clip-path="url(#cage-promo-1-conservative-board)"/><g fill="#fff7f1" stroke="#fff0eb" stroke-width="1" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" transform="translate(1477 615) skewY(-14)"><text x="77" y="108" font-size="118" textLength="154" lengthAdjust="spacingAndGlyphs">33%</text></g></g>\n </svg>',
+    expected: /font-family="JCS Cage Black,JCS Cage Sans Fallback,sans-serif"/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/cage-black-title.test.js:18:1
+✖ LIVE moves between title and VS while original scene and clickable score boards stay in place (1.063107ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /data-cage-live-position="above-vs"/. Input:
+  
+  '<svg class="cage-promo-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1774 887" aria-hidden="true" focusable="false">\n' +
+    ' <defs><clipPath id="cage-promo-2-progressive-board"><polygon points="114,470 291,513 294,742 114,697"/></clipPath><clipPath id="cage-promo-2-conservative-board"><polygon points="1472,509 1633,473 1633,704 1468,744"/></clipPath><pattern id="cage-promo-2-grain" width="94" height="81" patternUnits="userSpaceOnUse"><rect width="94" height="81" fill="white"/><path d="M15 4l-2 28 1-2 3-25z M54 18l-4 49 2-6 4-41z M78 2l-1 16 2-5z M27 49l-3 26 2-8 2-15z" fill="black" opacity=".18"/></pattern><mask id="cage-promo-2-grain-mask" maskUnits="userSpaceOnUse" x="-1000" y="0" width="2000" height="450"><rect x="-1000" y="0" width="2000" height="450" fill="url(#cage-promo-2-grain)"/></mask><clipPath id="cage-promo-2-title"><rect x="390" y="84" width="1015" height="282"/></clipPath><linearGradient id="cage-promo-2-ink" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffdf6"/><stop offset=".55" stop-color="#fff7dd"/><stop offset=".8" stop-color="#f4d28a"/><stop offset="1" stop-color="#c88b36"/></linearGradient><filter id="cage-promo-2-brush" x="-5%" y="-10%" width="110%" height="125%"><feTurbulence type="fractalNoise" baseFrequency=".055 .22" numOctaves="2" seed="8" result="grain"/><feDisplacementMap in="SourceGraphic" in2="grain" scale=".5" xChannelSelector="R" yChannelSelector="G" result="ink"/><feDropShadow in="ink" dx="1" dy="1.5" stdDeviation=".5" flood-color="#352009" flood-opacity=".95"/></filter></defs>\n' +
+    ' <image id="cage-promo-2-template" href="/assets/banners/cage-template-156.webp" width="1774" height="887"/>\n' +
+    ' <g clip-path="url(#cage-promo-2-title)"><g class="cage-promo-title" filter="url(#cage-promo-2-brush)" mask="url(#cage-promo-2-grain-mask)" fill="url(#cage-promo-2-ink)" stroke="#fff1c9" stroke-width=".6" stroke-linejoin="round" paint-order="stroke fill" font-family="JCS Cage Rock,JCS Cage Brush,cursive" font-weight="400" text-anchor="start" style="font-kerning:none;font-variant-ligatures:none" transform="translate(897.5 0) skewX(-4)"><text transform="scale(1.00000 1)" data-cage-title-line="1" x="-318.91" y="222.48" font-size="145.42" letter-spacing="1.75">&#39;인사청문회&#39;</text><text transform="scale(1.00000 1)" data-cage-title-line="2" x="-396.41" y="339.04" font-size="106.64" letter-spacing="1.28">게임을 시작해 볼까?</text></g></g>\n' +
+    ' <g class="cage-readout cage-readout--progressive"><use href="#cage-promo-2-template" clip-path="url(#cage-promo-2-progressive-board)"/><g fill="#f1fcff" stroke="#def9ff" stroke-width="1" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" transform="translate(132 563) skewY(14)"><text x="78" y="111" font-size="118" textLength="156" lengthAdjust="spacingAndGlyphs">67%</text></g></g>\n' +
+    ' <g class="cage-readout cage-readout--conservative"><use href="#cage-promo-2-template" clip-path="url(#cage-promo-2-conservative-board)"/><g fill="#fff7f1" stroke="#fff0eb" stroke-width="1" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" transform="translate(1477 615) skewY(-14)"><text x="77" y="108" font-size="118" textLength="154" lengthAdjust="spacingAndGlyphs">33%</text></g></g>\n' +
+    ' </svg>'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/2c41bbae2f63/qa166/source-165/tests/cage-black-title.test.js:20:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '<svg class="cage-promo-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1774 887" aria-hidden="true" focusable="false">\n <defs><clipPath id="cage-promo-2-progressive-board"><polygon points="114,470 291,513 294,742 114,697"/></clipPath><clipPath id="cage-promo-2-conservative-board"><polygon points="1472,509 1633,473 1633,704 1468,744"/></clipPath><pattern id="cage-promo-2-grain" width="94" height="81" patternUnits="userSpaceOnUse"><rect width="94" height="81" fill="white"/><path d="M15 4l-2 28 1-2 3-25z M54 18l-4 49 2-6 4-41z M78 2l-1 16 2-5z M27 49l-3 26 2-8 2-15z" fill="black" opacity=".18"/></pattern><mask id="cage-promo-2-grain-mask" maskUnits="userSpaceOnUse" x="-1000" y="0" width="2000" height="450"><rect x="-1000" y="0" width="2000" height="450" fill="url(#cage-promo-2-grain)"/></mask><clipPath id="cage-promo-2-title"><rect x="390" y="84" width="1015" height="282"/></clipPath><linearGradient id="cage-promo-2-ink" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffdf6"/><stop offset=".55" stop-color="#fff7dd"/><stop offset=".8" stop-color="#f4d28a"/><stop offset="1" stop-color="#c88b36"/></linearGradient><filter id="cage-promo-2-brush" x="-5%" y="-10%" width="110%" height="125%"><feTurbulence type="fractalNoise" baseFrequency=".055 .22" numOctaves="2" seed="8" result="grain"/><feDisplacementMap in="SourceGraphic" in2="grain" scale=".5" xChannelSelector="R" yChannelSelector="G" result="ink"/><feDropShadow in="ink" dx="1" dy="1.5" stdDeviation=".5" flood-color="#352009" flood-opacity=".95"/></filter></defs>\n <image id="cage-promo-2-template" href="/assets/banners/cage-template-156.webp" width="1774" height="887"/>\n <g clip-path="url(#cage-promo-2-title)"><g class="cage-promo-title" filter="url(#cage-promo-2-brush)" mask="url(#cage-promo-2-grain-mask)" fill="url(#cage-promo-2-ink)" stroke="#fff1c9" stroke-width=".6" stroke-linejoin="round" paint-order="stroke fill" font-family="JCS Cage Rock,JCS Cage Brush,cursive" font-weight="400" text-anchor="start" style="font-kerning:none;font-variant-ligatures:none" transform="translate(897.5 0) skewX(-4)"><text transform="scale(1.00000 1)" data-cage-title-line="1" x="-318.91" y="222.48" font-size="145.42" letter-spacing="1.75">&#39;인사청문회&#39;</text><text transform="scale(1.00000 1)" data-cage-title-line="2" x="-396.41" y="339.04" font-size="106.64" letter-spacing="1.28">게임을 시작해 볼까?</text></g></g>\n <g class="cage-readout cage-readout--progressive"><use href="#cage-promo-2-template" clip-path="url(#cage-promo-2-progressive-board)"/><g fill="#f1fcff" stroke="#def9ff" stroke-width="1" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" transform="translate(132 563) skewY(14)"><text x="78" y="111" font-size="118" textLength="156" lengthAdjust="spacingAndGlyphs">67%</text></g></g>\n <g class="cage-readout cage-readout--conservative"><use href="#cage-promo-2-template" clip-path="url(#cage-promo-2-conservative-board)"/><g fill="#fff7f1" stroke="#fff0eb" stroke-width="1" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" transform="translate(1477 615) skewY(-14)"><text x="77" y="108" font-size="118" textLength="154" lengthAdjust="spacingAndGlyphs">33%</text></g></g>\n </svg>',
+    expected: /data-cage-live-position="above-vs"/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/cage-black-title.test.js:29:1
+✖ fonts are self hosted and Black font bytes are the approved comparison file (0.483365ms)
+  Error: ENOENT: no such file or directory, open '/workspace/scratch/2c41bbae2f63/qa166/source-165/css/cage-title-166.css'
+      at Object.readFileSync (node:fs:484:20)
+      at TestContext.<anonymous> (file:///workspace/scratch/2c41bbae2f63/qa166/source-165/tests/cage-black-title.test.js:30:15)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/workspace/scratch/2c41bbae2f63/qa166/source-165/css/cage-title-166.css'
+  }

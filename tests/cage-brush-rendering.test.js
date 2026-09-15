@@ -14,7 +14,7 @@ test('approved and changed cage titles both stay editable live lettering',()=>{
  }
 });
 
-test('tilted thick title ink fits the original board for every manual emphasis',()=>{
+test('selected title ink fits the original board for every manual emphasis',()=>{
  for(const title of ["'인사청문회' 게임을 시작해 볼까?","'케이지메뉴오픈' 이게진짜 싸움이다.",'지역의 내일 시민이 결정한다','정책🙂 토론'])for(const emphasis of ['first','second','equal']){
   const layout=validateCageTitleLayout(title,{title,breakAt:Array.from(title).indexOf(' '),emphasis});
   for(const line of cageTitleGeometry(title,layout).lines){
@@ -25,7 +25,7 @@ test('tilted thick title ink fits the original board for every manual emphasis',
  }
 });
 
-test('brush uses exact Rock metrics with exact bundled fallback metrics',async()=>{
+test('archived Rock metrics remain unchanged and current renderer uses the selected face',async()=>{
  const {CAGE_TITLE_WIDTHS,CAGE_TITLE_BOUNDS,CAGE_TITLE_X_BOUNDS}=await import('../src/data/cage-brush-metrics.js');
  // Independently read from original font hmtx and BoundsPen, in em.
  assert.equal(CAGE_TITLE_WIDTHS[47928],.774);
@@ -35,7 +35,7 @@ test('brush uses exact Rock metrics with exact bundled fallback metrics',async()
  assert.equal(CAGE_TITLE_WIDTHS[45098],.532);
  assert.deepEqual(CAGE_TITLE_BOUNDS[45098],[-.157,.516]);
  assert.deepEqual(CAGE_TITLE_X_BOUNDS[45098],[.015,.537]);
- assert.match(renderCageBanner({title:'문 뀪'}),/font-family="JCS Cage Rock,JCS Cage Brush,cursive"/);
+ assert.match(renderCageBanner({title:'문 뀪'}),/font-family="JCS Cage Black,JCS Cage Sans Fallback,sans-serif"/);
 });
 
 test('saved one-line layout stays one line when the replacement face needs a smaller font size',()=>{

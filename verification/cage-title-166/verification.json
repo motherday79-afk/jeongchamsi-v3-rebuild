@@ -1,0 +1,58 @@
+{
+  "release": "JCS_0_0_31_166",
+  "patchBase": "JCS_0_0_31_165",
+  "baselineRecovery": "Valid 164 FULL overlaid by valid 165 PATCH, because stored 165 FULL lacked ZIP end records",
+  "tests": {
+    "total": 262,
+    "passed": 262,
+    "failed": 0
+  },
+  "syntaxChecks": [
+    "src/app.js",
+    "src/core/cage-title-layout.js",
+    "src/core/release.js",
+    "src/data/cage-black-metrics-166.js",
+    "src/layout/home-layout.js",
+    "src/ui/cage-title-editor.js",
+    "src/ui/home-cage-banner.js",
+    "src/views/community-ui.js",
+    "src/views/search-discovery.js",
+    "src/views/search-page.js",
+    "src/views/stage1.js"
+  ],
+  "protectedFilesUnchanged": 144,
+  "existingAssetsDataApiLibCssAndDependenciesUnchanged": true,
+  "selectedFont": "Black Han Sans — exact option 2 font binary",
+  "fallback": "Gmarket Sans Bold, only for glyphs absent in Black Han Sans",
+  "hangulCoverage": 11172,
+  "fontFixtures": 93,
+  "glyphMetricsVerified": 12266,
+  "originalCageRasterUnchanged": true,
+  "imageChangesRestrictedToHeaderWindows": [
+    {
+      "x": "688",
+      "y": "0",
+      "width": "405",
+      "height": "114"
+    },
+    {
+      "x": "685",
+      "y": "414",
+      "width": "410",
+      "height": "110"
+    }
+  ],
+  "liveLabelY": [
+    439,
+    498
+  ],
+  "vsTopY": 578,
+  "manualLayoutAcceptancePreservedFrom165": true,
+  "manualLayoutComparisonCases": 588,
+  "serverPackageRegressionPassed": true,
+  "cageEntryAndLoginRegressionsPassed": true,
+  "productionDataChanged": false,
+  "deployed": false,
+  "realBrowserVerified": false,
+  "limitation": "Automated tests, original-font glyph geometry and source/asset checks. No actual browser layout, animation frame, live API/DB or deployment verification."
+}

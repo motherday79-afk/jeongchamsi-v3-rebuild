@@ -1,7 +1,9 @@
 // Also imported by the API: keep shared dependency paths traceable by Vercel.
 import { CAGE_TITLE_WIDTHS, CAGE_TITLE_BOUNDS, CAGE_TITLE_X_BOUNDS } from '../data/cage-brush-metrics.js';
+import { CAGE_TITLE_WIDTHS as BLACK_WIDTHS, CAGE_TITLE_BOUNDS as BLACK_BOUNDS, CAGE_TITLE_X_BOUNDS as BLACK_X_BOUNDS } from '../data/cage-black-metrics-166.js';
 import { CAGE_TITLE_WIDTHS as LEGACY_WIDTHS, CAGE_TITLE_BOUNDS as LEGACY_BOUNDS } from '../data/cage-title-metrics.js';
-// Keep the brush face upright and at its native width for small sidebar text.
+// Released 165 geometry is retained only to preserve saved-layout validation.
+// Rendering uses the selected Black Han Sans face below.
 export const CAGE_BRUSH_SKEW=4;
 export const CAGE_BRUSH_TRACKING=.012;
 export const CAGE_BRUSH_WIDTH=1;
@@ -22,7 +24,7 @@ function metrics(text,widthScale=1){
  if(!Number.isFinite(left))return {advance,left:0,right:0,low:0,high:1};
  return {advance,left,right,low,high};
 }
-export function cageBrushGeometry(texts,emphasis='equal'){
+function released165Geometry(texts,emphasis='equal'){
  const factors=texts.length===1?[1]:emphasis==='first'?[1.2,.88]:emphasis==='second'?[.88,1.2]:[1,1];
  const measures=texts.map(text=>metrics(text)),factorTotal=factors.reduce((a,b)=>a+b,0),height=texts.length===1?254:244;
  const base=Math.min(280,...measures.map((m,i)=>Math.min(995/Math.max(m.right-m.left,.1)/factors[i],height/factorTotal/Math.max(m.high-m.low,.1))));
@@ -52,12 +54,37 @@ function releasedLayoutFits(texts,emphasis){
  });
  return Math.min(250,...sizes)*Math.min(...factors)>=84;
 }
+// Use the approved option 2 sizes at their native width. Apply one uniform
+// reduction only when a changed title exceeds the board; never stretch glyphs.
+export function cageTitleFontGeometry(texts,emphasis='equal'){
+ const sizes=texts.length===1?[176]:emphasis==='first'?[145.46667,106.44]:emphasis==='second'?[106.44,145.46667]:[126,126];
+ const baselines=texts.length===1?[232]:[223,340];
+ const slots=texts.length===1?[[94,356]]:[[94,244],[250,356]];
+ const measures=texts.map(text=>{
+  let advance=0,left=Infinity,right=-Infinity,low=Infinity,high=-Infinity;
+  for(const char of text){
+   const code=char.codePointAt(0),[bottom,top]=BLACK_BOUNDS[code]??[-.2,.8],[x0,x1]=BLACK_X_BOUNDS[code]??[0,1];
+   if(char.trim()){left=Math.min(left,advance+x0);right=Math.max(right,advance+x1);low=Math.min(low,bottom);high=Math.max(high,top);}
+   advance+=BLACK_WIDTHS[code]??1;
+  }
+  return Number.isFinite(left)?{advance,left,right,low,high}:{advance,left:0,right:0,low:0,high:1};
+ });
+ const scale=Math.min(1,...measures.flatMap((m,i)=>[
+  497.5/Math.max(Math.abs(m.left-m.advance/2),Math.abs(m.right-m.advance/2),.1)/sizes[i],
+  (baselines[i]-slots[i][0])/Math.max(m.high,.1)/sizes[i],
+  m.low<0?(slots[i][1]-baselines[i])/-m.low/sizes[i]:1
+ ]));
+ return {emphasis,lines:texts.map((text,i)=>{
+  const m=measures[i],size=sizes[i]*scale,baseline=baselines[i];
+  return {text,size,widthScale:1,baseline,width:m.advance*size,projectedWidth:(m.right-m.left)*size,x:-m.advance*size/2,top:baseline-m.high*size,bottom:baseline-m.low*size};
+ })};
+}
 function geometry(title,layout){
  const chars=Array.from(title),texts=layout.breakAt?[chars.slice(0,layout.breakAt).join('').trim(),chars.slice(layout.breakAt).join('').trim()]:[title];
  if(texts.some(t=>!t))fail('CAGE_TITLE_BREAK_INVALID');
- const result=cageBrushGeometry(texts,layout.emphasis);
- if(result.lines.some(line=>line.size<84)&&!releasedLayoutFits(texts,layout.emphasis))fail('CAGE_TITLE_TOO_LONG');
- return result;
+ const released=released165Geometry(texts,layout.emphasis);
+ if(released.lines.some(line=>line.size<84)&&!releasedLayoutFits(texts,layout.emphasis))fail('CAGE_TITLE_TOO_LONG');
+ return cageTitleFontGeometry(texts,layout.emphasis);
 }
 export function validateCageTitleLayout(title,input){
  const actual=normalizeCageTitle(title);

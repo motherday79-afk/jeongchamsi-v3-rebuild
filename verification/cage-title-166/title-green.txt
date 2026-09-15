@@ -1,0 +1,45 @@
+✔ selected Black Han Sans matches the actual approved option 2 sizes and baselines (2.643137ms)
+✔ LIVE moves between title and VS while original scene and clickable score boards stay in place (0.714881ms)
+✔ fonts are self hosted and Black font bytes are the approved comparison file (1.151392ms)
+✔ approved and changed cage titles both stay editable live lettering (7.496484ms)
+✔ selected title ink fits the original board for every manual emphasis (8.202577ms)
+✔ archived Rock metrics remain unchanged and current renderer uses the selected face (5.734896ms)
+✔ saved one-line layout stays one line when the replacement face needs a smaller font size (3.952026ms)
+✔ sidebar progressive route opens the checked camp and enabled writer (34.164664ms)
+✔ guest keeps progressive through the login link without a writable form (3.537866ms)
+✔ sidebar conservative route opens the checked camp and enabled writer (16.635631ms)
+✔ guest keeps conservative through the login link without a writable form (0.579922ms)
+✔ ordinary or invalid entry retains manual camp selection:  (0.58638ms)
+✔ ordinary or invalid entry retains manual camp selection: ?camp=progressive (0.417737ms)
+✔ ordinary or invalid entry retains manual camp selection: ?camp=unknown&compose=1 (0.42697ms)
+✔ ordinary or invalid entry retains manual camp selection: ?camp=conservative&compose=0 (0.474609ms)
+✔ an ended cage links to its record and never opens a writable form (1.020502ms)
+✔ search logo is a non-submit reload button while the top-left slogan remains Home (0.435635ms)
+✔ login returns only to a valid cage composer, preserving both camp choices (1.013566ms)
+✔ successful login executes the actual application redirect with the selected camp (58.28215ms)
+✔ direct entry focuses the opinion title or guest login, never an ordinary/disabled writer (3.147302ms)
+✔ saving a direct-entry opinion submits the selected camp and consumes composer parameters (13.525271ms)
+✔ failed opinion submission keeps the chosen camp and does not navigate or reset (7.232117ms)
+✔ editor restores a saved layout across whitespace-only title changes (3.88897ms)
+✔ editor previews the same live brush text before manual layout is enabled (1.221199ms)
+✔ changing a break or emphasis select enables manual layout (93.940114ms)
+✔ manual break keeps the chosen wording and line boundary (8.525572ms)
+✔ stored layout cannot follow a different title after the source post changes (0.573678ms)
+✔ spaced titles reject manual breaks inside a word (0.464708ms)
+✔ titles without spaces retain deliberate codepoint break choices (7.286682ms)
+✔ long manual lines are rejected instead of cut or split again (6.867995ms)
+✔ manual geometry fits the approved title board without clipping (14.611485ms)
+✔ cage layout saves through the existing CAS without overwriting concurrent posts (5.112252ms)
+✔ stale title and unprivileged requests cannot change settings (1.027158ms)
+✔ turning manual layout off clears only the selected cage layout (0.765286ms)
+✔ layout target must match the explicitly featured cage (0.684967ms)
+✔ automatic selection rejects a stale layout target after a concurrent newer cage appears (20.826841ms)
+✔ automatic selection saves a layout for the newest eligible root (0.766091ms)
+ℹ tests 37
+ℹ suites 0
+ℹ pass 37
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 999.729627
