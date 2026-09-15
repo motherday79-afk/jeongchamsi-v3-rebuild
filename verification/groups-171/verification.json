@@ -1,0 +1,19 @@
+{
+  "release": "JCS_0_0_31_171",
+  "baseline": "JCS_0_0_31_170",
+  "tests": {
+    "total": 339,
+    "passed": 339,
+    "failed": 0,
+    "skipped": 0
+  },
+  "syntax": "passed",
+  "lua": "Actual exported CAS executed in Lua VM with Redis command boundary; create/arrays/member indexing/stale conflict passed",
+  "integration": "Real app entry + API/service/read-only example routes executed in Node DOM boundary; traced production server package starts",
+  "browser_or_device_qa": false,
+  "live_deployed": false,
+  "live_database_or_blob_mutations": false,
+  "asset_preservation": "All baseline asset files byte-identical; new groups examples asset only",
+  "media_setup": "Private Vercel Blob token in JCS_GROUPS_BLOB_READ_WRITE_TOKEN is needed for real group uploads",
+  "root_followup": "After scoped review: login-return wired to existing login success; stale create/conflict guards; SVG viewBox atlas rendering; compact card/footer grouping; notices first and review reasons visible. Fresh full suite passed."
+}

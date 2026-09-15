@@ -66,7 +66,9 @@ test('successful login executes the actual application redirect with the selecte
  const source=await readFile(new URL('../src/app.js',import.meta.url),'utf8');
  const start=source.indexOf("if(result?.status===401&&");
  const branch=source.slice(start,source.indexOf('if(result?.route)',start));
- const run=new Function('result','type','navigation','route','cageLoginReturn',branch);
+ const {groupLoginReturn}=await import('../src/core/group-routing.js');
+ const execute=new Function('result','type','navigation','route','cageLoginReturn','groupLoginReturn',branch);
+ const run=(...args)=>execute(...args,groupLoginReturn);
  for(const camp of ['progressive','conservative']){
   const next=`/community/cage-a?camp=${camp}&compose=1`,routes=[];
   run({ok:false,status:401,error:'INVALID_LOGIN'},'login',{navigate:r=>routes.push(r)},()=>'/login?next='+encodeURIComponent(next),cageLoginReturn);
@@ -78,6 +80,9 @@ test('successful login executes the actual application redirect with the selecte
  run({ok:true},'login',{navigate:r=>routes.push(r)},()=>'/login',cageLoginReturn);
  run({ok:false},'login',{navigate:r=>routes.push(r)},()=>'/login?next=x',cageLoginReturn);
  assert.deepEqual(routes,['/mypage']);
+ const invited='/groups/group-one?invite=invite-token';
+ run({ok:true},'login',{navigate:r=>routes.push(r)},()=>'/login?return='+encodeURIComponent(invited),cageLoginReturn);
+ assert.deepEqual(routes,['/mypage',invited]);
 });
 
 test('direct entry focuses the opinion title or guest login, never an ordinary/disabled writer',async()=>{

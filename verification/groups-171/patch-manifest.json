@@ -1,0 +1,43 @@
+{
+  "release": "JCS_0_0_31_171",
+  "base_release": "JCS_0_0_31_170",
+  "changed": [
+    "api/gateway.js",
+    "index.html",
+    "src/app.js",
+    "src/core/release.js",
+    "src/layout/home-layout.js",
+    "src/layout/site-shell.js",
+    "src/ui/service-icons.js",
+    "src/views/stage1.js",
+    "tests/cage-entry.test.js"
+  ],
+  "added": [
+    "assets/groups/examples-171.webp",
+    "css/groups-171.css",
+    "docs/releases/JCS_0_0_31_171.md",
+    "docs/superpowers/plans/2026-09-15-groups.md",
+    "docs/superpowers/specs/2026-09-15-groups.md",
+    "lib/group-http.js",
+    "lib/group-service.js",
+    "src/core/group-client.js",
+    "src/core/group-model.js",
+    "src/core/group-routing.js",
+    "src/data/group-examples.js",
+    "src/ui/group-interactions.js",
+    "src/views/group-pages.js",
+    "tests/group-client.test.js",
+    "tests/group-http.test.js",
+    "tests/group-integration.test.js",
+    "tests/group-model.test.js",
+    "tests/group-pages.test.js",
+    "tests/group-service.test.js",
+    "tests/helpers/groups-startup.mjs",
+    "verification/groups-171/backend-review.md",
+    "verification/groups-171/frontend-review.md",
+    "verification/groups-171/group-commit-check.lua",
+    "verification/groups-171/tests.txt",
+    "verification/groups-171/verification.json"
+  ],
+  "removed": []
+}

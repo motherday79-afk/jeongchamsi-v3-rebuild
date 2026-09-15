@@ -1,4 +1,8 @@
 import { createMediaSpreadService } from '../lib/media-spread-service.js';
+import { createGroupService } from '../lib/group-service.js';
+import { groupRequest } from '../lib/group-http.js';
+import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 import { createCampaignService } from '../lib/campaign-service.js';
 import { campaignRequest } from '../lib/campaign-http.js';
 import { createRequestReadScope } from '../lib/request-read-scope.js';
@@ -438,6 +442,14 @@ export default async function handler(req,res){
   try{
     if(route.startsWith('migration/'))return handleMigration(req,res,route);
     const command=rebuildRedisCommand();
+    if(route==='groups'){
+      const result=await groupRequest(req,{service:createGroupService({command}),user:await currentUser(req,command),url});
+      if(result.media){
+        res.statusCode=200;res.setHeader('Content-Type',result.media.contentType);res.setHeader('Cache-Control','private, no-store');res.setHeader('X-Content-Type-Options','nosniff');
+        await pipeline(Readable.fromWeb(result.media.stream),res);return;
+      }
+      return json(res,result.status,result.data);
+    }
     if(route==='campaigns'){
       const protectedRequest=req.method!=='GET'||url.searchParams.get('edit')==='1'||url.searchParams.get('view')==='manage';
       const result=await campaignRequest(req,{service:createCampaignService({command}),user:protectedRequest?await currentUser(req,command):null,url});
