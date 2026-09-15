@@ -7,3 +7,6 @@
 
 /* Preserve the single photo aspect when a wide cover crops the atlas tile. */
 .group-atlas>svg{display:block;width:100%;height:100%}.group-grid>*{min-width:0}.group-card-copy p{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;word-break:keep-all;overflow-wrap:anywhere}.group-card>.group-action{margin:0 12px 12px!important}.group-review-reason,.group-rules{padding:12px;background:#f7f3f8;border-radius:6px}.groups-page input,.groups-page select,.groups-page textarea{max-width:100%;color:#281f2d}.groups-page button:disabled{opacity:.6;cursor:wait}.group-post .group-media{max-width:480px}.group-detail [data-group-state]{width:100%;white-space:pre-wrap;overflow-wrap:anywhere}
+
+/* Keep the create label white above the hero navigation link rule. */
+.groups-hero a.group-primary{color:#fff}

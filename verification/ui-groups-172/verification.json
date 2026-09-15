@@ -1,0 +1,34 @@
+{
+  "release": "JCS_0_0_31_172",
+  "baseline": "JCS_0_0_31_171",
+  "tests": {
+    "total": 346,
+    "passed": 346,
+    "failed": 0,
+    "skipped": 0
+  },
+  "red_phase": "Five recommendation checks failed on 171 because the feature was absent.",
+  "pagination_regression": "A test with 12 newer members-only groups failed before the fix and passed after public filtering was moved ahead of pagination through the real client, HTTP and service.",
+  "code_review": "P2 pagination finding resolved; narrow recheck reported no remaining blocking findings.",
+  "server_package": "Traced deployment package starts real gateway; test passed.",
+  "html_checks": {
+    "primary_menu_groups": true,
+    "more_first_trending": true,
+    "create_label": "모임만들기",
+    "recommendations_after_shop": true,
+    "example_cards": 3,
+    "example_labels_and_cover_crops": true,
+    "mypage_and_sidebar_names": [
+      "관리자님",
+      "고등어님",
+      "고래아빠님"
+    ]
+  },
+  "responsive_css": "Three columns; one column at width <=700px.",
+  "browser_or_device_qa": false,
+  "browser_limit": "Browser rejected local HTTP and file URLs; no workaround attempted after explicit URL policy rejection.",
+  "live_deployed": false,
+  "live_database_mutations": false,
+  "source_directory": "/workspace/scratch/6b4498d07d47/jcs-172",
+  "baseline_zip": "/workspace/scratch/6b4498d07d47/recovered/JCS_0_0_31_171.zip"
+}

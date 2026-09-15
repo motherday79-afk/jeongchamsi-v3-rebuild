@@ -68,7 +68,7 @@ test('community and layout renderers retain identity, names, and selection state
   assert.match(showcase,/data-badge-slot="representative"/);
   assert.match(showcase,/class="jcs-badge jcs-badge--bronze"/);
   assert.match(showcase,/>시민 선택<\/small>/);
-  assert.match(showcase,/>민지<\/b>/);
+  assert.match(showcase,/>민지님<\/b>/);
 
   const status={earnedBadges:['citizen-choice'],eligibleBadges:[],showcaseBadges:[],representativeBadge:'citizen-choice'};
   const collection=renderBadgeCollection(status);

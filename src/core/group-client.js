@@ -16,7 +16,7 @@ export function createGroupClient({fetch:provided}={}){
   if(typeof request!=='function')throw new TypeError('fetch is required');
   const get=async params=>responseData(await request(`${endpoint}?${params}`,{credentials:'same-origin',cache:'no-store'}));
   return {
-    list({view='browse',category='all',q='',page=1}={}){return get(new URLSearchParams({view,category,q,page:String(page)}));},
+    list({view='browse',category='all',q='',page=1,visibility='all'}={}){const params=new URLSearchParams({view,category,q,page:String(page)});if(visibility==='public')params.set('visibility','public');return get(params);},
     get(id,{invite=''}={}){const p=new URLSearchParams({id:String(id??'')});if(invite)p.set('invite',invite);return get(p);},
     async save({id='',version=0,operation,input={},invite=''}={}){return responseData(await request(endpoint,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,version:Number(version)||0,operation,input,invite})}));},
     async upload(id,file,{purpose='gallery'}={}){

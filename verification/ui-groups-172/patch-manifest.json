@@ -1,0 +1,29 @@
+{
+  "release": "JCS_0_0_31_172",
+  "baseline": "JCS_0_0_31_171",
+  "changed": [
+    "css/groups-171.css",
+    "css/search-discovery-160.css",
+    "index.html",
+    "lib/group-http.js",
+    "lib/group-service.js",
+    "src/app.js",
+    "src/core/group-client.js",
+    "src/core/group-routing.js",
+    "src/core/release.js",
+    "src/layout/home-layout.js",
+    "src/views/group-pages.js",
+    "src/views/search-discovery.js",
+    "src/views/search-page.js",
+    "tests/badge-rendering.test.js"
+  ],
+  "added": [
+    "docs/releases/JCS_0_0_31_172.md",
+    "tests/search-groups.test.js",
+    "verification/ui-groups-172/patch-manifest.json",
+    "verification/ui-groups-172/review.md",
+    "verification/ui-groups-172/tests.txt",
+    "verification/ui-groups-172/verification.json"
+  ],
+  "removed": []
+}
