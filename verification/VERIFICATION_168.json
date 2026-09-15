@@ -1,0 +1,20 @@
+{
+  "version": "1.1.168-purple-gold",
+  "base": "1.1.167-purple-gold",
+  "pythonTests": 17,
+  "backPolicyAssertions": 12,
+  "backLayerAssertions": 8,
+  "startupReadyCases": 8,
+  "startupAndAnimationChecks": 3406,
+  "actualSdkBuild": true,
+  "apkV2V3SignatureVerified": true,
+  "protectedFilesUnchanged": 19,
+  "originalIntroLogoIconFontsUnchanged": true,
+  "deviceVerified": false,
+  "deviceRootCauseConfirmed": false,
+  "confirmedDefect": "15-second latch prevents late-content recovery",
+  "remoteSourceChanged": false,
+  "mainWorkflowChanged": false,
+  "websiteChanged": false,
+  "installedRun11Signing": "one-build-preview-key"
+}

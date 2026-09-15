@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -47,6 +48,9 @@ public final class MainActivity extends Activity {
     private Runnable unregisterBack;
     private String closeLayerScript = "false";
     private String failedUrl = BuildConfig.HOME_URL;
+    private final DocumentNavigation documents=new DocumentNavigation(BuildConfig.HOME_URL);
+    private String failureCode = "";
+    private String shownStatus = "";
     private boolean backPending;
     private boolean destroyed;
     private StartupGate startup;
@@ -88,7 +92,7 @@ public final class MainActivity extends Activity {
         CookieManager.getInstance().setAcceptCookie(true);
         CookieManager.getInstance().setAcceptThirdPartyCookies(web, true);
         web.setWebChromeClient(new WebChromeClient());
-        web.getSettings().setUserAgentString(web.getSettings().getUserAgentString()+" JCSAndroid/1.1.167");
+        web.getSettings().setUserAgentString(web.getSettings().getUserAgentString()+" JCSAndroid/1.1.168");
         web.setOnTouchListener((view, event) -> {
             // System Back can begin in this WebView, then cancel its touch
             // stream when the OS claims the edge gesture. ACTION_DOWN must not
@@ -108,25 +112,36 @@ public final class MainActivity extends Activity {
             }
             @Override public void onPageStarted(WebView view, String url, android.graphics.Bitmap icon) {
                 resetExit(); removeError(); startupEpoch++; startupProbePending=false;
-                if(startup!=null)startup.navigating();
+                String earlyFailure=documents.started(url);failureCode="";
+                if(startup!=null){
+                    startup.navigating(SystemClock.uptimeMillis());
+                    if(intro==null || introClosing)showLoadStatus("LOADING");
+                    scheduleStartupCheck();
+                }
                 if(trusted(Uri.parse(url)))failedUrl=url;
+                if(!earlyFailure.isEmpty())startupError(url,earlyFailure);
             }
             @Override public void doUpdateVisitedHistory(WebView view, String url, boolean reload) {
                 // Includes history.pushState/popstate used by the actual JCS router.
                 resetExit();
             }
             @Override public void onPageFinished(WebView view, String url) {
+                documents.finished(url);
                 CookieManager.getInstance().flush();
             }
             @Override public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                if (request.isForMainFrame()) startupError(request.getUrl().toString());
+                documentError(request,"NETWORK_"+error.getErrorCode());
             }
             @Override public void onReceivedHttpError(WebView view, WebResourceRequest request, android.webkit.WebResourceResponse response) {
-                if(request.isForMainFrame() && response.getStatusCode()>=400) startupError(request.getUrl().toString());
+                if(response.getStatusCode()>=400)documentError(request,"HTTP_"+response.getStatusCode());
             }
             @Override public void onReceivedSslError(WebView view, SslErrorHandler ssl, SslError error) {
                 ssl.cancel(); // Never bypass HTTPS certificate failures.
-                startupError(view.getUrl());
+                // This callback also reports failed images and other subresources.
+                if(documents.matches(error.getUrl())){
+                    String code="SSL_"+error.getPrimaryError();
+                    documents.error(true,error.getUrl(),code);startupError(error.getUrl(),code);
+                }
             }
         });
         if (Build.VERSION.SDK_INT >= 33) unregisterBack = Api33.register(this, this::handleBack);
@@ -146,42 +161,71 @@ public final class MainActivity extends Activity {
     }
 
     private void checkStartup() {
-        if(destroyed || intro==null || introClosing || startup==null)return;
+        if(destroyed || startup==null)return;
         int state=startup.state(SystemClock.uptimeMillis());
-        if(state==StartupGate.ERROR){showError(failedUrl);finishIntro();return;}
-        if(state==StartupGate.CONTENT){finishIntro();return;}
-        intro.showWaiting();
-        handler.postDelayed(startupTick,250);
+        if(state==StartupGate.ERROR){showLoadStatus(failureCode);finishIntro();return;}
+        if(state==StartupGate.CONTENT){
+            removeError();startup=null;handler.removeCallbacks(startupTick);finishIntro();return;
+        }
+        if(state==StartupGate.SLOW){showLoadStatus("SCREEN_WAIT");finishIntro();}
+        else if(intro!=null)intro.showWaiting();
+        // A slow page remains observable after the intro disappears. No timeout latch.
+        handler.postDelayed(startupTick,state==StartupGate.SLOW?1000:250);
         String current=web.getUrl();
-        if(startupProbePending || current==null || !trusted(Uri.parse(current)))return;
+        if(documents.awaitingStart() || startupProbePending || current==null || !trusted(Uri.parse(current)))return;
         startupProbePending=true;
         final int epoch=startupEpoch;
+        final StartupGate gate=startup;
         web.evaluateJavascript(readyScript,result -> {
-            if(destroyed || intro==null || epoch!=startupEpoch)return;
-            startupProbePending=false;
-            if(!"true".equals(result))return;
+            if(destroyed || epoch!=startupEpoch || gate!=startup)return;
+            if(!"true".equals(result)){startupProbePending=false;return;}
             // DOM-ready can precede a painted frame; wait for WebView's drawing fence.
             web.postVisualStateCallback(epoch,new WebView.VisualStateCallback(){
                 @Override public void onComplete(long requestId){
-                    if(!destroyed && intro!=null && epoch==startupEpoch && startup!=null)startup.ready();
+                    if(!destroyed && epoch==startupEpoch && gate==startup){
+                        startupProbePending=false;gate.ready();scheduleStartupCheck();
+                    }
                 }
             });
         });
     }
 
-    private void startupError(String url){
+    private void scheduleStartupCheck(){
+        handler.removeCallbacks(startupTick);
+        if(!destroyed && startup!=null)handler.post(startupTick);
+    }
+
+    private void documentError(WebResourceRequest request,String code){
+        if(documents.error(request.isForMainFrame(),request.getUrl().toString(),code))
+            startupError(request.getUrl().toString(),code);
+    }
+
+    private void startupError(String url,String code){
         if(url!=null && trusted(Uri.parse(url)))failedUrl=url;
-        if(startup!=null && intro!=null && !introClosing){startup.failed();return;}
-        showError(url);
+        failureCode=code;
+        // Keep diagnostics free of URL paths, query strings, cookies or page text.
+        Log.w("JCSLoad",code);
+        if(startup==null)startup=new StartupGate(SystemClock.uptimeMillis(),false);
+        startup.failed();scheduleStartupCheck();
+    }
+
+    private void retryLoading(){
+        if(destroyed)return;
+        web.stopLoading();
+        startupEpoch++;startupProbePending=false;failureCode="";
+        documents.expect(failedUrl);
+        startup=new StartupGate(SystemClock.uptimeMillis(),false);
+        showLoadStatus("LOADING");scheduleStartupCheck();
+        web.loadUrl(failedUrl);
     }
 
     private void finishIntro(){
         if(intro==null || introClosing)return;
-        introClosing=true;handler.removeCallbacks(startupTick);
+        introClosing=true;
         intro.animate().alpha(0f).setDuration(180).withEndAction(() -> {
             if(destroyed)return;
             if(intro!=null){root.removeView(intro);intro=null;}
-            startup=null;introClosing=false;contentSystemBars();
+            introClosing=false;contentSystemBars();
         }).start();
     }
 
@@ -203,7 +247,15 @@ public final class MainActivity extends Activity {
     }
 
     private boolean routeExternal(Uri uri) {
-        if (trusted(uri)) return false;
+        if (trusted(uri)) {
+            // Fragment-only jumps do not start a new document.
+            if(!DocumentFailure.sameDocument(uri.toString(),web.getUrl())){
+                startupEpoch++;startupProbePending=false;failureCode="";
+                documents.expect(uri.toString());
+                if(startup!=null){startup.navigating(SystemClock.uptimeMillis());scheduleStartupCheck();}
+            }
+            return false;
+        }
         String scheme = uri.getScheme();
         // Only standard navigation, not arbitrary intent/file/javascript execution.
         if ("https".equalsIgnoreCase(scheme) || "http".equalsIgnoreCase(scheme)
@@ -273,10 +325,11 @@ public final class MainActivity extends Activity {
         } catch (java.io.IOException e) { return "false"; }
     }
 
-    private void showError(String url) {
+    private void showLoadStatus(String code) {
         if (destroyed) return;
-        if (url != null && trusted(Uri.parse(url))) failedUrl = url;
+        if(errorPanel!=null && code.equals(shownStatus))return;
         removeError();
+        shownStatus=code;
         LinearLayout box = new LinearLayout(this);
         box.setOrientation(LinearLayout.VERTICAL);
         box.setGravity(Gravity.CENTER);
@@ -284,12 +337,27 @@ public final class MainActivity extends Activity {
         int padding = (int)(getResources().getDisplayMetrics().density * 24);
         box.setPadding(padding, padding, padding, padding);
         TextView message = new TextView(this);
-        message.setText("정참시를 불러오지 못했습니다.\n인터넷 연결과 사이트 상태를 확인해 주세요.");
+        boolean waiting=code.equals("SCREEN_WAIT") || code.equals("LOADING");
+        message.setText(waiting
+            ? code.equals("LOADING") ? "정참시를 불러오고 있습니다." : "정참시 화면을 준비하고 있습니다.\n연결이 지연되어 계속 불러오는 중입니다."
+            : code.startsWith("SSL_")
+                ? "정참시의 보안 연결을 확인하지 못했습니다.\n잠시 후 다시 시도해 주세요."
+                : "정참시 사이트를 불러오지 못했습니다.\n다시 시도하거나 브라우저에서 확인해 주세요.");
         message.setTextColor(Color.DKGRAY); message.setTextSize(16); message.setGravity(Gravity.CENTER);
         box.addView(message);
         Button retry = new Button(this); retry.setText("다시 시도");
-        retry.setOnClickListener(view -> { removeError(); web.loadUrl(failedUrl); });
+        retry.setOnClickListener(view -> retryLoading());
         box.addView(retry);
+        Button browser=new Button(this);browser.setText("브라우저에서 확인");
+        browser.setOnClickListener(view -> {
+            try{startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(failedUrl)));}
+            catch(ActivityNotFoundException error){Toast.makeText(this,"열 수 있는 브라우저가 없습니다.",Toast.LENGTH_SHORT).show();}
+        });
+        box.addView(browser);
+        TextView detail=new TextView(this);
+        detail.setText("앱 1.1.168 · "+code);
+        detail.setTextColor(Color.GRAY);detail.setTextSize(12);detail.setGravity(Gravity.CENTER);
+        box.addView(detail);
         errorPanel = box;
         root.addView(box, new FrameLayout.LayoutParams(-1, -1));
         if (intro != null) intro.bringToFront();
@@ -297,6 +365,7 @@ public final class MainActivity extends Activity {
 
     private void removeError() {
         if (errorPanel != null) { root.removeView(errorPanel); errorPanel = null; }
+        shownStatus="";
     }
 
     @Override protected void onSaveInstanceState(Bundle state) {

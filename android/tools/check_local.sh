@@ -9,7 +9,7 @@ javac -encoding UTF-8 -d verification/test-classes src/com/jeongchamsi/preview/B
 java -cp verification/test-classes com.jeongchamsi.preview.BackPolicyTest
 node tests/test_back_layer.cjs
 node tests/test_startup_ready.cjs
-javac -encoding UTF-8 -d verification/test-classes src/com/jeongchamsi/preview/StartupGate.java src/com/jeongchamsi/preview/IntroTimeline.java tests/StartupTest.java
+javac -encoding UTF-8 -d verification/test-classes src/com/jeongchamsi/preview/StartupGate.java src/com/jeongchamsi/preview/DocumentFailure.java src/com/jeongchamsi/preview/DocumentNavigation.java src/com/jeongchamsi/preview/IntroTimeline.java tests/StartupTest.java
 java -cp verification/test-classes com.jeongchamsi.preview.StartupTest
 
 bash -n tools/build.sh

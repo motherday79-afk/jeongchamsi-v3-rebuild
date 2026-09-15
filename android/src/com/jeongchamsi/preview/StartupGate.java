@@ -1,20 +1,23 @@
 package com.jeongchamsi.preview;
-/** No WebView timing assumptions. A ready DOM alone cannot skip the intro. */
+/** Loading delay is recoverable; only a document error is a failure. */
 public final class StartupGate {
-    public static final int WAIT=0, CONTENT=1, ERROR=2;
-    public static final long INTRO_MS=2300, TIMEOUT_MS=15000;
-    private final long started;
-    private boolean ready, failed, timedOut;
-    public StartupGate(long started){this.started=started;}
-    public void ready(){ready=true;}
-    public void navigating(){ready=false;failed=false;}
+    public static final int WAIT=0, CONTENT=1, ERROR=2, SLOW=3;
+    public static final long INTRO_MS=2300, SLOW_MS=15000;
+    private final long introEnds;
+    private long loadStarted;
+    private boolean ready, failed;
+    public StartupGate(long started){this(started,true);}
+    public StartupGate(long started,boolean playIntro){
+        introEnds=started+(playIntro?INTRO_MS:0);loadStarted=started;
+    }
+    public void ready(){if(!failed)ready=true;}
+    public void navigating(long now){ready=false;failed=false;loadStarted=now;}
     public void failed(){failed=true;}
     public int state(long now){
-        long elapsed=Math.max(0,now-started);
-        if(elapsed<INTRO_MS)return WAIT;
-        if(timedOut||failed)return ERROR;
+        if(now<introEnds)return WAIT;
+        if(failed)return ERROR;
         if(ready)return CONTENT;
-        if(elapsed>=TIMEOUT_MS){timedOut=true;return ERROR;}
+        if(now-loadStarted>=SLOW_MS)return SLOW;
         return WAIT;
     }
 }
