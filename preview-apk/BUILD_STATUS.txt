@@ -1,0 +1,2 @@
+Signing: one-build-preview-key
+Build/signature/static checks passed. Installation and live-site navigation still require a real Android phone test.

@@ -1,0 +1,29 @@
+{
+  "class_count": 20,
+  "classes": [
+    "Lcom/jeongchamsi/preview/BackPolicy;",
+    "Lcom/jeongchamsi/preview/BuildConfig;",
+    "Lcom/jeongchamsi/preview/IntroTimeline;",
+    "Lcom/jeongchamsi/preview/IntroView;",
+    "Lcom/jeongchamsi/preview/MainActivity$$ExternalSyntheticLambda0;",
+    "Lcom/jeongchamsi/preview/MainActivity$$ExternalSyntheticLambda1;",
+    "Lcom/jeongchamsi/preview/MainActivity$$ExternalSyntheticLambda2;",
+    "Lcom/jeongchamsi/preview/MainActivity$$ExternalSyntheticLambda3;",
+    "Lcom/jeongchamsi/preview/MainActivity$$ExternalSyntheticLambda4;",
+    "Lcom/jeongchamsi/preview/MainActivity$$ExternalSyntheticLambda5;",
+    "Lcom/jeongchamsi/preview/MainActivity$$ExternalSyntheticLambda6;",
+    "Lcom/jeongchamsi/preview/MainActivity$$ExternalSyntheticLambda7;",
+    "Lcom/jeongchamsi/preview/MainActivity$$ExternalSyntheticLambda8;",
+    "Lcom/jeongchamsi/preview/MainActivity$1;",
+    "Lcom/jeongchamsi/preview/MainActivity$2;",
+    "Lcom/jeongchamsi/preview/MainActivity$Api33$$ExternalSyntheticLambda0;",
+    "Lcom/jeongchamsi/preview/MainActivity$Api33$$ExternalSyntheticLambda1;",
+    "Lcom/jeongchamsi/preview/MainActivity$Api33;",
+    "Lcom/jeongchamsi/preview/MainActivity;",
+    "Lcom/jeongchamsi/preview/StartupGate;"
+  ],
+  "purple_gold_intro_present": true,
+  "original_intro_packaged": false,
+  "no_push_or_firebase": true,
+  "compile_only_stub_absent": true
+}

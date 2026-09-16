@@ -1,0 +1,7 @@
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:insetLeft="5.555556%" android:insetRight="5.555556%"
+    android:insetTop="20.37037%" android:insetBottom="20.37037%">
+    <!-- Bounds-relative 8/9 by 16/27 preserves the original 1536:1024 aspect.
+         Visible gold fits inside the 66dp adaptive safe circle at every density. -->
+    <bitmap android:src="@drawable/jcs_gold" android:gravity="fill" android:filter="true" />
+</inset>
