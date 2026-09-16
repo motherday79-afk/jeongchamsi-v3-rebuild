@@ -2,7 +2,7 @@ import {bindPersonRefresh,loadMemberRefresh,watchAnalysisAccess} from './ui/pers
 import { bindRankingWeights, rankingWeightsReady, updateRunningRankingWeights } from './ui/ranking-weights.js?v=0.0.31.174';
 import { createGroupClient } from './core/group-client.js?v=0.0.31.172';
 import { loadGroupPage, groupLoginReturn } from './core/group-routing.js?v=0.0.31.179';
-import { bindGroupInteractions } from './ui/group-interactions.js?v=0.0.31.179';
+import { bindGroupInteractions } from './ui/group-interactions.js?v=0.0.31.180';
 import { cageLoginReturn, cageOpinionCompletion } from './core/cage-entry.js?v=0.0.31.178';
 import { bindCageTitleEditors } from './ui/cage-title-editor.js?v=0.0.31.167';
 import { createCampaignClient } from './core/campaign-client.js?v=0.0.31.158';
@@ -20,7 +20,7 @@ import { createPoliticianService } from './core/politicians.js?v=0.0.31.147';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith, isTransientAnalysisRoute } from './core/navigation.js?v=0.0.31.177';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.148';
-import * as views from './views/stage1.js?v=0.0.31.179';
+import * as views from './views/stage1.js?v=0.0.31.180';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.177';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.177';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.178';
