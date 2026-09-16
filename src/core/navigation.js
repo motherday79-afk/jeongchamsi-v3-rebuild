@@ -9,6 +9,7 @@ export const routeFromLocation=location=>{
   return decodeRoute(raw||'/');
 };
 const routePath=route=>{const value=String(route||'/');return value.startsWith('/')?value:`/${value}`;};
+export const isTransientAnalysisRoute=route=>['person','compare'].includes(routePath(route).split('?')[0].split('/').filter(Boolean)[0]);
 const ADMIN_TABS=new Set(['operations','members','politicians','pipeline','site','keywords','participation']);
 export function adminRouteState(route='/admin'){
   const params=new URLSearchParams(String(route).split('?')[1]||''),tab=params.get('tab')||'operations';
@@ -70,7 +71,10 @@ export function createNavigation({window,readSnapshot,restoreSnapshot,rebind,onR
   };
   const navigate=route=>{
     const target=String(route||'/').startsWith('/')?String(route||'/'):`/${route}`;
-    if(decodeRoute(target)===currentRoute())return;
+    if(decodeRoute(target)===currentRoute()){
+      if(isTransientAnalysisRoute(target))onRoute?.(currentRoute(),{restored:false,preserveScroll:true,freshSession:true});
+      return;
+    }
     record();
     committedRoute=null;
     const next=stateFor(target,{});

@@ -1,0 +1,21 @@
+{
+  "release": "JCS_0_0_31_177",
+  "baseline": "JCS_0_0_31_176",
+  "automated_tests": {
+    "passed": 422,
+    "failed": 0
+  },
+  "deployment_trace": "passed as part of full suite",
+  "backend_review": "PASS",
+  "comparison_review": "PASS after expired-response correction",
+  "final_review": "PASS after protected-route retry correction",
+  "entitlement_duration_ms": 86400000,
+  "entitlement_scope": "authenticated member ID + person ID",
+  "settlement": "publication, debit and grant in the same Redis compare-and-swap transaction",
+  "max_paid_comparison_people": 4,
+  "existing_purchases_migrated": false,
+  "live_collection": false,
+  "live_charges": false,
+  "live_deployment": false,
+  "browser_visual_qa": "not performed"
+}

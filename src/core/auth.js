@@ -26,7 +26,7 @@ function createRemoteAuthService(){
     async register(input={}){return request('user/register',{method:'POST',body:JSON.stringify(input)});},
     async login(input={}){return request('user/login',{method:'POST',body:JSON.stringify(input)});},
     async logout(){return request('user/logout',{method:'POST',body:'{}'});},
-    async session(){const x=await request('user/session');return x.status===200?{authenticated:!!x.authenticated,user:x.user||null}:{authenticated:false,user:null,error:x.error};},
+    async session({fresh=false}={}){if(fresh)requestCache.delete('user/session');const x=await request('user/session');return x.status===200?{authenticated:!!x.authenticated,user:x.user||null}:{authenticated:false,user:null,error:x.error};},
     async updateProfile(patch={}){return request('user/profile',{method:'POST',body:JSON.stringify(patch)});},
     async completePasswordChange(password){return request('user/password',{method:'POST',body:JSON.stringify({password})});},
     async badgeStatus(){const x=await request('user/badges');return x.ok?x.status:null;},

@@ -19,6 +19,7 @@ import { readUsers, listUsers, getUser, registerUser, authenticateUser, updatePr
 import { POLITICIAN_COUNTS, POLITICIAN_TYPES, cleanPoliticianType, readPoliticianType, readPoliticianPhotos, getPolitician, searchPoliticianProfiles } from '../lib/politician-store.js';
 import { createIntelligenceService } from '../lib/intelligence-service.js';
 import { accessTierForUser, projectIntelligence } from '../lib/intelligence-access.js';
+import { readPersonAnalysisAccess } from '../lib/person-analysis-access.js';
 import { buildIntelligenceDraft } from '../lib/intelligence-analysis.js';
 import { createBadgeService } from '../lib/badge-service.js';
 import { VALID_BADGE_KEYS } from '../lib/badge-engine.js';
@@ -113,15 +114,18 @@ export async function handlePoliticians(req,res,command,url,intelligence){
   if(id){
     const [item,report,user,photos]=await Promise.all([getPolitician(command,id),intelligence.getPublicIntelligence(id),currentUser(req,command),readPoliticianPhotos(command)]);
     if(!item)return json(res,404,{ok:false,error:'POLITICIAN_NOT_FOUND'});
-    const tier=accessTierForUser(user),scope=String(url.searchParams.get('view')||req.query?.view||'')==='compare'?'compare':'detail';
+    const accountTier=accessTierForUser(user?.status==='suspended'?null:user),scope=String(url.searchParams.get('view')||req.query?.view||'')==='compare'?'compare':'detail';
     const legacyNews=Array.isArray(report?.news)?report.news.map(row=>({title:row.title,source:row.source,url:row.url,publishedAt:row.publishedAt||row.date})):[];
-    const fullReport=Array.isArray(report?.diagnoses)&&report.diagnoses.length===10?report:{...buildIntelligenceDraft(item,{personId:id,snapshotId:report?.snapshot||item.verifiedAt||'2026-09-03',collectedAt:`${report?.snapshot||item.verifiedAt||'2026-09-03'}T00:00:00.000Z`,searchAds:report?.raw?.searchAds||null,news:{items:legacyNews},sourceErrors:[]},{peers:[]},'JCS_INTELLIGENCE_V2'),rank:report?.rank||{overall:null,category:null,temporary:false},...(Array.isArray(report?.activities)&&report.activities.length?{activities:report.activities}:{}),...(Array.isArray(report?.achievements)&&report.achievements.length?{achievements:report.achievements}:{}),...(Array.isArray(report?.policies)&&report.policies.length?{policies:report.policies}:{})};
-    let projected=projectIntelligence(fullReport,tier,scope);
-    if(Array.isArray(projected?.related)&&projected.related.length){
+    let fullReport=Array.isArray(report?.diagnoses)&&report.diagnoses.length===10?report:{...buildIntelligenceDraft(item,{personId:id,snapshotId:report?.snapshot||item.verifiedAt||'2026-09-03',collectedAt:`${report?.snapshot||item.verifiedAt||'2026-09-03'}T00:00:00.000Z`,searchAds:report?.raw?.searchAds||null,news:{items:legacyNews},sourceErrors:[]},{peers:[]},'JCS_INTELLIGENCE_V2'),rank:report?.rank||{overall:null,category:null,temporary:false},...(Array.isArray(report?.activities)&&report.activities.length?{activities:report.activities}:{}),...(Array.isArray(report?.achievements)&&report.achievements.length?{achievements:report.achievements}:{}),...(Array.isArray(report?.policies)&&report.policies.length?{policies:report.policies}:{})};
+    if(Array.isArray(fullReport?.related)&&fullReport.related.length){
       const profiles=(await Promise.all(POLITICIAN_TYPES.map(type=>readPoliticianType(command,type)))).flat(),byId=new Map(profiles.map(person=>[person.id,person]));
-      projected={...projected,related:projected.related.map(row=>{const related=byId.get(row.id)||{};return {...row,party:related.party||'',jurisdiction:related.jurisdiction||'',office:related.office||related.roleLabel||'',photo:photos[row.id]||null};})};
+      fullReport={...fullReport,related:fullReport.related.map(row=>{const related=byId.get(row.id)||{};return {...row,party:related.party||'',jurisdiction:related.jurisdiction||'',office:related.office||related.roleLabel||'',photo:photos[row.id]||null};})};
     }
-    return json(res,200,{ok:true,accessTier:tier,item:{...item,photo:photos[id]||null},intelligence:projected});
+    // Check the member's grant after asynchronous report reads, immediately before projection.
+    const analysisAccess=accountTier==='member'?await readPersonAnalysisAccess(command,user,id):null;
+    const tier=accountTier==='admin'||analysisAccess?.active?'admin':accountTier;
+    const projected={...projectIntelligence(fullReport,tier,scope),analysisAccess};
+    return json(res,200,{ok:true,accessTier:tier,analysisAccess,item:{...item,photo:photos[id]||null},intelligence:projected});
   }
   const photos=await readPoliticianPhotos(command);
   if(ranking==='trending'||url.searchParams.has('keywords')){

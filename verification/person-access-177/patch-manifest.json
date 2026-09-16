@@ -1,0 +1,39 @@
+{
+  "release": "JCS_0_0_31_177",
+  "baseline": "JCS_0_0_31_176",
+  "changed": [
+    "api/gateway.js",
+    "css/person-refresh-175.css",
+    "index.html",
+    "lib/person-publication.js",
+    "lib/refresh-billing.js",
+    "src/app.js",
+    "src/core/auth.js",
+    "src/core/navigation.js",
+    "src/core/release.js",
+    "src/ui/person-refresh.js",
+    "src/views/person-refresh.js",
+    "src/views/politician-compare.js",
+    "src/views/politicians.js",
+    "src/views/stage1.js",
+    "tests/person-refresh-api-ui-175.test.js"
+  ],
+  "added": [
+    "docs/releases/JCS_0_0_31_177.md",
+    "docs/superpowers/plans/2026-09-16-person-access.md",
+    "docs/superpowers/specs/2026-09-16-person-access.md",
+    "lib/person-analysis-access.js",
+    "tests/person-access-177-compare.test.js",
+    "tests/person-access-177-ui.test.js",
+    "tests/person-access-177.test.js",
+    "tests/person-access-api-177.test.js",
+    "verification/person-access-177/backend-review.md",
+    "verification/person-access-177/compare-review.md",
+    "verification/person-access-177/final-review.md",
+    "verification/person-access-177/frontend-report.md",
+    "verification/person-access-177/full-test.txt",
+    "verification/person-access-177/patch-manifest.json",
+    "verification/person-access-177/verification.json"
+  ],
+  "removed": []
+}

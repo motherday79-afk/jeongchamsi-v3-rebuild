@@ -1,4 +1,4 @@
-import {bindPersonRefresh,loadMemberRefresh} from './ui/person-refresh.js?v=0.0.31.175';
+import {bindPersonRefresh,loadMemberRefresh,watchAnalysisAccess} from './ui/person-refresh.js?v=0.0.31.177';
 import { bindRankingWeights, rankingWeightsReady, updateRunningRankingWeights } from './ui/ranking-weights.js?v=0.0.31.174';
 import { createGroupClient } from './core/group-client.js?v=0.0.31.172';
 import { loadGroupPage, groupLoginReturn } from './core/group-routing.js?v=0.0.31.172';
@@ -14,15 +14,15 @@ import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.56';
 import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.171';
 import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.172';
 import { focusCageCompose, setupHomeCompare, setupPoliticianAutocomplete, setupLayoutInteractions, setupPoliticianPhotoFallback, setupNowCarousel, setupCageCountdown, setupDesktopHomeViewport } from './ui/interactions.js?v=0.0.31.165';
-import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.175';
+import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.177';
 import { createContentService, loadNavigationDashboard, loadPersonNavigation } from './core/content.js?v=0.0.31.153';
 import { createPoliticianService } from './core/politicians.js?v=0.0.31.147';
-import { sharePost, createNavigation, adminRouteState, adminRouteWith } from './core/navigation.js?v=0.0.31.164';
+import { sharePost, createNavigation, adminRouteState, adminRouteWith, isTransientAnalysisRoute } from './core/navigation.js?v=0.0.31.177';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.148';
-import * as views from './views/stage1.js?v=0.0.31.176';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.175';
-import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.175';
+import * as views from './views/stage1.js?v=0.0.31.177';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.177';
+import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.177';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.175';
 import { renderPresidentPage } from './views/president.js?v=0.0.31.107';
 import { renderSearchPage, hasSearchSnapshot } from './views/search-page.js?v=0.0.31.172';
@@ -70,6 +70,11 @@ let navigation=null;
 const route=()=>navigation?.route()||String(location.hash||'#/').replace(/^#/,'')||'/';
 const parts=r=>r.split('?')[0].split('/').filter(Boolean);
 const unstable=new Set();
+function agePersonAccessResult(result,elapsed){
+ if(!result?.ok||!Number.isFinite(elapsed)||elapsed<=0)return result;
+ const age=access=>access&&Number.isFinite(Number(access.serverNow))?{...access,serverNow:Number(access.serverNow)+elapsed}:access;
+ return {...result,analysisAccess:age(result.analysisAccess),intelligence:result.intelligence?{...result.intelligence,analysisAccess:age(result.intelligence.analysisAccess)}:result.intelligence};
+}
 
 function tunePoliticianNarratives(){
   const cover=document.querySelector('.person-intelligence-cover');if(!cover)return;
@@ -151,10 +156,11 @@ function setupMemberBadgeManagers(){
   for(const row of document.querySelectorAll('[data-member-badge-row]'))row.addEventListener('toggle',()=>{if(!row.open)return;const mount=row.querySelector('[data-member-badge-mount]');if(!mount||mount.dataset.loaded)return;try{mount.innerHTML=views.renderMemberBadgeManager(JSON.parse(row.dataset.memberBadgePayload||'{}'));mount.dataset.loaded='true';void loadMemberPoints(mount.querySelector('[data-member-points-panel]'));}catch{mount.innerHTML='<p class="module-desc">배지 목록을 불러오지 못했습니다.</p>';}});
 }
 
-async function render({preserveScroll=false,refreshHome=false}={}){
+async function render({preserveScroll=false,refreshHome=false,freshSession=false}={}){
   const renderId=++renderSequence,r=route(),p=parts(r);
+  if(freshSession)await auth.session({fresh:true});
   if(!p.length&&!refreshHome&&homeSnapshot){
-    app.replaceChildren(homeSnapshot.node);setupDesktopHomeViewport(document);setupCageCountdown(document);
+    app.replaceChildren(homeSnapshot.node);watchAnalysisAccess(document);setupDesktopHomeViewport(document);setupCageCountdown(document);
     setupHomeCompare(document);setupPoliticianAutocomplete(document,(query,limit)=>politicians.search(query,limit));refreshFontScale(document);
     if(!preserveScroll)window.scrollTo(0,0);
     const snapshot=homeSnapshot;
@@ -179,7 +185,8 @@ async function render({preserveScroll=false,refreshHome=false}={}){
   }
   if(p[0]==='admin'){const target=document.querySelector('.page-wrap');if(target)target.innerHTML=views.renderAdminLoading(adminRouteState(r).tab);}
   void loadShellInfo();
-  const personData=p[0]==='person'?await loadPersonNavigation(p[1]||'',auth,content,politicians):null;
+  const personRequestStarted=Date.now(),personData=p[0]==='person'?await loadPersonNavigation(p[1]||'',auth,content,politicians):null;
+  if(personData?.detail)personData.detail=agePersonAccessResult(personData.detail,Date.now()-personRequestStarted);
   const session=personData?personData.session:await auth.session();
   if(renderId!==renderSequence)return;
   const badgeStatusPromise=session.authenticated&&p[0]!=='admin'
@@ -270,13 +277,14 @@ async function render({preserveScroll=false,refreshHome=false}={}){
   restoreCageDraft();
   showCageFeedback();
   if(p[0]==='person'){void loadMemberRefresh(document,auth);invalidateHome();recordRecentPolitician(document);tunePoliticianNarratives();if(session.user?.role==='admin')void updatePoliticianPhotoStorageStatus();}
+  watchAnalysisAccess(document,{onExpired:()=>{navigation?.clearCache();void render({preserveScroll:true,freshSession:true});}});
   if(!preserveScroll){window.scrollTo(0,0);focusCageCompose(document);if(p[0]==='support'||p[0]==='points'&&new URLSearchParams(r.split('?')[1]||'').get('view')==='support'){const target=document.getElementById('jcs-support');target?.scrollIntoView({block:'start'});target?.querySelector('h2')?.focus({preventScroll:true});}}
   app.setAttribute('data-jcs-ready','true');
   navigation?.cacheCurrent();
   if(p[0]==='admin')queueMicrotask(resumeAdminIntelligence);
 }
 
-navigation=createNavigation({window,readSnapshot:()=>parts(route())[0]==='groups'?'':app.innerHTML,restoreSnapshot:markup=>{app.innerHTML=markup;if(document.querySelector('.product-home-wrap')&&homeSnapshot)homeSnapshot.node=app.firstElementChild;},rebind:()=>{++renderSequence;const cachedRoute=parts(route());if(['mypage','points','campaigns','person'].includes(cachedRoute[0]))queueMicrotask(()=>void render({preserveScroll:true}));else if(cachedRoute[0]==='search'){const params=new URLSearchParams(route().split('?')[1]||'');void loadSearchDiscovery(document,campaigns,(params.get('q')||'').trim(),{groups,session:()=>auth.session()});}else if(!cachedRoute.length)void refreshCachedMemberSummary();setupLayoutInteractions(document,{politicianSearch:(query,limit)=>politicians.search(query,limit)});setupMemberBadgeManagers();if(document.querySelector('.jc55'))queueMicrotask(()=>void render({preserveScroll:true}));if(pipelineActive())queueMicrotask(resumeAdminIntelligence);},onRoute:(_route,options)=>void render(options)});
+navigation=createNavigation({window,readSnapshot:()=>parts(route())[0]==='groups'||isTransientAnalysisRoute(route())?'':app.innerHTML,restoreSnapshot:markup=>{app.innerHTML=markup;if(document.querySelector('.product-home-wrap')&&homeSnapshot)homeSnapshot.node=app.firstElementChild;},rebind:()=>{++renderSequence;const cachedRoute=parts(route());if(['mypage','points','campaigns','person','compare'].includes(cachedRoute[0]))queueMicrotask(()=>void render({preserveScroll:true}));else if(cachedRoute[0]==='search'){const params=new URLSearchParams(route().split('?')[1]||'');void loadSearchDiscovery(document,campaigns,(params.get('q')||'').trim(),{groups,session:()=>auth.session()});}else if(!cachedRoute.length)void refreshCachedMemberSummary();setupLayoutInteractions(document,{politicianSearch:(query,limit)=>politicians.search(query,limit)});setupMemberBadgeManagers();if(document.querySelector('.jc55'))queueMicrotask(()=>void render({preserveScroll:true}));if(pipelineActive())queueMicrotask(resumeAdminIntelligence);},onRoute:(_route,options)=>void render(options)});
 navigation.start();
 bindCageTitleEditors(document);
 bindGroupInteractions(document,{client:groups,onSaved:async(_result,targetRoute)=>{
@@ -288,7 +296,7 @@ bindCampaignInteractions(document,{client:campaigns,onSaved:async(_result,target
   // The editor updates its own version after draft saves; preserve unsent input and focus.
   if(targetRoute){if(targetRoute===route())await render({preserveScroll:true});else navigation.navigate(targetRoute);}
 }});
-bindPersonRefresh(document,{auth,onPublished:()=>render({preserveScroll:true})});
+bindPersonRefresh(document,{auth,onPublished:event=>{navigation.clearCache();return render({preserveScroll:true,freshSession:event?.revalidate===true});}});
 bindRankingWeights(document,{auth,onSaved:()=>render({preserveScroll:true})});
 window.addEventListener('jcs:layout-route',event=>navigation.navigate(event.detail?.route||'/'));
 window.addEventListener('jcs:layout-search',event=>navigation.navigate(`/search?q=${encodeURIComponent(String(event.detail?.query||'').trim())}`));

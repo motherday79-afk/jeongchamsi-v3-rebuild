@@ -40,7 +40,7 @@ test('the real client sends the displayed price and stable request ID without ac
  globalThis.fetch=async(url,options)=>{request={url,body:JSON.parse(options.body)};return {ok:true,status:200,json:async()=>({ok:true,publishedAt:1})};};
  try{await createAuthService().requestMemberRefresh({personId:'assembly-211',requestId:'request-one-12345',quotedFee:100});assert.equal(request.url,'/api/v3/person-refresh');assert.deepEqual(request.body,{personId:'assembly-211',requestId:'request-one-12345',quotedFee:100});}finally{globalThis.fetch=old;}
 });
-test('paid refresh does not upgrade member report access',async()=>{
+test('administrator refresh without a member purchase leaves member report access unchanged',async()=>{
  const {service}=await fixture();await service.refreshPerson({personId:'assembly-211'});await service.publishPersonRefresh({personId:'assembly-211'});
  const report=projectIntelligence(await service.getPublicIntelligence('assembly-211'),'member');
  assert.equal(report.accessTier,'member');assert.equal(report.prescriptions,undefined);
