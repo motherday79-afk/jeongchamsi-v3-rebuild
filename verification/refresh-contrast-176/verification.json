@@ -1,0 +1,16 @@
+{
+  "release": "JCS_0_0_31_176",
+  "cause": "White card inherited #f8f5fa text from .admin-intelligence-console",
+  "previous_contrast": 1.08,
+  "corrected_contrast": {
+    "title_and_labels": 14.57,
+    "help_and_placeholder": 5.37,
+    "status": 8.66
+  },
+  "existing_api_ui_tests": {
+    "passed": 4,
+    "failed": 0
+  },
+  "visual_browser_check": "not performed",
+  "live_deployment": "not performed"
+}

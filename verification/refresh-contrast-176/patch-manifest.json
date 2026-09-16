@@ -1,0 +1,17 @@
+{
+  "release": "JCS_0_0_31_176",
+  "baseline": "JCS_0_0_31_175",
+  "changed": [
+    "css/person-refresh-175.css",
+    "index.html",
+    "src/app.js",
+    "src/core/release.js",
+    "src/views/stage1.js"
+  ],
+  "added": [
+    "docs/releases/JCS_0_0_31_176.md",
+    "verification/refresh-contrast-176/patch-manifest.json",
+    "verification/refresh-contrast-176/verification.json"
+  ],
+  "removed": []
+}
