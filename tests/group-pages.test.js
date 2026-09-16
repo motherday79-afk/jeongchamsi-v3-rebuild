@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import { renderGroupDirectory, renderGroupDetail, renderGroupCreate } from '../src/views/group-pages.js';
 import { loadGroupPage } from '../src/core/group-routing.js';
 import { groupInputFromFormData, groupMutationFromForm, bindGroupInteractions } from '../src/ui/group-interactions.js';
@@ -35,6 +36,24 @@ test('manager controls reflect server capabilities and examples are always read 
   assert.match(example,/읽기 전용/); assert.doesNotMatch(example,/data-group-(post|member|settings|event|action)-form|name="operation"/);
   const lockedExample=renderGroupDetail(detail({canRead:false,canWrite:true},{isExample:true}));
   assert.doesNotMatch(lockedExample,/name="operation"|가입 신청/);
+});
+
+test('activity request keys include group and target identity',()=>{
+ const viewer={role:'owner',userId:'member',membershipStatus:'active',canRead:true,canWrite:true,canManage:true};
+ const first=renderGroupDetail(detail(viewer,{id:'group-one',posts:[{id:'post-a',title:'A',body:'A',kind:'post',authorName:'나',images:[],comments:[]},{id:'post-b',title:'B',body:'B',kind:'post',authorName:'나',images:[],comments:[]}]}));
+ const second=renderGroupDetail(detail(viewer,{id:'group-two'}));
+ assert.match(first,/data-activity-request-key="group:group-one:post:new"/);
+ assert.match(first,/data-activity-request-key="group:group-one:comment:post-a"/);
+ assert.match(first,/data-activity-request-key="group:group-one:comment:post-b"/);
+ assert.match(second,/data-activity-request-key="group:group-two:post:new"/);
+});
+
+test('group kind changes suppress a notice reward promise and restore current policy for eligible kinds',()=>{
+ const listeners={},hint={hidden:false,innerHTML:'현재 정책 100P'},images={dataset:{}},body={required:true},form={querySelector:selector=>selector==='[data-activity-hint]'?hint:selector==='[name=imageIds]'?images:selector==='[name=body]'?body:null},kind={value:'notice',closest:selector=>selector==='[name=kind]'?kind:selector==='form'?form:null},root={addEventListener:(name,handler)=>listeners[name]=handler};
+ bindGroupInteractions(root,{client:{}});listeners.change({target:kind});assert.equal(hint.hidden,true);
+ kind.value='gallery';listeners.change({target:kind});assert.equal(hint.hidden,false);assert.equal(hint.innerHTML,'현재 정책 100P');
+ kind.value='post';listeners.change({target:kind});assert.equal(hint.hidden,false);
+ assert.match(readFileSync(new URL('../css/activity-points-178.css',import.meta.url),'utf8'),/\.activity-hint\[hidden\]\s*\{[^}]*display\s*:\s*none/);
 });
 
 test('create form includes privacy consent and creates the exact payload',()=>{

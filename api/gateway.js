@@ -239,7 +239,7 @@ export async function handleContent(req,res,command,url){
     if(!['columns','community','itsme','news'].includes(domain))return json(res,403,{ok:false,error:'WRITE_NOT_ALLOWED'});
     const body=bodyOf(req),service=createCommunityService({command});
     try{if(req.method==='DELETE'){const result=await service.deletePost(domain,body.id,user);return json(res,200,result);}const item=await service.editPost(domain,body.id,body.input||{},user);const {likeStates,...safe}=item;return json(res,200,{ok:true,item:safe});}
-    catch(error){return json(res,error.status||503,{ok:false,error:error.message||'CONTENT_SAVE_FAILED'});}
+    catch(error){return json(res,error.status||503,{ok:false,error:error.message||'CONTENT_SAVE_FAILED',...(error.retryAfterSeconds?{retryAfterSeconds:error.retryAfterSeconds}:{})});}
   }
   if(req.method==='POST'){
     const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});
@@ -255,7 +255,7 @@ export async function handleContent(req,res,command,url){
       }catch(error){return json(res,400,{ok:false,error:String(error.message||'IMAGE_UPLOAD_FAILED')});}
     }
     try{const item=await createCommunityService({command}).createPost(domain,bodyOf(req).input||bodyOf(req),user),decorated=await attachRepresentativeBadges(command,{items:[item]});return json(res,201,{ok:true,item:decorated.items[0]});}
-    catch(error){return json(res,error.status||503,{ok:false,error:error.message||'CONTENT_SAVE_FAILED'});}
+    catch(error){return json(res,error.status||503,{ok:false,error:error.message||'CONTENT_SAVE_FAILED',...(error.retryAfterSeconds?{retryAfterSeconds:error.retryAfterSeconds}:{})});}
   }
   return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
 }
@@ -280,7 +280,7 @@ export async function handleAction(req,res,command){
       if(action==='comment-add')result={ok:true,comment:await service.addComment(domain,postId,payload,user)};
       if(result.comment){const {likedBy,...safe}=result.comment;result.comment=safe;}
       return json(res,200,result);
-    }catch(error){return json(res,error.status||503,{ok:false,error:error.message||'CONTENT_SAVE_FAILED'});}
+    }catch(error){return json(res,error.status||503,{ok:false,error:error.message||'CONTENT_SAVE_FAILED',...(error.retryAfterSeconds?{retryAfterSeconds:error.retryAfterSeconds}:{})});}
   }
   if(action==='favorite-toggle'){
     const result=await favoriteService(command).toggle(user,payload);
@@ -504,7 +504,7 @@ export default async function handler(req,res){
     if(route==='points'){
       if(req.method==='GET'&&url.searchParams.get('clock')==='1')return json(res,200,{ok:true,serverNow:Date.now()});
       const service=createPointService({command}),user=await currentUser(req,command);
-      try{if(req.method==='GET')return json(res,200,await (url.searchParams.get('member')?service.member(user,url.searchParams.get('member')):url.searchParams.get('wallet')==='1'?service.wallet(user):service.status(user)));if(req.method!=='POST')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});const input=bodyOf(req),op=input.operation;if(!['bank','order','review','cage','grant'].includes(op))return json(res,400,{ok:false,error:'INVALID_OPERATION'});return json(res,200,await service[op](user,input));}catch(error){return json(res,error.message==='ADMIN_REQUIRED'?403:error.message==='LOGIN_REQUIRED'?401:400,{ok:false,error:error.message});}
+      try{if(req.method==='GET')return json(res,200,await (url.searchParams.get('member')?service.member(user,url.searchParams.get('member')):url.searchParams.get('wallet')==='1'?service.wallet(user):service.status(user)));if(req.method!=='POST')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});const input=bodyOf(req),op=input.operation;if(!['bank','order','review','cage','grant','activity-policy','activity-revoke','activity-restrict'].includes(op))return json(res,400,{ok:false,error:'INVALID_OPERATION'});return json(res,200,await service[({'activity-policy':'activityPolicy','activity-revoke':'activityRevoke','activity-restrict':'activityRestrict'})[op]||op](user,input));}catch(error){return json(res,error.message==='ADMIN_REQUIRED'?403:error.message==='LOGIN_REQUIRED'?401:400,{ok:false,error:error.message});}
     }
     if(route==='content')return handleContent(req,res,command,url);
     if(route==='home/banner'&&req.method==='GET'){const service=createHomeBannerService({command}),[sidebar,hero,featuredCompare]=await Promise.all([service.get(),service.get('hero'),service.getCompare()]);return json(res,200,{ok:true,banner:{...(sidebar||{}),hero,featuredCompare:featuredCompare?{ids:featuredCompare.ids}:null}});}

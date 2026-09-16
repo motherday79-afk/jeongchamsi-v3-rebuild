@@ -1,4 +1,4 @@
-import { renderGroupDirectory,renderGroupDetail,renderGroupCreate } from '../views/group-pages.js?v=0.0.31.172';
+import { renderGroupDirectory,renderGroupDetail,renderGroupCreate } from '../views/group-pages.js?v=0.0.31.178';
 export async function loadGroupPage({parts=[],searchParams=new URLSearchParams(),session={},client}={}){
  const view=['browse','mine','manage'].includes(searchParams.get('view'))?searchParams.get('view'):'browse';
  const category=['politics','culture','social'].includes(searchParams.get('category'))?searchParams.get('category'):'all';

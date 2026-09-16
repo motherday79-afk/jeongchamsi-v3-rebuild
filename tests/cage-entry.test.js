@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { cageDetail } from '../src/views/community-ui.js';
 import { renderHomeCage } from '../src/layout/home-layout.js';
 import { siteHeader } from '../src/layout/site-shell.js';
+import { cageOpinionCompletion } from '../src/core/cage-entry.js';
+import { authoringResult } from '../src/ui/activity-points.js';
 
 const item={id:'cage-a',title:'시민의 새로운 의제',cageEnabled:true,published:true};
 const content={commentsFor:async()=>[],peekDomain:()=>({items:[item]})};
@@ -98,27 +100,18 @@ test('direct entry focuses the opinion title or guest login, never an ordinary/d
 });
 
 test('saving a direct-entry opinion submits the selected camp and consumes composer parameters',async()=>{
- const {readFile}=await import('node:fs/promises');
- const source=await readFile(new URL('../src/app.js',import.meta.url),'utf8');
- const start=source.indexOf("if(type==='board'){const item=await content.create");
- const branch=source.slice(start,source.indexOf('\n',start));
- const stateStart=source.indexOf('function cageRouteState('),stateEnd=source.indexOf('function showCageFeedback',stateStart);
- const run=new (Object.getPrototypeOf(async function(){}).constructor)('content','data','window','route','form','render',`let renderSequence=0,cageFeedback=null,result;const type='board';${source.slice(stateStart,stateEnd)}${branch}return {result,cageFeedback};`);
  for(const camp of ['progressive','conservative']) {
-  const input={cageParentId:'cage-a',camp,title:'제목',body:'의견'},saved=[];let location=`/community/cage-a?camp=${camp}&compose=1`,renders=0;
-  const outcome=await run({create:async(domain,data)=>{saved.push({domain,data});return{id:'child'};}},input,{history:{state:{},replaceState(_state,_title,url){location=url;}}},()=>location,{dataset:{domain:'community'}},async()=>{renders++;});
-  assert.deepEqual(saved,[{domain:'community',data:input}]);
-  assert.equal(location,'/community/cage-a?page=1&mode=posts');
-  assert.deepEqual(outcome.cageFeedback,{rootId:'cage-a',camp});assert.equal(renders,1);
+  const input={cageParentId:'cage-a',camp,title:'제목',body:'의견'},events=[];
+  const completion=await cageOpinionCompletion({result:{ok:true,activityReward:{status:'credited'}},data:input,onCageFeedback:value=>events.push(['cage',value]),onRouteState:value=>events.push(['route',value]),onActivityFeedback:value=>events.push(['activity',value.activityReward.status]),onRender:async()=>events.push(['render'])});
+  assert.deepEqual(completion,{rootId:'cage-a',camp});
+  assert.deepEqual(events,[['cage',{rootId:'cage-a',camp}],['route',{page:1,mode:'posts',camp:null,compose:null}],['activity','credited'],['render']]);
  }
 });
 
 test('failed opinion submission keeps the chosen camp and does not navigate or reset',async()=>{
- const {readFile}=await import('node:fs/promises');
- const source=await readFile(new URL('../src/app.js',import.meta.url),'utf8');
- const start=source.indexOf("if(type==='board'){const item=await content.create"),branch=source.slice(start,source.indexOf('\n',start));
- const run=new (Object.getPrototypeOf(async function(){}).constructor)('content','data','form',`let result,cageFeedback=null;const type='board';${branch}return result;`);
  const data={cageParentId:'cage-a',camp:'progressive',title:'제목',body:'의견'};
- const result=await run({create:async()=>({error:'CAGE_CLOSED'})},data,{dataset:{domain:'community'}});
+ const result=authoringResult({error:'CAGE_CLOSED'},'/community/child');let effects=0;
+ assert.equal(await cageOpinionCompletion({result,data,onCageFeedback:()=>effects++,onRouteState:()=>effects++,onActivityFeedback:()=>effects++,onRender:()=>effects++}),null);
  assert.deepEqual(result,{ok:false,error:'CAGE_CLOSED'});assert.equal(data.camp,'progressive');assert.equal(data.body,'의견');
+ assert.equal(effects,0);
 });

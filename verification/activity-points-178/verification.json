@@ -1,0 +1,19 @@
+{
+  "release": "JCS_0_0_31_178",
+  "baseline": "JCS_0_0_31_177",
+  "fullTest": {
+    "command": "npm test",
+    "tests": 464,
+    "passed": 464,
+    "failed": 0,
+    "skipped": 0
+  },
+  "deploymentTrace": "passed in full test suite",
+  "backendReview": "passed after two scoped fixes",
+  "finalReview": "passed after scoped final fixes",
+  "liveDeployment": false,
+  "liveCollection": false,
+  "realPointsMutation": false,
+  "liveRedisInterpreter": false,
+  "browserVisualQA": false
+}

@@ -24,3 +24,13 @@ export function isCageClosed(item,now=Date.now()){
  const end=Number(item?.cageEndsAt);
  return Number.isFinite(end)&&end>0&&now>=end;
 }
+
+export async function cageOpinionCompletion({result,data,onCageFeedback,onRouteState,onActivityFeedback,onRender}={}){
+ if(!result?.ok||!data?.cageParentId)return null;
+ const feedback={rootId:data.cageParentId,camp:data.camp};
+ onCageFeedback?.(feedback);
+ onRouteState?.({page:1,mode:'posts',camp:null,compose:null});
+ onActivityFeedback?.(result);
+ await onRender?.();
+ return feedback;
+}

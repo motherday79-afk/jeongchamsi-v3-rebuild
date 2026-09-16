@@ -1,34 +1,35 @@
 import {bindPersonRefresh,loadMemberRefresh,watchAnalysisAccess} from './ui/person-refresh.js?v=0.0.31.177';
 import { bindRankingWeights, rankingWeightsReady, updateRunningRankingWeights } from './ui/ranking-weights.js?v=0.0.31.174';
 import { createGroupClient } from './core/group-client.js?v=0.0.31.172';
-import { loadGroupPage, groupLoginReturn } from './core/group-routing.js?v=0.0.31.172';
-import { bindGroupInteractions } from './ui/group-interactions.js?v=0.0.31.171';
-import { cageLoginReturn } from './core/cage-entry.js?v=0.0.31.165';
+import { loadGroupPage, groupLoginReturn } from './core/group-routing.js?v=0.0.31.178';
+import { bindGroupInteractions } from './ui/group-interactions.js?v=0.0.31.178';
+import { cageLoginReturn, cageOpinionCompletion } from './core/cage-entry.js?v=0.0.31.178';
 import { bindCageTitleEditors } from './ui/cage-title-editor.js?v=0.0.31.167';
 import { createCampaignClient } from './core/campaign-client.js?v=0.0.31.158';
 import { loadCampaignPage } from './core/campaign-routing.js?v=0.0.31.160';
 import { bindCampaignInteractions } from './ui/campaign-interactions.js?v=0.0.31.165';
 import { refreshFontScale } from './ui/font-scale.js?v=0.0.31.56';
-import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.170';
+import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.178';
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.56';
 import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.171';
-import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.172';
+import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.178';
 import { focusCageCompose, setupHomeCompare, setupPoliticianAutocomplete, setupLayoutInteractions, setupPoliticianPhotoFallback, setupNowCarousel, setupCageCountdown, setupDesktopHomeViewport } from './ui/interactions.js?v=0.0.31.165';
 import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.177';
-import { createContentService, loadNavigationDashboard, loadPersonNavigation } from './core/content.js?v=0.0.31.153';
+import { createContentService, loadNavigationDashboard, loadPersonNavigation } from './core/content.js?v=0.0.31.178';
 import { createPoliticianService } from './core/politicians.js?v=0.0.31.147';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith, isTransientAnalysisRoute } from './core/navigation.js?v=0.0.31.177';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.148';
-import * as views from './views/stage1.js?v=0.0.31.177';
+import * as views from './views/stage1.js?v=0.0.31.178';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.177';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.177';
-import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.175';
+import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.178';
 import { renderPresidentPage } from './views/president.js?v=0.0.31.107';
-import { renderSearchPage, hasSearchSnapshot } from './views/search-page.js?v=0.0.31.172';
-import { loadSearchDiscovery } from './views/search-discovery.js?v=0.0.31.172';
+import { renderSearchPage, hasSearchSnapshot } from './views/search-page.js?v=0.0.31.178';
+import { loadSearchDiscovery } from './views/search-discovery.js?v=0.0.31.178';
 import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.31.56';
 import { regionDistrictOptions, regionSubdistrictOptions } from './data/korean-regions.js?v=0.0.31.56';
+import {activityFormPayload,activityRequestId,settleActivityRequest,rememberActivityFeedback,rememberSubmissionFeedback,showActivityFeedback,hydrateActivityHints,bindActivityPoints,authoringResult} from './ui/activity-points.js?v=0.0.31.178';
 
 const formErrors={GOODS_REQUEST_REQUIRED:'상품 종류, 희망 수량, 연락처와 제작 요청을 확인해 주세요.',ALREADY_VOTED:'이번 회차 투표를 이미 완료했습니다.',AGE_GROUP_MISMATCH:'20대 이상 회원은 본인 세대에서만 투표할 수 있습니다.',GENERATION_VOTE_CLOSED:'현재 진행 중인 모의투표가 아닙니다.',CANDIDATE_NOT_ALLOWED:'이번 회차에 등록된 후보를 선택해 주세요.',ADMIN_VOTE_DISABLED:'관리자는 데모 설정으로 현황을 관리해 주세요.',CAMP_REQUIRED:'진보진영 또는 보수진영을 선택해 주세요.',PIN_FORBIDDEN:'공지·케이지 고정은 관리자만 할 수 있습니다.',PIN_INVALID:'공지 또는 케이지 중 하나를 선택해 주세요.',POST_EDIT_FORBIDDEN:'본인이 작성한 게시글만 수정·삭제할 수 있습니다.',COMMENT_EDIT_FORBIDDEN:'본인이 작성한 댓글만 수정·삭제할 수 있습니다.',CONTENT_CHANGED_RETRY:'다른 참여 내용이 갱신됐습니다. 입력 내용은 유지되니 다시 저장해 주세요.',CONTENT_STORAGE_INVALID:'저장된 게시판 데이터를 읽지 못했습니다. 다시 시도해 주세요.',TITLE_REQUIRED:'제목을 입력해 주세요.',INVALID_COMMENT:'댓글 내용을 입력해 주세요.',COMMENT_PARENT_INVALID:'답글을 달 댓글이 변경되었거나 삭제되었습니다.',CAGE_NOT_FOUND:'케이지를 찾을 수 없습니다.',POST_NOT_FOUND:'게시글이 삭제되었거나 존재하지 않습니다.',COMMENT_NOT_FOUND:'댓글이 삭제되었거나 존재하지 않습니다.',CAMP_IMMUTABLE:'작성한 글의 진영은 변경할 수 없습니다.',INVALID_REFERRER:'추천인코드를 확인해 주세요. 사용 가능한 회원의 코드를 입력해야 합니다.',INVALID_REFERRER_CODE:'추천인코드는 숫자로 입력해 주세요.',INVALID_REGION:'시·군·구와 해당 구를 올바르게 선택해 주세요.',REGISTRATION_BUSY:'가입 요청이 많습니다. 잠시 후 다시 시도해 주세요.',MEMBERS_CHANGED_RETRY:'회원 정보가 갱신됐습니다. 새로고침 후 다시 저장해 주세요.'};
 const app=document.getElementById('app');
@@ -67,6 +68,7 @@ function showCageFeedback(){
 const intelligenceAutoResumeGuard=createIntelligenceAutoResumeGuard();
 
 let navigation=null;
+let activeSessionIdentity='guest';
 const route=()=>navigation?.route()||String(location.hash||'#/').replace(/^#/,'')||'/';
 const parts=r=>r.split('?')[0].split('/').filter(Boolean);
 const unstable=new Set();
@@ -95,7 +97,7 @@ const sessionIdentity=session=>session?.authenticated?`${session.user?.id}:${ses
 const invalidateHome=()=>{if(homeSnapshot)homeSnapshot.at=0;};
 window.addEventListener('jcs:data-changed',invalidateHome);
 window.addEventListener('jcs:admin-changed',()=>{invalidateHome();navigation?.clearCache();});
-window.addEventListener('jcs:auth-changed',()=>{homeSnapshot=null;navigation?.clearCache();});
+window.addEventListener('jcs:auth-changed',()=>{activeSessionIdentity='changing';homeSnapshot=null;navigation?.clearCache();});
 window.addEventListener('storage',()=>{homeSnapshot=null;navigation?.clearCache();});
 function updateVisibleHome(body){
  const before=document.createElement('template'),after=document.createElement('template');before.innerHTML=homeSnapshot.body;after.innerHTML=body;
@@ -153,7 +155,7 @@ function resumeAdminIntelligence(){
 }
 
 function setupMemberBadgeManagers(){
-  for(const row of document.querySelectorAll('[data-member-badge-row]'))row.addEventListener('toggle',()=>{if(!row.open)return;const mount=row.querySelector('[data-member-badge-mount]');if(!mount||mount.dataset.loaded)return;try{mount.innerHTML=views.renderMemberBadgeManager(JSON.parse(row.dataset.memberBadgePayload||'{}'));mount.dataset.loaded='true';void loadMemberPoints(mount.querySelector('[data-member-points-panel]'));}catch{mount.innerHTML='<p class="module-desc">배지 목록을 불러오지 못했습니다.</p>';}});
+  for(const row of document.querySelectorAll('[data-member-badge-row]')){const load=()=>{if(!row.open)return;const mount=row.querySelector('[data-member-badge-mount]');if(!mount||mount.dataset.loaded)return;try{mount.innerHTML=views.renderMemberBadgeManager(JSON.parse(row.dataset.memberBadgePayload||'{}'));mount.dataset.loaded='true';void loadMemberPoints(mount.querySelector('[data-member-points-panel]'));}catch{mount.innerHTML='<p class="module-desc">배지 목록을 불러오지 못했습니다.</p>';}};row.addEventListener('toggle',load);load();}
 }
 
 async function render({preserveScroll=false,refreshHome=false,freshSession=false}={}){
@@ -189,6 +191,7 @@ async function render({preserveScroll=false,refreshHome=false,freshSession=false
   if(personData?.detail)personData.detail=agePersonAccessResult(personData.detail,Date.now()-personRequestStarted);
   const session=personData?personData.session:await auth.session();
   if(renderId!==renderSequence)return;
+  activeSessionIdentity=sessionIdentity(session);
   const badgeStatusPromise=session.authenticated&&p[0]!=='admin'
     ? auth.recordBadgeVisit().then(result=>result?.status||auth.badgeStatus()).catch(()=>null)
     : Promise.resolve(null);
@@ -217,7 +220,7 @@ async function render({preserveScroll=false,refreshHome=false,freshSession=false
     const peopleById=Object.fromEntries(resolvedPeople.filter(result=>result?.ok&&result.item).map(result=>[result.item.id,result.item])),generationView={...generation,candidatePeople:peopleById,candidateLabels:Object.fromEntries(generationIds.map(id=>[id,peopleById[id]?.name||id]))},nationalEvaluationView={...nationalEvaluation,slots:Object.fromEntries(Object.entries(nationalEvaluation?.slots||{}).map(([key,slot])=>[key,{...slot,subjectName:peopleById[slot?.subjectId]?.name||slot?.subjectName,party:peopleById[slot?.subjectId]?.party||slot?.party,jurisdiction:peopleById[slot?.subjectId]?.jurisdiction||slot?.jurisdiction,photo:peopleById[slot?.subjectId]?.photo||slot?.photo}]))};
     const home={...HOME_FIXTURE,trending:trendingResult.items||[],keywords:keywordResult.items||[],memberCount,columns,community,communityData:content.peekDomain('community')||{items:community},itsmePosts,newsPosts,polls,generation:generationView,nationalEvaluation:nationalEvaluationView,academy,rank,homeBanner,recentPoliticians:loadRecentPoliticians(),session,badgeStatus};
     body=`<div class="product-home-wrap">${renderHomeLayout(home)}</div>`;
-  } else if(p[0]==='points') body=renderPointShop(await content.points(),session,new URLSearchParams(r.split('?')[1]||'').get('view')==='support'?'support':'shop');
+  } else if(p[0]==='points'){const pointView=new URLSearchParams(r.split('?')[1]||'').get('view');body=renderPointShop(await content.points(),session,pointView==='support'?'support':pointView==='activity'?'activity':'shop');}
   else if(p[0]==='groups') body=await loadGroupPage({parts:p,searchParams,session,client:groups});
   else if(p[0]==='campaigns') body=await loadCampaignPage({parts:p,searchParams,session,client:campaigns});
   else if(p[0]==='shop') body=p[1]==='request'?renderGoodsRequest(session,r):p[1]?renderCheerProduct(p[1]):renderCheerCatalog();
@@ -276,6 +279,8 @@ async function render({preserveScroll=false,refreshHome=false,freshSession=false
   if(p[0]==='search')void loadSearchDiscovery(document,campaigns,searchTerm,{groups,session});
   restoreCageDraft();
   showCageFeedback();
+  void hydrateVisibleActivityHints();
+  showActivityFeedback(document,{identity:activeSessionIdentity});
   if(p[0]==='person'){void loadMemberRefresh(document,auth);invalidateHome();recordRecentPolitician(document);tunePoliticianNarratives();if(session.user?.role==='admin')void updatePoliticianPhotoStorageStatus();}
   watchAnalysisAccess(document,{onExpired:()=>{navigation?.clearCache();void render({preserveScroll:true,freshSession:true});}});
   if(!preserveScroll){window.scrollTo(0,0);focusCageCompose(document);if(p[0]==='support'||p[0]==='points'&&new URLSearchParams(r.split('?')[1]||'').get('view')==='support'){const target=document.getElementById('jcs-support');target?.scrollIntoView({block:'start'});target?.querySelector('h2')?.focus({preventScroll:true});}}
@@ -284,7 +289,7 @@ async function render({preserveScroll=false,refreshHome=false,freshSession=false
   if(p[0]==='admin')queueMicrotask(resumeAdminIntelligence);
 }
 
-navigation=createNavigation({window,readSnapshot:()=>parts(route())[0]==='groups'||isTransientAnalysisRoute(route())?'':app.innerHTML,restoreSnapshot:markup=>{app.innerHTML=markup;if(document.querySelector('.product-home-wrap')&&homeSnapshot)homeSnapshot.node=app.firstElementChild;},rebind:()=>{++renderSequence;const cachedRoute=parts(route());if(['mypage','points','campaigns','person','compare'].includes(cachedRoute[0]))queueMicrotask(()=>void render({preserveScroll:true}));else if(cachedRoute[0]==='search'){const params=new URLSearchParams(route().split('?')[1]||'');void loadSearchDiscovery(document,campaigns,(params.get('q')||'').trim(),{groups,session:()=>auth.session()});}else if(!cachedRoute.length)void refreshCachedMemberSummary();setupLayoutInteractions(document,{politicianSearch:(query,limit)=>politicians.search(query,limit)});setupMemberBadgeManagers();if(document.querySelector('.jc55'))queueMicrotask(()=>void render({preserveScroll:true}));if(pipelineActive())queueMicrotask(resumeAdminIntelligence);},onRoute:(_route,options)=>void render(options)});
+navigation=createNavigation({window,readSnapshot:()=>parts(route())[0]==='groups'||isTransientAnalysisRoute(route())?'':app.innerHTML,restoreSnapshot:markup=>{app.innerHTML=markup;if(document.querySelector('.product-home-wrap')&&homeSnapshot)homeSnapshot.node=app.firstElementChild;},rebind:()=>{++renderSequence;const cachedRoute=parts(route());if(['mypage','points','campaigns','person','compare'].includes(cachedRoute[0]))queueMicrotask(()=>void render({preserveScroll:true}));else if(cachedRoute[0]==='search'){const params=new URLSearchParams(route().split('?')[1]||'');void loadSearchDiscovery(document,campaigns,(params.get('q')||'').trim(),{groups,session:()=>auth.session()});}else if(!cachedRoute.length)void refreshCachedMemberSummary();setupLayoutInteractions(document,{politicianSearch:(query,limit)=>politicians.search(query,limit)});setupMemberBadgeManagers();void hydrateVisibleActivityHints();showActivityFeedback(document,{identity:activeSessionIdentity});if(document.querySelector('.jc55'))queueMicrotask(()=>void render({preserveScroll:true}));if(pipelineActive())queueMicrotask(resumeAdminIntelligence);},onRoute:(_route,options)=>void render(options)});
 navigation.start();
 bindCageTitleEditors(document);
 bindGroupInteractions(document,{client:groups,onSaved:async(_result,targetRoute)=>{
@@ -298,6 +303,7 @@ bindCampaignInteractions(document,{client:campaigns,onSaved:async(_result,target
 }});
 bindPersonRefresh(document,{auth,onPublished:event=>{navigation.clearCache();return render({preserveScroll:true,freshSession:event?.revalidate===true});}});
 bindRankingWeights(document,{auth,onSaved:()=>render({preserveScroll:true})});
+bindActivityPoints(document,{loadMemberPage:(panel,page)=>loadMemberPoints(panel,page)});
 window.addEventListener('jcs:layout-route',event=>navigation.navigate(event.detail?.route||'/'));
 window.addEventListener('jcs:layout-search',event=>navigation.navigate(`/search?q=${encodeURIComponent(String(event.detail?.query||'').trim())}`));
 document.addEventListener('change',event=>{
@@ -310,6 +316,7 @@ document.addEventListener('change',event=>{
 document.addEventListener('toggle',async event=>{const details=event.target;if(!(details instanceof HTMLDetailsElement)||!details.matches('[data-admin-audit-disclosure]')||!details.open||details.dataset.loaded==='true')return;const mount=details.querySelector('[data-admin-audit-mount]');details.dataset.loaded='loading';if(mount)mount.innerHTML='<p>관리자 작업 기록을 불러오는 중입니다…</p>';const result=await auth.adminAudit().catch(()=>({ok:false,error:'AUDIT_LOAD_FAILED'}));if(!details.isConnected)return;if(result?.ok){if(mount)mount.innerHTML=views.renderAdminAuditPanel(result);details.dataset.loaded='true';}else{if(mount)mount.innerHTML='<p>작업 기록을 불러오지 못했습니다. 접었다가 다시 펼쳐 주세요.</p>';delete details.dataset.loaded;}},true);
 
 document.addEventListener('submit',async event=>{
+  const memberSearch=event.target.closest('[data-admin-member-search]');if(memberSearch){event.preventDefault();navigation.navigate(adminRouteWith(route(),{tab:'members',q:String(new FormData(memberSearch).get('q')||'').trim()}));return;}
   const keywordForm=event.target.closest('[data-keyword-rules-form]');if(keywordForm){event.preventDefault();const data=Object.fromEntries(new FormData(keywordForm)),parse=value=>Object.fromEntries(String(value||'').split('\n').map(line=>line.split('=').map(part=>part.trim())).filter(parts=>parts.length===2&&parts.every(Boolean)));data.aliases=parse(data.aliases);data.labels=parse(data.labels);const result=await auth.saveKeywordRules(data);keywordForm.querySelector('[data-form-state]').textContent=result.ok?'저장했습니다.':result.error||'저장하지 못했습니다.';return;}
   const footerInfoForm=event.target.closest('[data-footer-info-form]');
   if(footerInfoForm){event.preventDefault();const state=footerInfoForm.querySelector('[data-form-state]'),result=await auth.saveFooterInfo(Object.fromEntries(new FormData(footerInfoForm)));if(state)state.textContent=result?.ok?'풋터 정보를 저장하고 공개 화면에 반영했습니다.':(result?.error||'풋터 정보를 저장하지 못했습니다.');if(result?.ok){shellInfoCache=null;await render({preserveScroll:true});}return;}
@@ -348,7 +355,7 @@ document.addEventListener('submit',async event=>{
   const pastRiskForm=event.target.closest('[data-intelligence-past-risk-form]');
   if(pastRiskForm){event.preventDefault();const data=new FormData(pastRiskForm),state=pastRiskForm.querySelector('[data-intelligence-draft-state]'),pastRisks=String(data.get('pastRisks')||'').split(/\r?\n/).map(line=>line.split('|').map(value=>value.trim())).filter(parts=>parts[0]&&parts[1]&&/^https?:\/\//.test(parts[2])).slice(0,5).map(([tag,title,url,date])=>({tag:tag.startsWith('#')?tag:`#${tag}`,title,url,date:date||''})),result=await auth.intelligenceDraftUpdate({personId:String(data.get('personId')||''),diagnoses:[{id:'01',pastRisks}]});if(state)state.textContent=result?.ok?'PAST RISK SIGNALS를 저장했습니다. 자동 검증 통과 시 바로 게시할 수 있습니다.':(result?.error||'PAST RISK SIGNALS를 저장하지 못했습니다.');if(result?.ok)await render({preserveScroll:true});return;}
   const pointForm=event.target.closest('[data-point-form]');
-  if(pointForm){event.preventDefault();const fd=new FormData(pointForm),input=Object.fromEntries(fd);input.operation=pointForm.dataset.pointForm;input.confirmed=pointForm.elements.confirmed?.checked===true;input.decision=event.submitter?.value;const state=pointForm.querySelector('[data-form-state]'),buttons=[...pointForm.querySelectorAll('button')];if((input.operation==='grant'||input.operation==='review'&&input.decision==='approve')&&!input.confirmed){state.textContent='입금 확인 항목을 체크해 주세요.';return;}if(input.operation==='cage'&&!window.confirm('선택한 포인트를 사용해 케이지를 지금 개설할까요?'))return;buttons.forEach(b=>b.disabled=true);try{const result=await content.pointAction(input);if(result.ok){if(result.id)navigation.navigate('/community/'+result.id);else if(pointForm.closest('[data-member-points-panel]'))await loadMemberPoints(pointForm.closest('[data-member-points-panel]'));else await render({preserveScroll:true});}else if(result.error==='INSUFFICIENT_POINTS'){state.textContent='보유 포인트가 부족해 케이지를 열 수 없습니다.';if(await askPointCharge(pointForm)){if(parts(route())[0]==='points')document.querySelector('[data-point-form=order]')?.scrollIntoView({behavior:'smooth'});else navigation.navigate('/points');}}else state.textContent=({INSUFFICIENT_POINTS:'보유 포인트가 부족합니다.',BANK_REQUIRED:'은행·계좌번호·예금주를 등록해 주세요.',LOGIN_REQUIRED:'로그인이 필요합니다.',TRANSFER_CONFIRM_REQUIRED:'실제 입금을 확인해 주세요.',INVALID_CAGE:'제목·내용과 50,000~100,000P 사이의 금액을 확인해 주세요.'})[result.error]||result.error||'처리하지 못했습니다.';}catch{state.textContent='처리 결과를 확인하지 못했습니다. 같은 신청으로 다시 시도해 주세요.';}finally{buttons.forEach(b=>b.disabled=false);}return;}
+  if(pointForm){event.preventDefault();const fd=new FormData(pointForm),operation=pointForm.dataset.pointForm,activityOperation=operation.startsWith('activity-'),input=activityOperation?activityFormPayload(fd,operation):Object.fromEntries(fd);if(!activityOperation){input.operation=operation;input.confirmed=pointForm.elements.confirmed?.checked===true;input.decision=event.submitter?.value;}const state=pointForm.querySelector('[data-form-state]'),buttons=[...pointForm.querySelectorAll('button')];if((input.operation==='grant'||input.operation==='review'&&input.decision==='approve')&&!input.confirmed){state.textContent='입금 확인 항목을 체크해 주세요.';return;}if(input.operation==='cage'&&!window.confirm('선택한 포인트를 사용해 케이지를 지금 개설할까요?'))return;buttons.forEach(b=>b.disabled=true);try{const result=await content.pointAction(input);if(result.ok){if(activityOperation)state.textContent=input.operation==='activity-policy'?'활동 포인트 정책을 저장했습니다.':input.operation==='activity-revoke'?`적립을 정산했습니다. ${Number(result.recovered||0).toLocaleString('ko-KR')}P 회수 · ${Number(result.debtAdded||0).toLocaleString('ko-KR')}P 상계 대기`:'활동 적립 제한을 저장했습니다.';if(result.id)navigation.navigate('/community/'+result.id);else if(pointForm.closest('[data-member-points-panel]'))await loadMemberPoints(pointForm.closest('[data-member-points-panel]'));else await render({preserveScroll:true});}else if(result.error==='INSUFFICIENT_POINTS'){state.textContent='보유 포인트가 부족해 케이지를 열 수 없습니다.';if(await askPointCharge(pointForm)){if(parts(route())[0]==='points')document.querySelector('[data-point-form=order]')?.scrollIntoView({behavior:'smooth'});else navigation.navigate('/points');}}else state.textContent=({INSUFFICIENT_POINTS:'보유 포인트가 부족합니다.',BANK_REQUIRED:'은행·계좌번호·예금주를 등록해 주세요.',LOGIN_REQUIRED:'로그인이 필요합니다.',TRANSFER_CONFIRM_REQUIRED:'실제 입금을 확인해 주세요.',INVALID_CAGE:'제목·내용과 50,000~100,000P 사이의 금액을 확인해 주세요.',INVALID_ACTIVITY_POLICY:'활동 포인트 정책 값을 확인해 주세요.',INVALID_REASON:'조치 사유를 입력해 주세요.',ACTIVITY_EVENT_NOT_FOUND:'회수할 활동 적립을 찾을 수 없습니다.'})[result.error]||result.error||'처리하지 못했습니다.';}catch{state.textContent='처리 결과를 확인하지 못했습니다. 같은 신청으로 다시 시도해 주세요.';}finally{buttons.forEach(b=>b.disabled=false);}return;}
   const cohortForm=event.target.closest('[data-generation-cohort-editor]');
   if(cohortForm){event.preventDefault();const ids=[...cohortForm.querySelectorAll('[name=cohortIds]')].map(x=>x.value),counts=Object.fromEntries([...cohortForm.querySelectorAll('.generation-manage-row')].map(row=>[row.querySelector('[name=cohortIds]').value,Number(row.querySelector('[data-cohort-count]').value)])),state=cohortForm.querySelector('[data-form-state]'),button=cohortForm.querySelector('[type=submit]');button.disabled=true;try{const result=await content.editParticipation('generation','',{age:cohortForm.dataset.age,itemId:cohortForm.dataset.itemId,candidateIds:ids,counts,enabled:cohortForm.elements.enabled.checked},'cohort');if(result.ok)await render({preserveScroll:true});else state.textContent=result.error==='GENERATION_ROUND_CHANGED'?'현재 회차가 바뀌었습니다. 새로고침 후 다시 저장해 주세요.':result.error||'저장하지 못했습니다.';}catch{state.textContent='저장하지 못했습니다. 다시 시도해 주세요.';}finally{button.disabled=false;}return;}
   const demoForm=event.target.closest('[data-participation-demo]');
@@ -362,7 +369,7 @@ document.addEventListener('submit',async event=>{
   const generationSearch=event.target.closest('[data-generation-search]');
   if(generationSearch){event.preventDefault();const data=new FormData(generationSearch),age=String(data.get('age')||'20대'),query=String(data.get('q')||'').trim();navigation.navigate(`/generation-president?age=${encodeURIComponent(age)}${query?`&q=${encodeURIComponent(query)}`:''}`);return;}
   const form=event.target.closest('[data-stage-form]'); if(!form)return;
-  event.preventDefault(); const data=Object.fromEntries(new FormData(form)); const type=form.dataset.stageForm; let result=null;
+  event.preventDefault(); let data=Object.fromEntries(new FormData(form)); const type=form.dataset.stageForm; let result=null;const activitySubmission=!!form.dataset.activityRequestKey&&data.writeMode!=='cage',activityUser=form.dataset.activityUser||'',submittingIdentity=activeSessionIdentity;if(activitySubmission)data.requestId=activityRequestId(form,data);
   if(form.dataset.pending)return;form.dataset.pending='true';const submitButtons=[...form.querySelectorAll('button[type="submit"],button:not([type])')],dialog=form.closest('dialog');submitButtons.forEach(button=>button.disabled=true);
   try{
   if(form.querySelector('[name="pinKind"]'))data.pinKind=data.pinCage?'cage':data.pinNotice?'notice':'';
@@ -374,7 +381,7 @@ document.addEventListener('submit',async event=>{
   }
   delete data.coverFile;
   if(type==='post-edit'){const item=await content.update(form.dataset.domain,form.dataset.postId,data);result=item?.error?{ok:false,error:item.error}:{ok:true};if(result.ok)await render({preserveScroll:true});}
-  if(type==='post-delete'){if(form.dataset.confirmed!=='true'&&!window.confirm('이 게시물을 삭제하시겠습니까?'))return;result=await content.remove(form.dataset.domain,form.dataset.postId);if(result.ok)result.route=form.dataset.returnRoute||`/${form.dataset.domain==='columns'?'column':form.dataset.domain}`;}
+  if(type==='post-delete'){if(form.dataset.confirmed!=='true'&&!window.confirm('이 게시물을 삭제하시겠습니까?'))return;result=await content.remove(form.dataset.domain,form.dataset.postId);if(result.ok){rememberSubmissionFeedback(result,{submittingIdentity,currentIdentity:()=>activeSessionIdentity});result.route=form.dataset.returnRoute||`/${form.dataset.domain==='columns'?'column':form.dataset.domain}`;}}
   if(type==='login') result=await auth.login(data);
   if(type==='join'){result=await auth.register(data);shellInfoCache=null;}
   if(type==='profile-address'){data.regionDistrict=data.regionDistrict||'';result=await auth.updateProfile(data);}
@@ -382,14 +389,14 @@ document.addEventListener('submit',async event=>{
     const button=form.querySelector('button[type=submit]'),state=form.querySelector('[data-form-state]');if(form.dataset.busy)return;form.dataset.busy='true';button.disabled=true;
     try{const opened=await content.pointAction({operation:'cage',fee:data.fee,title:data.title,body:data.body,requestId:data.requestId});if(opened.ok){try{sessionStorage.removeItem('jcs-cage-draft:'+form.querySelector('[data-cage-writer]').dataset.userId);}catch{}navigation.navigate('/community/'+opened.id);}else if(opened.error==='INSUFFICIENT_POINTS'){state.textContent='포인트가 부족해 케이지를 열 수 없습니다.';if(await askPointCharge(button)){try{sessionStorage.setItem('jcs-cage-draft:'+form.querySelector('[data-cage-writer]').dataset.userId,JSON.stringify({title:data.title,body:data.body,fee:data.fee,requestId:data.requestId}));}catch{}navigation.navigate('/points');}}else state.textContent=formErrors[opened.error]||opened.error||'개설에 실패했습니다.';}catch{state.textContent='개설 결과를 확인하지 못했습니다. 같은 신청으로 다시 시도해 주세요.';}finally{delete form.dataset.busy;button.disabled=false;}return;
   }
-  if(type==='board'){const item=await content.create(form.dataset.domain,data),routeName=form.dataset.domain==='columns'?'column':form.dataset.domain==='news'?'news':'community';result=item?.error?{ok:false,error:item.error}:{ok:true,route:`/${routeName}/${item.id}`};if(result.ok&&data.cageParentId){cageFeedback={rootId:data.cageParentId,camp:data.camp};cageRouteState({page:1,mode:'posts',camp:null,compose:null});delete result.route;await render({preserveScroll:true});}}
-  if(type==='itsme'){const item=await content.create('itsme',data);result=item?.error?{ok:false,error:item.error}:{ok:true,route:`/itsme/${item.id}`};}
+  if(type==='board'){const item=await content.create(form.dataset.domain,data),routeName=form.dataset.domain==='columns'?'column':form.dataset.domain==='news'?'news':'community';result=authoringResult(item,`/${routeName}/${item.id}`);}
+  if(type==='itsme'){const item=await content.create('itsme',data);result=authoringResult(item,`/itsme/${item.id}`);}
   if(type==='goods-request'){result=await content.createInquiry({...data,kind:'goods-request',visibility:'private'});if(result?.ok)result.route=`/inquiry/${result.item.id}`;}
   if(type==='inquiry'){result=await content.createInquiry(data);if(result?.ok)result.route=`/inquiry/${result.item.id}`;}
   if(type==='inquiry-reply'){result=await content.replyInquiry(form.dataset.inquiryId,data.body);if(result?.ok)await render({preserveScroll:true});}
-  if(type==='comment'){result=await content.comment(form.dataset.domain,form.dataset.postId,data.text,{camp:data.camp,parentId:data.parentId});if(result.ok){const root=form.closest('.jc55');if(root&&data.camp){cageFeedback={rootId:root.dataset.cageId,camp:data.camp};cageRouteState({mode:'comments'});}await render({preserveScroll:true});}}
+  if(type==='comment'){result=await content.comment(form.dataset.domain,form.dataset.postId,data.text,{camp:data.camp,parentId:data.parentId,requestId:data.requestId});if(result.ok){const root=form.closest('.jc55');if(root&&data.camp){cageFeedback={rootId:root.dataset.cageId,camp:data.camp};cageRouteState({mode:'comments'});}}}
   if(type==='comment-edit'){result=await content.editComment(form.dataset.domain,form.dataset.postId,form.dataset.commentId,data.text);if(result.ok)await render({preserveScroll:true});}
-  if(type==='comment-delete'){result=await content.deleteComment(form.dataset.domain,form.dataset.postId,form.dataset.commentId);if(result.ok)await render({preserveScroll:true});}
+  if(type==='comment-delete'){result=await content.deleteComment(form.dataset.domain,form.dataset.postId,form.dataset.commentId);if(result.ok){rememberSubmissionFeedback(result,{submittingIdentity,currentIdentity:()=>activeSessionIdentity});await render({preserveScroll:true});}}
 
   if(type==='poll-vote'){result=await content.vote(form.dataset.voteScope,String(data.option||''));}
   if(type==='politician-request')result=await content.createPoliticianRequest(data);
@@ -397,7 +404,10 @@ document.addEventListener('submit',async event=>{
   if(type==='partner')result=await content.createPartnerApplication(data);
   if(type==='migration'){result=await auth.migrationRun(String(data.secret||''));}
   if(type==='politician-migration'){result=await auth.politicianMigrationRun(String(data.secret||''));}
-  const state=form.querySelector('[data-form-state]'); if(state)state.textContent=result?.ok?(result.message||'처리되었습니다.'):(formErrors[result?.error]||result?.error||'처리하지 못했습니다.');
+  if(result?.ok&&type==='board'&&data.cageParentId){if(activitySubmission)settleActivityRequest(form,{outcome:'success'});await cageOpinionCompletion({result,data,onCageFeedback:value=>{cageFeedback=value;},onRouteState:cageRouteState,onActivityFeedback:value=>{if(!activityUser||activeSessionIdentity.startsWith(activityUser+':'))rememberActivityFeedback(value,{identity:activeSessionIdentity});},onRender:()=>render({preserveScroll:true})});return;}
+  if(activitySubmission){if(result?.ok){settleActivityRequest(form,{outcome:'success'});if(!activityUser||activeSessionIdentity.startsWith(activityUser+':'))rememberActivityFeedback(result,{identity:activeSessionIdentity});}else settleActivityRequest(form,{outcome:'rejected'});}
+  const state=form.querySelector('[data-form-state]'); if(state)state.textContent=result?.ok?(result.message||'처리되었습니다.'):result?.error==='ACTIVITY_RATE_LIMIT'?`작성 간격을 지켜 주세요. ${Number(result.retryAfterSeconds||1)}초 후 다시 시도할 수 있습니다.`:(formErrors[result?.error]||result?.error||'처리하지 못했습니다.');
+  if(result?.ok&&type==='comment'){await render({preserveScroll:true});return;}
   if(result?.ok)dialog?.close();
   if(result?.status===401&&type!=='migration'&&type!=='login'){navigation.navigate('/login');return;}
   if(result?.ok&&['login','join'].includes(type)){navigation.navigate(type==='login'?(groupLoginReturn(route())||cageLoginReturn(route())||'/mypage'):'/mypage');return;}
@@ -405,7 +415,7 @@ document.addEventListener('submit',async event=>{
   if(result?.ok&&['migration','politician-migration'].includes(type)){await render();return;}
   if(result?.ok&&['poll-vote','politician-request','politician-request-status','partner'].includes(type)){await render({preserveScroll:true});return;}
   if(result?.ok&&!['comment','inquiry-reply'].includes(type))form.reset();
-  }catch{const state=form.querySelector('[data-form-state]');if(state)state.textContent='요청을 완료하지 못했습니다. 입력 내용은 유지되니 다시 시도해 주세요.';}
+  }catch{if(activitySubmission)settleActivityRequest(form,{outcome:'unknown'});const state=form.querySelector('[data-form-state]');if(state)state.textContent='요청을 완료하지 못했습니다. 입력 내용은 유지되니 같은 요청으로 다시 시도해 주세요.';}
   finally{delete form.dataset.pending;submitButtons.forEach(button=>button.disabled=false);}
 });
 
@@ -498,9 +508,10 @@ async function refreshCachedMemberSummary(){
  for(const mount of document.querySelectorAll('[data-member-summary-mount]'))mount.innerHTML=renderMemberSummary(summary,wallet);
 }
 
-async function loadMemberPoints(panel){if(!panel)return;const id=panel.dataset.memberPointsPanel;const result=await content.memberPoints(id).catch(()=>({ok:false}));if(panel.isConnected)panel.innerHTML=views.renderAdminMemberPoints(result,id);}
+async function hydrateVisibleActivityHints(){const identity=activeSessionIdentity;return hydrateActivityHints(document,{getIdentity:()=>activeSessionIdentity,loadStatus:()=>identity==='guest'?content.points():content.myWallet()});}
+async function loadMemberPoints(panel,activityPage=1){if(!panel)return;const id=panel.dataset.memberPointsPanel;const result=await content.memberPoints(id).catch(()=>({ok:false}));if(panel.isConnected)panel.innerHTML=views.renderAdminMemberPoints(result,id,activityPage);}
 function askPointCharge(trigger){return new Promise(resolve=>{const dialog=communityDialog('<h2>포인트가 부족합니다</h2><p>보유 포인트가 부족해 케이지를 열 수 없습니다. 포인트 충전 페이지로 이동할까요?</p><div class="jc-editor-bottom"><button type="button" data-charge-no class="jc-subtle">아니오</button><button type="button" data-charge-yes class="jc-primary">예 · 충전하기</button></div>',trigger);dialog.querySelector('[data-charge-no]').onclick=()=>dialog.close('no');dialog.querySelector('[data-charge-yes]').onclick=()=>dialog.close('yes');dialog.addEventListener('close',()=>resolve(dialog.returnValue==='yes'),{once:true});});}
-function paintCageWriter(form){const cage=form.elements.writeMode?.value==='cage',settings=form.querySelector('[data-cage-write-settings]'),pin=form.querySelector('[data-normal-post-pin]');if(settings)settings.hidden=!cage;if(pin){pin.hidden=cage;pin.querySelectorAll('input').forEach(x=>x.disabled=cage);}const button=form.querySelector('button[type=submit]');if(button)button.textContent=cage?'포인트 사용 · 케이지 열기':'게시글 등록';}
+function paintCageWriter(form){const cage=form.elements.writeMode?.value==='cage',settings=form.querySelector('[data-cage-write-settings]'),pin=form.querySelector('[data-normal-post-pin]'),hint=form.querySelector('[data-activity-hint]');if(settings)settings.hidden=!cage;if(hint)hint.hidden=cage;if(pin){pin.hidden=cage;pin.querySelectorAll('input').forEach(x=>x.disabled=cage);}const button=form.querySelector('button[type=submit]');if(button)button.textContent=cage?'포인트 사용 · 케이지 열기':'게시글 등록';}
 function restoreCageDraft(){for(const writer of document.querySelectorAll('[data-cage-writer]')){const form=writer.closest('form');try{const saved=JSON.parse(sessionStorage.getItem('jcs-cage-draft:'+writer.dataset.userId)||'null');if(saved){for(const name of ['title','body','fee','requestId'])if(saved[name])form.elements[name].value=saved[name];form.elements.writeMode.value='cage';}}catch{}paintCageWriter(form);}}
 document.addEventListener('change',event=>{const field=event.target,form=field.closest('form');if(field.name==='writeMode'&&form?.querySelector('[data-cage-writer]'))paintCageWriter(form);if(field.matches('[data-admin-charge-amount]')){const amount=Number(field.value),first=form.dataset.firstCharge==='true',bonus=first?20:amount>=1000000?20:amount>=500000?15:amount>=100000?10:0;form.querySelector('[data-admin-charge-preview]').textContent='지급 예정 '+(amount*(100+bonus)/100).toLocaleString('ko-KR')+' P · 보너스 '+bonus+'%';}});
 document.addEventListener('click',event=>{const retry=event.target.closest('[data-member-points-retry]');if(retry)void loadMemberPoints(retry.closest('[data-member-points-panel]'));if(event.target.closest('[data-member-summary-retry]'))void refreshCachedMemberSummary();});

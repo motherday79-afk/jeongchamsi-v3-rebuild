@@ -1,4 +1,4 @@
-import { cageComposeRoute, isCageClosed } from '../core/cage-entry.js?v=0.0.31.165';
+import { cageComposeRoute, isCageClosed } from '../core/cage-entry.js?v=0.0.31.178';
 import { renderCageBanner } from '../ui/home-cage-banner.js?v=0.0.31.167';
 import { GENERATION_AGES, participationDisplay, demoLabel } from '../core/participation-model.js?v=0.0.31.79';
 import { SERVICE_CATALOG, moduleActionIconSvg, serviceIconSvg, serviceNavIconSvg } from '../ui/service-icons.js?v=0.0.31.171';
