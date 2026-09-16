@@ -30,6 +30,7 @@ function storage(){
   if(op==='SET'){values.set(key,rest[0]);return 'OK';}
   if(op==='DEL'){let count=0;for(const k of [key,...rest])count+=Number(values.delete(k));return count;}
   if(op==='SCAN'){const pattern=args[args.indexOf('MATCH')+1],prefix=pattern.replace(/\*$/,'');return ['0',[...values.keys()].filter(k=>k.startsWith(prefix))];}
+  if(op==='EVAL'){const n=Number(args[2]),keys=args.slice(3,3+n),before=args.slice(3+n,3+n*2),after=args.slice(3+n*2);if(keys.some((k,i)=>(values.get(k)||'')!==before[i]))return 0;keys.forEach((k,i)=>values.set(k,after[i]));return 1;}
   throw Error('Unexpected storage command: '+op);
  };
  return {values,calls,command};

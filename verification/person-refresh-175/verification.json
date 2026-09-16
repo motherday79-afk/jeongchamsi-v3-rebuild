@@ -1,0 +1,20 @@
+{
+  "release": "JCS_0_0_31_175",
+  "baseline": "JCS_0_0_31_174",
+  "tests": {
+    "passed": 392,
+    "failed": 0
+  },
+  "operating_database_mutated": false,
+  "deployed": false,
+  "real_provider_calls": false,
+  "reviews": {
+    "backend": "Resolved: zero-match validation; scoped known sums; coherent public reads; member billing ownership; publication lifecycle CAS; carry newest targets including failed whole-collection targets.",
+    "ui": "Resolved: terminal failure recovery; recovery after quote errors with retained displayed fee; field lock during save."
+  },
+  "limitations": [
+    "Live regional data and resulting actual rank require deployment and an individual collection.",
+    "Regional RSS filtering cannot perfectly disambiguate a famous namesake visiting the region.",
+    "Live browser visual inspection unavailable in this environment."
+  ]
+}

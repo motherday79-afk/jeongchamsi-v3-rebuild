@@ -323,6 +323,9 @@ export async function dispatchAdminIntelligence(route,method,service,input={}){
     'admin/intelligence/youtube/discovery/step':{method:'POST',run:()=>service.runYouTubeDiscoveryStep()},
     'admin/intelligence/youtube/channel':{method:'PATCH',run:()=>service.saveYouTubeChannel(input)},
     'admin/intelligence/youtube/channel/rediscover':{method:'POST',run:()=>service.rediscoverYouTubeChannel(input)},
+    'admin/intelligence/person/status':{method:'GET',run:()=>service.personRefreshStatus(input)},
+    'admin/intelligence/collection-profile':{method:'PATCH',run:()=>service.saveCollectionProfile(input)},
+    'admin/intelligence/refresh-policy':{method:'PATCH',run:()=>service.saveRefreshPolicy(input)},
     'admin/intelligence/person/refresh':{method:'POST',run:()=>service.refreshPerson(input)},
     'admin/intelligence/person/approve':{method:'POST',run:()=>service.approvePersonRefresh(input)},
     'admin/intelligence/person/publish':{method:'POST',run:()=>service.publishPersonRefresh(input)},
@@ -337,7 +340,7 @@ export async function dispatchAdminIntelligence(route,method,service,input={}){
   try{return {status:200,body:{ok:true,...await action.run()}};}
   catch(error){
     const code=String(error?.code||error?.message||'INTELLIGENCE_OPERATION_FAILED');
-    const status=['COLLECTION_NOT_READY','COLLECTION_VALIDATION_REQUIRED','DRAFT_APPROVAL_REQUIRED','NAVER_CREDENTIALS_MISSING','YOUTUBE_CREDENTIALS_MISSING','YOUTUBE_SEARCH_QUOTA_REACHED','PERSON_REFRESH_APPROVAL_REQUIRED','PERSON_REFRESH_BASE_CHANGED'].includes(code)?409:['RANKING_WEIGHTS_INVALID','DRAFT_NOT_FOUND','DRAFT_NOT_EDITABLE','DRAFT_VALIDATION_FAILED','YOUTUBE_CHANNEL_REFERENCE_INVALID','YOUTUBE_DISCOVERY_NOT_STARTED','PERSON_REFRESH_NOT_READY'].includes(code)?400:['POLITICIAN_PROFILE_MISSING','YOUTUBE_CHANNEL_NOT_FOUND'].includes(code)?404:500;
+    const status=['PERSON_REFRESH_MEMBER_OWNED','PERSON_REFRESH_BUSY','PUBLICATION_BUSY','PUBLIC_SNAPSHOT_REQUIRED','PERSON_SOURCE_INCOMPLETE','PERSON_REFRESH_CHANGED','PERSON_PROFILE_CHANGED','PERSON_PUBLICATION_CHANGED_RETRY','COLLECTION_NOT_READY','COLLECTION_VALIDATION_REQUIRED','DRAFT_APPROVAL_REQUIRED','NAVER_CREDENTIALS_MISSING','YOUTUBE_CREDENTIALS_MISSING','YOUTUBE_SEARCH_QUOTA_REACHED','PERSON_REFRESH_APPROVAL_REQUIRED','PERSON_REFRESH_BASE_CHANGED'].includes(code)?409:['REFRESH_POLICY_INVALID','COLLECTION_PROFILE_INVALID','RANKING_WEIGHTS_INVALID','DRAFT_NOT_FOUND','DRAFT_NOT_EDITABLE','DRAFT_VALIDATION_FAILED','YOUTUBE_CHANNEL_REFERENCE_INVALID','YOUTUBE_DISCOVERY_NOT_STARTED','PERSON_REFRESH_NOT_READY'].includes(code)?400:['POLITICIAN_PROFILE_MISSING','YOUTUBE_CHANNEL_NOT_FOUND'].includes(code)?404:500;
     if(status===500)console.error('[admin-intelligence]',{route,code,message:String(error?.message||''),cause:String(error?.cause?.code||error?.cause?.message||'')});
     return {status,body:{ok:false,error:code,...(status===500?{stage:error.stage|| (route.includes('/publish/')?'게시 처리':''),diagnostic:error.diagnostic||''}:{})}};
   }
@@ -367,7 +370,7 @@ async function handleAdmin(req,res,route,command){
     }catch(error){return json(res,400,{ok:false,error:error.message||'PARTICIPATION_SAVE_FAILED'});}
   }
   if(route.startsWith('admin/intelligence/')){
-    const input={...bodyOf(req),reviewedBy:user.id,editorId:user.id},result=await dispatchAdminIntelligence(route,req.method,createIntelligenceService({command}),input),auditedActions={'admin/intelligence/ranking-weights':'RANKING_WEIGHTS_UPDATE','admin/intelligence/collect/start':'COLLECTION_START','admin/intelligence/collect/retry-failures':'COLLECTION_RETRY','admin/intelligence/approve':'COLLECTION_APPROVE','admin/intelligence/publish/start':'PUBLICATION_START','admin/intelligence/youtube/discovery/start':'YOUTUBE_DISCOVERY_START','admin/intelligence/youtube/channel':'YOUTUBE_CHANNEL_UPDATE','admin/intelligence/youtube/channel/rediscover':'YOUTUBE_CHANNEL_REDISCOVER','admin/intelligence/person/refresh':'PERSON_REFRESH','admin/intelligence/person/approve':'PERSON_REFRESH_APPROVE','admin/intelligence/person/publish':'PERSON_REFRESH_PUBLISH'},action=auditedActions[route];
+    const input={...(req.method==='GET'?{personId:new URL(req.url,'https://local.test').searchParams.get('personId')}:bodyOf(req)),reviewedBy:user.id,editorId:user.id},result=await dispatchAdminIntelligence(route,req.method,createIntelligenceService({command}),input),auditedActions={'admin/intelligence/ranking-weights':'RANKING_WEIGHTS_UPDATE','admin/intelligence/collect/start':'COLLECTION_START','admin/intelligence/collect/retry-failures':'COLLECTION_RETRY','admin/intelligence/approve':'COLLECTION_APPROVE','admin/intelligence/publish/start':'PUBLICATION_START','admin/intelligence/youtube/discovery/start':'YOUTUBE_DISCOVERY_START','admin/intelligence/youtube/channel':'YOUTUBE_CHANNEL_UPDATE','admin/intelligence/youtube/channel/rediscover':'YOUTUBE_CHANNEL_REDISCOVER','admin/intelligence/person/refresh':'PERSON_REFRESH','admin/intelligence/person/approve':'PERSON_REFRESH_APPROVE','admin/intelligence/person/publish':'PERSON_REFRESH_PUBLISH'},action=auditedActions[route];
     if(result.status<300&&action)try{await adminPoliticians.log(user.id,action,input.personId||'',{method:req.method,...(action==='RANKING_WEIGHTS_UPDATE'?{news:input.news,search:input.search}:{} )});}catch(error){console.error('[admin-audit]',{action,code:String(error?.code||error?.message||'AUDIT_WRITE_FAILED')});}
     return json(res,result.status,result.body);
   }
@@ -484,6 +487,15 @@ export default async function handler(req,res){
       if(req.method==='POST'){const result=await service.createPartnerApplication(user,bodyOf(req));return json(res,result.ok?201:400,result);}
       if(req.method==='GET'){const result=await service.listPartnerApplications(user);return json(res,result.ok?200:403,result);}
       return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
+    }
+    if(route==='person-refresh'){
+      const user=await currentUser(req,command);if(!user||user.status==='suspended')return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});
+      const service=createIntelligenceService({command});
+      try{
+        if(req.method==='GET')return json(res,200,url.searchParams.has('requestId')?await service.memberRefreshStatus(user,url.searchParams.get('requestId')):await service.personRefreshQuote(user,url.searchParams.get('personId')));
+        if(req.method!=='POST')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
+        const body=bodyOf(req);return json(res,200,await service.requestMemberRefresh(user,{personId:body.personId,requestId:body.requestId,quotedFee:body.quotedFee}));
+      }catch(error){return json(res,400,{ok:false,error:String(error.code||error.message||'PERSON_REFRESH_FAILED')});}
     }
     if(route==='points'){
       if(req.method==='GET'&&url.searchParams.get('clock')==='1')return json(res,200,{ok:true,serverNow:Date.now()});
