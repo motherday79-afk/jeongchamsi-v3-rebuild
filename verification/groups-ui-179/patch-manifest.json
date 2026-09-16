@@ -1,0 +1,32 @@
+{
+  "release": "JCS_0_0_31_179",
+  "baseline": "JCS_0_0_31_178",
+  "changed": [
+    "css/groups-171.css",
+    "index.html",
+    "src/app.js",
+    "src/core/group-model.js",
+    "src/core/group-routing.js",
+    "src/core/release.js",
+    "src/ui/group-interactions.js",
+    "src/views/group-pages.js",
+    "src/views/search-discovery.js",
+    "src/views/search-page.js",
+    "src/views/stage1.js",
+    "tests/group-model.test.js",
+    "tests/group-pages.test.js"
+  ],
+  "added": [
+    "docs/releases/JCS_0_0_31_179.md",
+    "tests/groups-ui-179.test.js",
+    "verification/groups-ui-179/backend-test.txt",
+    "verification/groups-ui-179/full-test.txt",
+    "verification/groups-ui-179/model-green.txt",
+    "verification/groups-ui-179/model-red.txt",
+    "verification/groups-ui-179/patch-manifest.json",
+    "verification/groups-ui-179/review.md",
+    "verification/groups-ui-179/ui-report.md",
+    "verification/groups-ui-179/verification.json"
+  ],
+  "removed": []
+}

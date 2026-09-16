@@ -165,7 +165,7 @@ test('My Groups renders versioned leave controls outside the routed card',()=>{
 test('invite token survives detail tabs, gallery pages, and guest login return',()=>{
  const item=detail({canRead:true},{posts:[{id:'p',kind:'gallery',title:'사진',authorName:'나',images:Array.from({length:25},(_,i)=>({id:String(i),url:`/api/v3/groups?id=g&imageId=${i}`})),comments:[]}]});
  const html=renderGroupDetail(item,{},'gallery',1,'invite token');assert.match(html,/tab=posts&amp;invite=invite\+token/);assert.match(html,/galleryPage=2&amp;invite=invite\+token/);assert.match(html,/return=%2Fgroups%2Fg%25201%3Finvite%3Dinvite%2520token/);
- const writable=renderGroupDetail({...item,viewer:{...item.viewer,userId:'u',membershipStatus:'active',canWrite:true}}, {authenticated:true,user:{id:'u'}},'gallery',1,'invite token');assert.match(writable,/name="kind">[\s\S]*value="gallery" selected/);assert.match(writable,/accept="image\/jpeg,image\/png,image\/webp"/);
+ const writable=renderGroupDetail({...item,viewer:{...item.viewer,userId:'u',membershipStatus:'active',canWrite:true}}, {authenticated:true,user:{id:'u'}},'gallery',1,'invite token');assert.match(writable,/name="kind" value="gallery"/);assert.doesNotMatch(writable,/<select name="kind">/);assert.match(writable,/accept="image\/jpeg,image\/png,image\/webp"/);
 });
 
 test('conflict blocks retry until the latest saved data is acknowledged',async()=>{

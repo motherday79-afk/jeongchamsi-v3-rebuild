@@ -1,0 +1,10 @@
+{
+  "release": "JCS_0_0_31_179",
+  "tests": 473,
+  "pass": 473,
+  "fail": 0,
+  "skipped": 0,
+  "live_deployment": false,
+  "live_data_mutation": false,
+  "browser_visual_review": false
+}

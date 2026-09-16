@@ -47,3 +47,18 @@ test('rename reapproval limits pending detail to owner and site administrator',(
  assert.throws(()=>model.groupDetail(g,alice),/GROUP_NOT_FOUND/);
  assert.equal(model.groupDetail(g,owner).status,'pending');assert.equal(model.groupDetail(g,admin).status,'pending');
 });
+
+test('event optional end time is validated, projected, preserved for old clients and can be cleared',()=>{
+ let g=mutate(joined(),owner,'event',{title:'일정',startsAt:'2026-10-01T10:00:00+09:00',endsAt:'2026-10-01T12:00:00+09:00'});
+ const id=g.events[0].id;
+ assert.equal(model.groupDetail(g,owner).events[0].endsAt,'2026-10-01T03:00:00.000Z');
+ const edit={eventId:id,title:'수정',startsAt:'2026-10-01T11:00:00+09:00'};
+ g=mutate(g,owner,'event',edit);
+ assert.equal(g.events[0].endsAt,'2026-10-01T03:00:00.000Z');
+ assert.throws(()=>mutate(g,owner,'event',{...edit,endsAt:'2026-10-01T10:00:00+09:00'}),/GROUP_INPUT_INVALID/);
+ assert.throws(()=>mutate(g,owner,'event',{...edit,endsAt:'invalid'}),/GROUP_INPUT_INVALID/);
+ assert.throws(()=>mutate(g,alice,'event',{...edit,endsAt:''}),/GROUP_FORBIDDEN/);
+ g=mutate(g,owner,'event',{...edit,endsAt:''});
+ assert.equal(model.groupDetail(g,owner).events[0].endsAt,'');
+ assert.equal(model.groupDetail(g,bob).events.length,0);
+});

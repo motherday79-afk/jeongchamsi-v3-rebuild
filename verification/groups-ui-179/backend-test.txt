@@ -1,0 +1,43 @@
+✔ group HTTP passes authenticated identity on reads and rejects cross-origin writes (1.438915ms)
+✔ group HTTP rejects malformed JSON and unsupported methods and hides storage errors (0.538915ms)
+✔ group HTTP maps conflict and auth errors and ignores forged user in JSON (0.558544ms)
+✔ image GET returns bytes separately from JSON and performs same user-based service read (1.513868ms)
+✔ creation enters pending review without global role elevation (1.796054ms)
+✔ only site admin approves group creation and activates the owner (0.840731ms)
+✔ membership requires consent and explicit approval before reading/writing (0.570592ms)
+✔ members-only projection omits content, events, member identifiers and secrets (1.086051ms)
+✔ public reading does not permit writing or disclose membership lists (0.384321ms)
+✔ membership and moderator powers are local to one group (0.413835ms)
+✔ group owner cannot rewrite member opinions, but can hide with reason and audit (0.643903ms)
+✔ ordinary members cannot publish notices, appoint moderators or remove owners (0.419584ms)
+✔ moderators cannot edit membership of owners or peer moderators (1.477051ms)
+✔ leaving immediately revokes private reads, posting and RSVP counts (0.638956ms)
+✔ owner must transfer ownership before leaving (0.321716ms)
+✔ invite-only group is invisible without membership or current invitation (0.491943ms)
+✔ sample data is read-only even for a site administrator (0.248596ms)
+✔ renaming an approved group requires admin review again (0.198581ms)
+✔ foreign or unregistered media cannot be attached to a post (0.274064ms)
+✔ moderation deletions clear body and images while retaining reason in audit (0.372543ms)
+✔ closed groups remain readable to members but cannot accept new activity (0.396609ms)
+✔ closing cannot publish an unapproved application and closed membership is immutable (0.252682ms)
+✔ hidden and deleted gallery media follow post visibility, including its original author (0.39071ms)
+✔ rename reapproval limits pending detail to owner and site administrator (0.286193ms)
+✔ event optional end time is validated, projected, preserved for old clients and can be cleared (0.706497ms)
+✔ approval and membership indices exclude examples and never write global users (5.106456ms)
+✔ parallel updates have one winner and preserve the committed post (4.283152ms)
+✔ private projection and invitation discovery do not expose member content (1.910626ms)
+✔ example records stay complete and immutable with no Redis mutations (0.837726ms)
+✔ private image ACL is checked again after membership removal (2.361098ms)
+✔ image errors deny upload before storage and clean up only uncommitted new blobs (0.717203ms)
+✔ invalid envelopes and reserved IDs cannot smuggle group roles or example flags (0.4034ms)
+✔ members can cancel participation from MyGroups while reapproval blocks detail (0.84708ms)
+✔ closed groups do not retain an unread notification that members cannot dismiss (1.48278ms)
+✔ leave cannot reveal existence or version of a hidden group to an outsider (0.78089ms)
+ℹ tests 35
+ℹ suites 0
+ℹ pass 35
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 234.37854

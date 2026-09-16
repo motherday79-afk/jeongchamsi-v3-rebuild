@@ -1,6 +1,6 @@
 import {KIDS_PRODUCTS,cheerArtDefs,cheerProductImage} from '../layout/home-layout.js?v=0.0.31.178';
 import {renderCampaignItemCard} from './campaign-pages.js?v=0.0.31.160';
-import {renderGroupCover} from './group-pages.js?v=0.0.31.178';
+import {renderGroupCover} from './group-pages.js?v=0.0.31.179';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 let discoveryRequestSequence=0;

@@ -39,7 +39,7 @@ export function groupDetail(g,user,{invite=''}={}){
  if(viewer.canRead){
   result.posts=(g.posts||[]).filter(p=>!p.deleted&&(!p.hidden||viewer.canManage)).map(p=>({id:p.id,title:p.title,body:p.body,kind:p.kind,authorId:p.authorId,authorName:p.authorName,createdAt:p.createdAt,updatedAt:p.updatedAt,hidden:!!p.hidden,images:(p.images||[]).map(a=>g.isExample?a:{id:a.id,url:mediaUrl(g,a.id)}),comments:(p.comments||[]).filter(c=>!c.deleted).map(c=>({id:c.id,body:c.body,authorId:c.authorId,authorName:c.authorName,createdAt:c.createdAt})),canEdit:viewer.canWrite&&(p.authorId===user?.id||viewer.canManage&&p.kind==='notice'),canDelete:viewer.canWrite&&(p.authorId===user?.id||viewer.canManage),canModerate:viewer.canManage&&viewer.canWrite}));
   const activeIds=new Set((g.members||[]).filter(active).map(m=>m.userId));
-  result.events=(g.events||[]).filter(e=>!e.deleted).map(e=>{const rsvps=(e.rsvps||[]).filter(r=>activeIds.has(r.userId));return {id:e.id,title:e.title,body:e.body,startsAt:e.startsAt,place:e.place,authorId:e.authorId,authorName:e.authorName,createdAt:e.createdAt,yesCount:rsvps.filter(r=>r.response==='yes').length,noCount:rsvps.filter(r=>r.response==='no').length,myResponse:rsvps.find(r=>r.userId===user?.id)?.response||'',canEdit:viewer.canManage&&viewer.canWrite,canDelete:viewer.canManage&&viewer.canWrite};});
+  result.events=(g.events||[]).filter(e=>!e.deleted).map(e=>{const rsvps=(e.rsvps||[]).filter(r=>activeIds.has(r.userId));return {id:e.id,title:e.title,body:e.body,startsAt:e.startsAt,endsAt:e.endsAt||'',place:e.place,authorId:e.authorId,authorName:e.authorName,createdAt:e.createdAt,yesCount:rsvps.filter(r=>r.response==='yes').length,noCount:rsvps.filter(r=>r.response==='no').length,myResponse:rsvps.find(r=>r.userId===user?.id)?.response||'',canEdit:viewer.canManage&&viewer.canWrite,canDelete:viewer.canManage&&viewer.canWrite};});
  }
  if(viewer.canManage){
   result.members=(g.members||[]).map(({userId,nickname,status,role,requestedAt,joinedAt})=>({userId,nickname,status,role,requestedAt,joinedAt}));
@@ -113,7 +113,10 @@ export function mutateGroup(previous,user,{operation,input={},now,idFor,inviteTo
   case 'comment-delete':{requireActive();const post=findPost(),comment=post.comments.find(c=>c.id===input.commentId&&!c.deleted);if(!comment)fail('GROUP_NOT_FOUND');if(comment.authorId!==user.id&&!manager)fail('GROUP_FORBIDDEN');const why=reason(comment.authorId!==user.id);comment.body='';comment.deleted=true;audit('comment-delete',why);break;}
   case 'event':{
    requireActive();requireManager();const old=input.eventId?g.events.find(e=>e.id===input.eventId&&!e.deleted):null;if(input.eventId&&!old)fail('GROUP_NOT_FOUND');
-   const changes={title:text(input.title,120,true),body:text(input.body??'',4000),startsAt:date(input.startsAt),place:text(input.place??'',160),updatedAt:now};
+   const startsAt=date(input.startsAt),rawEnd=input.endsAt===undefined?(old?.endsAt||''):input.endsAt;
+   const endsAt=rawEnd===''?'':date(rawEnd);
+   if((rawEnd!==''&&typeof rawEnd!=='string')||(endsAt&&endsAt<startsAt))fail('GROUP_INPUT_INVALID');
+   const changes={title:text(input.title,120,true),body:text(input.body??'',4000),startsAt,endsAt,place:text(input.place??'',160),updatedAt:now};
    if(old)Object.assign(old,changes);else g.events.push({...changes,id:idFor(),authorId:user.id,authorName:nameOf(user),createdAt:now,rsvps:[]});audit(old?'event-edit':'event-create');activity=true;break;
   }
   case 'event-delete':{requireActive();requireManager();const event=g.events.find(e=>e.id===input.eventId&&!e.deleted);if(!event)fail('GROUP_NOT_FOUND');event.deleted=true;audit('event-delete',reason(true));break;}

@@ -1,0 +1,54 @@
+✔ creation enters pending review without global role elevation (1.538892ms)
+✔ only site admin approves group creation and activates the owner (0.902248ms)
+✔ membership requires consent and explicit approval before reading/writing (0.464179ms)
+✔ members-only projection omits content, events, member identifiers and secrets (1.26969ms)
+✔ public reading does not permit writing or disclose membership lists (0.326389ms)
+✔ membership and moderator powers are local to one group (0.321812ms)
+✔ group owner cannot rewrite member opinions, but can hide with reason and audit (0.605946ms)
+✔ ordinary members cannot publish notices, appoint moderators or remove owners (0.387722ms)
+✔ moderators cannot edit membership of owners or peer moderators (1.083536ms)
+✔ leaving immediately revokes private reads, posting and RSVP counts (0.56283ms)
+✔ owner must transfer ownership before leaving (0.334811ms)
+✔ invite-only group is invisible without membership or current invitation (0.481035ms)
+✔ sample data is read-only even for a site administrator (0.225645ms)
+✔ renaming an approved group requires admin review again (0.196511ms)
+✔ foreign or unregistered media cannot be attached to a post (0.315432ms)
+✔ moderation deletions clear body and images while retaining reason in audit (0.315592ms)
+✔ closed groups remain readable to members but cannot accept new activity (0.263994ms)
+✔ closing cannot publish an unapproved application and closed membership is immutable (0.270774ms)
+✔ hidden and deleted gallery media follow post visibility, including its original author (0.415825ms)
+✔ rename reapproval limits pending detail to owner and site administrator (0.34034ms)
+✖ event optional end time is validated, projected, preserved for old clients and can be cleared (1.002321ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 20
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 98.338436
+
+✖ failing tests:
+
+test at tests/group-model.test.js:51:1
+✖ event optional end time is validated, projected, preserved for old clients and can be cleared (1.002321ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - '2026-10-01T03:00:00.000Z'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/6b4498d07d47/jcs-172/tests/group-model.test.js:54:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: '2026-10-01T03:00:00.000Z',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
