@@ -1,0 +1,27 @@
+JCS 0.0.31.183 관리자 단순화 패치
+
+기준 버전: JCS 0.0.31.182
+
+적용 방법
+1. 현재 GitHub 프로젝트가 0.0.31.182 기준인지 확인합니다.
+2. 이 ZIP의 폴더 구조를 그대로 유지합니다.
+3. ZIP 안의 파일만 기존 저장소 같은 경로에 덮어씁니다.
+4. 기존 저장소의 다른 파일은 삭제하지 않습니다.
+5. 업로드 후 Vercel 배포를 진행합니다.
+
+주의
+- 이 패치는 풀 교체용이 아닙니다.
+- 31.182 전체 파일을 다시 올릴 필요가 없습니다.
+- 아래 파일만 변경됩니다.
+
+index.html
+src/app.js
+src/layout/home-layout.js
+src/core/ai-panel-routing.js
+src/ui/ai-panel-interactions.js
+src/views/ai-panel-pages.js
+src/views/stage1.js
+lib/human-poll-sources.js
+css/ai-panel-181.css
+README_0_0_31_183_KO.md
+docs/releases/JCS_0_0_31_183.md

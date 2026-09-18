@@ -1,20 +1,31 @@
 const maxBytes=4*1024*1024;
 const parse=(raw,array)=>{const value=JSON.parse(raw|| (array?'[]':'{}'));if(array?!Array.isArray(value):!value||typeof value!=='object'||Array.isArray(value))throw Error('JSON 형식을 확인해 주세요.');return value;};
 const number=v=>v==null||String(v).trim()===''?null:Number(v);
+const isoWeek=value=>{const d=new Date(`${value}T12:00:00Z`);if(!Number.isFinite(d.getTime()))return '';const day=d.getUTCDay()||7;d.setUTCDate(d.getUTCDate()+4-day);const year=d.getUTCFullYear(),first=new Date(Date.UTC(year,0,1)),week=Math.ceil((((d-first)/86400000)+1)/7);return `${year}-W${String(week).padStart(2,'0')}`;};
 export function aiPanelPayload(operation,data){
  const input=Object.fromEntries(data);delete input.profilesJson;delete input.responsesJson;delete input.sourcesJson;delete input.subgroupsJson;delete input.provenanceJson;
  if(operation==='panel-create')return {name:input.name,isSample:data.has('isSample'),population:{sourceUrl:input.sourceUrl,referenceDate:input.referenceDate,notes:input.notes},profiles:parse(data.get('profilesJson'),true)};
- if(operation==='create')return {...input,isSample:data.has('isSample'),modes:data.getAll('modes')};
- if(operation==='environment')return {...input,sources:parse(data.get('sourcesJson'),true)};
- if(operation==='responses')return {...input,executedAt:new Date(input.executedAt).toISOString(),responses:parse(data.get('responsesJson'),true)};
- if(operation==='human'){const groups=parse(data.get('subgroupsJson'),false),overall={};for(const key of ['positive','negative','undecided','n']){overall[key]=number(input[key]);delete input[key];}for(const key of ['sampleSize','responseRate','marginOfError'])input[key]=number(input[key]);return {poll:{...input,...(data.get('provenanceJson')?{provenance:parse(data.get('provenanceJson'),false)}:{}),comparable:data.has('comparable'),results:{gender:groups.gender||{},age:groups.age||{},region:groups.region||{},overall}}};}
+ if(operation==='create'){if(!String(input.week||'').trim()&&input.basisDate)input.week=isoWeek(input.basisDate);return {...input,modes:data.getAll('modes')};}
+ if(operation==='environment'){
+  const raw=String(data.get('sourcesJson')||'').trim();let sources=raw?parse(raw,true):[];
+  if(!sources.length)for(let i=1;i<=4;i++){const title=String(data.get(`source${i}Title`)||'').trim(),url=String(data.get(`source${i}Url`)||'').trim();if(!title&&!url)continue;if(!title||!url)throw Error('출처 제목과 URL을 함께 입력해 주세요.');sources.push({title,url,publishedAt:null,containsPollNumbers:data.has(`source${i}Poll`)});}
+  for(let i=1;i<=4;i++){delete input[`source${i}Title`];delete input[`source${i}Url`];delete input[`source${i}Poll`];}
+  return {...input,sources};
+ }
+ if(operation==='responses')return {...input,executedAt:input.executedAt?new Date(input.executedAt).toISOString():new Date().toISOString(),responses:parse(data.get('responsesJson'),true)};
+ if(operation==='human'){
+  const groups=parse(data.get('subgroupsJson'),false),overall={};for(const key of ['positive','negative','undecided','n']){overall[key]=number(input[key]);delete input[key];}
+  for(const key of ['sampleSize','responseRate','marginOfError'])input[key]=number(input[key]);if(!String(input.id||'').trim())input.id=`manual-${Date.now()}`;
+  return {poll:{...input,...(data.get('provenanceJson')?{provenance:parse(data.get('provenanceJson'),false)}:{}),comparable:data.has('comparable'),results:{gender:groups.gender||{},age:groups.age||{},region:groups.region||{},overall}}};
+ }
  return input;
 }
-const messages={HUMAN_POLL_BUSY:'다른 수집이 진행 중입니다. 잠시 후 다시 확인해 주세요.',HUMAN_POLL_FORBIDDEN:'관리자 로그인을 확인해 주세요.',HUMAN_POLL_ORIGIN_INVALID:'페이지를 새로고침한 뒤 다시 시도해 주세요.',HUMAN_POLL_UNAVAILABLE:'수집 상태를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.',AI_PANEL_CONFLICT:'다른 관리자가 자료를 변경했습니다. 입력 내용을 복사한 뒤 새로고침해 주세요.',AI_PANEL_FORBIDDEN:'관리자 로그인을 확인해 주세요.',AI_PANEL_LOCKED:'잠금된 AI 자료입니다. 새 회차를 만들어 주세요.',AI_PANEL_NETWORK_FAILED:'연결하지 못했습니다. 입력 내용은 유지됩니다.',AI_PANEL_INPUT_INVALID:'필수 항목과 JSON 입력값을 확인해 주세요.',AI_PANEL_RERUN_REQUIRED:'같은 주차의 재실행은 이전 회차와 재실행 사유가 필요합니다.'};
+const messages={HUMAN_POLL_BUSY:'다른 수집이 진행 중입니다. 잠시 후 다시 확인해 주세요.',HUMAN_POLL_FORBIDDEN:'관리자 로그인을 확인해 주세요.',HUMAN_POLL_ORIGIN_INVALID:'페이지를 새로고침한 뒤 다시 시도해 주세요.',HUMAN_POLL_UNAVAILABLE:'수집 상태를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.',AI_PANEL_CONFLICT:'다른 관리자가 자료를 변경했습니다. 새로고침 후 다시 시도해 주세요.',AI_PANEL_FORBIDDEN:'관리자 로그인을 확인해 주세요.',AI_PANEL_LOCKED:'이미 확정된 AI 자료입니다. 새 회차를 만들어 주세요.',AI_PANEL_NETWORK_FAILED:'연결하지 못했습니다. 입력 내용은 유지됩니다.',AI_PANEL_INPUT_INVALID:'필수 입력값 또는 파일 형식을 확인해 주세요.',AI_PANEL_RERUN_REQUIRED:'같은 주차의 재실행은 재실행 사유가 필요합니다.',AI_PANEL_ENVIRONMENT_REQUIRED:'먼저 AI 참고자료를 저장해 주세요.',AI_PANEL_RESPONSES_REQUIRED:'먼저 AI 응답파일을 등록해 주세요.',AI_PANEL_RESPONSES_INVALID:'AI 응답파일의 ID 수·중복·응답값을 확인해 주세요.',AI_PANEL_HUMAN_REQUIRED:'게시하려면 긍정·부정·유보가 모두 있는 HUMAN 자료를 비교 가능으로 저장해 주세요.',AI_PANEL_HUMAN_INVALID:'HUMAN 조사 숫자와 원문 URL을 확인해 주세요.',AI_PANEL_HUMAN_DUPLICATE:'이미 등록된 HUMAN 조사입니다.',AI_PANEL_REVIEW_REQUIRED:'먼저 결과 검수를 완료해 주세요.',AI_PANEL_PUBLISH_INVALID:'정식 1,000명 패널만 게시할 수 있습니다.',AI_PANEL_BLIND_POLL_LEAKAGE:'BLIND 모드에는 여론조사 수치가 포함된 자료를 넣을 수 없습니다.'};
 export function bindAiPanelInteractions(root,{client,onSaved=()=>{},navigate=()=>{}}={}){
  const states=new WeakMap();const state=form=>{if(!states.has(form))states.set(form,{busy:false,files:new Map()});return states.get(form);};
  const notice=(form,text)=>{const el=form.querySelector('[data-ai-form-state]');if(el)el.textContent=text;};
  root.addEventListener('submit',async event=>{
+  const finalize=event.target.closest('[data-ai-finalize]');if(finalize){event.preventDefault();const s=state(finalize);if(s.busy)return;const id=finalize.dataset.id;let version=Number(finalize.dataset.version)||0,status=finalize.dataset.status||'draft',result=null;const sample=finalize.dataset.sample==='1',button=finalize.querySelector('button');s.busy=true;if(button)button.disabled=true;notice(finalize,'결과를 확인하고 확정하고 있습니다…');try{const steps=[];if(status==='draft')steps.push(['review',{note:'관리자 간편 확정'}]);if(['draft','reviewed'].includes(status))steps.push(['lock',{}]);if(!sample&&['draft','reviewed','locked'].includes(status))steps.push(['publish',{}]);for(const [operation,input] of steps){result=await client.save({operation,id,version,input});if(!result?.ok){notice(finalize,messages[result?.error]||`처리하지 못했습니다. (${result?.error||'연결 오류'})`);return;}version=Number(result.item?.version)||version+1;status=result.item?.status||status;}notice(finalize,sample?'검수와 LOCK을 완료했습니다.':'결과를 확정하고 게시했습니다.');if(result)await onSaved(result,'finalize');}catch{notice(finalize,'확정 결과를 확인하지 못했습니다. 새로고침해 상태를 확인해 주세요.');}finally{s.busy=false;if(button)button.disabled=false;}return;}
   const search=event.target.closest('[data-ai-search]');if(search){event.preventDefault();navigate('/ai-panel?'+new URLSearchParams(new FormData(search)));return;}
   const form=event.target.closest('[data-ai-form]');if(!form)return;event.preventDefault();const s=state(form);if(s.busy)return;
   if([...s.files.values()].some(x=>x!=='ready')){notice(form,'파일 읽기가 끝났는지 확인하고, 실패한 파일은 다시 선택해 주세요.');return;}
