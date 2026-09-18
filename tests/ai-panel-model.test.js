@@ -5,6 +5,10 @@ export const profiles=(n=10)=>Array.from({length:n},(_,i)=>({id:`JCS-AI-${String
 const ctx={id:'p1',now:'2026-09-19T00:00:00.000Z',user:{id:'admin',role:'admin',status:'active'}};
 const panel=()=>createPanel({name:'샘플',isSample:true,population:{sourceUrl:'https://example.org',referenceDate:'2026-09-01'},profiles:profiles()},ctx);
 const bareRun=()=>createRun({week:'2026-W38',basisDate:'2026-09-19',question:'평가?',questionVersion:'1',modes:['EXPOSED']},{...ctx,panel:panel(),runNumber:1});
+test('imported HUMAN source summary provenance survives saving and cannot inject extra metadata',()=>{
+ const source={id:'gallup-1659',institution:'한국갤럽',sourceUrl:'https://www.gallup.co.kr/gallupdb/reportContent.asp?seqNo=1659',question:'대통령 직무수행 평가',comparable:false,topic:'presidential-approval',fetchedAt:ctx.now,provenance:{questionKind:'source-summary',parserVersion:'official-html-v1',contentHash:'a'.repeat(64),secret:'discard'},results:{overall:{positive:37,negative:56,undecided:7}}};
+ const saved=mutateRun(bareRun(),'human',{poll:source},ctx).humanPolls[0];assert.equal(saved.provenance.questionKind,'source-summary');assert.equal(saved.provenance.secret,undefined);assert.equal(saved.fetchedAt,ctx.now);assert.equal(saved.topic,'presidential-approval');
+});
 const run=()=>mutateRun(bareRun(),'environment',{mode:'EXPOSED',notes:'Entered context',sources:[]},ctx);
 export const poll=()=>({id:'poll1',institution:'기관',sourceUrl:'https://example.org/poll',question:'평가?',comparable:true,results:{overall:{positive:50,negative:40,undecided:10,n:null}}});
 test('panel requires complete unique stable IDs and explicit sample classification',()=>{
