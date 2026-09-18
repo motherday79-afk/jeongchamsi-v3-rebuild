@@ -1,3 +1,5 @@
+import {createAiPanelService} from '../lib/ai-panel-service.js';
+import {aiPanelRequest} from '../lib/ai-panel-http.js';
 import { createMediaSpreadService } from '../lib/media-spread-service.js';
 import { createGroupService } from '../lib/group-service.js';
 import { groupRequest } from '../lib/group-http.js';
@@ -450,6 +452,11 @@ export default async function handler(req,res){
   try{
     if(route.startsWith('migration/'))return handleMigration(req,res,route);
     const command=rebuildRedisCommand();
+    if(route==='ai-panel'){
+      const protectedRequest=req.method!=='GET'||url.searchParams.get('edit')==='1'||url.searchParams.get('view')==='manage';
+      const result=await aiPanelRequest(req,{service:createAiPanelService({command}),user:protectedRequest?await currentUser(req,command):null,url});
+      return json(res,result.status,result.data);
+    }
     if(route==='groups'){
       const result=await groupRequest(req,{service:createGroupService({command}),user:await currentUser(req,command),url});
       if(result.media){
