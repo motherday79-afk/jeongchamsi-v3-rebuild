@@ -1,3 +1,6 @@
+import {createAiPanelClient} from './core/ai-panel-client.js?v=0.0.31.181';
+import {loadAiPanelPage} from './core/ai-panel-routing.js?v=0.0.31.181';
+import {bindAiPanelInteractions} from './ui/ai-panel-interactions.js?v=0.0.31.181';
 import {bindPersonRefresh,loadMemberRefresh,watchAnalysisAccess} from './ui/person-refresh.js?v=0.0.31.177';
 import { bindRankingWeights, rankingWeightsReady, updateRunningRankingWeights } from './ui/ranking-weights.js?v=0.0.31.174';
 import { createGroupClient } from './core/group-client.js?v=0.0.31.172';
@@ -12,7 +15,7 @@ import { refreshFontScale } from './ui/font-scale.js?v=0.0.31.56';
 import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.178';
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.56';
 import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.171';
-import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.178';
+import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.181';
 import { focusCageCompose, setupHomeCompare, setupPoliticianAutocomplete, setupLayoutInteractions, setupPoliticianPhotoFallback, setupNowCarousel, setupCageCountdown, setupDesktopHomeViewport } from './ui/interactions.js?v=0.0.31.165';
 import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.177';
 import { createContentService, loadNavigationDashboard, loadPersonNavigation } from './core/content.js?v=0.0.31.178';
@@ -20,7 +23,7 @@ import { createPoliticianService } from './core/politicians.js?v=0.0.31.147';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith, isTransientAnalysisRoute } from './core/navigation.js?v=0.0.31.177';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.148';
-import * as views from './views/stage1.js?v=0.0.31.180';
+import * as views from './views/stage1.js?v=0.0.31.181';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.177';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.177';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.178';
@@ -39,6 +42,7 @@ const content=createContentService();
 const politicians=createPoliticianService();
 const campaigns=createCampaignClient();
 const groups=createGroupClient();
+const aiPanel=createAiPanelClient();
 
 async function updatePoliticianPhotoStorageStatus(){
   const status=document.querySelector('[data-photo-storage-status]');
@@ -202,7 +206,7 @@ async function render({preserveScroll=false,refreshHome=false,freshSession=false
   if(p[0]==='mypage'&&wantsWallet)dashboard.pointResult=await walletPromise;
   let body='';
   if(!p.length){
-    const [memberCount,columns,community,itsmePosts,newsPosts,polls,generation,nationalEvaluation,academy,rankResult,homeBanner,trendingResult,keywordResult]=await Promise.all([
+    const [memberCount,columns,community,itsmePosts,newsPosts,polls,generation,nationalEvaluation,academy,rankResult,homeBanner,trendingResult,keywordResult,aiPanelResult]=await Promise.all([
       auth.memberCount().catch(()=>0),
       content.list('columns').catch(()=>[]),
       content.list('community').catch(()=>[]),
@@ -213,14 +217,15 @@ async function render({preserveScroll=false,refreshHome=false,freshSession=false
       content.readDomain('nationalEvaluation').catch(()=>({})),
       content.readDomain('academy').catch(()=>({items:[],slots:[]})),
       politicians.rankings().catch(()=>({ok:false,items:[]})),
-      content.homeBanner().catch(()=>null),politicians.trending().catch(()=>({items:[]})),politicians.keywords().catch(()=>({items:[]}))
+      content.homeBanner().catch(()=>null),politicians.trending().catch(()=>({items:[]})),politicians.keywords().catch(()=>({items:[]})),aiPanel.list()
     ]);
     const rank=rankResult?.ok?(Array.isArray(rankResult.items)?rankResult.items:[]).slice(0,100):[];
     const generationIds=(Array.isArray(generation?.candidates)?generation.candidates:[]).slice(0,75),evaluationIds=Object.values(nationalEvaluation?.slots||{}).map(slot=>slot?.subjectId).filter(Boolean),profileIds=[...new Set([...generationIds,...evaluationIds])],profileResult=profileIds.length?await politicians.profiles(profileIds).catch(()=>({items:[]})):{items:[]},resolvedPeople=(profileResult.items||[]).map(item=>({ok:true,item}));
     const peopleById=Object.fromEntries(resolvedPeople.filter(result=>result?.ok&&result.item).map(result=>[result.item.id,result.item])),generationView={...generation,candidatePeople:peopleById,candidateLabels:Object.fromEntries(generationIds.map(id=>[id,peopleById[id]?.name||id]))},nationalEvaluationView={...nationalEvaluation,slots:Object.fromEntries(Object.entries(nationalEvaluation?.slots||{}).map(([key,slot])=>[key,{...slot,subjectName:peopleById[slot?.subjectId]?.name||slot?.subjectName,party:peopleById[slot?.subjectId]?.party||slot?.party,jurisdiction:peopleById[slot?.subjectId]?.jurisdiction||slot?.jurisdiction,photo:peopleById[slot?.subjectId]?.photo||slot?.photo}]))};
-    const home={...HOME_FIXTURE,trending:trendingResult.items||[],keywords:keywordResult.items||[],memberCount,columns,community,communityData:content.peekDomain('community')||{items:community},itsmePosts,newsPosts,polls,generation:generationView,nationalEvaluation:nationalEvaluationView,academy,rank,homeBanner,recentPoliticians:loadRecentPoliticians(),session,badgeStatus};
+    const home={...HOME_FIXTURE,aiPanelResult,trending:trendingResult.items||[],keywords:keywordResult.items||[],memberCount,columns,community,communityData:content.peekDomain('community')||{items:community},itsmePosts,newsPosts,polls,generation:generationView,nationalEvaluation:nationalEvaluationView,academy,rank,homeBanner,recentPoliticians:loadRecentPoliticians(),session,badgeStatus};
     body=`<div class="product-home-wrap">${renderHomeLayout(home)}</div>`;
   } else if(p[0]==='points'){const pointView=new URLSearchParams(r.split('?')[1]||'').get('view');body=renderPointShop(await content.points(),session,pointView==='support'?'support':pointView==='activity'?'activity':'shop');}
+  else if(p[0]==='ai-panel'||(p[0]==='admin'&&p[1]==='ai-panel')) body=await loadAiPanelPage({admin:p[0]==='admin',params:searchParams,session,client:aiPanel});
   else if(p[0]==='groups') body=await loadGroupPage({parts:p,searchParams,session,client:groups});
   else if(p[0]==='campaigns') body=await loadCampaignPage({parts:p,searchParams,session,client:campaigns});
   else if(p[0]==='shop') body=p[1]==='request'?renderGoodsRequest(session,r):p[1]?renderCheerProduct(p[1]):renderCheerCatalog();
@@ -289,9 +294,10 @@ async function render({preserveScroll=false,refreshHome=false,freshSession=false
   if(p[0]==='admin')queueMicrotask(resumeAdminIntelligence);
 }
 
-navigation=createNavigation({window,readSnapshot:()=>parts(route())[0]==='groups'||isTransientAnalysisRoute(route())?'':app.innerHTML,restoreSnapshot:markup=>{app.innerHTML=markup;if(document.querySelector('.product-home-wrap')&&homeSnapshot)homeSnapshot.node=app.firstElementChild;},rebind:()=>{++renderSequence;const cachedRoute=parts(route());if(['mypage','points','campaigns','person','compare'].includes(cachedRoute[0]))queueMicrotask(()=>void render({preserveScroll:true}));else if(cachedRoute[0]==='search'){const params=new URLSearchParams(route().split('?')[1]||'');void loadSearchDiscovery(document,campaigns,(params.get('q')||'').trim(),{groups,session:()=>auth.session()});}else if(!cachedRoute.length)void refreshCachedMemberSummary();setupLayoutInteractions(document,{politicianSearch:(query,limit)=>politicians.search(query,limit)});setupMemberBadgeManagers();void hydrateVisibleActivityHints();showActivityFeedback(document,{identity:activeSessionIdentity});if(document.querySelector('.jc55'))queueMicrotask(()=>void render({preserveScroll:true}));if(pipelineActive())queueMicrotask(resumeAdminIntelligence);},onRoute:(_route,options)=>void render(options)});
+navigation=createNavigation({window,readSnapshot:()=>['groups','ai-panel'].includes(parts(route())[0])||route().startsWith('/admin/ai-panel')||isTransientAnalysisRoute(route())?'':app.innerHTML,restoreSnapshot:markup=>{app.innerHTML=markup;if(document.querySelector('.product-home-wrap')&&homeSnapshot)homeSnapshot.node=app.firstElementChild;},rebind:()=>{++renderSequence;const cachedRoute=parts(route());if(['mypage','points','campaigns','person','compare'].includes(cachedRoute[0]))queueMicrotask(()=>void render({preserveScroll:true}));else if(cachedRoute[0]==='search'){const params=new URLSearchParams(route().split('?')[1]||'');void loadSearchDiscovery(document,campaigns,(params.get('q')||'').trim(),{groups,session:()=>auth.session()});}else if(!cachedRoute.length)void refreshCachedMemberSummary();setupLayoutInteractions(document,{politicianSearch:(query,limit)=>politicians.search(query,limit)});setupMemberBadgeManagers();void hydrateVisibleActivityHints();showActivityFeedback(document,{identity:activeSessionIdentity});if(document.querySelector('.jc55'))queueMicrotask(()=>void render({preserveScroll:true}));if(pipelineActive())queueMicrotask(resumeAdminIntelligence);},onRoute:(_route,options)=>void render(options)});
 navigation.start();
 bindCageTitleEditors(document);
+bindAiPanelInteractions(document,{client:aiPanel,navigate:target=>navigation.navigate(target),onSaved:async(result,operation)=>{homeSnapshot=null;navigation.clearCache();const target=operation==='panel-create'?'/admin/ai-panel?tab=panels':'/admin/ai-panel?id='+encodeURIComponent(result.item.id);if(target===route())await render({preserveScroll:true});else navigation.navigate(target);}});
 bindGroupInteractions(document,{client:groups,onSaved:async(_result,targetRoute)=>{
   navigation.clearCache();
   if(targetRoute){if(targetRoute===route())await render({preserveScroll:true});else navigation.navigate(targetRoute);}

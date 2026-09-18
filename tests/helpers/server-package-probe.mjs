@@ -18,8 +18,8 @@ const original=[...records],commands=[];
 globalThis.fetch=async(url,options)=>{
  assert.equal(String(url),'https://redis.fixture.invalid','No external network in verification');
  const command=JSON.parse(options.body);commands.push(command);
- assert.ok(['GET','MGET'].includes(command[0]),'Homepage reads cannot mutate stored data: '+command[0]);
- const result=command[0]==='GET'?(records.get(command[1])??null):command.slice(1).map(key=>records.get(key)??null);
+ assert.ok(['GET','MGET','HVALS'].includes(command[0]),'Homepage reads cannot mutate stored data: '+command[0]);
+ const result=command[0]==='HVALS'?[]:command[0]==='GET'?(records.get(command[1])??null):command.slice(1).map(key=>records.get(key)??null);
  return {ok:true,status:200,json:async()=>({result})};
 };
 const {default:handler}=await import(new URL('api/gateway.js',root));
@@ -31,6 +31,7 @@ async function request(route){
  return response;
 }
 const health=await request('health');assert.match(health.version,/^JCS_0_0_31_/);
+const aiPanel=await request('ai-panel');assert.deepEqual(aiPanel.items,[]);
 const banner=await request('home/banner');assert.equal(banner.banner.alt,'저장된 배너');assert.equal(banner.banner.hero.alt,'저장된 가로 배너');
 const community=await request('content?domain=community');assert.equal(community.data.featuredCageId,'cage-fixture');assert.equal(community.data.items[0].title,'저장된 케이지 제목');
 const rankings=await request('politicians?ranking=overall');assert.equal(rankings.published,true);assert.equal(rankings.items[0].name,'검증용 인물');assert.equal(rankings.items[0].rank,1);
