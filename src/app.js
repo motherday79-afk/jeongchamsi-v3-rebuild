@@ -1,6 +1,6 @@
-import {createAiPanelClient} from './core/ai-panel-client.js?v=0.0.31.183';
-import {loadAiPanelPage} from './core/ai-panel-routing.js?v=0.0.31.183';
-import {bindAiPanelInteractions} from './ui/ai-panel-interactions.js?v=0.0.31.183';
+import {createAiPanelClient} from './core/ai-panel-client.js?v=0.0.31.185';
+import {loadAiPanelPage} from './core/ai-panel-routing.js?v=0.0.31.185';
+import {bindAiPanelInteractions} from './ui/ai-panel-interactions.js?v=0.0.31.185';
 import {bindPersonRefresh,loadMemberRefresh,watchAnalysisAccess} from './ui/person-refresh.js?v=0.0.31.177';
 import { bindRankingWeights, rankingWeightsReady, updateRunningRankingWeights } from './ui/ranking-weights.js?v=0.0.31.174';
 import { createGroupClient } from './core/group-client.js?v=0.0.31.172';
