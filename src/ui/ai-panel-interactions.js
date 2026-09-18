@@ -4,6 +4,30 @@ const number=v=>v==null||String(v).trim()===''?null:Number(v);
 const isoWeek=value=>{const d=new Date(`${value}T12:00:00Z`);if(!Number.isFinite(d.getTime()))return '';const day=d.getUTCDay()||7;d.setUTCDate(d.getUTCDate()+4-day);const year=d.getUTCFullYear(),first=new Date(Date.UTC(year,0,1)),week=Math.ceil((((d-first)/86400000)+1)/7);return `${year}-W${String(week).padStart(2,'0')}`;};
 const latestHumanItems=items=>{const seen=new Set();return [...(Array.isArray(items)?items:[])].sort((a,b)=>String(b.publishedDate||'').localeCompare(String(a.publishedDate||''))).filter(p=>{if(!p?.institution||seen.has(p.institution))return false;seen.add(p.institution);return true;});};
 const usablePoll=p=>p&&p.results?.overall&&typeof p.results.overall.positive==='number'&&typeof p.results.overall.negative==='number';
+const choiceAliases={
+ 'very-positive':'very-positive',very_positive:'very-positive','매우 잘하고 있다':'very-positive','매우잘함':'very-positive',
+ positive:'positive','잘하는 편이다':'positive','잘함':'positive',
+ negative:'negative','잘못하는 편이다':'negative','잘못함':'negative',
+ 'very-negative':'very-negative',very_negative:'very-negative','매우 잘못하고 있다':'very-negative','매우잘못함':'very-negative',
+ undecided:'undecided','판단 유보 / 모르겠다':'undecided','판단유보':'undecided','모르겠다':'undecided'
+};
+function normalizeOperatorResponses(rows){
+ if(!Array.isArray(rows))throw Error('RESP_FORMAT');
+ if(rows.length!==1000)throw Error(`RESP_COUNT:${rows.length}`);
+ const seen=new Set(),duplicates=[],badIds=[],badChoices=[];
+ const normalized=rows.map((row,index)=>{
+  if(!row||typeof row!=='object'||Array.isArray(row)){badIds.push(`#${index+1}`);return row;}
+  const id=String(row.id||'').trim(),expected=`JCS-AI-${String(index+1).padStart(4,'0')}`;
+  if(!/^JCS-AI-\d{4}$/.test(id)||id!==expected)badIds.push(id||`#${index+1}`);
+  if(seen.has(id))duplicates.push(id);seen.add(id);
+  const raw=String(row.choice??'').trim(),choice=choiceAliases[raw];if(!choice)badChoices.push(`${id||`#${index+1}`}:${raw||'비어있음'}`);
+  return {...row,id,choice:choice||raw};
+ });
+ if(duplicates.length)throw Error(`RESP_DUP:${[...new Set(duplicates)].slice(0,5).join(',')}:${duplicates.length}`);
+ if(badIds.length)throw Error(`RESP_ID:${badIds.slice(0,5).join(',')}:${badIds.length}`);
+ if(badChoices.length)throw Error(`RESP_CHOICE:${badChoices.slice(0,5).join(',')}:${badChoices.length}`);
+ return normalized;
+}
 export function aiPanelPayload(operation,data){
  const input=Object.fromEntries(data);delete input.profilesJson;delete input.responsesJson;delete input.sourcesJson;delete input.subgroupsJson;delete input.provenanceJson;
  if(operation==='panel-create')return {name:input.name,isSample:data.has('isSample'),population:{sourceUrl:input.sourceUrl,referenceDate:input.referenceDate,notes:input.notes},profiles:parse(data.get('profilesJson'),true)};
@@ -24,7 +48,7 @@ export function aiPanelPayload(operation,data){
 }
 const messages={HUMAN_POLL_BUSY:'다른 수집이 진행 중입니다. 잠시 후 다시 확인해 주세요.',HUMAN_POLL_FORBIDDEN:'관리자 로그인을 확인해 주세요.',HUMAN_POLL_ORIGIN_INVALID:'페이지를 새로고침한 뒤 다시 시도해 주세요.',HUMAN_POLL_UNAVAILABLE:'수집 상태를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.',AI_PANEL_CONFLICT:'다른 관리자가 자료를 변경했습니다. 새로고침 후 다시 시도해 주세요.',AI_PANEL_FORBIDDEN:'관리자 로그인을 확인해 주세요.',AI_PANEL_LOCKED:'이미 확정된 AI 자료입니다. 새 회차를 만들어 주세요.',AI_PANEL_NETWORK_FAILED:'연결하지 못했습니다. 입력 내용은 유지됩니다.',AI_PANEL_INPUT_INVALID:'필수 입력값 또는 파일 형식을 확인해 주세요.',AI_PANEL_RERUN_REQUIRED:'같은 주차의 재실행은 재실행 사유가 필요합니다.',AI_PANEL_ENVIRONMENT_REQUIRED:'먼저 AI 참고자료를 저장해 주세요.',AI_PANEL_RESPONSES_REQUIRED:'먼저 AI 응답파일을 등록해 주세요.',AI_PANEL_RESPONSES_INVALID:'AI 응답파일의 ID 수·중복·응답값을 확인해 주세요.',AI_PANEL_HUMAN_REQUIRED:'게시하려면 긍정·부정·유보가 모두 있는 HUMAN 자료를 비교 가능으로 저장해 주세요.',AI_PANEL_HUMAN_INVALID:'HUMAN 조사 숫자와 원문 URL을 확인해 주세요.',AI_PANEL_HUMAN_DUPLICATE:'이미 등록된 HUMAN 조사입니다.',AI_PANEL_REVIEW_REQUIRED:'먼저 결과 검수를 완료해 주세요.',AI_PANEL_PUBLISH_INVALID:'정식 1,000명 패널만 게시할 수 있습니다.',AI_PANEL_BLIND_POLL_LEAKAGE:'BLIND 모드에는 여론조사 수치가 포함된 자료를 넣을 수 없습니다.'};
 export async function simpleOperatorUpload({client,panelId,responses}={}){
- if(!client||!Array.isArray(responses)||responses.length!==1000)throw Error('AI_PANEL_RESPONSES_INVALID');
+ if(!client)throw Error('AI_PANEL_NETWORK_FAILED');responses=normalizeOperatorResponses(responses);
  const [manage,human]=await Promise.all([client.list({manage:true}),client.humanPolls()]);
  if(!manage?.ok)throw Error(manage?.error||'AI_PANEL_NETWORK_FAILED');if(!human?.ok)throw Error(human?.error||'HUMAN_POLL_UNAVAILABLE');
  const polls=latestHumanItems(human.items).filter(usablePoll);if(!polls.length)throw Error('AI_PANEL_HUMAN_REQUIRED');
@@ -57,10 +81,16 @@ export function bindAiPanelInteractions(root,{client,onSaved=()=>{},navigate=()=
    const form=simple.closest('[data-ai-simple-upload]'),file=simple.files?.[0],s=state(form);if(!file)return;if(s.busy)return;
    s.busy=true;simple.disabled=true;notice(form,'AI 응답파일을 확인하고 있습니다…');
    try{
-    if(file.size>maxBytes)throw Error('FILE');const text=await file.text();const responses=parse(text,true);if(responses.length!==1000)throw Error('COUNT');
+    if(file.size>maxBytes)throw Error('FILE');const text=await file.text();const responses=parse(text,true);
     const result=await simpleOperatorUpload({client,panelId:form.dataset.panelId,responses});
-    notice(form,'1,000명 응답 등록과 HUMAN 비교 준비가 완료됐습니다. 이제 ③ 메인에 게시만 누르면 됩니다.');await onSaved(result,'simple-upload');
-   }catch(error){const code=String(error?.message||'');const friendly=code==='COUNT'?'응답파일은 정확히 1,000개 ID가 있어야 합니다.':messages[code]||messages[`AI_PANEL_${code}`]||'응답파일을 처리하지 못했습니다. JSON 형식과 1,000개 ID를 확인해 주세요.';notice(form,friendly);}
+    notice(form,'AI 응답 1,000개 확인 완료 · ID 정상 · 중복 없음 · 응답값 정상. 이제 ③ 메인에 게시만 누르면 됩니다.');await onSaved(result,'simple-upload');
+   }catch(error){const code=String(error?.message||'');let friendly=messages[code]||messages[`AI_PANEL_${code}`];
+    if(code.startsWith('RESP_COUNT:'))friendly=`AI 응답은 정확히 1,000개여야 합니다. 현재 ${code.split(':')[1]}개입니다.`;
+    else if(code.startsWith('RESP_DUP:'))friendly=`중복 ID가 있습니다: ${code.split(':')[1]} (중복 ${code.split(':')[2]}건).`;
+    else if(code.startsWith('RESP_ID:'))friendly=`ID 형식 또는 순서가 맞지 않습니다: ${code.split(':')[1]} (오류 ${code.split(':')[2]}건).`;
+    else if(code.startsWith('RESP_CHOICE:'))friendly=`응답값을 읽지 못한 항목이 있습니다: ${code.split(':')[1]} (오류 ${code.split(':')[2]}건).`;
+    else if(code==='FILE')friendly='응답파일이 너무 큽니다. 4MB 이하 JSON 파일을 선택해 주세요.';
+    notice(form,friendly||'응답파일을 처리하지 못했습니다. 파일 형식을 확인해 주세요.');}
    finally{s.busy=false;simple.disabled=false;}
    return;
   }
