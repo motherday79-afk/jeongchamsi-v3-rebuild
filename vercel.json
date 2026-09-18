@@ -1,5 +1,6 @@
 {
-  "functions":{"api/gateway.js":{"maxDuration":60},"api/share.js":{"maxDuration":10}},
+  "functions":{"api/gateway.js":{"maxDuration":60},"api/share.js":{"maxDuration":10},"api/human-poll-cron.js":{"maxDuration":60}},
+  "crons":[{"path":"/api/human-poll-cron","schedule":"0 8 * * *"}],
   "rewrites":[
     {"source":"/api/v3/:path*","destination":"/api/gateway?path=:path*"},
     {"source":"/person/:path*","destination":"/api/share?path=person/:path*"},
