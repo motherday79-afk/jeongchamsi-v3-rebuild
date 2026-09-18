@@ -1,0 +1,30 @@
+const maxBytes=4*1024*1024;
+const parse=(raw,array)=>{const value=JSON.parse(raw|| (array?'[]':'{}'));if(array?!Array.isArray(value):!value||typeof value!=='object'||Array.isArray(value))throw Error('JSON 형식을 확인해 주세요.');return value;};
+const number=v=>v==null||String(v).trim()===''?null:Number(v);
+export function aiPanelPayload(operation,data){
+ const input=Object.fromEntries(data);delete input.profilesJson;delete input.responsesJson;delete input.sourcesJson;delete input.subgroupsJson;
+ if(operation==='panel-create')return {name:input.name,isSample:data.has('isSample'),population:{sourceUrl:input.sourceUrl,referenceDate:input.referenceDate,notes:input.notes},profiles:parse(data.get('profilesJson'),true)};
+ if(operation==='create')return {...input,isSample:data.has('isSample'),modes:data.getAll('modes')};
+ if(operation==='environment')return {...input,sources:parse(data.get('sourcesJson'),true)};
+ if(operation==='responses')return {...input,executedAt:new Date(input.executedAt).toISOString(),responses:parse(data.get('responsesJson'),true)};
+ if(operation==='human'){const groups=parse(data.get('subgroupsJson'),false),overall={};for(const key of ['positive','negative','undecided','n']){overall[key]=number(input[key]);delete input[key];}for(const key of ['sampleSize','responseRate','marginOfError'])input[key]=number(input[key]);return {poll:{...input,comparable:data.has('comparable'),results:{gender:groups.gender||{},age:groups.age||{},region:groups.region||{},overall}}};}
+ return input;
+}
+const messages={AI_PANEL_CONFLICT:'다른 관리자가 자료를 변경했습니다. 입력 내용을 복사한 뒤 새로고침해 주세요.',AI_PANEL_FORBIDDEN:'관리자 로그인을 확인해 주세요.',AI_PANEL_LOCKED:'잠금된 AI 자료입니다. 새 회차를 만들어 주세요.',AI_PANEL_NETWORK_FAILED:'연결하지 못했습니다. 입력 내용은 유지됩니다.',AI_PANEL_INPUT_INVALID:'필수 항목과 JSON 입력값을 확인해 주세요.',AI_PANEL_RERUN_REQUIRED:'같은 주차의 재실행은 이전 회차와 재실행 사유가 필요합니다.'};
+export function bindAiPanelInteractions(root,{client,onSaved=()=>{},navigate=()=>{}}={}){
+ const states=new WeakMap();const state=form=>{if(!states.has(form))states.set(form,{busy:false,files:new Map()});return states.get(form);};
+ const notice=(form,text)=>{const el=form.querySelector('[data-ai-form-state]');if(el)el.textContent=text;};
+ root.addEventListener('submit',async event=>{
+  const search=event.target.closest('[data-ai-search]');if(search){event.preventDefault();navigate('/ai-panel?'+new URLSearchParams(new FormData(search)));return;}
+  const form=event.target.closest('[data-ai-form]');if(!form)return;event.preventDefault();const s=state(form);if(s.busy)return;
+  if([...s.files.values()].some(x=>x!=='ready')){notice(form,'파일 읽기가 끝났는지 확인하고, 실패한 파일은 다시 선택해 주세요.');return;}
+  let input;try{input=aiPanelPayload(form.dataset.aiForm,new FormData(form));}catch{notice(form,'JSON 형식 또는 날짜를 확인해 주세요. 입력 내용은 유지됩니다.');return;}
+  s.busy=true;const buttons=[...form.querySelectorAll('button')],disabled=buttons.map(x=>x.disabled);buttons.forEach(x=>x.disabled=true);notice(form,'저장하고 있습니다…');
+  try{const result=await client.save({operation:form.dataset.aiForm,id:form.dataset.id||'',version:Number(form.dataset.version)||0,input});if(!result?.ok){notice(form,messages[result?.error]||`저장하지 못했습니다. 입력값을 확인해 주세요. (${result?.error||'연결 오류'})`);return;}notice(form,'저장했습니다.');await onSaved(result,form.dataset.aiForm);}catch{notice(form,'저장 결과를 확인하지 못했습니다. 새로고침하여 확인해 주세요.');}finally{s.busy=false;buttons.forEach((x,i)=>x.disabled=disabled[i]);}
+ });
+ root.addEventListener('change',async event=>{const fileInput=event.target.closest('[data-ai-json-target]');if(!fileInput)return;const form=fileInput.closest('form'),s=state(form),key=fileInput.dataset.aiJsonTarget,file=fileInput.files?.[0],token={};s.files.set(key,token);if(!file){s.files.delete(key);return;}try{if(file.size>maxBytes)throw Error();const text=await file.text();JSON.parse(text);if(s.files.get(key)!==token)return;form.elements.namedItem(key).value=text;s.files.set(key,'ready');notice(form,'파일을 읽었습니다. 내용을 확인한 뒤 저장해 주세요.');}catch{if(s.files.get(key)===token){s.files.set(key,'failed');notice(form,'JSON 파일을 읽지 못했습니다. 4MB 이하의 올바른 파일을 다시 선택해 주세요.');}}});
+ root.addEventListener('click',event=>{
+  const sample=event.target.closest('[data-ai-sample]');if(sample){const form=sample.closest('form');form.elements.namedItem('isSample').checked=true;form.elements.namedItem('profilesJson').value=JSON.stringify(Array.from({length:Number(sample.dataset.aiSample)},(_,i)=>({id:`JCS-AI-${String(i+1).padStart(4,'0')}`,gender:'DEV 미설정',age:'DEV 미설정',region:'DEV 미설정',politicalInterest:'DEV 미설정',pollExposure:false})),null,2);state(form).files.delete('profilesJson');notice(form,'공개할 수 없는 개발 샘플입니다.');return;}
+  const button=event.target.closest('[data-ai-template]');if(!button)return;const templates={profiles:[{id:'JCS-AI-0001',gender:'입력',age:'입력',region:'입력',politicalInterest:'입력',pollExposure:false}],responses:[{id:'JCS-AI-0001',choice:'undecided',reason:'실제 응답 사유',explanation:'실제 응답 설명',factors:[]}],human:{gender:{},age:{},region:{}}};const url=URL.createObjectURL(new Blob([JSON.stringify(templates[button.dataset.aiTemplate],null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download=`jcs-ai-${button.dataset.aiTemplate}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ });
+}
