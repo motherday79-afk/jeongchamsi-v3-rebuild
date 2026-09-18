@@ -10,11 +10,15 @@ function harness(t,{operation='review',values={note:'검수 내용을 유지'},s
  const NativeFormData=globalThis.FormData;
  globalThis.FormData=class extends NativeFormData{constructor(target){super();for(const [key,field] of Object.entries(fields))this.append(key,field.value);assert.equal(target,form);}};
  t.after(()=>{globalThis.FormData=NativeFormData;});
- bindAiPanelInteractions({addEventListener:(name,fn)=>{listeners[name]=fn;}},{client:{save:payload=>{calls.push(payload);return save(payload);}},onSaved:(...args)=>saved.push(args)});
+ bindAiPanelInteractions({addEventListener:(name,fn)=>{listeners[name]=fn;}},{client:{collectHumanPolls:()=>{calls.push({operation:'collect'});return save();},save:payload=>{calls.push(payload);return save(payload);}},onSaved:(...args)=>saved.push(args)});
  const submit=()=>{const event={target:form,prevented:false,preventDefault(){this.prevented=true;}};const result=listeners.submit(event);assert.equal(event.prevented,true);return result;};
  const file={dataset:{aiJsonTarget:'sourcesJson'},files:[],closest:selector=>selector==='[data-ai-json-target]'?file:selector==='form'?form:null};
- return {fields,form,buttons,notice,calls,saved,submit,read:selected=>{file.files=selected?[selected]:[];return listeners.change({target:file});}};
+ return {fields,form,buttons,notice,calls,saved,submit,click:target=>listeners.click({target}),read:selected=>{file.files=selected?[selected]:[];return listeners.change({target:file});}};
 }
+
+test('collection uses dedicated method and refreshes without a run item',async t=>{const result={ok:true,items:[],providers:[]};const h=harness(t,{operation:'collect',values:{},save:async()=>result});await h.submit();assert.deepEqual(h.calls,[{operation:'collect'}]);assert.deepEqual(h.saved,[[result,'collect']]);});
+
+test('import preserves decimal values and provenance but clears comparison confirmation',t=>{const keys=['id','institution','commissioner','title','startDate','endDate','publishedDate','sampleSize','method','responseRate','marginOfError','sourceUrl','question','comparisonNote','topic','fetchedAt','positive','negative','undecided','n','subgroupsJson','provenanceJson','comparable'];const h=harness(t,{operation:'human',values:Object.fromEntries(keys.map(k=>[k,'']))});h.fields.comparable.checked=true;const poll={id:'g1',institution:'한국갤럽',question:'대통령 직무수행 평가',provenance:{questionKind:'source-summary'},results:{overall:{positive:61.2,negative:29.8,undecided:null,n:1000}}};h.form.querySelector=selector=>selector==='[data-ai-import-source]'?{value:JSON.stringify(poll)}:h.notice;const button={closest:selector=>selector==='[data-ai-import]'?button:selector==='form'?h.form:null};h.click(button);assert.equal(h.fields.positive.value,61.2);assert.equal(h.fields.undecided.value,'');assert.equal(h.fields.comparable.checked,false);assert.deepEqual(JSON.parse(h.fields.provenanceJson.value),poll.provenance);assert.match(h.notice.textContent,/질문지 원문/);});
 
 test('delegated submit suppresses duplicates while pending and preserves initially disabled buttons',async t=>{
  const request=deferred(),h=harness(t,{save:()=>request.promise});
