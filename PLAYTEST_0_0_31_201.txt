@@ -1,0 +1,36 @@
+JCS 0.0.31.201 POLIMARBLE ACTUAL ENGINE PLAYTEST
+====================================================
+START         | T00 | POS 00 | SCORE  1000 | STAGE 1 | DICE - | 게임 시작
+ROLL 1        | T01 | POS 04 | SCORE  1000 | STAGE 1 | DICE 4 | 4칸 이동 / 민심 방어권
+USE CARD      | 민심 방어권 | 다음 감점 1회를 완전히 막습니다.
+ROLL 2        | T02 | POS 07 | SCORE  1000 | STAGE 1 | DICE 3 | 3칸 이동 / 운명의 선택
+CHOICE safe   | T02 | POS 07 | SCORE  1220 | STAGE 1 | DICE 3 | 안전한 선택(+220)
+ROLL 3        | T03 | POS 09 | SCORE  1480 | STAGE 1 | DICE 2 | 2칸 이동 / 깜짝 호재(+260)
+ROLL 4        | T04 | POS 11 | SCORE  1480 | STAGE 1 | DICE 2 | 2칸 이동 / 우대권
+USE CARD      | 우대권 | 다음 2턴 획득 점수에 30% 보너스.
+ROLL 5        | T05 | POS 13 | SCORE  1727 | STAGE 1 | DICE 2 | 2칸 이동 / 정책 발표(+247)
+ROLL 6        | T06 | POS 16 | SCORE  1922 | STAGE 1 | DICE 3 | 3칸 이동 / 지역 공감(+195)
+ROLL 7        | T07 | POS 19 | SCORE  2052 | STAGE 1 | DICE 3 | 3칸 이동 / 언론 호응(+130)
+ROLL 8        | T08 | POS 21 | SCORE  2372 | STAGE 1 | DICE 2 | 2칸 이동 / 참여의 시간(+320)
+ROLL 9        | T09 | POS 22 | SCORE  2372 | STAGE 1 | DICE 1 | 1칸 이동 / 호응 2배권
+USE CARD      | 호응 2배권 | 다음 플러스 점수 1회를 2배로 만듭니다.
+ROLL 10       | T10 | POS 01 | SCORE  2652 | STAGE 1 | DICE 3 | 3칸 이동 / 정책 호응(+280)
+ROLL 11       | T11 | POS 07 | SCORE  2652 | STAGE 1 | DICE 6 | 6칸 이동 / 운명의 선택
+CHOICE risk   | T11 | POS 07 | SCORE  3502 | STAGE 2 | DICE 6 | 승부 성공(+850) / STAGE 2
+ROLL 12       | T12 | POS 09 | SCORE  3783 | STAGE 2 | DICE 2 | 2칸 이동 / 깜짝 호재(+281)
+ROLL 13       | T13 | POS 11 | SCORE  3783 | STAGE 2 | DICE 2 | 2칸 이동 / 기록 보험
+USE CARD      | 기록 보험 | 게임오버 시 최고점의 70%를 기록합니다.
+ROLL 14       | T14 | POS 14 | SCORE  3783 | STAGE 2 | DICE 3 | 3칸 이동 / 쟁점 발생(0)
+ROLL 15       | T15 | POS 16 | SCORE  3945 | STAGE 2 | DICE 2 | 2칸 이동 / 지역 공감(+162)
+ROLL 16       | T16 | POS 21 | SCORE  4291 | STAGE 2 | DICE 5 | 5칸 이동 / 참여의 시간(+346)
+ROLL 17       | T17 | POS 23 | SCORE  4047 | STAGE 2 | DICE 2 | 2칸 이동 / 위기 관리(-244)
+ROLL 18       | T18 | POS 01 | SCORE  4198 | STAGE 2 | DICE 2 | 2칸 이동 / 정책 호응(+151)
+ROLL 19       | T19 | POS 07 | SCORE  4198 | STAGE 2 | DICE 6 | 6칸 이동 / 운명의 선택
+CHOICE safe   | T19 | POS 07 | SCORE  4436 | STAGE 2 | DICE 6 | 안전한 선택(+238)
+ROLL 20       | T20 | POS 09 | SCORE  4717 | STAGE 2 | DICE 2 | 2칸 이동 / 깜짝 호재(+281)
+IDEMPOTENCY    | same requestId twice -> turn 21/21, score 4520/4520
+CASH OUT       | FINAL 4,520 | STATUS cashed_out
+TODAY RANKING  | #1 KKS 4,520 | top entries=1
+====================================================
+RESULT: PASS
+Verified: start / roll / movement / score / cards / safe+risk choice / stage-up / request idempotency / cash-out / TODAY leaderboard
