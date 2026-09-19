@@ -1,0 +1,17 @@
+JCS 0.0.31.205 POLIMARBLE DSOT DIRECT APPLY
+
+VALIDATION
+- node --check src/views/polimable-page.js : PASS
+- node --check src/ui/polimable-interactions.js : PASS
+- node --check src/app.js : PASS
+- node --check src/layout/home-layout.js : PASS
+- node --test tests/polimable-201.test.js : 8 / 8 PASS
+- rendered 24 movement anchors : PASS (24)
+- rendered moving player token : PASS (1)
+- desktop DSOT preview generated at 1600x1000 : PASS
+- mobile landscape preview generated at 844x390 : PASS
+
+NOTE
+The repository was provided without node_modules. Running the entire test suite in this container triggers
+ERR_MODULE_NOT_FOUND for optional/runtime packages such as @vercel/blob and @vercel/nft.
+The isolated Polimable suite and modified-file syntax checks passed.
