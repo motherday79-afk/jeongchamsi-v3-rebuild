@@ -98,12 +98,13 @@ export function renderPoliMarbleSidebarCard(data={},session={}){
   const me=board?.me||entries.find(entry=>entry?.isMe);
   const kingText=king?`${esc(king.initials||'JCS')} · ${number(king.score)}`:'아직 기록 없음';
   const meText=me?`${number(me.score)}점 · ${Number(me.rank)||'-'}위`:'기록 없음';
+  const statsClass=session?.authenticated?'pm-side-overlay-stats':'pm-side-overlay-stats is-single';
   return `<section class="side-card side-polimable">
     <button type="button" class="pm-side-entry pm-side-entry--overlay" data-layout-route="/polimable" aria-label="JCS 폴리마블 게임 바로가기">
       <img src="/assets/polimable/sidebar-entry-31-204.webp" alt="JCS 폴리마블">
       <div class="pm-side-overlay" aria-hidden="true">
         <div class="pm-side-overlay-brand"><b>🎲 JCS 폴리마블</b><span>TODAY</span></div>
-        <div class="pm-side-overlay-stack">
+        <div class="${statsClass}">
           <div class="pm-side-overlay-panel pm-side-overlay-king"><small>👑 TODAY KING</small><b>${kingText}</b></div>
           ${session?.authenticated?`<div class="pm-side-overlay-panel pm-side-overlay-me"><small>나의 오늘 기록</small><b>${meText}</b></div>`:''}
         </div>
