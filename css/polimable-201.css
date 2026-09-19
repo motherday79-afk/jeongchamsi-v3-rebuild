@@ -96,3 +96,62 @@
   .pm-background-only-page::before{content:"가로모드로 돌려서 플레이해 주세요 ↻";position:absolute;z-index:30;inset:0;display:grid;place-items:center;background:#eef3ff;color:#53368e;font-size:18px;font-weight:1000;text-align:center;padding:28px}
   .pm-background-stage{visibility:hidden}
 }
+
+/* === JCS 0.0.31.209 · SERVER GAME RULE HUD ===
+   The approved board/background/tile geometry above remains unchanged.
+   These overlays only fill the blank control areas already drawn into the 1200×675 background. */
+.pm-game-hud{position:absolute;inset:0;z-index:7;pointer-events:none;color:#3f2b76}
+
+/* Dice panel: reuse the blank purple panel at the top-right. */
+.pm-dice-live{position:absolute;left:66.3%;top:8.7%;width:18.7%;height:32.8%;pointer-events:none}
+.pm-live-dice{position:absolute;left:7%;right:7%;top:18%;height:42%;display:grid;place-items:center;color:#fff;font-size:4.85cqw;font-weight:1000;line-height:1;text-shadow:0 .18cqw .34cqw rgba(24,13,70,.30)}
+.pm-live-dice.is-rolling{animation:pm-dice-wobble .16s linear infinite}
+.pm-live-status{position:absolute;left:7%;right:7%;top:61%;height:12%;display:flex;align-items:center;justify-content:center;padding:0 .35cqw;color:#f8f4ff;font-size:.62cqw;font-weight:900;line-height:1.15;text-align:center;white-space:normal;overflow:hidden;text-shadow:0 .08cqw .12cqw rgba(28,13,74,.34)}
+.pm-live-roll{position:absolute;left:6.4%;right:6.4%;bottom:6.4%;height:18.5%;min-height:31px;border:.13cqw solid #d18d14;border-radius:.86cqw;background:linear-gradient(180deg,#ffd85c,#f4aa1a);box-shadow:inset 0 -.22cqw 0 rgba(115,67,7,.14),0 .2cqw .38cqw rgba(47,25,90,.18);color:#49306e;font-size:1.0cqw;font-weight:1000;letter-spacing:-.035em;cursor:pointer;pointer-events:auto}
+.pm-live-roll:disabled{opacity:.66;cursor:wait}
+
+/* Score panel: fill the white score card already present in the background. */
+.pm-score-live{position:absolute;left:86.5%;top:15.8%;width:12.15%;height:24.3%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:3.2%;box-sizing:border-box;pointer-events:none}
+.pm-score-live>strong{font-size:2.62cqw;line-height:.98;font-weight:1000;color:#4e35a0;letter-spacing:-.07em;text-shadow:0 .06cqw 0 #fff}
+.pm-score-live>small{margin-top:.30cqw;font-size:.65cqw;font-weight:1000;color:#b57813}
+.pm-score-live>small b{font-size:.70cqw;color:#8a5a08}
+.pm-score-live>span{margin-top:.42cqw;padding:.23cqw .64cqw;border-radius:999px;background:#7350c4;color:#fff;font-size:.58cqw;font-weight:1000}
+.pm-effect-line{margin-top:.26cqw;max-width:94%;min-height:.72cqw;color:#65588a;font-size:.49cqw;font-weight:900;line-height:1.2;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pm-cashout-button{margin-top:.24cqw;width:84%;height:1.45cqw;border:.07cqw solid #b9a7e5;border-radius:.48cqw;background:linear-gradient(180deg,#fff,#eee9fb);color:#51358e;font-size:.55cqw;font-weight:1000;cursor:pointer;pointer-events:auto;box-shadow:0 .12cqw .22cqw rgba(54,32,112,.12)}
+.pm-cashout-button:disabled{opacity:.56;cursor:wait}
+
+/* Strategy cards: each real card is a button inside the three baked-in slots. */
+.pm-card-live-grid{position:absolute;left:67.6%;top:50.1%;width:30.6%;height:13.6%;display:grid;grid-template-columns:repeat(3,1fr);gap:2.65%;pointer-events:none}
+.pm-live-card{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;border:0;border-radius:.72cqw;background:transparent;color:#5d419d;padding:.12cqw;pointer-events:auto;cursor:pointer}
+.pm-live-card:not(.has-card){pointer-events:none;color:#9185c9}
+.pm-live-card.has-card{background:rgba(255,255,255,.72);box-shadow:inset 0 0 0 .09cqw rgba(108,80,177,.28)}
+.pm-live-card:disabled{cursor:default;opacity:.72}
+.pm-live-card-icon{font-size:2.02cqw;line-height:1}
+.pm-live-card b{display:block;max-width:95%;margin-top:.12cqw;font-size:.72cqw;line-height:1.0;font-weight:1000;letter-spacing:-.04em;white-space:normal;text-align:center}
+.pm-live-card small{margin-top:.12cqw;font-size:.44cqw;font-weight:1000;letter-spacing:.06em;color:#8c75bf}
+
+/* TODAY ranking: fit four rows into the white ranking panel baked into the background. */
+.pm-ranking-live{position:absolute;left:68.45%;top:74.35%;width:29.0%;height:16.1%;display:grid;grid-template-rows:repeat(4,1fr);gap:.16cqw;pointer-events:none}
+.pm-rank-row{display:grid;grid-template-columns:1.5cqw 1fr auto;align-items:center;gap:.38cqw;padding:0 .55cqw;border-radius:.38cqw;color:#584885;font-size:.66cqw;font-weight:900;min-width:0}
+.pm-rank-row i{font-style:normal;text-align:center;color:#9273c4}
+.pm-rank-row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pm-rank-row b{color:#4c3c7c;font-size:.68cqw}
+.pm-rank-row.is-me{background:rgba(118,84,202,.13);color:#4f3290}
+
+/* Choice and game-over overlays are temporary; they do not alter the permanent board design. */
+.pm-choice-modal,.pm-result-modal{position:absolute;inset:0;display:grid;place-items:center;background:rgba(44,28,86,.26);backdrop-filter:blur(1px);pointer-events:auto}
+.pm-choice-modal[hidden],.pm-result-modal[hidden]{display:none}
+.pm-choice-card,.pm-result-card{width:30cqw;max-width:360px;padding:1.2cqw 1.35cqw;border:.17cqw solid rgba(92,58,169,.7);border-radius:1.25cqw;background:rgba(255,255,255,.96);box-shadow:0 1.1cqw 2.3cqw rgba(39,20,79,.30);text-align:center;color:#4e348e}
+.pm-choice-card>strong,.pm-result-card>strong{display:block;font-size:1.55cqw;font-weight:1000}
+.pm-choice-card>p,.pm-result-card>p{margin:.58cqw 0 .82cqw;font-size:.82cqw;font-weight:800;line-height:1.38;color:#6e6384}
+.pm-choice-card>div{display:grid;grid-template-columns:1fr 1fr;gap:.65cqw}
+.pm-choice-card button,.pm-result-card button{min-height:2.55cqw;border:0;border-radius:.7cqw;font-size:.83cqw;font-weight:1000;cursor:pointer}
+.pm-choice-card button:first-child{background:#dcf6ff;color:#315f7f}
+.pm-choice-card button:last-child{background:#ffe4a9;color:#75501d}
+.pm-result-card>b{display:block;margin:.32cqw 0 .72cqw;font-size:2.5cqw;color:#5a38b0}
+.pm-result-card button{display:block;width:100%;margin-top:.45cqw;background:#6a48be;color:#fff}
+.pm-result-card button+button{background:#f0ebfb;color:#5a3a9e}
+
+@media(max-width:1240px){
+  .pm-live-roll{min-height:28px}
+}
