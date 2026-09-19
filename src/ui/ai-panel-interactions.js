@@ -34,7 +34,7 @@ function normalizeOperatorResponses(rows){
   if(!/^JCS-AI-\d{4}$/.test(id)||id!==expected)badIds.push(id||`#${index+1}`);
   if(seen.has(id))duplicates.push(id);seen.add(id);
   const raw=String(row.choice??'').trim(),choice=choiceAliases[raw];if(!choice)badChoices.push(`${id||`#${index+1}`}:${raw||'비어있음'}`);
-  return {...row,id,choice:choice||raw};
+  return {id,choice:choice||raw,reason:row.reason??'',explanation:row.explanation??'',factors:Array.isArray(row.factors)?row.factors:[]};
  });
  if(duplicates.length)throw Error(`RESP_DUP:${[...new Set(duplicates)].slice(0,5).join(',')}:${duplicates.length}`);
  if(badIds.length)throw Error(`RESP_ID:${badIds.slice(0,5).join(',')}:${badIds.length}`);
@@ -59,9 +59,9 @@ export function aiPanelPayload(operation,data){
  }
  return input;
 }
-const messages={HUMAN_POLL_BUSY:'다른 수집이 진행 중입니다. 잠시 후 다시 확인해 주세요.',HUMAN_POLL_FORBIDDEN:'관리자 로그인을 확인해 주세요.',HUMAN_POLL_ORIGIN_INVALID:'페이지를 새로고침한 뒤 다시 시도해 주세요.',HUMAN_POLL_UNAVAILABLE:'수집 상태를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.',AI_PANEL_CONFLICT:'다른 관리자가 자료를 변경했습니다. 새로고침 후 다시 시도해 주세요.',AI_PANEL_FORBIDDEN:'관리자 로그인을 확인해 주세요.',AI_PANEL_LOCKED:'이미 확정된 AI 자료입니다. 새 회차를 만들어 주세요.',AI_PANEL_NETWORK_FAILED:'연결하지 못했습니다. 입력 내용은 유지됩니다.',AI_PANEL_INPUT_INVALID:'필수 입력값 또는 파일 형식을 확인해 주세요.',AI_PANEL_RERUN_REQUIRED:'같은 주차의 재실행은 재실행 사유가 필요합니다.',AI_PANEL_ENVIRONMENT_REQUIRED:'먼저 AI 참고자료를 저장해 주세요.',AI_PANEL_RESPONSES_REQUIRED:'먼저 AI 응답파일을 등록해 주세요.',AI_PANEL_RESPONSES_INVALID:'AI 응답파일의 ID 수·중복·응답값을 확인해 주세요.',AI_PANEL_HUMAN_REQUIRED:'게시하려면 긍정·부정·유보가 모두 있는 HUMAN 자료를 비교 가능으로 저장해 주세요.',AI_PANEL_HUMAN_INVALID:'HUMAN 조사 숫자와 원문 URL을 확인해 주세요.',AI_PANEL_HUMAN_DUPLICATE:'이미 등록된 HUMAN 조사입니다.',AI_PANEL_REVIEW_REQUIRED:'먼저 결과 검수를 완료해 주세요.',AI_PANEL_PUBLISH_INVALID:'정식 1,000명 패널만 게시할 수 있습니다.',AI_PANEL_BLIND_POLL_LEAKAGE:'BLIND 모드에는 여론조사 수치가 포함된 자료를 넣을 수 없습니다.',AI_PANEL_STORAGE_FAILED:'게시 저장소 응답이 지연되었습니다. AI/HUMAN 결과는 이미 저장되어 있으니 잠시 후 게시 버튼만 다시 눌러 주세요.'};
+const messages={HUMAN_POLL_BUSY:'다른 수집이 진행 중입니다. 잠시 후 다시 확인해 주세요.',HUMAN_POLL_FORBIDDEN:'관리자 로그인을 확인해 주세요.',HUMAN_POLL_ORIGIN_INVALID:'페이지를 새로고침한 뒤 다시 시도해 주세요.',HUMAN_POLL_UNAVAILABLE:'수집 상태를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.',AI_PANEL_CONFLICT:'다른 관리자가 자료를 변경했습니다. 새로고침 후 다시 시도해 주세요.',AI_PANEL_FORBIDDEN:'관리자 로그인을 확인해 주세요.',AI_PANEL_LOCKED:'이미 확정된 AI 자료입니다. 새 회차를 만들어 주세요.',AI_PANEL_NETWORK_FAILED:'연결하지 못했습니다. 입력 내용은 유지됩니다.',AI_PANEL_INPUT_INVALID:'필수 입력값 또는 파일 형식을 확인해 주세요.',AI_PANEL_RERUN_REQUIRED:'같은 주차의 재실행은 재실행 사유가 필요합니다.',AI_PANEL_ENVIRONMENT_REQUIRED:'먼저 AI 참고자료를 저장해 주세요.',AI_PANEL_RESPONSES_REQUIRED:'먼저 AI 응답파일을 등록해 주세요.',AI_PANEL_RESPONSES_INVALID:'AI 응답파일의 ID 수·중복·응답값을 확인해 주세요.',AI_PANEL_HUMAN_REQUIRED:'게시하려면 긍정·부정·유보가 모두 있는 HUMAN 자료를 비교 가능으로 저장해 주세요.',AI_PANEL_HUMAN_INVALID:'HUMAN 조사 숫자와 원문 URL을 확인해 주세요.',AI_PANEL_HUMAN_DUPLICATE:'이미 등록된 HUMAN 조사입니다.',AI_PANEL_REVIEW_REQUIRED:'먼저 결과 검수를 완료해 주세요.',AI_PANEL_PUBLISH_INVALID:'정식 1,000명 패널만 게시할 수 있습니다.',AI_PANEL_BLIND_POLL_LEAKAGE:'BLIND 모드에는 여론조사 수치가 포함된 자료를 넣을 수 없습니다.',AI_PANEL_STORAGE_FAILED:'저장소 응답이 지연되었습니다. 현재 단계의 저장이 완료되지 않았습니다. 잠시 후 다시 시도해 주세요.'};
 export async function simpleOperatorUpload({client,panelId,responses,onProgress=()=>{}}={}){
- if(!client)throw Error('AI_PANEL_NETWORK_FAILED');responses=normalizeOperatorResponses(responses);const profiles=integratedProfiles(responses);onProgress('AI 통합파일 1,000명 검증 완료 · 서버 저장을 준비하고 있습니다…');
+ if(!client)throw Error('AI_PANEL_NETWORK_FAILED');const profiles=integratedProfiles(responses);responses=normalizeOperatorResponses(responses);onProgress('AI 통합파일 1,000명 검증 완료 · 서버 저장을 준비하고 있습니다…');
  const [manage,human]=await Promise.all([client.list({manage:true}),client.humanPolls()]);onProgress('정식 패널과 최신 HUMAN 자료를 확인했습니다…');
  if(!manage?.ok)throw Error(manage?.error||'AI_PANEL_NETWORK_FAILED');if(!human?.ok)throw Error(human?.error||'HUMAN_POLL_UNAVAILABLE');
  const polls=latestHumanItems(human.items).filter(usablePoll);if(!polls.length)throw Error('AI_PANEL_HUMAN_REQUIRED');
@@ -87,7 +87,7 @@ export function bindAiPanelInteractions(root,{client,onSaved=()=>{},navigate=()=
  const states=new WeakMap();const state=form=>{if(!states.has(form))states.set(form,{busy:false,files:new Map()});return states.get(form);};
  const notice=(form,text)=>{const el=form.querySelector('[data-ai-form-state]');if(el)el.textContent=text;};
  root.addEventListener('submit',async event=>{
-  const finalize=event.target.closest('[data-ai-finalize]');if(finalize){event.preventDefault();const s=state(finalize);if(s.busy)return;const id=finalize.dataset.id,version=Number(finalize.dataset.version)||0,sample=finalize.dataset.sample==='1',button=finalize.querySelector('button');s.busy=true;if(button)button.disabled=true;notice(finalize,'결과를 한 번에 확정하고 메인에 게시하고 있습니다…');try{if(sample){notice(finalize,'샘플 패널은 메인에 게시할 수 없습니다.');return;}const result=await client.save({operation:'finalize',id,version,input:{note:'관리자 간편 확정'}});if(!result?.ok){notice(finalize,messages[result?.error]||`처리하지 못했습니다. (${result?.error||'연결 오류'})`);return;}notice(finalize,'메인 게시를 완료했습니다.');await onSaved(result,'finalize');}catch{notice(finalize,'게시 결과를 확인하지 못했습니다. 잠시 후 게시 버튼만 다시 눌러 주세요.');}finally{s.busy=false;if(button)button.disabled=false;}return;}
+  const finalize=event.target.closest('[data-ai-finalize]');if(finalize){event.preventDefault();const s=state(finalize);if(s.busy)return;const id=finalize.dataset.id,version=Number(finalize.dataset.version)||0,sample=finalize.dataset.sample==='1',button=finalize.querySelector('button');s.busy=true;if(button)button.disabled=true;notice(finalize,'결과를 한 번에 확정하고 메인에 게시하고 있습니다…');try{if(sample){notice(finalize,'샘플 패널은 메인에 게시할 수 없습니다.');return;}const result=await client.save({operation:'finalize',id,version,input:{note:'관리자 간편 확정'}});if(!result?.ok){notice(finalize,result?.error==='AI_PANEL_STORAGE_FAILED'?'게시용 저장소 응답이 지연되었습니다. AI/HUMAN 자료는 유지되어 있으니 잠시 후 게시 버튼만 다시 눌러 주세요.':(messages[result?.error]||`처리하지 못했습니다. (${result?.error||'연결 오류'})`));return;}notice(finalize,'메인 게시를 완료했습니다.');await onSaved(result,'finalize');}catch{notice(finalize,'게시 결과를 확인하지 못했습니다. 잠시 후 게시 버튼만 다시 눌러 주세요.');}finally{s.busy=false;if(button)button.disabled=false;}return;}
   const search=event.target.closest('[data-ai-search]');if(search){event.preventDefault();navigate('/ai-panel?'+new URLSearchParams(new FormData(search)));return;}
   const form=event.target.closest('[data-ai-form]');if(!form)return;event.preventDefault();const s=state(form);if(s.busy)return;
   if([...s.files.values()].some(x=>x!=='ready')){notice(form,'파일 읽기가 끝났는지 확인하고, 실패한 파일은 다시 선택해 주세요.');return;}
@@ -112,6 +112,7 @@ export function bindAiPanelInteractions(root,{client,onSaved=()=>{},navigate=()=
     else if(code.startsWith('PROFILE_MISSING:'))friendly=`통합파일의 프로필 정보가 일부 비어 있습니다: ${code.split(':')[1]} (누락 ${code.split(':')[2]}건).`;
     else if(code==='PROFILE_BASE_REQUIRED')friendly='통합파일을 처음 적용할 기준 패널의 인구구조 출처가 없습니다. 고급설정에서 정식 패널을 한 번만 확인해 주세요.';
     else if(code==='FILE')friendly='AI 통합파일이 너무 큽니다. 4MB 이하 JSON 파일을 선택해 주세요.';
+    else if(code==='AI_PANEL_STORAGE_FAILED')friendly='AI 통합파일 저장 중 저장소 응답이 지연되었습니다. 파일 검증 오류가 아니라 서버 저장 단계 문제입니다. 잠시 후 같은 파일을 다시 선택해 주세요.';
     notice(form,friendly||'응답파일을 처리하지 못했습니다. 파일 형식을 확인해 주세요.');}
    finally{s.busy=false;simple.disabled=false;}
    return;
