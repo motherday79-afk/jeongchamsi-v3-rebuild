@@ -1,4 +1,4 @@
-import {serviceIconSvg,moduleActionIconSvg} from '../ui/service-icons.js?v=0.0.31.194';
+import {serviceIconSvg,moduleActionIconSvg} from '../ui/service-icons.js?v=0.0.31.197';
 // Pure HTML renderers. Mutations and JSON/file handling live in ai-panel-interactions.
 const esc=(v='')=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const arr=v=>Array.isArray(v)?v:[];
@@ -92,7 +92,30 @@ function directory(r,mode,p,items,idHistory){
   return `${search}<div class="ai-explorer">${list}${body}</div>`;
 }
 function method(r,mode){const env=r.environments?.[mode]||{};return `<section class="ai-section"><h3>조사 방법과 정보환경</h3>${disclosure}${runMeta(r)}${metadata([['사용 AI 모델',r.results?.[mode]?.model],['실행일',r.results?.[mode]?.executedAt],['모드',mode],['환경 메모',env.notes],['인구자료 기준일',r.panel?.population?.referenceDate],['인구구조 메모',r.panel?.population?.notes]])}<p class="ai-muted">EXPOSED는 공개 여론조사 결과를 포함할 수 있습니다. BLIND는 인간 조사 결과 숫자를 제공하지 않는 대조 모드입니다. 입력 자료의 조사 수치 노출 여부를 확인해야 합니다.</p><h3>정보환경 자료</h3>${arr(env.sources).map(s=>`<article class="ai-history-row"><div><strong>${esc(s.title||'정보 자료')}</strong><p>${esc(value(s.publishedAt))} · 여론조사 수치 ${s.containsPollNumbers?'포함':'미포함'}</p></div></article>`).join('')||'<p>등록된 자료가 없습니다.</p>'}</section>`;}
-function reasons(r,mode){return `<section class="ai-section"><h3>AI 응답 이유</h3><p class="ai-muted">각 응답의 판단 이유를 JCS AI PANEL의 INTELLIGENCE 데이터 형식으로 표시합니다.</p>${arr(r.results?.[mode]?.responses).map(row=>`<details><summary>${esc(row.id)} · ${esc(choices[row.choice]||row.choice)}</summary>${answer(row)}${link(route('/ai-panel',{id:r.id,tab:'panels',mode,panel:row.id}),'프로필 보기')}</details>`).join('')||'<p>등록된 응답이 없습니다.</p>'}</section>`;}
+const reasonChoiceOrder=['very-positive','positive','negative','very-negative','undecided'];
+const reasonTone={
+ 'very-positive':'strong-positive',positive:'positive',negative:'negative','very-negative':'strong-negative',undecided:'undecided'
+};
+const reasonTop=(rows,total)=>{
+ const counts=new Map();
+ for(const row of rows){const key=String(row.reason||'미제공').trim()||'미제공';counts.set(key,(counts.get(key)||0)+1);}
+ return [...counts.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'ko')).slice(0,3).map(([label,count])=>({label,count,pct:total?count/total*100:0}));
+};
+const profileBrief=profile=>[profile?.age,profile?.gender,profile?.region,profile?.occupation].filter(v=>v!==undefined&&v!==null&&String(v).trim()).map(value).join(' · ');
+const reasonIdRow=(row,profile,index)=>`<details class="ai-reason-id" data-ai-reason-item ${index>=20?'hidden':''}><summary><span class="ai-reason-id-main"><b>${esc(row.id)}</b><small>${esc(profileBrief(profile)||'프로필 정보 확인')}</small></span><span class="ai-reason-id-cause">${esc(value(row.reason))}</span></summary><div class="ai-reason-id-body">${profile?metadata(profileFields.map(([k,l])=>[l,profile[k]])):''}${answer(row)}${link(route('/ai-panel',{id:row.runId||'',tab:'panels',mode:row.mode||'EXPOSED',panel:row.id}),'AI 패널 프로필 전체보기','ai-outline')}</div></details>`;
+function reasons(r,mode){
+ const responses=arr(r.results?.[mode]?.responses),profiles=new Map(arr(r.panel?.profiles).map(profile=>[profile.id,profile])),total=responses.length;
+ if(!total)return '<section class="ai-section"><h3>AI 응답 이유</h3><p>등록된 응답이 없습니다.</p></section>';
+ const overview=reasonChoiceOrder.map(choice=>{const rows=responses.filter(row=>row.choice===choice);return `<div class="ai-reason-overview-card ${reasonTone[choice]||''}"><span>${esc(choices[choice]||choice)}</span><strong>${rows.length}명</strong><small>${pct(total?rows.length/total*100:null)}</small></div>`;}).join('');
+ const groups=reasonChoiceOrder.map(choice=>{
+  const rows=responses.filter(row=>row.choice===choice);if(!rows.length)return '';
+  const top=reasonTop(rows,rows.length),hidden=Math.max(0,rows.length-20);
+  const topHtml=top.length?`<div class="ai-reason-top"><span class="ai-reason-top-label">주요 이유 TOP ${top.length}</span>${top.map((item,index)=>`<div class="ai-reason-top-item"><b>${index+1}</b><span>${esc(item.label)}</span><strong>${item.count}명 · ${pct(item.pct)}</strong></div>`).join('')}</div>`:'';
+  const idRows=rows.map((row,index)=>reasonIdRow({...row,runId:r.id,mode},profiles.get(row.id),index)).join('');
+  return `<details class="ai-reason-category ${reasonTone[choice]||''}" data-ai-reason-category><summary><span><b>${esc(choices[choice]||choice)}</b><small>응답 카테고리</small></span><strong>${rows.length}명 · ${pct(rows.length/total*100)}</strong></summary><div class="ai-reason-category-body">${topHtml}<div class="ai-reason-id-head"><span>AI ID ${rows.length}개</span><small>각 ID를 펼치면 프로필과 INTELLIGENCE 응답을 확인할 수 있습니다.</small></div><div class="ai-reason-id-list">${idRows}</div>${hidden?`<button type="button" class="ai-outline ai-reason-more" data-ai-reason-more>더보기 +20 <span>(${hidden}명 남음)</span></button>`:''}</div></details>`;
+ }).join('');
+ return `<section class="ai-section ai-reasons-section"><div class="ai-reason-title"><div><span class="ai-kicker">JCS AI PANEL · RESPONSE INTELLIGENCE</span><h3>AI 응답 이유</h3></div><p class="ai-muted">응답 형태별로 묶어서 보고, 각 카테고리를 펼치면 실제 AI ID와 판단 근거를 순서대로 확인할 수 있습니다.</p></div><div class="ai-reason-overview">${overview}</div><div class="ai-reason-groups">${groups}</div></section>`;
+}
 export function renderAiPanelPublic({list={},detail={},params={},idHistory={},human={}}={}){
   const p=paramsOf(params),items=arr(list.items).filter(published),r=published(detail.item)?detail.item:(!p.id?items[0]:null),tab=['compare','panels','history','reasons'].includes(p.tab)?p.tab:'compare',mode=modeFor(r,p);
   const heading=`<header class="ai-hero ai-public-hero"><span class="ai-poll-icon ai-poll-icon-large">${serviceIconSvg('survey')}</span><div><span class="ai-kicker">HUMAN ↔ AI POLL</span><h1>JCS 여론조사</h1></div></header>`;
