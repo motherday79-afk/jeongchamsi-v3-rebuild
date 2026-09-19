@@ -1,0 +1,17 @@
+Verifies
+Verified using v1 scheme (JAR signing): false
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): true
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Signer #1 certificate DN: CN=JCS Private Installation Preview
+Signer #1 certificate SHA-256 digest: ffe496387d9a3c941f3576374cb745b08271b75234defe4d1a857bb3bc9494b9
+Signer #1 certificate SHA-1 digest: 93fed32394f197e98abd13dfc130bb5425a46940
+Signer #1 certificate MD5 digest: bebb2d55373485e2b72bdecce46bc016
+Signer #1 key algorithm: RSA
+Signer #1 key size (bits): 3072
+Signer #1 public key SHA-256 digest: eacd37dd49121e7f924e929855679b8e1f7309c95e76e574e6229a8c540626af
+Signer #1 public key SHA-1 digest: f803c7698ab98c350a371d26eff3a04f6cdeb74d
+Signer #1 public key MD5 digest: ff485c3dc8775a64071a116ad476ff4d

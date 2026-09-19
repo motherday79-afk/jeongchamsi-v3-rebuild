@@ -1,0 +1,20 @@
+{
+  "failureReproduced": true,
+  "failedRequest": "tools",
+  "correctedRequest": [
+    "platform-tools",
+    "platforms;android-35",
+    "build-tools;35.0.0"
+  ],
+  "correctedInstallExitCode": 0,
+  "toolVersions": {
+    "aapt2": "Android Asset Packaging Tool (aapt) 2.19-11948202",
+    "d8": "D8 8.6.2-dev (build abaab469b5ebd4dd2bb91ba0ed6f45277faae4ca from go/r8bot (luci-r8-custom-ci-archive-0-77gl))",
+    "apksigner": "0.9"
+  },
+  "mainDispatcherChecksOut": "android-minimal-webview",
+  "mainDispatcherStepCountUnchanged": 5,
+  "existing167NativeSourcesChanged": false,
+  "signingSecretsForwardedNotReplaced": true,
+  "githubRunExecuted": false
+}

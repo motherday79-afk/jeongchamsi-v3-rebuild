@@ -1,0 +1,13 @@
+{
+  "approvedPngSha256": "4d0922dc35204aa27260f35a05c4ed4f1aa5e5a871e5657de39f83b446a58e9e",
+  "dimensions": [
+    1536,
+    1024
+  ],
+  "visibleAlphaThreshold": 1,
+  "maxVisibleRadiusIn108dp": 32.68803775848284,
+  "safeRadius": 33,
+  "sourceAlpha1SpecklesOutsideSafeCircle": 40,
+  "originalPixelsInCompiledApkIdentical": true,
+  "launcherBoundsRelative": true
+}

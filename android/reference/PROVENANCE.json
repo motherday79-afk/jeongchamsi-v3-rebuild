@@ -1,0 +1,26 @@
+{
+  "source_zip": "app-debug.zip",
+  "source_apk": "app-debug.apk",
+  "source_apk_sha256": "956e3d90390770bf2c0dc6a7635a63532a44839d92d883ecc3459c2a758bb76d",
+  "source_dex": "classes3.dex",
+  "source_dex_sha256": "84bb1e423a1ad018e9c74a84923be912d22b43ff27fbcc8e959bc2b5ade1d2cf",
+  "preserved_class": "com.jeongchamsi.preview.IntroView",
+  "preserved_method_count": 20,
+  "local_tests": {
+    "python_test_methods": 16,
+    "back_policy_assertions": 12,
+    "back_layer_assertions": 8
+  },
+  "github_workflow_write": "attempted; denied HTTP 403 Resource not accessible by integration",
+  "repository_modified": false,
+  "android_sdk_build_executed": false,
+  "apk_generated": false,
+  "device_installation_tested": false,
+  "live_site_navigation_tested_on_device": false,
+  "website_source_reviewed": {
+    "repository": "motherday79-afk/jeongchamsi-v3-rebuild",
+    "branch": "main",
+    "navigation_file_sha": "b1b8c14793d747c482c47b56cc685e52f940ea7b",
+    "interactions_file_sha": "6fd067071baa94586bb62c1e5757242f40c6c6d7"
+  }
+}
