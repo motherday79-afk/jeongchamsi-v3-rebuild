@@ -1,0 +1,11 @@
+JCS 0.0.31.204 POLIMARBLE DESIGN REBUILD VERIFY
+
+- Engine tests: 8/8 PASS
+- JS syntax: PASS
+- Rendered board cells: 24
+- Dynamic moving board character: 1
+- Right control panel: 1
+- Runtime full DESIGN_SOURCE_OF_TRUTH background reference: 0
+- Sidebar entry asset: sidebar-entry-31-204.webp
+- Sequential one-cell movement: retained
+- Fixed decorative character on board tiles: removed

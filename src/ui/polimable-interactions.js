@@ -1,5 +1,5 @@
-import {renderPoliMarblePage} from '../views/polimable-page.js?v=0.0.31.203';
-import {POLIMARBLE_BOARD as BOARD} from '../core/polimable-data.js?v=0.0.31.203';
+import {renderPoliMarblePage} from '../views/polimable-page.js?v=0.0.31.204';
+import {POLIMARBLE_BOARD as BOARD} from '../core/polimable-data.js?v=0.0.31.204';
 
 const sessionKey='jcs:polimable:active-session';
 const contexts=new WeakMap();
@@ -13,27 +13,14 @@ async function loadRank(ctx,client,scope=ctx.scope){const result=await client.le
 async function animateMoveSequence(mount,ctx,fromState,toState){
   const steps=(toState?.lastDice||[]).reduce((sum,value)=>sum+Number(value||0),0);
   if(!fromState||!steps)return mount;
-  const startPos=Number(fromState.position||0);
-  const boardSize=BOARD.length;
-  const base=clone(fromState);
-  base.lastDice=toState.lastDice||[];
-  base.pendingChoice=null;
+  const startPos=Number(fromState.position||0),boardSize=BOARD.length,base=clone(fromState);
+  base.lastDice=toState.lastDice||[];base.pendingChoice=null;
   for(let step=1;step<=steps;step+=1){
-    const transient=clone(base);
-    transient.position=(startPos+step)%boardSize;
-    transient._moving=true;
-    transient._moveProgress=step;
-    transient._moveTotal=steps;
-    ctx.state=transient;
-    ctx.message=`총총총 ${step}/${steps}칸 이동 중...`;
-    mount=paint(mount,ctx);
-    await wait(step===steps?170:190);
+    const transient=clone(base);transient.position=(startPos+step)%boardSize;transient._moving=true;transient._moveProgress=step;transient._moveTotal=steps;
+    ctx.state=transient;ctx.message=`총총총 ${step}/${steps}칸 이동 중...`;mount=paint(mount,ctx);await wait(step===steps?175:185);
   }
   return mount;
 }
 export async function hydratePoliMarble(root,client,session){let mount=root.querySelector?.('[data-pm-root]');if(!mount)return;let ctx={session,state:null,leaderboard:null,scope:'today',message:'주사위를 굴려 정참시의 오늘을 만들어봐요! 💜',recordMode:false,busy:false};contexts.set(mount,ctx);await loadRank(ctx,client);if(session?.authenticated){const id=loadSession();if(id){const resumed=await client.resume(id).catch(()=>null);if(resumed?.ok&&resumed.state){ctx.state=resumed.state;ctx.message=resumed.state.status==='playing'?'이어서 플레이할 수 있어요. 🎲':'이전 기록을 확인했어요.';}else saveSession('');}}paint(mount,ctx);}
 
-export function bindPoliMarbleInteractions(root,{client,navigate}={}){if(root.__jcsPolimableBound)return;root.__jcsPolimableBound=true;root.addEventListener('click',async event=>{const button=event.target.closest?.('[data-pm-start],[data-pm-roll],[data-pm-choice],[data-pm-card],[data-pm-record-open],[data-pm-record-cancel],[data-pm-record],[data-pm-scope],[data-pm-login]');if(!button)return;let mount=button.closest('[data-pm-root]');if(!mount)return;let ctx=contexts.get(mount);if(!ctx)return;event.preventDefault();if(button.hasAttribute('data-pm-login')){navigate?.('/login');return;}if(button.hasAttribute('data-pm-record-open')){ctx.recordMode=true;paint(mount,ctx);return;}if(button.hasAttribute('data-pm-record-cancel')){ctx.recordMode=false;paint(mount,ctx);return;}if(button.hasAttribute('data-pm-scope')){ctx.busy=true;mount=paint(mount,ctx);await loadRank(ctx,client,button.dataset.pmScope);ctx.busy=false;paint(mount,ctx);return;}if(!ctx.session?.authenticated){navigate?.('/login');return;}const recordInitials=button.hasAttribute('data-pm-record')?(mount.querySelector('[data-pm-initials]')?.value||ctx.state?.initials||'JCS'):'';const previousState=ctx.state?clone(ctx.state):null;ctx.busy=true;mount=paint(mount,ctx);let result=null;try{if(button.hasAttribute('data-pm-start'))result=await client.start();else if(button.hasAttribute('data-pm-roll'))result=await client.roll(ctx.state?.sessionId);else if(button.hasAttribute('data-pm-choice'))result=await client.choice(ctx.state?.sessionId,button.dataset.pmChoice);else if(button.hasAttribute('data-pm-card'))result=await client.card(ctx.state?.sessionId,button.dataset.pmCard);else if(button.hasAttribute('data-pm-record')){result=await client.cashout(ctx.state?.sessionId,recordInitials);}if(!result?.ok)throw new Error(result?.error||'REQUEST_FAILED');
-if(button.hasAttribute('data-pm-roll')&&previousState&&result.state){mount=await animateMoveSequence(mount,ctx,previousState,result.state);}
-ctx.state=result.state||ctx.state;if(result.state?.sessionId)saveSession(result.state.sessionId);if(button.hasAttribute('data-pm-record')){ctx.recordMode=false;ctx.message=`${Number(result.recordedScore||0).toLocaleString('ko-KR')}점 기록 완료! 🏆`;await loadRank(ctx,client);}else{const last=ctx.state?.lastEvents?.at?.(-1)||ctx.state?.lastEvents?.[ctx.state.lastEvents.length-1];ctx.message=last?`${last.title} · ${last.message}`:'좋아요! 다음 걸음을 이어가볼까요?';}if(ctx.state?.status==='cashed_out')saveSession('');}catch(error){const code=String(error?.message||'');ctx.message=errorMessage(code);if(code==='GAME_SESSION_NOT_FOUND')saveSession('');}finally{ctx.busy=false;if(ctx.state&&ctx.state._moving)delete ctx.state._moving;paint(document.querySelector('[data-pm-root]')||mount,ctx);}});
-}
+export function bindPoliMarbleInteractions(root,{client,navigate}={}){if(root.__jcsPolimableBound)return;root.__jcsPolimableBound=true;root.addEventListener('click',async event=>{const button=event.target.closest?.('[data-pm-start],[data-pm-roll],[data-pm-choice],[data-pm-card],[data-pm-record-open],[data-pm-record-cancel],[data-pm-record],[data-pm-scope],[data-pm-login]');if(!button)return;let mount=button.closest('[data-pm-root]');if(!mount)return;let ctx=contexts.get(mount);if(!ctx)return;event.preventDefault();if(button.hasAttribute('data-pm-login')){navigate?.('/login');return;}if(button.hasAttribute('data-pm-record-open')){ctx.recordMode=true;paint(mount,ctx);return;}if(button.hasAttribute('data-pm-record-cancel')){ctx.recordMode=false;paint(mount,ctx);return;}if(button.hasAttribute('data-pm-scope')){ctx.busy=true;mount=paint(mount,ctx);await loadRank(ctx,client,button.dataset.pmScope);ctx.busy=false;paint(mount,ctx);return;}if(!ctx.session?.authenticated){navigate?.('/login');return;}const recordInitials=button.hasAttribute('data-pm-record')?(mount.querySelector('[data-pm-initials]')?.value||ctx.state?.initials||'JCS'):'';const previousState=ctx.state?clone(ctx.state):null;ctx.busy=true;mount=paint(mount,ctx);let result=null;try{if(button.hasAttribute('data-pm-start'))result=await client.start();else if(button.hasAttribute('data-pm-roll'))result=await client.roll(ctx.state?.sessionId);else if(button.hasAttribute('data-pm-choice'))result=await client.choice(ctx.state?.sessionId,button.dataset.pmChoice);else if(button.hasAttribute('data-pm-card'))result=await client.card(ctx.state?.sessionId,button.dataset.pmCard);else if(button.hasAttribute('data-pm-record'))result=await client.cashout(ctx.state?.sessionId,recordInitials);if(!result?.ok)throw new Error(result?.error||'REQUEST_FAILED');if(button.hasAttribute('data-pm-roll')&&previousState&&result.state)mount=await animateMoveSequence(mount,ctx,previousState,result.state);ctx.state=result.state||ctx.state;if(result.state?.sessionId)saveSession(result.state.sessionId);if(button.hasAttribute('data-pm-record')){ctx.recordMode=false;ctx.message=`${Number(result.recordedScore||0).toLocaleString('ko-KR')}점 기록 완료! 🏆`;await loadRank(ctx,client);}else{const last=ctx.state?.lastEvents?.at?.(-1)||ctx.state?.lastEvents?.[ctx.state.lastEvents.length-1];ctx.message=last?`${last.title} · ${last.message}`:'좋아요! 다음 걸음을 이어가볼까요?';}if(ctx.state?.status==='cashed_out')saveSession('');}catch(error){const code=String(error?.message||'');ctx.message=errorMessage(code);if(code==='GAME_SESSION_NOT_FOUND')saveSession('');}finally{ctx.busy=false;if(ctx.state&&ctx.state._moving)delete ctx.state._moving;paint(document.querySelector('[data-pm-root]')||mount,ctx);}});}
