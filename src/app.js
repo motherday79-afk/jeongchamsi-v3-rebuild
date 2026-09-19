@@ -1,6 +1,6 @@
 import {createAiPanelClient} from './core/ai-panel-client.js?v=0.0.31.185';
-import {loadAiPanelPage} from './core/ai-panel-routing.js?v=0.0.31.188';
-import {bindAiPanelInteractions} from './ui/ai-panel-interactions.js?v=0.0.31.188';
+import {loadAiPanelPage} from './core/ai-panel-routing.js?v=0.0.31.189';
+import {bindAiPanelInteractions} from './ui/ai-panel-interactions.js?v=0.0.31.189';
 import {bindPersonRefresh,loadMemberRefresh,watchAnalysisAccess} from './ui/person-refresh.js?v=0.0.31.177';
 import { bindRankingWeights, rankingWeightsReady, updateRunningRankingWeights } from './ui/ranking-weights.js?v=0.0.31.174';
 import { createGroupClient } from './core/group-client.js?v=0.0.31.172';
@@ -297,7 +297,24 @@ async function render({preserveScroll=false,refreshHome=false,freshSession=false
 navigation=createNavigation({window,readSnapshot:()=>['groups','ai-panel'].includes(parts(route())[0])||route().startsWith('/admin/ai-panel')||isTransientAnalysisRoute(route())?'':app.innerHTML,restoreSnapshot:markup=>{app.innerHTML=markup;if(document.querySelector('.product-home-wrap')&&homeSnapshot)homeSnapshot.node=app.firstElementChild;},rebind:()=>{++renderSequence;const cachedRoute=parts(route());if(['mypage','points','campaigns','person','compare'].includes(cachedRoute[0]))queueMicrotask(()=>void render({preserveScroll:true}));else if(cachedRoute[0]==='search'){const params=new URLSearchParams(route().split('?')[1]||'');void loadSearchDiscovery(document,campaigns,(params.get('q')||'').trim(),{groups,session:()=>auth.session()});}else if(!cachedRoute.length)void refreshCachedMemberSummary();setupLayoutInteractions(document,{politicianSearch:(query,limit)=>politicians.search(query,limit)});setupMemberBadgeManagers();void hydrateVisibleActivityHints();showActivityFeedback(document,{identity:activeSessionIdentity});if(document.querySelector('.jc55'))queueMicrotask(()=>void render({preserveScroll:true}));if(pipelineActive())queueMicrotask(resumeAdminIntelligence);},onRoute:(_route,options)=>void render(options)});
 navigation.start();
 bindCageTitleEditors(document);
-bindAiPanelInteractions(document,{client:aiPanel,navigate:target=>navigation.navigate(target),onSaved:async(result,operation)=>{homeSnapshot=null;navigation.clearCache();const target=operation==='collect'?route():operation==='panel-create'?'/admin/ai-panel?tab=panels':'/admin/ai-panel?id='+encodeURIComponent(result.item.id);if(target===route())await render({preserveScroll:true});else navigation.navigate(target);}});
+async function refreshAiPanelAdmin(operation){
+  homeSnapshot=null;navigation.clearCache();
+  if(operation==='panel-create'){navigation.navigate('/admin/ai-panel?tab=panels');return;}
+  if(!route().startsWith('/admin/ai-panel')){await render({preserveScroll:true});return;}
+  try{
+    const session=await auth.session();
+    const params=new URLSearchParams(route().split('?')[1]||'');
+    params.delete('id');params.delete('history');params.set('tab','runs');
+    const markup=await loadAiPanelPage({admin:true,params,session,client:aiPanel});
+    const current=document.querySelector('.ai-panel.ai-page.ai-admin');
+    if(!current){await render({preserveScroll:true});return;}
+    current.outerHTML=markup;
+    const step=operation==='simple-upload'?'3':operation==='collect'?'1':operation==='finalize'?'3':null;
+    if(step)queueMicrotask(()=>document.querySelector(`[data-ai-step="${step}"]`)?.scrollIntoView({block:'nearest'}));
+    navigation?.cacheCurrent();
+  }catch{await render({preserveScroll:true});}
+}
+bindAiPanelInteractions(document,{client:aiPanel,navigate:target=>navigation.navigate(target),onSaved:async(_result,operation)=>refreshAiPanelAdmin(operation)});
 bindGroupInteractions(document,{client:groups,onSaved:async(_result,targetRoute)=>{
   navigation.clearCache();
   if(targetRoute){if(targetRoute===route())await render({preserveScroll:true});else navigation.navigate(targetRoute);}
