@@ -1,0 +1,21 @@
+JCS 0.0.31.207 VERIFY
+======================
+
+[PASS] polimable engine/service tests: 8/8
+[PASS] object UI tests: 2/2
+[PASS] polimable total selected tests: 10/10
+[PASS] JS syntax: app.js / polimable-page.js / polimable-interactions.js
+[PASS] rendered board cells: 24
+[PASS] rendered moving player tokens: 1
+[PASS] no is-active / has-player / pm-cell-anchor / pm-moving-avatar markers
+[PASS] no full DESIGN_SOURCE_OF_TRUTH screenshot referenced by runtime polimable UI
+[PASS] PC render viewport 1440x900: stage 1200x675.34
+[PASS] mobile landscape 844x390: stage 844x390
+[PASS] mobile landscape horizontal overflow: none (scrollWidth 844 == innerWidth 844)
+[PASS] current-position cell glow/pulse: none
+[PASS] movement animation: player Minime only
+
+FULL npm test note:
+The provided project archive does not include node_modules. Existing unrelated tests that import
+@vercel/blob and @vercel/nft fail at module loading in this container. This is an environment/dependency
+limitation, not a Polimable test failure.
