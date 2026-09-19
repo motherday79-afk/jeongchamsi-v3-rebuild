@@ -11,6 +11,19 @@ const choiceAliases={
  'very-negative':'very-negative',very_negative:'very-negative','매우 잘못하고 있다':'very-negative','매우잘못함':'very-negative',
  undecided:'undecided','판단 유보 / 모르겠다':'undecided','판단유보':'undecided','모르겠다':'undecided'
 };
+const integratedProfileFields=['gender','age','region','politicalInterest','pollExposure','occupation','education','income','household','housing','newsConsumption','politicalNewsExposure','criteria','axes'];
+const requiredIntegratedProfileFields=['gender','age','region','politicalInterest','pollExposure'];
+function integratedProfiles(rows){
+ const hasProfileData=rows.some(row=>row&&typeof row==='object'&&requiredIntegratedProfileFields.some(key=>row[key]!==undefined));
+ if(!hasProfileData)return null;
+ const missing=[];
+ const profiles=rows.map((row,index)=>{
+  for(const key of requiredIntegratedProfileFields)if(row?.[key]===undefined||row?.[key]===null||(typeof row?.[key]==='string'&&!row[key].trim()))missing.push(`${row?.id||`#${index+1}`}:${key}`);
+  return Object.fromEntries([['id',row?.id],...integratedProfileFields.filter(key=>row?.[key]!==undefined).map(key=>[key,row[key]])]);
+ });
+ if(missing.length)throw Error(`PROFILE_MISSING:${missing.slice(0,5).join(',')}:${missing.length}`);
+ return profiles;
+}
 function normalizeOperatorResponses(rows){
  if(!Array.isArray(rows))throw Error('RESP_FORMAT');
  if(rows.length!==1000)throw Error(`RESP_COUNT:${rows.length}`);
@@ -48,20 +61,26 @@ export function aiPanelPayload(operation,data){
 }
 const messages={HUMAN_POLL_BUSY:'다른 수집이 진행 중입니다. 잠시 후 다시 확인해 주세요.',HUMAN_POLL_FORBIDDEN:'관리자 로그인을 확인해 주세요.',HUMAN_POLL_ORIGIN_INVALID:'페이지를 새로고침한 뒤 다시 시도해 주세요.',HUMAN_POLL_UNAVAILABLE:'수집 상태를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.',AI_PANEL_CONFLICT:'다른 관리자가 자료를 변경했습니다. 새로고침 후 다시 시도해 주세요.',AI_PANEL_FORBIDDEN:'관리자 로그인을 확인해 주세요.',AI_PANEL_LOCKED:'이미 확정된 AI 자료입니다. 새 회차를 만들어 주세요.',AI_PANEL_NETWORK_FAILED:'연결하지 못했습니다. 입력 내용은 유지됩니다.',AI_PANEL_INPUT_INVALID:'필수 입력값 또는 파일 형식을 확인해 주세요.',AI_PANEL_RERUN_REQUIRED:'같은 주차의 재실행은 재실행 사유가 필요합니다.',AI_PANEL_ENVIRONMENT_REQUIRED:'먼저 AI 참고자료를 저장해 주세요.',AI_PANEL_RESPONSES_REQUIRED:'먼저 AI 응답파일을 등록해 주세요.',AI_PANEL_RESPONSES_INVALID:'AI 응답파일의 ID 수·중복·응답값을 확인해 주세요.',AI_PANEL_HUMAN_REQUIRED:'게시하려면 긍정·부정·유보가 모두 있는 HUMAN 자료를 비교 가능으로 저장해 주세요.',AI_PANEL_HUMAN_INVALID:'HUMAN 조사 숫자와 원문 URL을 확인해 주세요.',AI_PANEL_HUMAN_DUPLICATE:'이미 등록된 HUMAN 조사입니다.',AI_PANEL_REVIEW_REQUIRED:'먼저 결과 검수를 완료해 주세요.',AI_PANEL_PUBLISH_INVALID:'정식 1,000명 패널만 게시할 수 있습니다.',AI_PANEL_BLIND_POLL_LEAKAGE:'BLIND 모드에는 여론조사 수치가 포함된 자료를 넣을 수 없습니다.'};
 export async function simpleOperatorUpload({client,panelId,responses}={}){
- if(!client)throw Error('AI_PANEL_NETWORK_FAILED');responses=normalizeOperatorResponses(responses);
+ if(!client)throw Error('AI_PANEL_NETWORK_FAILED');responses=normalizeOperatorResponses(responses);const profiles=integratedProfiles(responses);
  const [manage,human]=await Promise.all([client.list({manage:true}),client.humanPolls()]);
  if(!manage?.ok)throw Error(manage?.error||'AI_PANEL_NETWORK_FAILED');if(!human?.ok)throw Error(human?.error||'HUMAN_POLL_UNAVAILABLE');
  const polls=latestHumanItems(human.items).filter(usablePoll);if(!polls.length)throw Error('AI_PANEL_HUMAN_REQUIRED');
- panelId=panelId||manage.panels?.find(p=>!p.isSample&&(p.profileCount===1000||p.count===1000))?.id;const selectedPanel=manage.panels?.find(p=>p.id===panelId);if(!selectedPanel||selectedPanel.isSample||(selectedPanel.profileCount??selectedPanel.count)!==1000)throw Error('AI_PANEL_INPUT_INVALID');
  const basisDate=polls.map(p=>p.publishedDate).filter(Boolean).sort().at(-1)||new Date().toISOString().slice(0,10),week=isoWeek(basisDate);
- const sameWeek=(manage.runs||[]).filter(r=>r.week===week).sort((a,b)=>(b.runNumber||0)-(a.runNumber||0));let result,run;
- const draft=sameWeek.find(r=>r.status==='draft');
+ let selectedPanel=manage.panels?.find(p=>p.id===panelId)||manage.panels?.find(p=>!p.isSample&&(p.profileCount===1000||p.count===1000));let result;
+ if(profiles){
+  if(!selectedPanel||selectedPanel.isSample||!selectedPanel.population?.sourceUrl||!selectedPanel.population?.referenceDate)throw Error('PROFILE_BASE_REQUIRED');
+  const population={...selectedPanel.population,notes:[selectedPanel.population?.notes,'통합 AI 파일 업로드로 프로필 1,000개 자동 갱신'].filter(Boolean).join(' · ')};
+  result=await client.save({operation:'panel-create',id:'',version:0,input:{name:`JCS 통합 패널 · ${basisDate}`,isSample:false,population,profiles}});if(!result?.ok)throw Error(result?.error||'AI_PANEL_INPUT_INVALID');selectedPanel=result.item;panelId=selectedPanel.id;
+ }
+ if(!selectedPanel||selectedPanel.isSample||(selectedPanel.profileCount??selectedPanel.count??selectedPanel.profiles?.length)!==1000)throw Error('AI_PANEL_INPUT_INVALID');panelId=panelId||selectedPanel.id;
+ const sameWeek=(manage.runs||[]).filter(r=>r.week===week).sort((a,b)=>(b.runNumber||0)-(a.runNumber||0));let run;
+ const draft=!profiles&&sameWeek.find(r=>r.status==='draft');
  if(draft){result=await client.get(draft.id,{edit:true});if(!result?.ok)throw Error(result?.error||'AI_PANEL_NETWORK_FAILED');run=result.item;}
- else{const latest=sameWeek[0],input={week,basisDate,question:'대통령이 대통령으로서의 직무를 잘 수행하고 있다고 보십니까, 잘못 수행하고 있다고 보십니까?',questionVersion:'v1',panelId,modes:['EXPOSED'],...(latest?{sourceRunId:latest.id,rerunReason:'관리자 동일 주차 AI 응답 재등록'}:{})};result=await client.save({operation:'create',id:'',version:0,input});if(!result?.ok)throw Error(result?.error||'AI_PANEL_NETWORK_FAILED');run=result.item;}
+ else{const latest=sameWeek[0],input={week,basisDate,question:'대통령이 대통령으로서의 직무를 잘 수행하고 있다고 보십니까, 잘못 수행하고 있다고 보십니까?',questionVersion:'v1',panelId,modes:['EXPOSED'],...(latest?{sourceRunId:latest.id,rerunReason:profiles?'관리자 동일 주차 통합 AI 파일 재등록':'관리자 동일 주차 AI 응답 재등록'}:{})};result=await client.save({operation:'create',id:'',version:0,input});if(!result?.ok)throw Error(result?.error||'AI_PANEL_NETWORK_FAILED');run=result.item;}
  let version=Number(run.version)||1;
  for(const poll of polls){if((run.humanPolls||[]).some(p=>p.id===poll.id))continue;const normalized={...poll,comparable:true,comparisonNote:poll.comparisonNote||'JCS AI 대통령 직무평가와 동일 주제의 최신 HUMAN 조사로 자동 연결'};result=await client.save({operation:'human',id:run.id,version,input:{poll:normalized}});if(!result?.ok&&result?.error!=='AI_PANEL_HUMAN_DUPLICATE')throw Error(result?.error||'AI_PANEL_NETWORK_FAILED');if(result?.ok){run=result.item;version=Number(run.version)||version+1;}}
- if(!run.environments?.EXPOSED){const sources=polls.map(p=>({title:`${p.institution} 최신 대통령 직무평가`,url:p.sourceUrl,containsPollNumbers:true,publishedAt:null}));result=await client.save({operation:'environment',id:run.id,version,input:{mode:'EXPOSED',notes:'관리자 간편 업로드 · 최신 HUMAN 조사 확인 후 ChatGPT에서 생성한 AI 응답파일',sources}});if(!result?.ok)throw Error(result?.error||'AI_PANEL_NETWORK_FAILED');run=result.item;version=Number(run.version)||version+1;}
- result=await client.save({operation:'responses',id:run.id,version,input:{mode:'EXPOSED',model:'ChatGPT · 관리자 업로드',executedAt:new Date().toISOString(),responses}});if(!result?.ok)throw Error(result?.error||'AI_PANEL_NETWORK_FAILED');return result;
+ if(!run.environments?.EXPOSED){const sources=polls.map(p=>({title:`${p.institution} 최신 대통령 직무평가`,url:p.sourceUrl,containsPollNumbers:true,publishedAt:null}));result=await client.save({operation:'environment',id:run.id,version,input:{mode:'EXPOSED',notes:'관리자 간편 업로드 · 최신 HUMAN 조사 확인 후 ChatGPT에서 생성한 통합 AI 파일',sources}});if(!result?.ok)throw Error(result?.error||'AI_PANEL_NETWORK_FAILED');run=result.item;version=Number(run.version)||version+1;}
+ result=await client.save({operation:'responses',id:run.id,version,input:{mode:'EXPOSED',model:'ChatGPT · 관리자 통합파일 업로드',executedAt:new Date().toISOString(),responses}});if(!result?.ok)throw Error(result?.error||'AI_PANEL_NETWORK_FAILED');return {...result,integratedProfiles:!!profiles};
 }
 export function bindAiPanelInteractions(root,{client,onSaved=()=>{},navigate=()=>{}}={}){
  const states=new WeakMap();const state=form=>{if(!states.has(form))states.set(form,{busy:false,files:new Map()});return states.get(form);};
@@ -79,17 +98,19 @@ export function bindAiPanelInteractions(root,{client,onSaved=()=>{},navigate=()=
   const simple=event.target.closest('[data-ai-simple-response]');
   if(simple){
    const form=simple.closest('[data-ai-simple-upload]'),file=simple.files?.[0],s=state(form);if(!file)return;if(s.busy)return;
-   s.busy=true;simple.disabled=true;notice(form,'AI 응답파일을 확인하고 있습니다…');
+   s.busy=true;simple.disabled=true;notice(form,'AI 통합파일을 확인하고 있습니다…');
    try{
     if(file.size>maxBytes)throw Error('FILE');const text=await file.text();const responses=parse(text,true);
     const result=await simpleOperatorUpload({client,panelId:form.dataset.panelId,responses});
-    notice(form,result?.item?.sourceRunId?'AI 응답 1,000개 확인 완료 · 새 RUN을 만들었습니다. 이제 ③ 메인에 재게시를 누르면 됩니다.':'AI 응답 1,000개 확인 완료 · ID 정상 · 중복 없음 · 응답값 정상. 이제 ③ 메인에 게시만 누르면 됩니다.');await onSaved(result,'simple-upload');
+    notice(form,result?.integratedProfiles?(result?.item?.sourceRunId?'프로필 1,000명 + 응답 1,000개 저장 완료 · 새 RUN을 만들었습니다. 이제 ③ 메인에 재게시를 누르면 됩니다.':'프로필 1,000명 + 응답 1,000개 저장 완료 · 이제 ③ 메인에 게시만 누르면 됩니다.'):(result?.item?.sourceRunId?'AI 응답 1,000개 확인 완료 · 새 RUN을 만들었습니다. 이제 ③ 메인에 재게시를 누르면 됩니다.':'AI 응답 1,000개 확인 완료 · ID 정상 · 중복 없음 · 응답값 정상. 이제 ③ 메인에 게시만 누르면 됩니다.'));await onSaved(result,'simple-upload');
    }catch(error){const code=String(error?.message||'');let friendly=messages[code]||messages[`AI_PANEL_${code}`];
     if(code.startsWith('RESP_COUNT:'))friendly=`AI 응답은 정확히 1,000개여야 합니다. 현재 ${code.split(':')[1]}개입니다.`;
     else if(code.startsWith('RESP_DUP:'))friendly=`중복 ID가 있습니다: ${code.split(':')[1]} (중복 ${code.split(':')[2]}건).`;
     else if(code.startsWith('RESP_ID:'))friendly=`ID 형식 또는 순서가 맞지 않습니다: ${code.split(':')[1]} (오류 ${code.split(':')[2]}건).`;
     else if(code.startsWith('RESP_CHOICE:'))friendly=`응답값을 읽지 못한 항목이 있습니다: ${code.split(':')[1]} (오류 ${code.split(':')[2]}건).`;
-    else if(code==='FILE')friendly='응답파일이 너무 큽니다. 4MB 이하 JSON 파일을 선택해 주세요.';
+    else if(code.startsWith('PROFILE_MISSING:'))friendly=`통합파일의 프로필 정보가 일부 비어 있습니다: ${code.split(':')[1]} (누락 ${code.split(':')[2]}건).`;
+    else if(code==='PROFILE_BASE_REQUIRED')friendly='통합파일을 처음 적용할 기준 패널의 인구구조 출처가 없습니다. 고급설정에서 정식 패널을 한 번만 확인해 주세요.';
+    else if(code==='FILE')friendly='AI 통합파일이 너무 큽니다. 4MB 이하 JSON 파일을 선택해 주세요.';
     notice(form,friendly||'응답파일을 처리하지 못했습니다. 파일 형식을 확인해 주세요.');}
    finally{s.busy=false;simple.disabled=false;}
    return;
