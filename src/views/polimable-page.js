@@ -103,7 +103,7 @@ export function renderPoliMarbleSidebarCard(data={},session={}){
     <button type="button" class="pm-side-entry pm-side-entry--overlay" data-layout-route="/polimable" aria-label="JCS 폴리마블 게임 바로가기">
       <img src="/assets/polimable/sidebar-entry-31-204.webp" alt="JCS 폴리마블">
       <div class="pm-side-overlay" aria-hidden="true">
-        <div class="pm-side-overlay-brand"><b>🎲 JCS 폴리마블</b><span>TODAY</span></div>
+        <div class="pm-side-overlay-brand"><span>TODAY</span></div>
         <div class="${statsClass}">
           <div class="pm-side-overlay-panel pm-side-overlay-king"><small>👑 TODAY KING</small><b>${kingText}</b></div>
           ${session?.authenticated?`<div class="pm-side-overlay-panel pm-side-overlay-me"><small>나의 오늘 기록</small><b>${meText}</b></div>`:''}
