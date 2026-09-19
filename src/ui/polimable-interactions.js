@@ -1,84 +1,68 @@
-import {renderPoliMarblePage} from '../views/polimable-page.js?v=0.0.31.209';
-import {POLIMARBLE_BOARD as BOARD} from '../core/polimable-data.js?v=0.0.31.209';
+const DICE_FACES=['⚀','⚁','⚂','⚃','⚄','⚅'];
+const STEP_MS=230;
 
-const sessionKey='jcs:polimable:active-session';
-const contexts=new WeakMap();
-const saveSession=id=>{try{id?sessionStorage.setItem(sessionKey,id):sessionStorage.removeItem(sessionKey);}catch{}};
-const loadSession=()=>{try{return sessionStorage.getItem(sessionKey)||'';}catch{return '';}};
-const errorMessage=code=>({LOGIN_REQUIRED:'로그인 후 플레이할 수 있습니다.',GAME_SESSION_NOT_FOUND:'이전 게임이 만료되었습니다. 새 게임을 시작해 주세요.',GAME_SESSION_FORBIDDEN:'현재 계정의 게임이 아닙니다.',CHOICE_REQUIRED:'먼저 운명의 선택을 완료해 주세요.',CARD_NOT_OWNED:'보유하지 않은 카드입니다.',GAME_NOT_ACTIVE:'새 게임을 시작해 주세요.'})[code]||'잠시 후 다시 시도해 주세요.';
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-const clone=value=>typeof structuredClone==='function'?structuredClone(value):JSON.parse(JSON.stringify(value));
-function paint(root,ctx){const page=root?.closest?.('.pm-page')||root;page.outerHTML=renderPoliMarblePage(ctx);const next=document.querySelector('[data-pm-root]');if(next)contexts.set(next,ctx);return next;}
-async function loadRank(ctx,client,scope=ctx.scope){const result=await client.leaderboard(scope).catch(()=>null);if(result?.ok){ctx.leaderboard=result.leaderboard;ctx.scope=scope;}return ctx;}
-async function animateMoveSequence(mount,ctx,fromState,toState){
-  const steps=(toState?.lastDice||[]).reduce((sum,value)=>sum+Number(value||0),0);
-  if(!fromState||!steps)return mount;
-  const startPos=Number(fromState.position||0),boardSize=BOARD.length,base=clone(fromState);
-  base.lastDice=toState.lastDice||[];base.pendingChoice=null;delete base._diceRolling;
-  for(let step=1;step<=steps;step+=1){
-    const transient=clone(base);transient.position=(startPos+step)%boardSize;transient._moving=true;transient._moveProgress=step;transient._moveTotal=steps;
-    ctx.state=transient;ctx.message=`총총총 ${step}/${steps}칸 이동 중...`;mount=paint(mount,ctx);await wait(step===steps?190:165);
-  }
-  return mount;
-}
-export async function hydratePoliMarble(root,client,session){
-  let mount=root.querySelector?.('[data-pm-root]');if(!mount)return;
-  let ctx={session,state:null,leaderboard:null,scope:'today',message:'주사위를 굴려 정참시의 오늘을 만들어봐요! 💜',recordMode:false,busy:false};
-  contexts.set(mount,ctx);await loadRank(ctx,client);
-  if(session?.authenticated){const id=loadSession();if(id){const resumed=await client.resume(id).catch(()=>null);if(resumed?.ok&&resumed.state){ctx.state=resumed.state;ctx.message=resumed.state.status==='playing'?'이어서 플레이할 수 있어요. 🎲':'이전 기록을 확인했어요.';}else saveSession('');}}
-  paint(mount,ctx);
-}
-
-export function bindPoliMarbleInteractions(root,{client,navigate}={}){
-  if(root.__jcsPolimableBound)return;root.__jcsPolimableBound=true;
-  root.addEventListener('click',async event=>{
-    const button=event.target.closest?.('[data-pm-start],[data-pm-roll],[data-pm-choice],[data-pm-card],[data-pm-record-open],[data-pm-record-cancel],[data-pm-record],[data-pm-scope],[data-pm-login]');
-    if(!button)return;
-    let mount=button.closest('[data-pm-root]');if(!mount)return;
-    let ctx=contexts.get(mount);if(!ctx)return;
-    event.preventDefault();
-    if(button.hasAttribute('data-pm-login')){navigate?.('/login');return;}
-    if(button.hasAttribute('data-pm-record-open')){ctx.recordMode=true;paint(mount,ctx);return;}
-    if(button.hasAttribute('data-pm-record-cancel')){ctx.recordMode=false;paint(mount,ctx);return;}
-    if(button.hasAttribute('data-pm-scope')){ctx.busy=true;mount=paint(mount,ctx);await loadRank(ctx,client,button.dataset.pmScope);ctx.busy=false;paint(mount,ctx);return;}
-    if(!ctx.session?.authenticated){navigate?.('/login');return;}
-
-    const recordInitials=button.hasAttribute('data-pm-record')?(mount.querySelector('[data-pm-initials]')?.value||ctx.state?.initials||'JCS'):'';
-    const previousState=ctx.state?clone(ctx.state):null;
-    const isRoll=button.hasAttribute('data-pm-roll');
-    ctx.busy=true;
-    if(isRoll&&ctx.state){ctx.state=clone(ctx.state);ctx.state._diceRolling=true;ctx.message='주사위를 굴리는 중...';}
-    mount=paint(mount,ctx);
-
-    let result=null;
-    try{
-      if(button.hasAttribute('data-pm-start')) result=await client.start();
-      else if(isRoll){
-        const request=client.roll(previousState?.sessionId||ctx.state?.sessionId);
-        const [rolled]=await Promise.all([request,wait(720)]);
-        result=rolled;
-      }
-      else if(button.hasAttribute('data-pm-choice')) result=await client.choice(ctx.state?.sessionId,button.dataset.pmChoice);
-      else if(button.hasAttribute('data-pm-card')) result=await client.card(ctx.state?.sessionId,button.dataset.pmCard);
-      else if(button.hasAttribute('data-pm-record')) result=await client.cashout(ctx.state?.sessionId,recordInitials);
-
-      if(!result?.ok)throw new Error(result?.error||'REQUEST_FAILED');
-      if(isRoll&&previousState&&result.state){
-        ctx.state=previousState;delete ctx.state._diceRolling;mount=paint(mount,ctx);
-        mount=await animateMoveSequence(mount,ctx,previousState,result.state);
-      }
-      ctx.state=result.state||ctx.state;
-      if(ctx.state){delete ctx.state._diceRolling;delete ctx.state._moving;}
-      if(result.state?.sessionId)saveSession(result.state.sessionId);
-      if(button.hasAttribute('data-pm-record')){ctx.recordMode=false;ctx.message=`${Number(result.recordedScore||0).toLocaleString('ko-KR')}점 기록 완료! 🏆`;await loadRank(ctx,client);}else{
-        const last=ctx.state?.lastEvents?.at?.(-1)||ctx.state?.lastEvents?.[ctx.state.lastEvents.length-1];ctx.message=last?`${last.title} · ${last.message}`:'좋아요! 다음 걸음을 이어가볼까요?';
-      }
-      if(ctx.state?.status==='cashed_out')saveSession('');
-    }catch(error){
-      const code=String(error?.message||'');ctx.message=errorMessage(code);if(code==='GAME_SESSION_NOT_FOUND')saveSession('');
-      if(ctx.state){delete ctx.state._diceRolling;delete ctx.state._moving;}
-    }finally{
-      ctx.busy=false;paint(document.querySelector('[data-pm-root]')||mount,ctx);
+const secureDie=()=>{
+  try{
+    if(globalThis.crypto?.getRandomValues){
+      const buf=new Uint32Array(1);
+      globalThis.crypto.getRandomValues(buf);
+      return (buf[0]%6)+1;
     }
+  }catch{}
+  return Math.floor(Math.random()*6)+1;
+};
+
+function setPlayerToTile(root,index,{moving=false}={}){
+  const player=root.querySelector('[data-pm-player]');
+  const tile=root.querySelector(`[data-pm-tile="${index}"]`);
+  if(!player||!tile)return;
+  const x=Number(tile.dataset.pmCx);
+  const y=Number(tile.dataset.pmCy);
+  if(!Number.isFinite(x)||!Number.isFinite(y))return;
+  player.style.left=`${x}%`;
+  player.style.top=`${y}%`;
+  player.dataset.pmPosition=String(index);
+  player.classList.toggle('is-moving',moving);
+}
+
+async function runMovementTest(root,button){
+  if(button.disabled)return;
+  const player=root.querySelector('[data-pm-player]');
+  const result=root.querySelector('[data-pm-dice-result]');
+  if(!player||!result)return;
+  button.disabled=true;
+  result.classList.add('is-rolling');
+  result.textContent='🎲';
+  await wait(260);
+  const rolled=secureDie();
+  result.textContent=DICE_FACES[rolled-1];
+  result.classList.remove('is-rolling');
+  let position=Number(player.dataset.pmPosition||0);
+  for(let step=0;step<rolled;step+=1){
+    position=(position+1)%24;
+    setPlayerToTile(root,position,{moving:true});
+    await wait(STEP_MS);
+  }
+  player.classList.remove('is-moving');
+  button.disabled=false;
+}
+
+export async function hydratePoliMarble(root){
+  const mount=root.querySelector?.('[data-pm-root]');
+  if(!mount)return;
+  setPlayerToTile(mount,0);
+}
+
+export function bindPoliMarbleInteractions(root){
+  if(root.__jcsPolimable207Bound)return;
+  root.__jcsPolimable207Bound=true;
+  root.addEventListener('click',event=>{
+    const button=event.target.closest?.('[data-pm-test-roll]');
+    if(!button)return;
+    const mount=button.closest('[data-pm-root]');
+    if(!mount)return;
+    event.preventDefault();
+    void runMovementTest(mount,button);
   });
 }

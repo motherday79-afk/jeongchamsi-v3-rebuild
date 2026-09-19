@@ -1,95 +1,32 @@
-# JCS 0.0.31.207 — 폴리마블 객체형 UI 재구축
+# JCS 0.0.31.207 · 폴리마블 연속 보드 + 게임말 이동 테스트
 
-## 작업 목적
-31.205/31.206에서 사용했던 '완성 스크린샷을 배경으로 깔고 실제 UI를 위에 덮는 방식'을 폐기했습니다.
-31.207은 게임의 모든 조작 요소를 실제 객체로 구현합니다.
+## 적용 기준
+- **31.206 위에 그대로 덮어쓰기**
+- 이번 패치의 테스트 범위만 구현합니다.
 
-## 유지한 것
-- 기존 서버 게임 엔진
-- 서버 주사위 판정
-- 24칸 이동 규칙
-- 점수 획득/손실
-- 전략카드/민심카드/운명의 선택
-- 0점 GAME OVER
-- 기록하고 종료
-- TODAY/WEEK/ALL Redis 랭킹
-- 로그인/세션 연동
-- 한 칸씩 이동하는 총총 이동 시퀀스
+## 이번에 반영한 내용
+1. **24칸은 계속 각각 독립 객체**입니다.
+2. 칸 사이의 빈 공간을 제거해, 화면에서는 **하나의 연결된 보드 띠**처럼 보이도록 변경했습니다.
+3. 상단 칸은 의사당/배경이 보이도록 기존보다 낮고 더 투명하게 유지했습니다.
+4. 사용자가 승인한 **투명 PNG 캐릭터 1개를 실제 게임말 객체**로 추가했습니다.
+5. 게임말은 **오른쪽 하단 START**에서 시작합니다.
+6. 오른쪽 기존 주사위 프레임 안에 테스트용 `주사위 굴리기` 버튼을 올렸습니다.
+7. 주사위를 누르면 1~6이 나오고 게임말이 **칸을 하나씩 총총 이동**합니다.
+8. 24번 다음은 다시 START로 순환합니다.
 
-## 완전히 재구축한 것
-- 게임보드 24칸: 24개의 실제 DOM 객체
-- 현재 위치: 움직이는 미니미 이미지 1개만 표시
-- 주사위: 실제 동적 주사위 객체
-- 민심 SCORE/최고기록
-- 계속 도전/기록하고 종료 버튼
-- 전략카드 3장
-- 랭킹 5행
-- PC 게임 레이아웃
-- 모바일 가로모드 전용 레이아웃
+## 이번 패치에서 하지 않은 것
+- 점수 반영
+- 전략카드/민심카드 실제 효과
+- 랭킹 저장
+- 서버 게임 세션 연동
 
-## 현재 위치 표시 원칙
-- 칸 반짝임 없음
-- 칸 테두리 강조 없음
-- active pulse 없음
-- 현재 칸 번호 배지 추가 없음
-- 현재 위치는 미니미 1개로만 표시
-- 이동 중에는 미니미 자체만 짧게 총총 뛰는 애니메이션
+즉 이번 버전은 **보드 연결감 + 실제 게임말 + 주사위 이동**까지만 확인하는 테스트 패치입니다.
 
-## 그래픽 원칙
-승인된 JCS 폴리마블 디자인은 분위기/세계관 기준으로 유지하되,
-완성 화면 전체를 UI 이미지로 사용하지 않습니다.
-
-정적인 풍경만 scenic asset으로 사용하고 아래 항목은 모두 실제 UI 객체입니다.
-- 24칸
-- 플레이어
-- 주사위
-- 점수
-- 버튼
-- 전략카드
-- 랭킹
-
-## 추가 자산
-- assets/polimable/board-scene-31-207.webp
-  - 승인 시안에서 풍경 영역만 사용하기 위한 scenic reference
-- assets/polimable/player-male-31-207.png
-  - 승인 시안 화풍에서 분리한 실제 이동용 미니미
-
-## PC 검수
-- 1440×900 viewport 렌더링
-- 게임 stage: 1200×675.34
-- 실제 24칸 확인
-- 플레이어 객체 1개 확인
-- 한 화면 내 보드/주사위/점수/카드/랭킹 확인
-
-## 모바일 가로 검수
-- 844×390 viewport 렌더링
-- 게임 stage: 844×390 전체 화면
-- 실제 24칸 확인
-- 플레이어 객체 1개 확인
-- document scrollWidth = 844 / innerWidth = 844
-- 가로 오버플로 없음
-- 세로모드는 가로모드 안내만 표시
-
-## 테스트
-PASS:
-- node --check src/app.js
-- node --check src/views/polimable-page.js
-- node --check src/ui/polimable-interactions.js
-- tests/polimable-201.test.js
-- tests/polimable-no-highlight-206.test.js
-- 폴리마블 관련 테스트 10/10 PASS
-
-전체 npm test는 원본 FULL에 node_modules가 포함되어 있지 않아
-@vercel/blob, @vercel/nft를 필요로 하는 일부 기존 테스트가 로드 단계에서 실패합니다.
-폴리마블 변경과 직접 관련된 테스트는 모두 통과했습니다.
-
-## 주요 수정 파일
-- index.html
-- src/app.js
-- src/layout/home-layout.js
-- src/ui/polimable-interactions.js
-- src/views/polimable-page.js
-- css/polimable-201.css
-- tests/polimable-no-highlight-206.test.js
-- assets/polimable/board-scene-31-207.webp
-- assets/polimable/player-male-31-207.png
+## 수정/추가 파일
+- `assets/polimable/polimable-player-piece-31-207.png`
+- `src/core/polimable-layout.js`
+- `src/views/polimable-page.js`
+- `src/ui/polimable-interactions.js`
+- `css/polimable-201.css`
+- `src/app.js`
+- `index.html`
