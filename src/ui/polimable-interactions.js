@@ -1,7 +1,7 @@
-import {POLIMARBLE_CARDS as CARDS} from '../core/polimable-data.js?v=0.0.31.206';
+import {POLIMARBLE_BOARD as BOARD,POLIMARBLE_CARDS as CARDS} from '../core/polimable-data.js?v=0.0.31.206';
 
 const DICE_FACES=['⚀','⚁','⚂','⚃','⚄','⚅'];
-const STEP_MS=230;
+const STEP_MS=265;
 const SESSION_KEY='jcs:polimable:active-session';
 const contexts=new WeakMap();
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
@@ -153,22 +153,104 @@ async function loadRanking(root,ctx,client){
   if(result?.ok){ctx.leaderboard=result.leaderboard;updateRanking(root,ctx.leaderboard);}
 }
 
+
+function vfxLayer(root){
+  let layer=root.querySelector('.pm-vfx-layer');
+  if(!layer){layer=document.createElement('div');layer.className='pm-vfx-layer';layer.setAttribute('aria-hidden','true');root.append(layer);}
+  return layer;
+}
+function tileCenter(root,index){
+  const tile=root.querySelector(`[data-pm-tile="${index}"]`);
+  if(!tile)return {x:50,y:50};
+  const x=Number(tile.dataset.pmCx),y=Number(tile.dataset.pmCy);
+  return {x:Number.isFinite(x)?x:50,y:Number.isFinite(y)?y:50};
+}
+function eventDelta(state){
+  const events=Array.isArray(state?.lastEvents)?state.lastEvents:[];
+  const scoreEvent=[...events].reverse().find(event=>event?.type==='score'&&Number.isFinite(Number(event?.delta)));
+  return scoreEvent?Number(scoreEvent.delta):0;
+}
+function finalEffectKind(state){
+  const tile=BOARD?.[Number(state?.position||0)];
+  if(!tile)return 'safe';
+  if(['gain','bonus','start'].includes(tile.kind))return 'good';
+  if(['loss','percent_loss'].includes(tile.kind))return 'bad';
+  if(tile.kind==='strategy_card')return 'card';
+  if(tile.kind==='public_card')return 'public';
+  if(tile.kind==='choice')return 'choice';
+  return 'safe';
+}
+function burstSymbols(kind){
+  if(kind==='good')return ['★','✦','✨','★','✧','🎉'];
+  if(kind==='bad')return ['💔','✕','⚡','●','💢','✕'];
+  if(kind==='card')return ['🃏','✦','◆','✦','🃏','◆'];
+  if(kind==='public')return ['💗','?','💬','💗','?','✦'];
+  if(kind==='choice')return ['?','⚖','!','?','✦','!'];
+  return ['✦','✨','✦','✨'];
+}
+function playFinalEffect(root,state){
+  const kind=finalEffectKind(state);
+  if(kind==='safe')return;
+  const {x,y}=tileCenter(root,state?.position||0),layer=vfxLayer(root);
+  const burst=document.createElement('div');
+  burst.className=`pm-vfx-burst is-${kind}`;
+  burst.style.setProperty('--pm-vfx-x',`${x}%`);
+  burst.style.setProperty('--pm-vfx-y',`${y}%`);
+  const shock=document.createElement('span');shock.className='pm-vfx-shock';burst.append(shock);
+  const symbols=burstSymbols(kind);
+  const dirs=[[-2.4,-2.4,-30],[0,-3.0,12],[2.35,-2.25,38],[-2.8,-.8,-70],[2.8,-.65,62],[-1.0,-3.25,100],[1.1,-3.35,-95]];
+  for(let i=0;i<Math.min(7,symbols.length+1);i++){
+    const p=document.createElement('span');p.className='pm-vfx-particle';p.textContent=symbols[i%symbols.length];
+    const [dx,dy,rot]=dirs[i];p.style.setProperty('--dx',`${dx}cqw`);p.style.setProperty('--dy',`${dy}cqw`);p.style.setProperty('--rot',`${rot}deg`);p.style.animationDelay=`${i*24}ms`;burst.append(p);
+  }
+  const delta=eventDelta(state);
+  if(delta){const score=document.createElement('strong');score.className='pm-vfx-score';score.textContent=`${delta>0?'+':''}${delta.toLocaleString('ko-KR')}`;burst.append(score);}
+  layer.append(burst);
+  if(kind==='bad'){root.classList.remove('is-bad-impact');void root.offsetWidth;root.classList.add('is-bad-impact');setTimeout(()=>root.classList.remove('is-bad-impact'),280);}
+  setTimeout(()=>burst.remove(),950);
+}
+async function animateDiceThrow(root,dice){
+  const result=root.querySelector('[data-pm-dice-result]');
+  if(!result)return;
+  result.classList.remove('is-rolling','is-settled','is-tossing');
+  void result.offsetWidth;
+  result.classList.add('is-tossing');
+  const started=performance.now();
+  while(performance.now()-started<760){
+    const faces=dice.length>1?dice.map(()=>DICE_FACES[Math.floor(Math.random()*6)]):[DICE_FACES[Math.floor(Math.random()*6)]];
+    result.textContent=faces.join(' ');
+    await wait(72);
+  }
+  result.classList.remove('is-tossing');
+  result.textContent=dice.map(n=>DICE_FACES[n-1]||String(n)).join(' ');
+  void result.offsetWidth;
+  result.classList.add('is-settled');
+  await wait(220);
+  result.classList.remove('is-settled');
+  await wait(200);
+}
+
 async function animateMove(root,fromState,toState){
   const dice=Array.isArray(toState?.lastDice)?toState.lastDice:[];
   const distance=dice.reduce((sum,n)=>sum+Number(n||0),0);
   if(!distance)return;
-  const result=root.querySelector('[data-pm-dice-result]');
-  if(result){result.textContent='🎲';result.classList.add('is-rolling');}
-  await wait(230);
-  if(result){result.textContent=dice.map(n=>DICE_FACES[n-1]||String(n)).join(' ');result.classList.remove('is-rolling');}
+  await animateDiceThrow(root,dice);
   let position=Number(fromState?.position||0);
+  const player=root.querySelector('[data-pm-player]');
   for(let step=0;step<distance;step+=1){
     position=(position+1)%24;
+    player?.classList.remove('is-moving','is-landing');
+    if(player)void player.offsetWidth;
     const tile=setPlayerToTile(root,position,{moving:true,react:true});
-    await wait(STEP_MS);
+    await wait(205);
+    player?.classList.remove('is-moving');
+    player?.classList.add('is-landing');
+    await wait(60);
+    player?.classList.remove('is-landing');
     tile?.classList.remove('is-stepping');
   }
-  root.querySelector('[data-pm-player]')?.classList.remove('is-moving');
+  playFinalEffect(root,toState);
+  await wait(420);
 }
 
 async function startGame(root,ctx,client){
