@@ -1,5 +1,8 @@
-/* JCS 0.0.31.205 · POLIMARBLE BACKGROUND ONLY
-   PC 기준: 정확히 1200 × 675px. 기존 게임 UI/보드/오버레이는 렌더링하지 않는다. */
+/* JCS 0.0.31.206 · POLIMARBLE 24-TILE BOARD
+   - Background: existing 1200×675 asset, unchanged.
+   - 24 independent tile objects only.
+   - START: bottom-right → left → left-up → top-right → right-down.
+   - Tiles are semi-transparent so the parliament/city background remains visible. */
 .pm-background-only-page{
   width:100%;
   margin:0;
@@ -11,9 +14,11 @@
   overflow:visible;
 }
 .pm-background-stage{
+  position:relative;
   width:1200px;
   height:675px;
   flex:0 0 1200px;
+  container-type:inline-size;
   background-image:url('/assets/polimable/polimable-background-1200x675-v31-205.png');
   background-repeat:no-repeat;
   background-position:center center;
@@ -21,9 +26,62 @@
   border:0;
   border-radius:0;
   box-shadow:none;
+  overflow:hidden;
 }
+.pm-board-tiles{position:absolute;inset:0;z-index:3;pointer-events:none}
+.pm-board-tile{
+  --tile-fill:#f8fbff;
+  --tile-border:#7766b4;
+  --tile-text:#433267;
+  position:absolute;
+  left:var(--pm-x);
+  top:var(--pm-y);
+  width:var(--pm-w);
+  height:var(--pm-h);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  box-sizing:border-box;
+  padding:.55cqw .4cqw .48cqw;
+  border:.14cqw solid var(--tile-border);
+  border-radius:1.05cqw;
+  color:var(--tile-text);
+  text-align:center;
+  line-height:1.03;
+  isolation:isolate;
+  box-shadow:0 .42cqw .72cqw rgba(42,25,87,.16),inset 0 .12cqw 0 rgba(255,255,255,.72);
+  overflow:visible;
+}
+.pm-board-tile::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  border-radius:inherit;
+  background:var(--tile-fill);
+  opacity:.76;
+}
+/* Upper band crosses the parliament/city. Keep it more transparent than the other bands. */
+.pm-board-tile.pm-band-top::before{opacity:.58}
+.pm-board-tile.pm-band-left::before,.pm-board-tile.pm-band-right::before{opacity:.69}
+.pm-board-tile.pm-band-bottom::before{opacity:.78}
+.pm-board-tile-icon{display:block;font-size:1.65cqw;line-height:1;margin-bottom:.18cqw;filter:drop-shadow(0 .08cqw .06cqw rgba(255,255,255,.75))}
+.pm-board-tile strong{display:block;max-width:100%;font-size:.94cqw;font-weight:1000;letter-spacing:-.055em;word-break:keep-all;text-shadow:0 .07cqw 0 rgba(255,255,255,.72)}
+.pm-board-tile small{display:block;margin-top:.18cqw;font-size:.74cqw;font-weight:1000;letter-spacing:-.025em}
 
-/* 홈 우측 사이드바: 기존 승인된 게임 바로가기 이미지를 그대로 사용 */
+/* tile types */
+.pm-kind-start{--tile-fill:#4d65d8;--tile-border:#ffd45d;--tile-text:#fff}.pm-kind-start::before{opacity:.88!important}.pm-kind-start strong{font-size:1.18cqw;text-shadow:0 .12cqw .12cqw rgba(31,22,80,.28)}
+.pm-kind-gain{--tile-fill:#eef9ff;--tile-border:#6b8ac9;--tile-text:#264c85}
+.pm-kind-bonus{--tile-fill:#fff0a8;--tile-border:#d49a27;--tile-text:#7d5414}
+.pm-kind-loss{--tile-fill:#ffdce3;--tile-border:#d36b82;--tile-text:#8e304b}
+.pm-kind-percent_loss{--tile-fill:#ffcfe0;--tile-border:#cb6087;--tile-text:#8f2b55}
+.pm-kind-strategy_card{--tile-fill:#eadfff;--tile-border:#8060c0;--tile-text:#5b3994}
+.pm-kind-public_card{--tile-fill:#d8f7e8;--tile-border:#51a681;--tile-text:#216e55}
+.pm-kind-choice{--tile-fill:#62628d;--tile-border:#4b4774;--tile-text:#fff}
+.pm-kind-safe{--tile-fill:#9b7048;--tile-border:#704b2f;--tile-text:#fffbe8}
+
+/* HOME sidebar: keep the already approved game-entry image; do not redesign. */
 .side-polimable{padding:0!important;overflow:hidden;background:transparent!important;border:0!important;box-shadow:none!important}
 .pm-side-entry{position:relative;display:block;width:100%;padding:0;border:0;background:transparent;cursor:pointer;border-radius:16px;overflow:hidden}
 .pm-side-entry img{display:block;width:100%;height:auto}
