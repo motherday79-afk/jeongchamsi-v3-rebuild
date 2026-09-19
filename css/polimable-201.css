@@ -209,3 +209,28 @@
   .product-home-wrap .home-balanced-layout .side-polimable{order:46}
   .side-polimable{width:100%}
 }
+
+
+/* 0.0.31.220 - sidebar overlay card */
+.side-polimable{padding:0!important;overflow:hidden;background:transparent!important;border:0!important;box-shadow:none!important}
+.pm-side-entry--overlay{position:relative;display:block;width:100%;padding:0;border:0;background:transparent;cursor:pointer;border-radius:18px;overflow:hidden;box-shadow:0 10px 24px rgba(49,25,98,.12)}
+.pm-side-entry--overlay img{display:block;width:100%;height:auto}
+.pm-side-overlay{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:12px;pointer-events:none}
+.pm-side-overlay-brand{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pm-side-overlay-brand b{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;background:rgba(88,57,163,.92);color:#fff;font-size:13px;font-weight:1000;letter-spacing:-.02em;box-shadow:0 6px 16px rgba(57,28,121,.2)}
+.pm-side-overlay-brand span{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.92);color:#6e4ab0;font-size:10px;font-weight:1000;box-shadow:0 4px 12px rgba(52,28,111,.12)}
+.pm-side-overlay-stack{display:grid;gap:8px;align-self:stretch;margin-top:auto;margin-bottom:10px}
+.pm-side-overlay-panel{padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);box-shadow:0 8px 20px rgba(48,25,98,.12);text-align:left}
+.pm-side-overlay-panel small{display:block;font-size:10px;font-weight:1000;color:#7f71a0;letter-spacing:.02em}
+.pm-side-overlay-panel b{display:block;margin-top:4px;font-size:13px;line-height:1.18;color:#452a77;font-weight:1000}
+.pm-side-overlay-me{background:rgba(255,250,240,.96)}
+.pm-side-overlay-cta{align-self:stretch;display:flex;align-items:center;justify-content:center;min-height:44px;padding:0 14px;border-radius:14px;background:linear-gradient(180deg,rgba(120,80,200,.96),rgba(88,56,168,.98));color:#fff;font-size:13px;font-weight:1000;letter-spacing:.02em;box-shadow:0 10px 20px rgba(72,43,139,.22)}
+/* Hide legacy under-image summary if any stale markup remains */
+.pm-side-summary,.pm-side-summary-head,.pm-side-stat,.pm-side-game-start{display:none!important}
+@media (max-width:767px){
+  .side-polimable{order:46}
+  .pm-side-overlay{padding:10px}
+  .pm-side-overlay-panel small{font-size:9px}
+  .pm-side-overlay-panel b{font-size:12px}
+  .pm-side-overlay-cta{min-height:40px;font-size:12px}
+}
