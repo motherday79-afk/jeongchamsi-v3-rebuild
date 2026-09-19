@@ -84,3 +84,23 @@
 }
 
 @media(prefers-reduced-motion:reduce){.pm-die.is-rolling,.pm-dice-panel.is-rolling .pm-dice-result{animation:none!important}}
+
+/* 31.211 STEP 1 — user-approved image applied to actual JCS page.
+   No tiles / player objects are rendered at this stage. */
+.pm-game-shell{grid-template-columns:7fr 3fr!important}
+.pm-board-step1{
+  position:relative!important;
+  overflow:hidden!important;
+  background:none!important;
+  min-width:0!important;
+}
+.pm-step1-approved-image{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:left center!important;
+  border:0!important;
+  pointer-events:none!important;
+  user-select:none!important;
+}

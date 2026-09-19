@@ -97,8 +97,9 @@ export function renderPoliMarblePage({session,state=null,leaderboard=null,scope=
     <div class="pm-game-root" data-pm-root data-authenticated="${authenticated?'true':'false'}">
       <div class="pm-stage">
         <section class="pm-board-zone" aria-label="폴리마블 게임 배경 - 24칸 설계 전 단계">
-          <div class="pm-board-scene" aria-hidden="true"></div>
-        </section>
+          <div class="pm-board pm-board-step1" aria-label="JCS 폴리마블 승인 배경">
+          <img class="pm-step1-approved-image" src="/assets/polimable/POLIMARBLE_STEP1_APPROVED_31_211.png" alt="JCS 폴리마블">
+        </div>
         <aside class="pm-console">
           <div class="pm-console-head"><div class="pm-console-title"><strong>JCS POLIMARBLE</strong><span>GAME STATUS</span></div><div class="pm-console-icons" aria-hidden="true"><span>🔊</span><span>?</span><span>⚙</span></div></div>
           <div class="pm-console-main">${dicePanel(state,authenticated,busy,moving)}${scorePanel(state,busy,moving)}</div>
