@@ -11,6 +11,7 @@ const choiceAliases={
  'very-negative':'very-negative',very_negative:'very-negative','매우 잘못하고 있다':'very-negative','매우잘못함':'very-negative',
  undecided:'undecided','판단 유보 / 모르겠다':'undecided','판단유보':'undecided','모르겠다':'undecided'
 };
+const normalizeIntelligenceExplanation=value=>{const raw=String(value??'').trim();if(!raw)return 'JCS AI PANEL의 INTELLIGENCE 데이터입니다.';if(/JCS AI PANEL의 INTELLIGENCE 데이터(?:입니다| 입니다)\.?$/i.test(raw))return raw.replace(/데이터 입니다/g,'데이터입니다.').replace(/데이터입니다\.?$/,'데이터입니다.');const normalized=raw.replace(/(?:개발용\s*)?(?:샘플\s*)?예시\s*응답입니다\.?$/,'').replace(/(?:개발용\s*)?샘플\s*응답입니다\.?$/,'').replace(/예시\s*응답입니다\.?$/,'').replace(/응답입니다\.?$/,'').trim();return `${normalized||raw.replace(/[.!?]+$/,'')} JCS AI PANEL의 INTELLIGENCE 데이터입니다.`;};
 const integratedProfileFields=['gender','age','region','politicalInterest','pollExposure','occupation','education','income','household','housing','newsConsumption','politicalNewsExposure','criteria','axes'];
 const requiredIntegratedProfileFields=['gender','age','region','politicalInterest','pollExposure'];
 function integratedProfiles(rows){
@@ -34,7 +35,7 @@ function normalizeOperatorResponses(rows){
   if(!/^JCS-AI-\d{4}$/.test(id)||id!==expected)badIds.push(id||`#${index+1}`);
   if(seen.has(id))duplicates.push(id);seen.add(id);
   const raw=String(row.choice??'').trim(),choice=choiceAliases[raw];if(!choice)badChoices.push(`${id||`#${index+1}`}:${raw||'비어있음'}`);
-  return {id,choice:choice||raw,reason:row.reason??'',explanation:row.explanation??'',factors:Array.isArray(row.factors)?row.factors:[]};
+  return {id,choice:choice||raw,reason:row.reason??'',explanation:normalizeIntelligenceExplanation(row.explanation),factors:Array.isArray(row.factors)?row.factors:[]};
  });
  if(duplicates.length)throw Error(`RESP_DUP:${[...new Set(duplicates)].slice(0,5).join(',')}:${duplicates.length}`);
  if(badIds.length)throw Error(`RESP_ID:${badIds.slice(0,5).join(',')}:${badIds.length}`);

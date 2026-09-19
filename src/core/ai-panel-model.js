@@ -9,6 +9,7 @@ const AI_CHOICE_ALIASES={
  undecided:'undecided','판단 유보 / 모르겠다':'undecided','판단유보':'undecided','모르겠다':'undecided'
 };
 const normalizeAiChoice=value=>AI_CHOICE_ALIASES[String(value??'').trim()]||String(value??'').trim();
+const normalizeIntelligenceExplanation=value=>{const raw=String(value??'').trim();if(!raw)return 'JCS AI PANEL의 INTELLIGENCE 데이터입니다.';if(/JCS AI PANEL의 INTELLIGENCE 데이터(?:입니다| 입니다)\.?$/i.test(raw))return raw.replace(/데이터 입니다/g,'데이터입니다.').replace(/데이터입니다\.?$/,'데이터입니다.');const normalized=raw.replace(/(?:개발용\s*)?(?:샘플\s*)?예시\s*응답입니다\.?$/,'').replace(/(?:개발용\s*)?샘플\s*응답입니다\.?$/,'').replace(/예시\s*응답입니다\.?$/,'').replace(/응답입니다\.?$/,'').trim();return `${normalized||raw.replace(/[.!?]+$/,'')} JCS AI PANEL의 INTELLIGENCE 데이터입니다.`;};
 export const fail=code=>{throw new Error(`AI_PANEL_${code}`);};
 export const isObject=v=>v!==null&&typeof v==='object'&&!Array.isArray(v);
 export const validId=v=>typeof v==='string'&&/^[a-zA-Z0-9_-]{1,100}$/.test(v);
@@ -61,7 +62,7 @@ export function mutateRun(previous,operation,input,{now,user}){
   // Any setting change invalidates imported responses and the prior review.
   delete r.results[m];delete r.aggregates[m];r.status='draft';
  }else if(operation==='responses'){
-  const m=mode(),rows=input.responses;if(!r.environments[m])fail('ENVIRONMENT_REQUIRED');if(!Array.isArray(rows)||rows.length!==r.panel.profiles.length)fail('RESPONSES_INVALID');const ids=new Set(r.panel.profiles.map(p=>p.id)),seen=new Set();const responses=rows.map(x=>{const choice=normalizeAiChoice(x?.choice);if(!isObject(x)||!ids.has(x.id)||seen.has(x.id)||!AI_CHOICES.includes(choice))fail('RESPONSES_INVALID');seen.add(x.id);if(x.factors!=null&&(!Array.isArray(x.factors)||x.factors.length>30))fail('RESPONSES_INVALID');return {id:x.id,choice,reason:str(x.reason,2000),explanation:str(x.explanation,4000),factors:(x.factors||[]).map(f=>str(f,500,true))};});
+  const m=mode(),rows=input.responses;if(!r.environments[m])fail('ENVIRONMENT_REQUIRED');if(!Array.isArray(rows)||rows.length!==r.panel.profiles.length)fail('RESPONSES_INVALID');const ids=new Set(r.panel.profiles.map(p=>p.id)),seen=new Set();const responses=rows.map(x=>{const choice=normalizeAiChoice(x?.choice);if(!isObject(x)||!ids.has(x.id)||seen.has(x.id)||!AI_CHOICES.includes(choice))fail('RESPONSES_INVALID');seen.add(x.id);if(x.factors!=null&&(!Array.isArray(x.factors)||x.factors.length>30))fail('RESPONSES_INVALID');return {id:x.id,choice,reason:str(x.reason,2000),explanation:str(normalizeIntelligenceExplanation(x.explanation),4000),factors:(x.factors||[]).map(f=>str(f,500,true))};});
   const executedAt=timestamp(input.executedAt);r.results[m]={model:str(input.model,300,true),executedAt,responses};r.aggregates[m]=aggregateResponses(r.panel.profiles,responses);r.status='draft';
  }else if(operation==='human'){const p=humanPoll(input.poll);if(r.humanPolls.some(x=>x.id===p.id))fail('HUMAN_DUPLICATE');if(r.humanPolls.length>=100)fail('LIMIT_REACHED');r.humanPolls.push(p);if(!locked)r.status='draft';
  }else if(operation==='review'){if(!r.modes.every(m=>r.environments[m]))fail('ENVIRONMENT_REQUIRED');if(!r.modes.every(m=>r.results[m]))fail('RESPONSES_REQUIRED');r.status='reviewed';r.reviewNote=str(input.note,4000);
