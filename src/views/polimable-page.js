@@ -14,7 +14,6 @@ const number=v=>Number(v||0).toLocaleString('ko-KR');
  */
 
 const DIE_PIPS={1:[5],2:[1,9],3:[1,5,9],4:[1,3,7,9],5:[1,3,5,7,9],6:[1,3,4,6,7,9]};
-const LOGO_ASSET='/assets/polimable/logo-31-208.webp';
 
 function die(face=1,rolling=false,index=0){
   const on=new Set(DIE_PIPS[Math.max(1,Math.min(6,Number(face)||1))]);
@@ -99,8 +98,6 @@ export function renderPoliMarblePage({session,state=null,leaderboard=null,scope=
       <div class="pm-stage">
         <section class="pm-board-zone" aria-label="폴리마블 게임 배경 - 24칸 설계 전 단계">
           <div class="pm-board-scene" aria-hidden="true"></div>
-          <img class="pm-board-logo" src="${LOGO_ASSET}" alt="JCS 폴리마블">
-          <div class="pm-board-copy">작은 한 걸음이<br>큰 변화를 만드는 정참시!</div>
         </section>
         <aside class="pm-console">
           <div class="pm-console-head"><div class="pm-console-title"><strong>JCS POLIMARBLE</strong><span>GAME STATUS</span></div><div class="pm-console-icons" aria-hidden="true"><span>🔊</span><span>?</span><span>⚙</span></div></div>
