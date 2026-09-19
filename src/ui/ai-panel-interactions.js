@@ -83,7 +83,7 @@ export function bindAiPanelInteractions(root,{client,onSaved=()=>{},navigate=()=
    try{
     if(file.size>maxBytes)throw Error('FILE');const text=await file.text();const responses=parse(text,true);
     const result=await simpleOperatorUpload({client,panelId:form.dataset.panelId,responses});
-    notice(form,'AI 응답 1,000개 확인 완료 · ID 정상 · 중복 없음 · 응답값 정상. 이제 ③ 메인에 게시만 누르면 됩니다.');await onSaved(result,'simple-upload');
+    notice(form,result?.item?.sourceRunId?'AI 응답 1,000개 확인 완료 · 새 RUN을 만들었습니다. 이제 ③ 메인에 재게시를 누르면 됩니다.':'AI 응답 1,000개 확인 완료 · ID 정상 · 중복 없음 · 응답값 정상. 이제 ③ 메인에 게시만 누르면 됩니다.');await onSaved(result,'simple-upload');
    }catch(error){const code=String(error?.message||'');let friendly=messages[code]||messages[`AI_PANEL_${code}`];
     if(code.startsWith('RESP_COUNT:'))friendly=`AI 응답은 정확히 1,000개여야 합니다. 현재 ${code.split(':')[1]}개입니다.`;
     else if(code.startsWith('RESP_DUP:'))friendly=`중복 ID가 있습니다: ${code.split(':')[1]} (중복 ${code.split(':')[2]}건).`;
