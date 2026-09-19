@@ -106,36 +106,37 @@
 .pm-dice-live{position:absolute;left:66.3%;top:8.7%;width:18.7%;height:32.8%;pointer-events:none}
 .pm-live-dice{position:absolute;left:7%;right:7%;top:18%;height:42%;display:grid;place-items:center;color:#fff;font-size:4.85cqw;font-weight:1000;line-height:1;text-shadow:0 .18cqw .34cqw rgba(24,13,70,.30)}
 .pm-live-dice.is-rolling{animation:pm-dice-wobble .16s linear infinite}
-.pm-live-status{position:absolute;left:7%;right:7%;top:61%;height:12%;display:flex;align-items:center;justify-content:center;padding:0 .35cqw;color:#f8f4ff;font-size:.62cqw;font-weight:900;line-height:1.15;text-align:center;white-space:normal;overflow:hidden;text-shadow:0 .08cqw .12cqw rgba(28,13,74,.34)}
+.pm-live-status{position:absolute;left:7.2%;right:7.2%;top:58.6%;height:17%;display:flex;align-items:center;justify-content:center;padding:0 .42cqw;color:#f8f4ff;font-size:.86cqw;font-weight:1000;line-height:1.18;text-align:center;white-space:normal;overflow:hidden;text-wrap:balance;text-shadow:0 .09cqw .13cqw rgba(28,13,74,.36)}
 .pm-live-roll{position:absolute;left:6.4%;right:6.4%;bottom:6.4%;height:18.5%;min-height:31px;border:.13cqw solid #d18d14;border-radius:.86cqw;background:linear-gradient(180deg,#ffd85c,#f4aa1a);box-shadow:inset 0 -.22cqw 0 rgba(115,67,7,.14),0 .2cqw .38cqw rgba(47,25,90,.18);color:#49306e;font-size:1.0cqw;font-weight:1000;letter-spacing:-.035em;cursor:pointer;pointer-events:auto}
 .pm-live-roll:disabled{opacity:.66;cursor:wait}
 
 /* Score panel: fill the white score card already present in the background. */
 .pm-score-live{position:absolute;left:86.5%;top:15.8%;width:12.15%;height:24.3%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:3.2%;box-sizing:border-box;pointer-events:none}
 .pm-score-live>strong{font-size:2.62cqw;line-height:.98;font-weight:1000;color:#4e35a0;letter-spacing:-.07em;text-shadow:0 .06cqw 0 #fff}
-.pm-score-live>small{margin-top:.30cqw;font-size:.65cqw;font-weight:1000;color:#b57813}
-.pm-score-live>small b{font-size:.70cqw;color:#8a5a08}
-.pm-score-live>span{margin-top:.42cqw;padding:.23cqw .64cqw;border-radius:999px;background:#7350c4;color:#fff;font-size:.58cqw;font-weight:1000}
-.pm-effect-line{margin-top:.26cqw;max-width:94%;min-height:.72cqw;color:#65588a;font-size:.49cqw;font-weight:900;line-height:1.2;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pm-cashout-button{margin-top:.24cqw;width:84%;height:1.45cqw;border:.07cqw solid #b9a7e5;border-radius:.48cqw;background:linear-gradient(180deg,#fff,#eee9fb);color:#51358e;font-size:.55cqw;font-weight:1000;cursor:pointer;pointer-events:auto;box-shadow:0 .12cqw .22cqw rgba(54,32,112,.12)}
+.pm-score-live>small{margin-top:.34cqw;font-size:.84cqw;font-weight:1000;color:#b57813;line-height:1.06;text-align:center}
+.pm-score-live>small b{font-size:.92cqw;color:#8a5a08}
+.pm-score-live>span{margin-top:.50cqw;padding:.28cqw .72cqw;border-radius:999px;background:#7350c4;color:#fff;font-size:.74cqw;font-weight:1000;line-height:1}
+.pm-effect-line{margin-top:.34cqw;max-width:94%;min-height:1.55cqw;color:#65588a;font-size:.70cqw;font-weight:900;line-height:1.14;text-align:center;white-space:normal;overflow:hidden;text-wrap:balance;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.pm-cashout-button{margin-top:.34cqw;width:88%;height:1.78cqw;border:.07cqw solid #b9a7e5;border-radius:.52cqw;background:linear-gradient(180deg,#fff,#eee9fb);color:#51358e;font-size:.73cqw;font-weight:1000;cursor:pointer;pointer-events:auto;box-shadow:0 .12cqw .22cqw rgba(54,32,112,.12)}
 .pm-cashout-button:disabled{opacity:.56;cursor:wait}
 
 /* Strategy cards: each real card is a button inside the three baked-in slots. */
 .pm-card-live-grid{position:absolute;left:67.6%;top:50.1%;width:30.6%;height:13.6%;display:grid;grid-template-columns:repeat(3,1fr);gap:2.65%;pointer-events:none}
 .pm-live-card{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;border:0;border-radius:.72cqw;background:transparent;color:#5d419d;padding:.12cqw;pointer-events:auto;cursor:pointer}
 .pm-live-card:not(.has-card){pointer-events:none;color:#9185c9}
-.pm-live-card.has-card{background:rgba(255,255,255,.72);box-shadow:inset 0 0 0 .09cqw rgba(108,80,177,.28)}
+.pm-live-card.has-card{background:#fff;box-shadow:inset 0 0 0 .09cqw rgba(108,80,177,.28),0 .10cqw .18cqw rgba(61,38,121,.10)}
 .pm-live-card:disabled{cursor:default;opacity:.72}
 .pm-live-card-icon{font-size:2.02cqw;line-height:1}
 .pm-live-card b{display:block;max-width:95%;margin-top:.12cqw;font-size:.72cqw;line-height:1.0;font-weight:1000;letter-spacing:-.04em;white-space:normal;text-align:center}
 .pm-live-card small{margin-top:.12cqw;font-size:.44cqw;font-weight:1000;letter-spacing:.06em;color:#8c75bf}
 
 /* TODAY ranking: fit four rows into the white ranking panel baked into the background. */
-.pm-ranking-live{position:absolute;left:68.45%;top:74.35%;width:29.0%;height:16.1%;display:grid;grid-template-rows:repeat(4,1fr);gap:.16cqw;pointer-events:none}
-.pm-rank-row{display:grid;grid-template-columns:1.5cqw 1fr auto;align-items:center;gap:.38cqw;padding:0 .55cqw;border-radius:.38cqw;color:#584885;font-size:.66cqw;font-weight:900;min-width:0}
+.pm-ranking-live{position:absolute;left:68.45%;top:74.35%;width:29.0%;height:16.1%;display:grid;grid-template-rows:repeat(4,1fr);gap:.16cqw;pointer-events:none;position:absolute}
+.pm-ranking-live::before{content:'';position:absolute;left:.15cqw;top:.05cqw;bottom:.05cqw;width:77%;border-radius:.58cqw;background:linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.95) 72%,rgba(255,255,255,.18) 100%);z-index:0}
+.pm-rank-row{position:relative;z-index:1;display:grid;grid-template-columns:1.5cqw 1fr auto;align-items:center;gap:.38cqw;padding:0 .55cqw;border-radius:.38cqw;color:#584885;font-size:.70cqw;font-weight:900;min-width:0}
 .pm-rank-row i{font-style:normal;text-align:center;color:#9273c4}
 .pm-rank-row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pm-rank-row b{color:#4c3c7c;font-size:.68cqw}
+.pm-rank-row b{color:#4c3c7c;font-size:.72cqw}
 .pm-rank-row.is-me{background:rgba(118,84,202,.13);color:#4f3290}
 
 /* Choice and game-over overlays are temporary; they do not alter the permanent board design. */
