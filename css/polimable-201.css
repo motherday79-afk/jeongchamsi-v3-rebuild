@@ -10,9 +10,9 @@
 }
 .pm-background-stage{
   position:relative;width:1200px;height:675px;flex:0 0 1200px;container-type:inline-size;
-  background-image:url('/assets/polimable/polimable-background-1200x675-v31-205.png');
+  background-image:url('/assets/polimable/polimable-background-1200x675-v31-217.png');
   background-repeat:no-repeat;background-position:center center;background-size:1200px 675px;
-  border:0;border-radius:0;box-shadow:none;overflow:hidden;background:transparent;
+  border:0;border-radius:0;box-shadow:none;overflow:hidden;
 }
 
 /* === 24 independent cells, visually one uninterrupted strip === */
