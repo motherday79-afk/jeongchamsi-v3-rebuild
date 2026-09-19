@@ -1,4 +1,4 @@
-// JCS 0.0.31.207 · POLIMARBLE CONNECTED 24-TILE LAYOUT
+// JCS 0.0.31.208 · POLIMARBLE CONNECTED 24-TILE LAYOUT
 // Background remains the approved 1200×675 image.
 // The 24 cells remain independent objects, but visually form one uninterrupted band.
 // Route: START bottom-right → left → up left side → right across top → down right side → START.

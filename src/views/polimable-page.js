@@ -1,5 +1,5 @@
 import {POLIMARBLE_BOARD as BOARD} from '../core/polimable-data.js?v=0.0.31.206';
-import {POLIMARBLE_24_TILE_LAYOUT as LAYOUT} from '../core/polimable-layout.js?v=0.0.31.207';
+import {POLIMARBLE_24_TILE_LAYOUT as LAYOUT} from '../core/polimable-layout.js?v=0.0.31.208';
 
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const number=v=>Number(v||0).toLocaleString('ko-KR');
@@ -39,7 +39,7 @@ function renderDiceTest(){
   </div>`;
 }
 
-// 31.207 test scope: connected 24-cell band + one real player-piece image + dice-driven movement only.
+// 31.208 test scope: connected 24-cell band + one real player-piece image + dice-driven movement only.
 export function renderPoliMarblePage(){
   return `<section class="pm-page pm-background-only-page" aria-label="JCS 폴리마블">
     <div class="pm-background-stage" data-pm-root aria-label="JCS 폴리마블 1200 × 675 게임 보드">

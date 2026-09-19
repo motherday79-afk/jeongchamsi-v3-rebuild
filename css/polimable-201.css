@@ -1,9 +1,9 @@
-/* JCS 0.0.31.207 · POLIMARBLE CONNECTED BAND + MOVEMENT TEST
+/* JCS 0.0.31.208 · POLIMARBLE TILE VISUAL + STEP ACTION
    Scope only:
-   1) Keep the approved 1200×675 background unchanged.
-   2) Keep 24 independent cells but remove gaps so they read as one continuous game-road.
-   3) Put the approved transparent game-piece on START.
-   4) Test one-die, one-cell-at-a-time movement. */
+   1) Keep the approved 1200×675 background and connected 24-cell route unchanged.
+   2) Make 23 tiles opaque; only 지역공감 +150 (tile 16) stays translucent over the Assembly roof.
+   3) Enlarge icon/title/value typography to fill each tile more confidently.
+   4) Add a small per-tile reaction whenever the player piece steps onto a cell. */
 .pm-background-only-page{
   width:100%;margin:0;padding:10px 0 24px;background:#f3f5f7;
   display:flex;justify-content:center;align-items:flex-start;overflow:visible;
@@ -26,18 +26,25 @@
   box-shadow:inset 0 .11cqw 0 rgba(255,255,255,.58);overflow:visible;
 }
 .pm-board-tile::before{
-  content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;background:var(--tile-fill);opacity:.73;
+  content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;background:var(--tile-fill);opacity:1;
 }
-.pm-board-tile.pm-band-top::before{opacity:.52}
-.pm-board-tile.pm-band-left::before,.pm-board-tile.pm-band-right::before{opacity:.66}
-.pm-board-tile.pm-band-bottom::before{opacity:.76}
-.pm-board-tile-icon{display:block;font-size:1.42cqw;line-height:1;margin-bottom:.10cqw;filter:drop-shadow(0 .06cqw .04cqw rgba(255,255,255,.72))}
-.pm-board-tile strong{display:block;max-width:100%;font-size:.82cqw;font-weight:1000;letter-spacing:-.05em;word-break:keep-all;text-shadow:0 .05cqw 0 rgba(255,255,255,.72)}
-.pm-board-tile small{display:block;margin-top:.09cqw;font-size:.64cqw;font-weight:1000;letter-spacing:-.02em}
-.pm-board-tile.pm-band-top{padding-top:.20cqw;padding-bottom:.17cqw}
-.pm-board-tile.pm-band-top .pm-board-tile-icon{font-size:1.18cqw;margin-bottom:.04cqw}
-.pm-board-tile.pm-band-top strong{font-size:.72cqw}
-.pm-board-tile.pm-band-top small{font-size:.57cqw;margin-top:.03cqw}
+/* Only 지역공감 +150 sits over the Assembly roof, so only this cell remains translucent. */
+.pm-board-tile[data-pm-tile="16"]::before{opacity:.54}
+.pm-board-tile-icon{display:block;font-size:1.78cqw;line-height:.95;margin-bottom:.08cqw;filter:drop-shadow(0 .06cqw .04cqw rgba(255,255,255,.78))}
+.pm-board-tile strong{display:block;max-width:98%;font-size:1.03cqw;font-weight:1000;line-height:.92;letter-spacing:-.065em;word-break:keep-all;text-wrap:balance;text-shadow:0 .05cqw 0 rgba(255,255,255,.82)}
+.pm-board-tile small{display:block;margin-top:.06cqw;font-size:.78cqw;line-height:.95;font-weight:1000;letter-spacing:-.035em}
+.pm-board-tile.pm-band-top{padding:.16cqw .18cqw .13cqw}
+.pm-board-tile.pm-band-top .pm-board-tile-icon{font-size:1.46cqw;margin-bottom:.02cqw}
+.pm-board-tile.pm-band-top strong{font-size:.91cqw;line-height:.9}
+.pm-board-tile.pm-band-top small{font-size:.69cqw;margin-top:.01cqw}
+
+/* Each independent object briefly reacts when the player steps on it. */
+.pm-board-tile.is-stepping{z-index:6;animation:pm-tile-step .23s ease-out}
+@keyframes pm-tile-step{
+  0%{transform:translateY(0) scale(1);filter:brightness(1);box-shadow:inset 0 .11cqw 0 rgba(255,255,255,.58)}
+  48%{transform:translateY(-.20cqw) scale(1.035);filter:brightness(1.12);box-shadow:0 .28cqw .52cqw rgba(66,42,128,.30),inset 0 0 0 .16cqw rgba(255,255,255,.78)}
+  100%{transform:translateY(0) scale(1);filter:brightness(1);box-shadow:inset 0 .11cqw 0 rgba(255,255,255,.58)}
+}
 
 /* only the four outside corners are rounded; internal cells remain square and connected */
 .pm-board-tile[data-pm-tile="12"]{border-radius:1.05cqw 0 0 0}
@@ -45,7 +52,7 @@
 .pm-board-tile[data-pm-tile="0"]{border-radius:0 0 1.05cqw 0}
 .pm-board-tile[data-pm-tile="7"]{border-radius:0 0 0 1.05cqw}
 
-.pm-kind-start{--tile-fill:#4d65d8;--tile-border:#ffd45d;--tile-text:#fff}.pm-kind-start::before{opacity:.88!important}.pm-kind-start strong{font-size:1.02cqw;text-shadow:0 .1cqw .1cqw rgba(31,22,80,.28)}
+.pm-kind-start{--tile-fill:#4d65d8;--tile-border:#ffd45d;--tile-text:#fff}.pm-kind-start::before{opacity:1!important}.pm-kind-start strong{font-size:1.14cqw;text-shadow:0 .1cqw .1cqw rgba(31,22,80,.28)}
 .pm-kind-gain{--tile-fill:#eef9ff;--tile-border:#6b8ac9;--tile-text:#264c85}
 .pm-kind-bonus{--tile-fill:#fff0a8;--tile-border:#d49a27;--tile-text:#7d5414}
 .pm-kind-loss{--tile-fill:#ffdce3;--tile-border:#d36b82;--tile-text:#8e304b}

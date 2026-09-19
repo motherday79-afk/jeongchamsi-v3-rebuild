@@ -13,17 +13,23 @@ const secureDie=()=>{
   return Math.floor(Math.random()*6)+1;
 };
 
-function setPlayerToTile(root,index,{moving=false}={}){
+function setPlayerToTile(root,index,{moving=false,react=false}={}){
   const player=root.querySelector('[data-pm-player]');
   const tile=root.querySelector(`[data-pm-tile="${index}"]`);
-  if(!player||!tile)return;
+  if(!player||!tile)return null;
   const x=Number(tile.dataset.pmCx);
   const y=Number(tile.dataset.pmCy);
-  if(!Number.isFinite(x)||!Number.isFinite(y))return;
+  if(!Number.isFinite(x)||!Number.isFinite(y))return null;
+  for(const cell of root.querySelectorAll('.pm-board-tile.is-stepping'))cell.classList.remove('is-stepping');
   player.style.left=`${x}%`;
   player.style.top=`${y}%`;
   player.dataset.pmPosition=String(index);
   player.classList.toggle('is-moving',moving);
+  if(react){
+    void tile.offsetWidth;
+    tile.classList.add('is-stepping');
+  }
+  return tile;
 }
 
 async function runMovementTest(root,button){
@@ -41,8 +47,9 @@ async function runMovementTest(root,button){
   let position=Number(player.dataset.pmPosition||0);
   for(let step=0;step<rolled;step+=1){
     position=(position+1)%24;
-    setPlayerToTile(root,position,{moving:true});
+    const steppedTile=setPlayerToTile(root,position,{moving:true,react:true});
     await wait(STEP_MS);
+    steppedTile?.classList.remove('is-stepping');
   }
   player.classList.remove('is-moving');
   button.disabled=false;
