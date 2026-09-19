@@ -1,6 +1,7 @@
 export const SERVICE_CATALOG = Object.freeze([
   { key:"now", tone:"blue", label:"NOW Rank", shortLabel:"NOW Rank", description:"지금 가장 주목받는 정치인", href:"/now", launcher:true },
   { key:"poll", tone:"red", label:"시민들의 선택", shortLabel:"시민선택", description:"오늘의 쟁점에 직접 한 표", href:"/poll", launcher:true },
+  { key:"survey", tone:"navy", label:"JCS 여론조사", shortLabel:"여론조사", description:"HUMAN과 AI의 여론 데이터를 함께 비교", href:"/ai-panel", launcher:true },
   { key:"itsme", tone:"teal", label:"IT’S ME", shortLabel:"IT’S ME", description:"내가 만드는 정책 제안", href:"/itsme", launcher:true },
   { key:"compare", tone:"orange", label:"정치인 비교분석", shortLabel:"비교분석", description:"두 사람을 같은 기준으로 비교", href:"/compare", launcher:true },
   { key:"campaign", tone:"gold", label:"정참시 CAMPAIGN", shortLabel:"캠페인", description:"사람과 프로젝트의 가능성을 발견합니다", href:"/campaigns", launcher:true },
@@ -29,6 +30,7 @@ const ICON_PATHS=Object.freeze({
  column:`<path d="M6 4h12v16H6z"/><path d="M9 8h6M9 12h6M9 16h4"/>`,
  news:`<path d="M4 6h12v12H4z"/><path d="M8 9h5M8 12h5M8 15h3"/><path d="M16 9h4v8a1 1 0 0 1-1 1h-3"/>`,
  poll:`<path d="M6 9.5h12l1.5 9H4.5l1.5-9Z"/><path d="M9 9.5V6.8a3 3 0 0 1 6 0v2.7"/><path d="m9.2 14 1.8 1.8 3.8-4"/>`,
+ survey:`<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 17v-4M12 17V9M16 17v-7"/><path d="M8 7h8"/>`,
  community:`<path d="M4 6h11v8H8l-4 3V6Z"/><path d="M14 9h6v8h-3l-3 2v-10Z"/>`,
  compare:`<path d="M12 4v16"/><path d="M5 7h5M14 7h5"/><path d="m5 7-2 5h6L7 7"/><path d="m17 7-2 5h6l-2-5"/><path d="M7 17h10"/>`,
  generation:`<circle cx="8" cy="8" r="2.5"/><circle cx="16.5" cy="9" r="2"/><path d="M3.5 18c.6-3.3 2.1-5 4.5-5s3.9 1.7 4.5 5"/><path d="M13.5 18c.4-2.5 1.4-3.8 3-3.8 1.7 0 2.8 1.3 3.2 3.8"/>`,
@@ -47,6 +49,7 @@ export function launcherServices(){return SERVICE_CATALOG.filter(x=>x.launcher);
 const MODULE_ACTION_PATHS=Object.freeze({
   write:`<path d="M5 19h4l10-10-4-4L5 15v4Z"/><path d="m13.5 6.5 4 4"/>`,
   poll:ICON_PATHS.poll,
+  survey:ICON_PATHS.survey,
   evaluation:ICON_PATHS.evaluation,
   generation:ICON_PATHS.generation,
   compare:`<path d="m5 4 15 15M19 4 4 19"/><path d="m4 4 4 1-3 3M20 4l-4 1 3 3M4 20l4-1-3-3M20 20l-4-1 3-3"/>`,
@@ -84,6 +87,7 @@ const NAV_SOLID={
  partners:'<path data-gold d="M11 2h10v6h-3V5h-4v3h-3z"/><rect x="2" y="8" width="28" height="22" rx="3"/><path data-gold-stroke d="M2 17h28" stroke-width="1.6"/><rect data-gold x="13" y="14" width="6" height="7" rx="1"/>',
  now:'<rect x="3" y="18" width="7" height="11" rx="1.5"/><rect x="12" y="11" width="7" height="18" rx="1.5"/><rect data-gold x="21" y="3" width="7" height="26" rx="1.5"/>',
  poll:'<path d="M6 13h20l4 6H2z"/><rect x="3" y="21" width="26" height="9" rx="2"/><rect data-gold x="12" y="2" width="12" height="14" rx="2" transform="rotate(18 18 9)"/><path d="m15 8 2 2 4-4" fill="none" stroke="#624122" stroke-width="2" stroke-linecap="round"/>',
+ survey:'<rect x="3" y="3" width="26" height="26" rx="4"/><path d="M8 23v-7h4v7zM15 23V11h4v12z" fill="#f7efff"/><path data-gold d="M22 23V7h4v16z"/><path data-gold d="M8 8h10v3H8z"/>',
  itsme:'<path d="M6 2h15v8h7v18a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2m17 0 5 6h-5z"/><path data-gold d="m11 18 10-10 4 4-10 10-5 1z"/><path d="M10 27h12" stroke="#f6edff" stroke-width="2"/>',
  compare:'<rect x="2" y="3" width="13" height="25" rx="2.5"/><rect data-gold x="18" y="5" width="12" height="25" rx="2.5"/><circle cx="8.5" cy="11" r="2.5" fill="#f5eafd"/><path d="M5 22v-3a3.5 3.5 0 0 1 7 0v3" fill="#f5eafd"/><circle cx="24" cy="13" r="2.5" fill="#785027"/><path d="M21 24v-3a3 3 0 0 1 6 0v3" fill="#785027"/>',
  community:'<path d="M4 3h16a4 4 0 0 1 4 4v5H15a6 6 0 0 0-6 6v4l-6 4v-7a4 4 0 0 1-2-3V7a4 4 0 0 1 3-4"/><path data-gold d="M16 14h11a4 4 0 0 1 4 4v7a4 4 0 0 1-4 4v3l-5-3h-6a4 4 0 0 1-4-4v-7a4 4 0 0 1 4-4"/>',
