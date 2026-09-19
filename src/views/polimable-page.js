@@ -49,11 +49,11 @@ function renderGameHud(authenticated){
     </div>
 
     <div class="pm-card-live-grid" aria-label="보유 전략카드">
-      ${[0,1,2].map(i=>`<button type="button" class="pm-live-card" data-pm-card-slot="${i}" disabled aria-label="비어 있는 전략카드 슬롯 ${i+1}"><span class="pm-live-card-icon">✦</span><b>전략카드</b><small>EMPTY</small></button>`).join('')}
+      ${[0,1,2].map(i=>`<button type="button" class="pm-live-card" data-pm-card-slot="${i}" disabled aria-label="비어 있는 전략카드 슬롯 ${i+1}"><span class="pm-live-card-icon">✦</span><b></b><small></small></button>`).join('')}
     </div>
 
     <div class="pm-ranking-live" data-pm-ranking aria-label="오늘의 랭킹">
-      ${[1,2,3,4].map(rank=>`<div class="pm-rank-row"><i>${rank===1?'♛':rank}</i><span>—</span><b>—</b></div>`).join('')}
+      ${[1,2,3,4].map(rank=>`<div class="pm-rank-row"><i>${rank===1?'♛':rank}</i><span></span><b></b></div>`).join('')}
     </div>
 
     <div class="pm-choice-modal" data-pm-choice-modal hidden role="dialog" aria-modal="true" aria-label="운명의 선택">

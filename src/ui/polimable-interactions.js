@@ -71,8 +71,8 @@ function updateCards(root,state,busy=false){
       button.title=card.description;
     }else{
       if(icon)icon.textContent='✦';
-      if(title)title.textContent='전략카드';
-      if(small)small.textContent='EMPTY';
+      if(title)title.textContent='';
+      if(small)small.textContent='';
       button.setAttribute('aria-label',`비어 있는 전략카드 슬롯 ${index+1}`);
       button.removeAttribute('title');
     }
@@ -85,7 +85,7 @@ function updateRanking(root,leaderboard){
   const entries=leaderboard?.entries||[];
   mount.innerHTML=[0,1,2,3].map(i=>{
     const e=entries[i],rank=i+1;
-    if(!e)return `<div class="pm-rank-row"><i>${rank===1?'♛':rank}</i><span>—</span><b>—</b></div>`;
+    if(!e)return `<div class="pm-rank-row"><i>${rank===1?'♛':rank}</i><span></span><b></b></div>`;
     return `<div class="pm-rank-row${e.isMe?' is-me':''}"><i>${rank===1?'♛':rank}</i><span>${String(e.initials||'JCS').replace(/[<>&]/g,'')}</span><b>${number(e.score)}</b></div>`;
   }).join('');
 }

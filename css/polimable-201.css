@@ -120,24 +120,25 @@
 .pm-cashout-button{margin-top:.34cqw;width:88%;height:1.78cqw;border:.07cqw solid #b9a7e5;border-radius:.52cqw;background:linear-gradient(180deg,#fff,#eee9fb);color:#51358e;font-size:.73cqw;font-weight:1000;cursor:pointer;pointer-events:auto;box-shadow:0 .12cqw .22cqw rgba(54,32,112,.12)}
 .pm-cashout-button:disabled{opacity:.56;cursor:wait}
 
-/* Strategy cards: each real card is a button inside the three baked-in slots. */
+/* Strategy cards: background image is clean; only real earned cards should appear. */
 .pm-card-live-grid{position:absolute;left:67.6%;top:50.1%;width:30.6%;height:13.6%;display:grid;grid-template-columns:repeat(3,1fr);gap:2.65%;pointer-events:none}
-.pm-live-card{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;border:0;border-radius:.72cqw;background:transparent;color:#5d419d;padding:.12cqw;pointer-events:auto;cursor:pointer}
-.pm-live-card:not(.has-card){pointer-events:none;color:#9185c9}
-.pm-live-card.has-card{background:#fff;box-shadow:inset 0 0 0 .09cqw rgba(108,80,177,.28),0 .10cqw .18cqw rgba(61,38,121,.10)}
-.pm-live-card:disabled{cursor:default;opacity:.72}
+.pm-live-card{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;border:0;border-radius:.72cqw;background:#fff;color:#5d419d;padding:.12cqw;pointer-events:none;cursor:default;box-shadow:inset 0 0 0 .09cqw rgba(108,80,177,.28),0 .10cqw .18cqw rgba(61,38,121,.10);opacity:0;visibility:hidden}
+.pm-live-card:not(.has-card){opacity:0;visibility:hidden;pointer-events:none;box-shadow:none;background:transparent}
+.pm-live-card.has-card{opacity:1;visibility:visible;pointer-events:auto;cursor:pointer}
+.pm-live-card:disabled{cursor:default;opacity:.78}
+.pm-live-card.has-card:disabled{opacity:.78;visibility:visible}
 .pm-live-card-icon{font-size:2.02cqw;line-height:1}
 .pm-live-card b{display:block;max-width:95%;margin-top:.12cqw;font-size:.72cqw;line-height:1.0;font-weight:1000;letter-spacing:-.04em;white-space:normal;text-align:center}
 .pm-live-card small{margin-top:.12cqw;font-size:.44cqw;font-weight:1000;letter-spacing:.06em;color:#8c75bf}
 
-/* TODAY ranking: fit four rows into the white ranking panel baked into the background. */
-.pm-ranking-live{position:absolute;left:68.45%;top:74.35%;width:29.0%;height:16.1%;display:grid;grid-template-rows:repeat(4,1fr);gap:.16cqw;pointer-events:none;position:absolute}
-.pm-ranking-live::before{content:'';position:absolute;left:.15cqw;top:.05cqw;bottom:.05cqw;width:77%;border-radius:.58cqw;background:linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.95) 72%,rgba(255,255,255,.18) 100%);z-index:0}
-.pm-rank-row{position:relative;z-index:1;display:grid;grid-template-columns:1.5cqw 1fr auto;align-items:center;gap:.38cqw;padding:0 .55cqw;border-radius:.38cqw;color:#584885;font-size:.70cqw;font-weight:900;min-width:0}
+/* TODAY ranking: cleaned background already contains the panel + watermark. Only rows are rendered on top. */
+.pm-ranking-live{position:absolute;left:68.55%;top:74.55%;width:28.7%;height:15.5%;display:grid;grid-template-rows:repeat(4,1fr);gap:.18cqw;pointer-events:none}
+.pm-ranking-live::before{content:none}
+.pm-rank-row{display:grid;grid-template-columns:1.5cqw 1fr auto;align-items:center;gap:.38cqw;padding:0 .55cqw;border-radius:.38cqw;color:#584885;font-size:.70cqw;font-weight:900;min-width:0;background:transparent}
 .pm-rank-row i{font-style:normal;text-align:center;color:#9273c4}
 .pm-rank-row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pm-rank-row b{color:#4c3c7c;font-size:.72cqw}
-.pm-rank-row.is-me{background:rgba(118,84,202,.13);color:#4f3290}
+.pm-rank-row.is-me{background:rgba(118,84,202,.10);color:#4f3290}
 
 /* Choice and game-over overlays are temporary; they do not alter the permanent board design. */
 .pm-choice-modal,.pm-result-modal{position:absolute;inset:0;display:grid;place-items:center;background:rgba(44,28,86,.26);backdrop-filter:blur(1px);pointer-events:auto}
