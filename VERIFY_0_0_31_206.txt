@@ -1,0 +1,13 @@
+JCS 0.0.31.206 POLIMARBLE NO CURRENT-CELL BLINK
+
+VALIDATION
+- node --check src/views/polimable-page.js : PASS
+- node --check src/ui/polimable-interactions.js : PASS
+- node --check src/app.js : PASS
+- node --check src/layout/home-layout.js : PASS
+- node --test tests/polimable-201.test.js : 8 / 8 PASS
+- node --test tests/polimable-no-highlight-206.test.js : PASS
+- permanent current-cell pulse/highlight : REMOVED
+- current-cell number badge overlay : REMOVED
+- current position indicator : PLAYER TOKEN ONLY
+- movement hop : movement phase only
