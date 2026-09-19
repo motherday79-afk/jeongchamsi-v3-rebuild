@@ -49,11 +49,11 @@ function renderGameHud(authenticated){
     </div>
 
     <div class="pm-card-live-grid" aria-label="보유 전략카드">
-      ${[0,1,2].map(i=>`<button type="button" class="pm-live-card" data-pm-card-slot="${i}" disabled aria-label="비어 있는 전략카드 슬롯 ${i+1}"><span class="pm-live-card-icon">✦</span><b></b><small></small></button>`).join('')}
+      ${[0,1,2].map(i=>`<button type="button" class="pm-live-card" data-pm-card-slot="${i}" disabled aria-label="비어 있는 전략카드 슬롯 ${i+1}"><span class="pm-live-card-icon">✦</span><b>전략카드</b><small>EMPTY</small></button>`).join('')}
     </div>
 
     <div class="pm-ranking-live" data-pm-ranking aria-label="오늘의 랭킹">
-      ${[1,2,3,4].map(rank=>`<div class="pm-rank-row"><i>${rank===1?'♛':rank}</i><span></span><b></b></div>`).join('')}
+      ${[1,2,3,4].map(rank=>`<div class="pm-rank-row"><i>${rank===1?'♛':rank}</i><span>—</span><b>—</b></div>`).join('')}
     </div>
 
     <div class="pm-choice-modal" data-pm-choice-modal hidden role="dialog" aria-modal="true" aria-label="운명의 선택">
@@ -92,7 +92,21 @@ export function renderPoliMarblePage({session}={}){
 }
 
 export function renderPoliMarbleSidebarCard(data={},session={}){
-  return `<section class="side-card side-polimable"><button type="button" class="pm-side-entry" data-layout-route="/polimable" aria-label="JCS 폴리마블 게임 바로가기"><img src="/assets/polimable/sidebar-entry-31-204.webp" alt="JCS 폴리마블"><span>GAME START <b>→</b></span></button></section>`;
+  const board=data?.leaderboard||data||{};
+  const entries=Array.isArray(board?.entries)?board.entries:[];
+  const king=entries[0];
+  const me=board?.me||entries.find(entry=>entry?.isMe);
+  const kingText=king?`${esc(king.initials||'JCS')} · ${number(king.score)}`:'아직 기록 없음';
+  const meText=me?`${number(me.score)} · ${Number(me.rank)||'-'}위`:'아직 기록 없음';
+  return `<section class="side-card side-polimable">
+    <button type="button" class="pm-side-entry" data-layout-route="/polimable" aria-label="JCS 폴리마블 게임 바로가기"><img src="/assets/polimable/sidebar-entry-31-204.webp" alt="JCS 폴리마블"></button>
+    <div class="pm-side-summary">
+      <div class="pm-side-summary-head"><b>🎲 JCS 폴리마블</b><span>TODAY</span></div>
+      <div class="pm-side-stat"><span>👑 TODAY KING</span><b>${kingText}</b></div>
+      ${session?.authenticated?`<div class="pm-side-stat is-me"><span>내 오늘 기록</span><b>${meText}</b></div>`:''}
+      <button type="button" class="pm-side-game-start" data-layout-route="/polimable">GAME START →</button>
+    </div>
+  </section>`;
 }
 
 export {CARDS};

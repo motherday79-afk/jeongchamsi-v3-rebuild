@@ -198,8 +198,8 @@ function playFinalEffect(root,state){
   burst.style.setProperty('--pm-vfx-y',`${y}%`);
   const shock=document.createElement('span');shock.className='pm-vfx-shock';burst.append(shock);
   const symbols=burstSymbols(kind);
-  const dirs=[[-2.4,-2.4,-30],[0,-3.0,12],[2.35,-2.25,38],[-2.8,-.8,-70],[2.8,-.65,62],[-1.0,-3.25,100],[1.1,-3.35,-95]];
-  for(let i=0;i<Math.min(7,symbols.length+1);i++){
+  const dirs=[[-3.8,-3.4,-30],[0,-4.4,12],[3.7,-3.3,38],[-4.3,-1.2,-70],[4.3,-1.0,62],[-1.6,-4.8,100],[1.8,-4.9,-95],[-3.2,-4.5,42],[3.2,-4.4,-42],[0.4,-5.3,15]];
+  for(let i=0;i<10;i++){
     const p=document.createElement('span');p.className='pm-vfx-particle';p.textContent=symbols[i%symbols.length];
     const [dx,dy,rot]=dirs[i];p.style.setProperty('--dx',`${dx}cqw`);p.style.setProperty('--dy',`${dy}cqw`);p.style.setProperty('--rot',`${rot}deg`);p.style.animationDelay=`${i*24}ms`;burst.append(p);
   }
@@ -207,7 +207,7 @@ function playFinalEffect(root,state){
   if(delta){const score=document.createElement('strong');score.className='pm-vfx-score';score.textContent=`${delta>0?'+':''}${delta.toLocaleString('ko-KR')}`;burst.append(score);}
   layer.append(burst);
   if(kind==='bad'){root.classList.remove('is-bad-impact');void root.offsetWidth;root.classList.add('is-bad-impact');setTimeout(()=>root.classList.remove('is-bad-impact'),280);}
-  setTimeout(()=>burst.remove(),950);
+  setTimeout(()=>burst.remove(),1150);
 }
 async function animateDiceThrow(root,dice){
   const result=root.querySelector('[data-pm-dice-result]');
