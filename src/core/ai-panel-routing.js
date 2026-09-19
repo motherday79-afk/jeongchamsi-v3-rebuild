@@ -1,4 +1,4 @@
-import {renderAiPanelPublic,renderAiPanelAdmin} from '../views/ai-panel-pages.js?v=0.0.31.190';
+import {renderAiPanelPublic,renderAiPanelAdmin} from '../views/ai-panel-pages.js?v=0.0.31.191';
 export async function loadAiPanelPage({admin=false,params=new URLSearchParams(),session={},client}={}){
  if(admin&&!(session.authenticated&&session.user?.role==='admin'&&session.user?.status==='active'))return renderAiPanelAdmin({session});
  const [list,human]=await Promise.all([client.list({manage:admin}),client.humanPolls?.()||Promise.resolve({})]);const id=params.get('id')||(!admin?list.items?.[0]?.id:'');const detail=id?await client.get(id,{edit:admin}):{};

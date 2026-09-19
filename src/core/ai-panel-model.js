@@ -54,7 +54,7 @@ function humanBucket(v){if(!isObject(v))fail('HUMAN_INVALID');const out={};for(c
 function humanPoll(p){if(!isObject(p)||!validId(p.id)||!isObject(p.results)||typeof p.comparable!=='boolean')fail('HUMAN_INVALID');const out={id:p.id,comparable:p.comparable,institution:str(p.institution,200,true),sourceUrl:url(p.sourceUrl),question:str(p.question,2000,true)};for(const k of ['commissioner','title','method','comparisonNote'])out[k]=str(p[k],2000);for(const k of ['startDate','endDate','publishedDate'])out[k]=p[k]?date(p[k]):null;if(out.startDate&&out.endDate&&out.startDate>out.endDate)fail('HUMAN_INVALID');for(const k of ['sampleSize','responseRate','marginOfError']){const v=p[k];if(v!=null&&(typeof v!=='number'||!Number.isFinite(v)||v<0||(k==='sampleSize'?!Number.isInteger(v):v>100)))fail('HUMAN_INVALID');out[k]=v??null;}if(p.topic)out.topic=str(p.topic,100);if(p.fetchedAt)out.fetchedAt=timestamp(p.fetchedAt);if(p.provenance!=null){if(!isObject(p.provenance))fail('HUMAN_INVALID');out.provenance={};for(const k of ['parserVersion','contentHash','questionKind'])if(p.provenance[k]!=null)out.provenance[k]=str(p.provenance[k],200);if(out.provenance.questionKind&&!['source-summary','verbatim'].includes(out.provenance.questionKind))fail('HUMAN_INVALID');}out.results={overall:humanBucket(p.results.overall)};for(const k of ['gender','age','region']){const v=p.results[k]||{};if(!isObject(v)||Object.keys(v).length>200)fail('HUMAN_INVALID');out.results[k]=Object.fromEntries(Object.entries(v).map(([name,b])=>[str(name,100,true),humanBucket(b)]));}return out;}
 export function mutateRun(previous,operation,input,{now,user}){
  if(!isObject(input))fail('INPUT_INVALID');const locked=['locked','published'].includes(previous.status);
- if(locked&&!['human','publish'].includes(operation))fail('LOCKED');const r=structuredClone(previous);
+ if(locked&&!['human','publish','finalize'].includes(operation))fail('LOCKED');const r=structuredClone(previous);
  const mode=()=>{if(!r.modes.includes(input.mode))fail('MODE_INVALID');return input.mode;};
  if(operation==='environment'){
   const m=mode(),sources=input.sources||[];if(!Array.isArray(sources)||sources.length>100)fail('INPUT_INVALID');r.environments[m]={notes:str(input.notes,20000),sources:sources.map(s=>{if(!isObject(s)||typeof s.containsPollNumbers!=='boolean')fail('INPUT_INVALID');if(m==='BLIND'&&s.containsPollNumbers)fail('BLIND_POLL_LEAKAGE');return {title:str(s.title,500,true),url:url(s.url),publishedAt:s.publishedAt?timestamp(s.publishedAt):null,containsPollNumbers:s.containsPollNumbers};})};
@@ -67,6 +67,16 @@ export function mutateRun(previous,operation,input,{now,user}){
  }else if(operation==='review'){if(!r.modes.every(m=>r.environments[m]))fail('ENVIRONMENT_REQUIRED');if(!r.modes.every(m=>r.results[m]))fail('RESPONSES_REQUIRED');r.status='reviewed';r.reviewNote=str(input.note,4000);
  }else if(operation==='lock'){if(r.status!=='reviewed')fail('REVIEW_REQUIRED');r.status='locked';r.lockedAt=now;r.lockedBy=user.id;
  }else if(operation==='publish'){if(r.status!=='locked'||r.isSample||r.panel.profiles.length!==1000)fail('PUBLISH_INVALID');if(!r.humanPolls.some(p=>p.comparable&&[p.results.overall.positive,p.results.overall.negative,p.results.overall.undecided].every(v=>v!==null)))fail('HUMAN_REQUIRED');r.status='published';r.publishedAt=now;
+ }else if(operation==='finalize'){
+  if(r.status==='published')fail('PUBLISH_INVALID');
+  if(!r.modes.every(m=>r.environments[m]))fail('ENVIRONMENT_REQUIRED');
+  if(!r.modes.every(m=>r.results[m]))fail('RESPONSES_REQUIRED');
+  if(r.isSample||r.panel.profiles.length!==1000)fail('PUBLISH_INVALID');
+  if(!r.humanPolls.some(p=>p.comparable&&[p.results.overall.positive,p.results.overall.negative,p.results.overall.undecided].every(v=>v!==null)))fail('HUMAN_REQUIRED');
+  if(r.status==='draft'){r.status='reviewed';r.reviewNote=str(input.note||'관리자 간편 확정',4000);r.audit.push({operation:'review',actorId:user.id,at:now});}
+  if(r.status==='reviewed'){r.status='locked';r.lockedAt=now;r.lockedBy=user.id;r.audit.push({operation:'lock',actorId:user.id,at:now});}
+  if(r.status!=='locked')fail('PUBLISH_INVALID');
+  r.status='published';r.publishedAt=now;r.audit.push({operation:'publish',actorId:user.id,at:now});
  }else fail('OPERATION_INVALID');
  r.version++;r.updatedAt=now;r.audit.push({operation,actorId:user.id,at:now});return r;
 }
