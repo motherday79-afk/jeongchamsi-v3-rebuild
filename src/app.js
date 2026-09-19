@@ -15,9 +15,9 @@ import { refreshFontScale } from './ui/font-scale.js?v=0.0.31.56';
 import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.178';
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.56';
 import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.194';
-import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.197';
+import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.200';
 import { focusCageCompose, setupHomeCompare, setupPoliticianAutocomplete, setupLayoutInteractions, setupPoliticianPhotoFallback, setupNowCarousel, setupCageCountdown, setupDesktopHomeViewport } from './ui/interactions.js?v=0.0.31.165';
-import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.177';
+import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.200';
 import { createContentService, loadNavigationDashboard, loadPersonNavigation } from './core/content.js?v=0.0.31.178';
 import { createPoliticianService } from './core/politicians.js?v=0.0.31.147';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith, isTransientAnalysisRoute } from './core/navigation.js?v=0.0.31.177';
@@ -33,6 +33,7 @@ import { loadSearchDiscovery } from './views/search-discovery.js?v=0.0.31.179';
 import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.31.56';
 import { regionDistrictOptions, regionSubdistrictOptions } from './data/korean-regions.js?v=0.0.31.56';
 import {activityFormPayload,activityRequestId,settleActivityRequest,rememberActivityFeedback,rememberSubmissionFeedback,showActivityFeedback,hydrateActivityHints,bindActivityPoints,authoringResult} from './ui/activity-points.js?v=0.0.31.178';
+import {bindFortuneInteractions} from './ui/fortune-interactions.js?v=0.0.31.200';
 
 const formErrors={GOODS_REQUEST_REQUIRED:'상품 종류, 희망 수량, 연락처와 제작 요청을 확인해 주세요.',ALREADY_VOTED:'이번 회차 투표를 이미 완료했습니다.',AGE_GROUP_MISMATCH:'20대 이상 회원은 본인 세대에서만 투표할 수 있습니다.',GENERATION_VOTE_CLOSED:'현재 진행 중인 모의투표가 아닙니다.',CANDIDATE_NOT_ALLOWED:'이번 회차에 등록된 후보를 선택해 주세요.',ADMIN_VOTE_DISABLED:'관리자는 데모 설정으로 현황을 관리해 주세요.',CAMP_REQUIRED:'진보진영 또는 보수진영을 선택해 주세요.',PIN_FORBIDDEN:'공지·케이지 고정은 관리자만 할 수 있습니다.',PIN_INVALID:'공지 또는 케이지 중 하나를 선택해 주세요.',POST_EDIT_FORBIDDEN:'본인이 작성한 게시글만 수정·삭제할 수 있습니다.',COMMENT_EDIT_FORBIDDEN:'본인이 작성한 댓글만 수정·삭제할 수 있습니다.',CONTENT_CHANGED_RETRY:'다른 참여 내용이 갱신됐습니다. 입력 내용은 유지되니 다시 저장해 주세요.',CONTENT_STORAGE_INVALID:'저장된 게시판 데이터를 읽지 못했습니다. 다시 시도해 주세요.',TITLE_REQUIRED:'제목을 입력해 주세요.',INVALID_COMMENT:'댓글 내용을 입력해 주세요.',COMMENT_PARENT_INVALID:'답글을 달 댓글이 변경되었거나 삭제되었습니다.',CAGE_NOT_FOUND:'케이지를 찾을 수 없습니다.',POST_NOT_FOUND:'게시글이 삭제되었거나 존재하지 않습니다.',COMMENT_NOT_FOUND:'댓글이 삭제되었거나 존재하지 않습니다.',CAMP_IMMUTABLE:'작성한 글의 진영은 변경할 수 없습니다.',INVALID_REFERRER:'추천인코드를 확인해 주세요. 사용 가능한 회원의 코드를 입력해야 합니다.',INVALID_REFERRER_CODE:'추천인코드는 숫자로 입력해 주세요.',INVALID_REGION:'시·군·구와 해당 구를 올바르게 선택해 주세요.',REGISTRATION_BUSY:'가입 요청이 많습니다. 잠시 후 다시 시도해 주세요.',MEMBERS_CHANGED_RETRY:'회원 정보가 갱신됐습니다. 새로고침 후 다시 저장해 주세요.'};
 const app=document.getElementById('app');
@@ -206,7 +207,7 @@ async function render({preserveScroll=false,refreshHome=false,freshSession=false
   if(p[0]==='mypage'&&wantsWallet)dashboard.pointResult=await walletPromise;
   let body='';
   if(!p.length){
-    const [memberCount,columns,community,itsmePosts,newsPosts,polls,generation,nationalEvaluation,academy,rankResult,homeBanner,trendingResult,keywordResult,aiPanelResult,aiHumanResult]=await Promise.all([
+    const [memberCount,columns,community,itsmePosts,newsPosts,polls,generation,nationalEvaluation,academy,rankResult,homeBanner,trendingResult,keywordResult,aiPanelResult,aiHumanResult,fortuneData]=await Promise.all([
       auth.memberCount().catch(()=>0),
       content.list('columns').catch(()=>[]),
       content.list('community').catch(()=>[]),
@@ -217,12 +218,12 @@ async function render({preserveScroll=false,refreshHome=false,freshSession=false
       content.readDomain('nationalEvaluation').catch(()=>({})),
       content.readDomain('academy').catch(()=>({items:[],slots:[]})),
       politicians.rankings().catch(()=>({ok:false,items:[]})),
-      content.homeBanner().catch(()=>null),politicians.trending().catch(()=>({items:[]})),politicians.keywords().catch(()=>({items:[]})),aiPanel.list(),aiPanel.humanPolls()
+      content.homeBanner().catch(()=>null),politicians.trending().catch(()=>({items:[]})),politicians.keywords().catch(()=>({items:[]})),aiPanel.list(),aiPanel.humanPolls(),session.authenticated?auth.fortuneToday().catch(()=>({ok:false,error:'FORTUNE_LOAD_FAILED'})):Promise.resolve({ok:true,needsLogin:true})
     ]);
     const rank=rankResult?.ok?(Array.isArray(rankResult.items)?rankResult.items:[]).slice(0,100):[];
     const generationIds=(Array.isArray(generation?.candidates)?generation.candidates:[]).slice(0,75),evaluationIds=Object.values(nationalEvaluation?.slots||{}).map(slot=>slot?.subjectId).filter(Boolean),profileIds=[...new Set([...generationIds,...evaluationIds])],profileResult=profileIds.length?await politicians.profiles(profileIds).catch(()=>({items:[]})):{items:[]},resolvedPeople=(profileResult.items||[]).map(item=>({ok:true,item}));
     const peopleById=Object.fromEntries(resolvedPeople.filter(result=>result?.ok&&result.item).map(result=>[result.item.id,result.item])),generationView={...generation,candidatePeople:peopleById,candidateLabels:Object.fromEntries(generationIds.map(id=>[id,peopleById[id]?.name||id]))},nationalEvaluationView={...nationalEvaluation,slots:Object.fromEntries(Object.entries(nationalEvaluation?.slots||{}).map(([key,slot])=>[key,{...slot,subjectName:peopleById[slot?.subjectId]?.name||slot?.subjectName,party:peopleById[slot?.subjectId]?.party||slot?.party,jurisdiction:peopleById[slot?.subjectId]?.jurisdiction||slot?.jurisdiction,photo:peopleById[slot?.subjectId]?.photo||slot?.photo}]))};
-    const home={...HOME_FIXTURE,aiPanelResult:{...aiPanelResult,human:aiHumanResult},trending:trendingResult.items||[],keywords:keywordResult.items||[],memberCount,columns,community,communityData:content.peekDomain('community')||{items:community},itsmePosts,newsPosts,polls,generation:generationView,nationalEvaluation:nationalEvaluationView,academy,rank,homeBanner,recentPoliticians:loadRecentPoliticians(),session,badgeStatus};
+    const home={...HOME_FIXTURE,aiPanelResult:{...aiPanelResult,human:aiHumanResult},fortuneData,trending:trendingResult.items||[],keywords:keywordResult.items||[],memberCount,columns,community,communityData:content.peekDomain('community')||{items:community},itsmePosts,newsPosts,polls,generation:generationView,nationalEvaluation:nationalEvaluationView,academy,rank,homeBanner,recentPoliticians:loadRecentPoliticians(),session,badgeStatus};
     body=`<div class="product-home-wrap">${renderHomeLayout(home)}</div>`;
   } else if(p[0]==='points'){const pointView=new URLSearchParams(r.split('?')[1]||'').get('view');body=renderPointShop(await content.points(),session,pointView==='support'?'support':pointView==='activity'?'activity':'shop');}
   else if(p[0]==='ai-panel'||(p[0]==='admin'&&p[1]==='ai-panel')) body=await loadAiPanelPage({admin:p[0]==='admin',params:searchParams,session,client:aiPanel});
@@ -342,6 +343,7 @@ bindCampaignInteractions(document,{client:campaigns,onSaved:async(_result,target
 bindPersonRefresh(document,{auth,onPublished:event=>{navigation.clearCache();return render({preserveScroll:true,freshSession:event?.revalidate===true});}});
 bindRankingWeights(document,{auth,onSaved:()=>render({preserveScroll:true})});
 bindActivityPoints(document,{loadMemberPage:(panel,page)=>loadMemberPoints(panel,page)});
+bindFortuneInteractions(document,{auth,onSaved:async()=>{navigation.clearCache();homeSnapshot=null;await render({preserveScroll:true,freshSession:true});}});
 window.addEventListener('jcs:layout-route',event=>navigation.navigate(event.detail?.route||'/'));
 window.addEventListener('jcs:layout-search',event=>navigation.navigate(`/search?q=${encodeURIComponent(String(event.detail?.query||'').trim())}`));
 document.addEventListener('change',event=>{

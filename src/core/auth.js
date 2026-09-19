@@ -28,6 +28,8 @@ function createRemoteAuthService(){
     async logout(){return request('user/logout',{method:'POST',body:'{}'});},
     async session({fresh=false}={}){if(fresh)requestCache.delete('user/session');const x=await request('user/session');return x.status===200?{authenticated:!!x.authenticated,user:x.user||null}:{authenticated:false,user:null,error:x.error};},
     async updateProfile(patch={}){return request('user/profile',{method:'POST',body:JSON.stringify(patch)});},
+    async fortuneToday(){return request('user/fortune');},
+    async saveFortuneProfile(input={}){return request('user/fortune',{method:'POST',body:JSON.stringify(input)});},
     async completePasswordChange(password){return request('user/password',{method:'POST',body:JSON.stringify({password})});},
     async badgeStatus(){const x=await request('user/badges');return x.ok?x.status:null;},
     async setRepresentativeBadge(badgeKey){return request('action',{method:'POST',body:JSON.stringify({action:'badge-representative-set',payload:{badgeKey}})});},

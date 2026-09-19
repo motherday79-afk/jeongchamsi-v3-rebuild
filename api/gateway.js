@@ -1,6 +1,7 @@
 import {createAiPanelService} from '../lib/ai-panel-service.js';
 import {aiPanelRequest} from '../lib/ai-panel-http.js';
 import {createHumanPollService} from '../lib/human-poll-service.js';
+import {createFortuneService} from '../lib/fortune-service.js';
 import {humanPollRequest} from '../lib/human-poll-http.js';
 import { createMediaSpreadService } from '../lib/media-spread-service.js';
 import { createGroupService } from '../lib/group-service.js';
@@ -202,6 +203,15 @@ async function handleUser(req,res,route,command,url){
   if(route==='user/logout'&&req.method==='POST'){clearSession(res);return json(res,200,{ok:true});}
   if(route==='user/session'&&req.method==='GET'){const user=await referralProfile(command,await currentUser(req,command));return json(res,200,{authenticated:!!user,user:user||null});}
   if(route==='user/profile'&&req.method==='POST'){const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});return json(res,200,await updateProfile(command,user.id,bodyOf(req)));}
+  if(route==='user/fortune'){
+    const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});
+    const service=createFortuneService({command});
+    try{
+      if(req.method==='GET')return json(res,200,await service.today(user));
+      if(req.method==='POST')return json(res,200,await service.saveProfile(user,bodyOf(req)));
+      return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
+    }catch(error){const code=String(error?.message||'FORTUNE_FAILED');return json(res,['FORTUNE_BIRTH_DATE_INVALID','FORTUNE_BIRTH_TIME_INVALID','FORTUNE_CALENDAR_INVALID'].includes(code)?400:code==='LOGIN_REQUIRED'?401:503,{ok:false,error:code});}
+  }
   if(route==='user/password'&&req.method==='POST'){
     const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});
     const result=await completeRequiredPasswordChange(command,user.id,bodyOf(req).password);
