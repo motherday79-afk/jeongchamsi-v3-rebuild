@@ -1,5 +1,5 @@
-import {renderPoliMarblePage} from '../views/polimable-page.js?v=0.0.31.208';
-import {POLIMARBLE_BOARD as BOARD} from '../core/polimable-data.js?v=0.0.31.208';
+import {renderPoliMarblePage} from '../views/polimable-page.js?v=0.0.31.209';
+import {POLIMARBLE_BOARD as BOARD} from '../core/polimable-data.js?v=0.0.31.209';
 
 const sessionKey='jcs:polimable:active-session';
 const contexts=new WeakMap();
