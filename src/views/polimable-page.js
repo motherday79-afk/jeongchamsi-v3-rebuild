@@ -1,18 +1,25 @@
-import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT} from '../core/polimable-layout.js?v=0.0.31.225';
+import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT} from '../core/polimable-layout.js?v=0.0.31.226';
+import {POLIMARBLE_LABEL_BY_INDEX as LABELS} from '../core/polimable-labels.js?v=0.0.31.226';
 
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const number=v=>Number(v||0).toLocaleString('ko-KR');
 
-function renderBlankTileObject(cell){
-  return `<div class="pm-board-cell-object${cell.corner?' is-corner':''}" data-pm-board-cell="${cell.index}" data-pm-side="${cell.side}" style="--x:${cell.x}%;--y:${cell.y}%;--w:${cell.w}%;--h:${cell.h}%;--clip:${cell.polygon};"></div>`;
+function renderTileObject(cell){
+  const item=LABELS[cell.index];
+  return `<div class="pm-board-cell-object${cell.corner?' is-corner':''} tone-${esc(item?.tone||'navy')}" data-pm-board-cell="${cell.index}" data-pm-side="${esc(cell.side)}" data-pm-label="${esc(item?.name||'')}" style="--x:${cell.x}%;--y:${cell.y}%;--w:${cell.w}%;--h:${cell.h}%;">
+    <div class="pm-board-label" aria-hidden="true">
+      <span class="pm-board-label-icon" role="presentation">${esc(item?.icon||'')}</span>
+      <span class="pm-board-label-text">${esc(item?.name||'')}</span>
+    </div>
+  </div>`;
 }
 
 export function renderPoliMarblePage(){
-  return `<section class="pm-board-stage-page" aria-label="JCS 폴리마블 보드 제작 1단계">
-    <div class="pm-board-stage" data-pm-root data-pm-stage="board-objects-only">
-      <img class="pm-board-stage-image" src="/assets/polimable/polimable-board-base-31-225.png" alt="JCS 폴리마블 빈 32칸 보드 배경">
+  return `<section class="pm-board-stage-page" aria-label="JCS 폴리마블 보드 라벨·아이콘 적용 2단계">
+    <div class="pm-board-stage" data-pm-root data-pm-stage="labels-icons-only">
+      <img class="pm-board-stage-image" src="/assets/polimable/polimable-board-base-31-226.png" alt="JCS 폴리마블 32칸 보드">
       <div class="pm-board-cell-layer" aria-hidden="true">
-        ${LAYOUT.map(renderBlankTileObject).join('')}
+        ${LAYOUT.map(renderTileObject).join('')}
       </div>
     </div>
   </section>`;

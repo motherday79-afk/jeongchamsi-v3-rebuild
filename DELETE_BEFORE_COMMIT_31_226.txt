@@ -1,0 +1,5 @@
+# Remove the previous board image from the repository in the same commit.
+assets/polimable/polimable-board-base-31-225.png
+
+# If still present from 31.224, also remove it. The 31.226 page does not use it.
+assets/polimable/DESIGN_SOURCE_OF_TRUTH_31_224.png

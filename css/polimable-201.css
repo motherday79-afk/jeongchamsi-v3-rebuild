@@ -1,8 +1,15 @@
-/* JCS 0.0.31.225 · POLIMARBLE board construction STEP 1
-   - Previous PoliMarble visual is not rendered.
-   - Approved new artwork is the single base image.
-   - Exactly 32 blank independent DOM cell objects sit on the matching visual cells.
-   - No cell names, icons, HUD, characters, dice or gameplay rules in this stage. */
+/* JCS 0.0.31.226 · POLIMARBLE board construction STEP 2
+   DESIGN SOURCE OF TRUTH:
+   1) approved blank 1672×941 board image = only base image
+   2) approved label/icon reference = label visual direction
+   This stage adds only designed labels + icons to 32 existing DOM tile objects.
+   NO gameplay / dice / HUD / characters / ownership / click actions. */
+
+@font-face{
+  font-family:'JCSBoardHeavy';
+  src:url('/assets/fonts/BlackHanSans-Regular.ttf') format('truetype');
+  font-display:swap;
+}
 
 .pm-board-stage-page{
   width:100%;
@@ -13,12 +20,12 @@
 }
 .pm-board-stage{
   position:relative;
-  width:min(100%,1846px);
-  aspect-ratio:1846/852;
+  width:min(100%,1672px);
+  aspect-ratio:1672/941;
   margin:0 auto;
   overflow:hidden;
   background:#fff;
-  line-height:0;
+  line-height:1;
   isolation:isolate;
 }
 .pm-board-stage-image{
@@ -46,20 +53,105 @@
   width:var(--w);
   height:var(--h);
   box-sizing:border-box;
-  clip-path:polygon(var(--clip));
   background:transparent;
   border:0;
   padding:0;
   margin:0;
-  color:transparent;
   overflow:hidden;
   pointer-events:none;
 }
 .pm-board-cell-object::before,
 .pm-board-cell-object::after{content:none!important}
 
-/* Optional local verification only: add ?pmObjects=1 and toggle class via devtools if needed.
-   Not active in production by default. */
+/* Approved-reference label treatment: icon above, heavy centered label below. */
+.pm-board-label{
+  position:absolute;
+  inset:5% 3% 4%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:2%;
+  text-align:center;
+  transform:translateZ(0);
+  user-select:none;
+}
+.pm-board-label-icon{
+  display:block;
+  flex:0 0 auto;
+  font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif;
+  font-size:clamp(13px,1.55vw,28px);
+  line-height:1;
+  filter:drop-shadow(0 1px 0 rgba(255,255,255,.95)) drop-shadow(0 2px 2px rgba(34,42,99,.18));
+  transform:translateY(-1px);
+}
+.pm-board-label-text{
+  display:block;
+  max-width:98%;
+  color:#15266f;
+  font-family:'JCSBoardHeavy','Malgun Gothic','Apple SD Gothic Neo',sans-serif;
+  font-size:clamp(8px,1.00vw,17px);
+  font-weight:900;
+  line-height:1.05;
+  letter-spacing:-.055em;
+  white-space:nowrap;
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.98),
+    1px 0 0 rgba(255,255,255,.72),
+    -1px 0 0 rgba(255,255,255,.72),
+    0 2px 2px rgba(39,45,106,.18);
+}
+
+/* Perspective side cells have a little more horizontal room than top cells. */
+.pm-board-cell-object[data-pm-side="left"] .pm-board-label,
+.pm-board-cell-object[data-pm-side="right"] .pm-board-label{inset:3% 5% 3%}
+.pm-board-cell-object[data-pm-side="left"] .pm-board-label-icon,
+.pm-board-cell-object[data-pm-side="right"] .pm-board-label-icon{font-size:clamp(12px,1.40vw,25px)}
+.pm-board-cell-object[data-pm-side="left"] .pm-board-label-text,
+.pm-board-cell-object[data-pm-side="right"] .pm-board-label-text{font-size:clamp(8px,.96vw,16px)}
+
+/* Tone follows the approved reference without altering the board artwork itself. */
+.pm-board-cell-object.tone-red .pm-board-label-text{color:#7f1521}
+.pm-board-cell-object.tone-green .pm-board-label-text{color:#075c38}
+.pm-board-cell-object.tone-purple .pm-board-label-text{color:#3c208f}
+.pm-board-cell-object.tone-brown .pm-board-label-text{color:#71320d}
+
+/* Four enlarged corner cells. */
+.pm-board-cell-object.is-corner .pm-board-label{inset:7% 5% 6%;gap:2%}
+.pm-board-cell-object.is-corner .pm-board-label-icon{
+  font-size:clamp(24px,2.85vw,51px);
+  filter:drop-shadow(0 2px 0 rgba(255,255,255,.55)) drop-shadow(0 4px 5px rgba(29,21,89,.28));
+}
+.pm-board-cell-object.is-corner .pm-board-label-text{
+  font-size:clamp(14px,1.85vw,32px);
+  color:#fff;
+  letter-spacing:-.05em;
+  text-shadow:
+    -2px -2px 0 #32206f,
+    2px -2px 0 #32206f,
+    -2px 2px 0 #32206f,
+    2px 2px 0 #32206f,
+    0 4px 3px rgba(47,29,90,.28);
+}
+.pm-board-cell-object.tone-corner-start .pm-board-label-text{
+  color:#fff;
+  text-shadow:
+    -2px -2px 0 #8d5000,
+    2px -2px 0 #8d5000,
+    -2px 2px 0 #8d5000,
+    2px 2px 0 #8d5000,
+    0 4px 3px rgba(119,69,0,.28);
+}
+.pm-board-cell-object.tone-corner-plaza .pm-board-label-text{
+  text-shadow:
+    -2px -2px 0 #086b43,
+    2px -2px 0 #086b43,
+    -2px 2px 0 #086b43,
+    2px 2px 0 #086b43,
+    0 4px 3px rgba(0,91,56,.28);
+}
+
+/* Optional local verification only; never active by default. */
 .pm-board-stage.pm-object-debug .pm-board-cell-object{
   outline:2px solid rgba(255,0,0,.85);
   outline-offset:-2px;

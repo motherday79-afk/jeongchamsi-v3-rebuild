@@ -1,0 +1,4 @@
+JCS POLIMARBLE 31.226
+Movement/index direction: START bottom-right -> bottom right-to-left -> left bottom-to-top -> top left-to-right -> right top-to-bottom -> START.
+Each tile remains its own DOM object. Label and icon are children of that object.
+No gameplay is bound in this version.
