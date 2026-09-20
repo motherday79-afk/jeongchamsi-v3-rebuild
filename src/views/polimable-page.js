@@ -1,4 +1,4 @@
-import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT,POLIMARBLE_HUD_LAYOUT as HUD} from '../core/polimable-layout.js?v=0.0.31.227';
+import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT,POLIMARBLE_HUD_LAYOUT as HUD} from '../core/polimable-layout.js?v=0.0.31.228';
 
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const number=v=>Number(v||0).toLocaleString('ko-KR');
@@ -17,6 +17,17 @@ export function renderPoliMarblePage(){
       <div class="pm-board-object-layer" aria-hidden="true">
         ${LAYOUT.map(renderTileObject).join('')}
         ${HUD.map(renderHudObject).join('')}
+      </div>
+      <div class="pm-character-layer" data-pm-character-test="male2">
+        <div class="pm-character-profile pm-character-profile--p1" aria-label="1P 남2 캐릭터 프로필">
+          <img src="/assets/polimable/characters/male2/male2-profile.png" alt="남2 캐릭터 프로필">
+        </div>
+        <button class="pm-character-token" type="button" data-pm-character-token aria-label="남2 캐릭터 테스트: 클릭할 때마다 이동, 승리, 실패, 감정 표현을 순서대로 확인">
+          <img data-pm-character-token-image src="/assets/polimable/characters/male2/male2-token.png" alt="남2 게임말">
+        </button>
+        <div class="pm-character-reaction" data-pm-character-reaction aria-hidden="true">
+          <img data-pm-character-reaction-image src="/assets/polimable/characters/male2/male2-emotion.png" alt="남2 캐릭터 반응">
+        </div>
       </div>
     </div>
   </section>`;

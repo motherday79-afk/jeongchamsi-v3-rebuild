@@ -1,0 +1,10 @@
+31.228에서는 31.227의 단일 보드 베이스를 그대로 사용합니다.
+캐릭터 이미지는 신규 개별 객체이므로 이전 보드/배경 파일을 새로 추가하거나 복원하지 마십시오.
+
+기존 저장소에 아래와 같은 캐릭터 합성본/임시 시트가 있다면 웹 서비스 경로에는 올리지 마십시오:
+- character-sheet*.png
+- male2-sheet*.png
+- polimable-character-preview*.png
+
+실제 런타임에서 사용할 캐릭터 자산은 다음 폴더의 개별 PNG뿐입니다:
+/assets/polimable/characters/male2/

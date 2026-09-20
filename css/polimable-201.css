@@ -22,3 +22,20 @@
 
 /* Keep existing main-page sidebar card behavior. */
 .side-polimable{padding:0!important;overflow:hidden;background:transparent!important;border:0!important;box-shadow:none!important}.pm-side-entry--overlay{position:relative;display:block;width:100%;padding:0;border:0;background:transparent;cursor:pointer;border-radius:18px;overflow:hidden;box-shadow:0 10px 24px rgba(49,25,98,.12)}.pm-side-entry--overlay img{display:block;width:100%;height:auto}.pm-side-overlay{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:12px;pointer-events:none}.pm-side-overlay-brand{display:flex;justify-content:flex-end}.pm-side-overlay-brand span{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.82);color:#6e4ab0;font-size:10px;font-weight:1000}.pm-side-overlay-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:auto;margin-bottom:10px}.pm-side-overlay-stats.is-single{grid-template-columns:1fr}.pm-side-overlay-panel{padding:4px 2px;background:transparent}.pm-side-overlay-panel small,.pm-side-overlay-panel b{display:block;color:#fff;text-shadow:0 2px 8px rgba(45,26,92,.55);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pm-side-overlay-panel small{font-size:10px}.pm-side-overlay-panel b{font-size:13px;margin-top:4px}.pm-side-overlay-cta{display:flex;align-items:center;justify-content:center;min-height:44px;border-radius:14px;background:linear-gradient(180deg,rgba(120,80,200,.96),rgba(88,56,168,.98));color:#fff;font-size:13px;font-weight:1000}
+
+/* 0.0.31.228 · MALE2 CHARACTER VISUAL TEST
+   Character art is split into individual transparent PNG objects.
+   Existing board/background remains untouched. No gameplay rules added. */
+.pm-character-layer{position:absolute;inset:0;z-index:4;pointer-events:none}
+.pm-character-profile{position:absolute;overflow:hidden;pointer-events:none}
+.pm-character-profile--p1{left:4.65%;top:2.35%;width:6.6%;height:11.4%;border-radius:50%}
+.pm-character-profile img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 34%;filter:drop-shadow(0 2px 2px rgba(25,40,90,.15))}
+.pm-character-token{position:absolute;left:83.55%;top:64.0%;width:7.0%;height:12.7%;display:flex;align-items:flex-end;justify-content:center;margin:0;padding:0;border:0;background:transparent;cursor:pointer;pointer-events:auto;z-index:6;transform-origin:50% 100%;-webkit-tap-highlight-color:transparent}
+.pm-character-token img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;filter:drop-shadow(0 5px 4px rgba(45,28,80,.35));user-select:none;-webkit-user-drag:none}
+.pm-character-token:focus-visible{outline:3px solid rgba(255,214,71,.95);outline-offset:2px;border-radius:18px}
+.pm-character-token.is-hop{animation:pmMale2Hop .52s cubic-bezier(.2,.8,.2,1) 1}
+@keyframes pmMale2Hop{0%{transform:translateY(0) scale(1)}45%{transform:translateY(-18%) scale(1.05)}100%{transform:translateY(0) scale(1)}}
+.pm-character-reaction{position:absolute;left:37%;top:25%;width:26%;height:47%;display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(2%) scale(.86);transition:opacity .16s ease,transform .22s cubic-bezier(.2,.8,.2,1);pointer-events:none;z-index:7}
+.pm-character-reaction.is-visible{opacity:1;transform:translateY(0) scale(1)}
+.pm-character-reaction img{display:block;max-width:100%;max-height:100%;object-fit:contain;filter:drop-shadow(0 10px 10px rgba(20,30,70,.28));user-select:none;-webkit-user-drag:none}
+@media(max-width:700px){.pm-character-token{width:7.6%;height:13.2%}.pm-character-reaction{left:34%;top:20%;width:32%;height:54%}}
