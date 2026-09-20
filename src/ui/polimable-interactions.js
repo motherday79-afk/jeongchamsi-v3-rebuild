@@ -122,7 +122,7 @@ function createGame(root){
     button?.addEventListener('click',()=>{ if(state.turn===0&&!state.rolling&&!state.gameOver) runTurn(0); });
     root.querySelector('[data-pm-strategy-slots]')?.addEventListener('click',ev=>{
       const b=ev.target.closest('[data-card-index]'); if(!b||state.turn!==0||state.rolling) return;
-      useCard(0,Number(b.dataset.cardIndex));
+      void useCard(0,Number(b.dataset.cardIndex));
     });
   }
 
@@ -156,13 +156,15 @@ function createGame(root){
   }
 
   function renderOwnership(){
-    root.querySelectorAll('.pm-board-cell-object').forEach(el=>{el.classList.remove('owned-p1','owned-p2','level-2','level-3','level-4');el.removeAttribute('data-owner-badge');});
+    const layer=root.querySelector('[data-pm-owner-marker-layer]');
+    if(!layer)return;
+    const markers=[];
     for(const [idxStr,prop] of Object.entries(state.props)){
-      const el=root.querySelector(`[data-pm-board-cell="${idxStr}"]`);if(!el)continue;
-      el.classList.add(prop.owner===0?'owned-p1':'owned-p2');
-      if(prop.level>1)el.classList.add(`level-${prop.level}`);
-      el.dataset.ownerBadge=`${prop.owner===0?'1P':'AI'} · L${prop.level}`;
+      const idx=Number(idxStr),tile=TILE_RULES[idx],point=OWNER_BADGES[idx];
+      if(!tile||tile.type!=='property'||!point)continue;
+      markers.push(`<div class="pm-owner-marker ${prop.owner===0?'is-p1':'is-p2'} level-${prop.level}" style="left:${point.x}px;top:${point.y}px" aria-label="${prop.owner===0?'1P':'AI'} 소유 ${tile.name} 레벨 ${prop.level}"><span>${prop.owner===0?'1P':'AI'}</span><b>L${prop.level}</b></div>`);
     }
+    layer.innerHTML=markers.join('');
   }
 
   async function runTurn(playerIndex){
@@ -305,15 +307,31 @@ function createGame(root){
     if(pi===1)autoUseAiCard(pi);
   }
 
-  function useCard(pi,index){
-    const p=state.players[pi],card=p.cards[index];if(!card)return;
+  async function useCard(pi,index){
+    const p=state.players[pi],card=p.cards[index];if(!card||pi!==0)return;
+    const activeReason=card.id==='shield'&&p.shield?'이미 방어권이 활성화되어 있습니다.'
+      :card.id==='reroll'&&p.reroll?'이미 재도전 효과가 활성화되어 있습니다.'
+      :card.id==='upgrade'&&p.upgradeDiscount?'이미 강화할인 효과가 활성화되어 있습니다.'
+      :card.id==='buyout'&&p.buyoutDiscount?'이미 인수할인 효과가 활성화되어 있습니다.'
+      :card.id==='boost'&&p.boost?'이미 영향력 x2 효과가 활성화되어 있습니다.'
+      :'';
+    const icon=CARD_ICONS[card.id]||'★';
+    const bodyHtml=`<span class="pm-card-confirm-icon" aria-hidden="true">${icon}</span><strong class="pm-card-confirm-name">${card.name}</strong><span class="pm-card-confirm-desc">${card.desc}</span>${activeReason?`<em class="pm-card-confirm-reason">${activeReason}</em>`:''}`;
+    const options=activeReason
+      ? [['확인','cancel',false],['사용하기','use',true]]
+      : [['사용하기','use',false],['취소','cancel',false]];
+    const choice=await ask('전략카드',bodyHtml,options);
+    if(choice!=='use')return;
+    // Card is consumed only after explicit confirmation.
     if(card.id==='shield')p.shield=true;
     if(card.id==='reroll')p.reroll=true;
     if(card.id==='upgrade')p.upgradeDiscount=true;
     if(card.id==='buyout')p.buyoutDiscount=true;
     if(card.id==='boost')p.boost=true;
-    if(card.id==='teleport'){p.cards.splice(index,1);render();resolveTour(pi);return;}
-    p.cards.splice(index,1);showToast(`${card.name} 사용`);render();
+    p.cards.splice(index,1);
+    render();
+    showToast(`${card.name} 사용`);
+    if(card.id==='teleport')await resolveTour(pi);
   }
   function autoUseAiCard(pi){const p=state.players[pi];if(!p.cards.length)return;const card=p.cards[0];if(card.id==='shield')p.shield=true;else if(card.id==='upgrade')p.upgradeDiscount=true;else if(card.id==='buyout')p.buyoutDiscount=true;else if(card.id==='boost')p.boost=true;else if(card.id==='reroll')p.reroll=true;else return;p.cards.shift();}
 
@@ -328,9 +346,9 @@ function createGame(root){
   function ask(head,html,opts){
     return new Promise(resolve=>{
       kicker.textContent='JCS POLIMARBLE';title.textContent=head;body.innerHTML=html;
-      actions.innerHTML=opts.map(([label,value],i)=>`<button type="button" class="pm-action-btn${i===0?' is-primary':''}" data-value="${String(value)}">${label}</button>`).join('');
+      actions.innerHTML=opts.map(([label,value,disabled],i)=>`<button type="button" class="pm-action-btn${i===0?' is-primary':''}" data-value="${String(value)}"${disabled?' disabled aria-disabled="true"':''}>${label}</button>`).join('');
       modal.setAttribute('aria-hidden','false');modal.classList.add('is-visible');
-      const handler=ev=>{const b=ev.target.closest('[data-value]');if(!b)return;actions.removeEventListener('click',handler);modal.classList.remove('is-visible');modal.setAttribute('aria-hidden','true');let v=b.dataset.value;if(v==='true')v=true;else if(v==='false')v=false;else if(/^\d+$/.test(v))v=Number(v);resolve(v);};
+      const handler=ev=>{const b=ev.target.closest('[data-value]');if(!b||b.disabled)return;actions.removeEventListener('click',handler);modal.classList.remove('is-visible');modal.setAttribute('aria-hidden','true');let v=b.dataset.value;if(v==='true')v=true;else if(v==='false')v=false;else if(/^\d+$/.test(v))v=Number(v);resolve(v);};
       actions.addEventListener('click',handler);
     });
   }

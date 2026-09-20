@@ -110,3 +110,28 @@ export const POLIMARBLE_MOVE_ANCHORS=Object.freeze([
   anchor(31,81.220,57.493,'right-6'),
   anchor(32,81.818,63.762,'right-7')
 ]);
+
+
+// 0.0.31.243 · ownership badge points in the same fixed 1672×941 logical canvas.
+// Only purchasable property tiles receive a point; event/card/corner cells never render ownership.
+const owner=(x,y)=>Object.freeze({x,y});
+export const POLIMARBLE_OWNER_BADGE_POINTS=Object.freeze({
+  2:owner(1104,715),
+  3:owner(992,715),
+  7:owner(543,715),
+  8:owner(433,715),
+  10:owner(274,617),
+  11:owner(282,560),
+  12:owner(290,502),
+  14:owner(310,390),
+  15:owner(318,333),
+  18:owner(502,208),
+  19:owner(610,208),
+  21:owner(826,208),
+  23:owner(1042,208),
+  24:owner(1148,208),
+  26:owner(1318,278),
+  27:owner(1327,336),
+  29:owner(1346,452),
+  30:owner(1355,510)
+});

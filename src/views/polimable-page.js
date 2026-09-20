@@ -1,4 +1,4 @@
-import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT,POLIMARBLE_HUD_LAYOUT as HUD} from '../core/polimable-layout.js?v=0.0.31.242';
+import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT,POLIMARBLE_HUD_LAYOUT as HUD} from '../core/polimable-layout.js?v=0.0.31.243';
 
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const number=v=>Number(v||0).toLocaleString('ko-KR');
@@ -35,6 +35,7 @@ export function renderPoliMarblePage(){
         </div>
         <div class="pm-ranking-overlay" data-pm-ranking-overlay aria-label="TODAY RANKING"></div>
         <div class="pm-strategy-slots" data-pm-strategy-slots aria-label="1P 보유 전략카드"></div>
+        <div class="pm-owner-marker-layer" data-pm-owner-marker-layer aria-label="거점 소유 표시"></div>
       </div>
 
       <div class="pm-game-overlay-layer">

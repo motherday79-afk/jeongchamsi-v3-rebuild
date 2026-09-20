@@ -363,3 +363,22 @@
   opacity:0!important;
   pointer-events:none!important;
 }
+
+/* 0.0.31.243 · Strategy card confirmation UX + ownership markers */
+.pm-action-btn:disabled,.pm-action-btn[aria-disabled="true"]{opacity:.42;cursor:not-allowed;filter:grayscale(.25)}
+.pm-card-confirm-icon{display:block;margin:0 auto .25em;font-size:42px;line-height:1}
+.pm-card-confirm-name{display:block;margin:.08em 0 .32em;font-size:1.12em;color:#3f2a8d}
+.pm-card-confirm-desc{display:block;max-width:28em;margin:0 auto;line-height:1.45}
+.pm-card-confirm-reason{display:block;margin:.7em auto 0;color:#b14563;font-style:normal;font-weight:900}
+
+.pm-logical-canvas .pm-owner-marker-layer{display:block!important;position:absolute!important;left:0!important;top:0!important;width:1672px!important;height:941px!important;z-index:13!important;pointer-events:none!important}
+.pm-logical-canvas .pm-owner-marker{position:absolute!important;width:58px!important;height:18px!important;transform:translate(-50%,-50%)!important;border-radius:999px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:4px!important;box-sizing:border-box!important;border:2px solid rgba(255,255,255,.96)!important;box-shadow:0 2px 5px rgba(26,31,83,.28)!important;color:#fff!important;font-size:11px!important;font-weight:1000!important;line-height:1!important;letter-spacing:-.2px!important;white-space:nowrap!important;overflow:hidden!important}
+.pm-logical-canvas .pm-owner-marker span,.pm-logical-canvas .pm-owner-marker b{display:inline!important;font:inherit!important;line-height:1!important;color:inherit!important}
+.pm-logical-canvas .pm-owner-marker.is-p1{background:linear-gradient(180deg,#4e9cff,#1f62d8)!important}
+.pm-logical-canvas .pm-owner-marker.is-p2{background:linear-gradient(180deg,#ff8dd8,#cf3caa)!important}
+.pm-logical-canvas .pm-owner-marker.level-2{box-shadow:0 0 0 2px rgba(255,222,80,.72),0 2px 5px rgba(26,31,83,.28)!important}
+.pm-logical-canvas .pm-owner-marker.level-3{box-shadow:0 0 0 2px rgba(255,173,55,.88),0 0 9px rgba(255,182,44,.54)!important}
+.pm-logical-canvas .pm-owner-marker.level-4{box-shadow:0 0 0 2px rgba(255,109,42,.94),0 0 12px rgba(255,109,42,.7)!important}
+
+/* Disable legacy pseudo-element ownership badges permanently. */
+.pm-board-cell-object.owned-p1::after,.pm-board-cell-object.owned-p2::after{content:none!important;display:none!important}
