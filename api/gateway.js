@@ -205,6 +205,7 @@ async function handlePolimable(req,res,route,command,url){
     if(action==='start'&&req.method==='POST')return json(res,200,{ok:true,...await service.start(user,bodyOf(req))});
     if(action==='roll'&&req.method==='POST')return json(res,200,{ok:true,...await service.roll(user,bodyOf(req))});
     if(action==='choice'&&req.method==='POST')return json(res,200,{ok:true,...await service.choice(user,bodyOf(req))});
+    if(action==='asset'&&req.method==='POST')return json(res,200,{ok:true,...await service.asset(user,bodyOf(req))});
     if(action==='card'&&req.method==='POST')return json(res,200,{ok:true,...await service.card(user,bodyOf(req))});
     if(action==='cashout'&&req.method==='POST')return json(res,200,{ok:true,...await service.cashout(user,bodyOf(req))});
     return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});

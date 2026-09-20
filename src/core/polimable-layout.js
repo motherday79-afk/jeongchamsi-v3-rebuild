@@ -1,49 +1,20 @@
-// JCS 0.0.31.208 · POLIMARBLE CONNECTED 24-TILE LAYOUT
-// Background remains the approved 1200×675 image.
-// The 24 cells remain independent objects, but visually form one uninterrupted band.
-// Route: START bottom-right → left → up left side → right across top → down right side → START.
-
-const pct=(value,total)=>Number((value/total*100).toFixed(4));
-const W=1200,H=675;
-const tile=(index,x,y,w,h,band)=>Object.freeze({
-  index,
-  x:pct(x,W),
-  y:pct(y,H),
-  w:pct(w,W),
-  h:pct(h,H),
-  band
-});
-
-export const POLIMARBLE_24_TILE_LAYOUT=Object.freeze([
-  // bottom band · 8 cells, touching edge-to-edge
-  tile(0,684,540,92,70,'bottom'),
-  tile(1,592,540,92,70,'bottom'),
-  tile(2,500,540,92,70,'bottom'),
-  tile(3,408,540,92,70,'bottom'),
-  tile(4,316,540,92,70,'bottom'),
-  tile(5,224,540,92,70,'bottom'),
-  tile(6,132,540,92,70,'bottom'),
-  tile(7,40,540,92,70,'bottom'),
-
-  // left band · 4 cells, touching bottom/top bands
-  tile(8,40,470,92,70,'left'),
-  tile(9,40,400,92,70,'left'),
-  tile(10,40,330,92,70,'left'),
-  tile(11,40,260,92,70,'left'),
-
-  // top band · 8 cells, shorter height to preserve the building silhouette
-  tile(12,40,205,92,55,'top'),
-  tile(13,132,205,92,55,'top'),
-  tile(14,224,205,92,55,'top'),
-  tile(15,316,205,92,55,'top'),
-  tile(16,408,205,92,55,'top'),
-  tile(17,500,205,92,55,'top'),
-  tile(18,592,205,92,55,'top'),
-  tile(19,684,205,92,55,'top'),
-
-  // right band · 4 cells, touching top/bottom bands
-  tile(20,684,260,92,70,'right'),
-  tile(21,684,330,92,70,'right'),
-  tile(22,684,400,92,70,'right'),
-  tile(23,684,470,92,70,'right')
-]);
+// 32-cell square route. Corner cells: 0/8/16/24. START is bottom-right; movement is counterclockwise.
+const x0=8.0,y0=8.0,x1=92.0,y1=92.0;
+const corner=10.0;
+const hStep=(x1-x0-2*corner)/7;
+const vStep=(y1-y0-2*corner)/7;
+const cells=[];
+const push=(index,x,y,w,h,side,cornerCell=false)=>cells.push({index,x,y,w,h,side,corner:cornerCell});
+// bottom: 0 START at right, then 1..7 toward left, 8 bottom-left
+push(0,x1-corner,y1-corner,corner,corner,'bottom',true);
+for(let i=1;i<=7;i++)push(i,x1-corner-i*hStep,y1-corner,hStep,corner,'bottom');
+push(8,x0,y1-corner,corner,corner,'bottom',true);
+// left: 9..15 upward, 16 top-left
+for(let i=1;i<=7;i++)push(8+i,x0,y1-corner-i*vStep,corner,vStep,'left');
+push(16,x0,y0,corner,corner,'left',true);
+// top: 17..23 rightward, 24 top-right
+for(let i=1;i<=7;i++)push(16+i,x0+corner+(i-1)*hStep,y0,hStep,corner,'top');
+push(24,x1-corner,y0,corner,corner,'top',true);
+// right: 25..31 downward
+for(let i=1;i<=7;i++)push(24+i,x1-corner,y0+corner+(i-1)*vStep,corner,vStep,'right');
+export const POLIMARBLE_32_TILE_LAYOUT=Object.freeze(cells.sort((a,b)=>a.index-b.index));

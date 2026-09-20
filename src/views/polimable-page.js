@@ -1,125 +1,57 @@
-import {POLIMARBLE_BOARD as BOARD,POLIMARBLE_CARDS as CARDS} from '../core/polimable-data.js?v=0.0.31.206';
-import {POLIMARBLE_24_TILE_LAYOUT as LAYOUT} from '../core/polimable-layout.js?v=0.0.31.208';
+import {POLIMARBLE_BOARD as BOARD,POLIMARBLE_CARDS as CARDS,POLIMARBLE_GROUPS as GROUPS} from '../core/polimable-data.js?v=0.0.31.224';
+import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT} from '../core/polimable-layout.js?v=0.0.31.224';
 
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const number=v=>Number(v||0).toLocaleString('ko-KR');
-const valueLabel=tile=>{
-  if(!tile?.value)return '';
-  if(tile.kind==='loss')return `-${number(tile.value)}`;
-  if(tile.kind==='percent_loss')return `-${number(tile.value)}%`;
-  return `+${number(tile.value)}`;
-};
 
-function renderBoardTile(layout){
+const groupClass=tile=>tile?.group?` pm-group-${tile.group}`:'';
+const gradeMarkup=tile=>tile?.grade?`<span class="pm-v2-grade">${esc(tile.grade)}</span>`:'';
+function renderTile(layout){
   const tile=BOARD[layout.index];
-  if(!tile)return '';
-  const style=`--pm-x:${layout.x}%;--pm-y:${layout.y}%;--pm-w:${layout.w}%;--pm-h:${layout.h}%;`;
-  const cx=Number((layout.x+layout.w/2).toFixed(4));
-  const cy=Number((layout.y+layout.h*.78).toFixed(4));
-  return `<div class="pm-board-tile pm-kind-${esc(tile.kind)} pm-band-${esc(layout.band)}${layout.index===0?' pm-start-tile':''}" data-pm-tile="${layout.index}" data-pm-cx="${cx}" data-pm-cy="${cy}" style="${style}" aria-label="${layout.index+1}번 칸 ${esc(tile.title)}">
-    <span class="pm-board-tile-icon" aria-hidden="true">${tile.icon}</span>
+  if(!tile)return'';
+  const cx=layout.x+layout.w/2,cy=layout.y+layout.h/2;
+  const special=tile.kind!=='asset';
+  return `<div class="pm-v2-tile pm-v2-kind-${esc(tile.kind)}${groupClass(tile)}${layout.corner?' is-corner':''}" data-pm-tile="${layout.index}" data-pm-cx="${cx}" data-pm-cy="${cy}" style="--x:${layout.x}%;--y:${layout.y}%;--w:${layout.w}%;--h:${layout.h}%;" aria-label="${layout.index+1}번 칸 ${esc(tile.title)}">
+    <div class="pm-v2-tile-glow"></div>
+    <span class="pm-v2-tile-icon">${tile.icon}</span>
     <strong>${esc(tile.title)}</strong>
-    ${tile.value?`<small>${esc(valueLabel(tile))}</small>`:''}
+    ${gradeMarkup(tile)}
+    ${special?`<small>${tile.kind==='public_card'?'EVENT':tile.kind==='start'?'JCS':'SPECIAL'}</small>`:''}
+    <span class="pm-v2-owner" data-pm-owner="${layout.index}"></span>
+    <span class="pm-v2-level" data-pm-level="${layout.index}"></span>
   </div>`;
 }
-
 function renderPlayerPiece(){
-  const start=LAYOUT[0];
-  const x=Number((start.x+start.w/2).toFixed(4));
-  const y=Number((start.y+start.h*.78).toFixed(4));
-  return `<div class="pm-player-piece" data-pm-player data-pm-position="0" style="left:${x}%;top:${y}%" aria-label="폴리마블 게임말">
-    <img src="/assets/polimable/polimable-player-piece-31-207.png" alt="JCS 폴리마블 플레이어 캐릭터">
-  </div>`;
+  const s=LAYOUT[0];
+  return `<div class="pm-v2-piece" data-pm-player data-pm-position="0" style="left:${s.x+s.w/2}%;top:${s.y+s.h/2}%"><img src="/assets/polimable/polimable-player-piece-31-207.png" alt="JCS 폴리마블 캐릭터"></div>`;
 }
+function renderCenter(){return `<div class="pm-v2-center" data-pm-center>
+  <div class="pm-v2-center-brand"><span>JCS</span><strong>POLIMARBLE</strong><small>정치에 참여할 시간</small></div>
+  <div class="pm-v2-center-event" data-pm-center-event hidden><span data-pm-center-kicker></span><strong data-pm-center-title></strong><p data-pm-center-copy></p></div>
+  <div class="pm-v2-dice-stage" data-pm-dice-stage aria-live="polite"><span data-pm-die="0">⚀</span><span data-pm-die="1">⚀</span><b data-pm-dice-total></b></div>
+</div>`}
+function renderHud(authenticated){return `<div class="pm-v2-hud">
+  <div class="pm-v2-player-card pm-v2-player-me"><div class="pm-v2-avatar">JCS</div><div><small>PLAYER 1</small><strong data-pm-score>10,000</strong><span>민심</span></div></div>
+  <div class="pm-v2-turn"><small data-pm-round>ROUND 0</small><strong data-pm-status>${authenticated?'GAME READY':'로그인 후 플레이'}</strong></div>
+  <div class="pm-v2-player-card pm-v2-player-rival"><div><small>RIVAL</small><strong>10,000</strong><span>멀티플레이 준비</span></div><div class="pm-v2-avatar is-rival">R</div></div>
+  <div class="pm-v2-card-dock"><button type="button" class="pm-v2-card-toggle" data-pm-card-toggle>✦ 전략카드 <b data-pm-card-count>0</b></button><div class="pm-v2-card-list" data-pm-card-list hidden>${[0,1,2].map(i=>`<button type="button" data-pm-card-slot="${i}" disabled><span>✦</span><b>EMPTY</b></button>`).join('')}</div></div>
+  <div class="pm-v2-roll-wrap"><button type="button" class="pm-v2-roll" data-pm-main-action><span>🎲 🎲</span><b>${authenticated?'주사위 굴리기':'로그인하고 시작'}</b></button><button type="button" class="pm-v2-cashout" data-pm-cashout hidden>기록하고 종료</button></div>
+</div>`}
+function renderActionModal(){return `<div class="pm-v2-modal" data-pm-action-modal hidden><div class="pm-v2-modal-card"><small data-pm-action-kicker>영향력 거점</small><strong data-pm-action-title>거점명</strong><p data-pm-action-copy></p><div class="pm-v2-modal-actions"><button type="button" data-pm-asset-action="skip">지나가기</button><button type="button" class="is-primary" data-pm-asset-action="buy">영향력 확보</button></div></div></div>`}
+function renderChoiceModal(){return `<div class="pm-v2-modal" data-pm-choice-modal hidden><div class="pm-v2-modal-card"><small>운명의 선택</small><strong>⚖️ CHOICE</strong><p data-pm-choice-copy>안전하게 갈지 승부수를 던질지 선택하세요.</p><div class="pm-v2-modal-actions"><button type="button" data-pm-choice="safe">안전하게</button><button type="button" class="is-primary" data-pm-choice="risk">승부수</button></div></div></div>`}
+function renderResultModal(){return `<div class="pm-v2-modal" data-pm-result-modal hidden><div class="pm-v2-modal-card"><small>JCS POLIMARBLE</small><strong data-pm-result-title>GAME OVER</strong><p data-pm-result-copy></p><b class="pm-v2-result-score" data-pm-result-score>0</b><div class="pm-v2-modal-actions"><button type="button" data-pm-result-record>기록하기</button><button type="button" class="is-primary" data-pm-result-restart>다시 시작</button></div></div></div>`}
 
-function renderGameHud(authenticated){
-  return `<div class="pm-game-hud" aria-label="폴리마블 게임 정보">
-    <div class="pm-dice-live" aria-label="주사위 조작">
-      <div class="pm-live-dice" data-pm-dice-result aria-live="polite">⚀</div>
-      <div class="pm-live-status" data-pm-status>${authenticated?'GAME READY':'로그인 후 플레이할 수 있어요'}</div>
-      <button type="button" class="pm-live-roll" data-pm-main-action>${authenticated?'GAME START':'로그인하고 시작'}</button>
-    </div>
-
-    <div class="pm-score-live" aria-label="민심 점수">
-      <strong data-pm-score>1,000</strong>
-      <small>최고 <b data-pm-peak>1,000</b></small>
-      <span data-pm-stage>STAGE 1</span>
-      <div class="pm-effect-line" data-pm-effects></div>
-      <button type="button" class="pm-cashout-button" data-pm-cashout hidden>기록하고 종료</button>
-    </div>
-
-    <div class="pm-card-live-grid" aria-label="보유 전략카드">
-      ${[0,1,2].map(i=>`<button type="button" class="pm-live-card" data-pm-card-slot="${i}" disabled aria-label="비어 있는 전략카드 슬롯 ${i+1}"><span class="pm-live-card-icon">✦</span><b>전략카드</b><small>EMPTY</small></button>`).join('')}
-    </div>
-
-    <div class="pm-ranking-live" data-pm-ranking aria-label="오늘의 랭킹">
-      ${[1,2,3,4].map(rank=>`<div class="pm-rank-row"><i>${rank===1?'♛':rank}</i><span>—</span><b>—</b></div>`).join('')}
-    </div>
-
-    <div class="pm-choice-modal" data-pm-choice-modal hidden role="dialog" aria-modal="true" aria-label="운명의 선택">
-      <div class="pm-choice-card">
-        <strong>⚖️ 운명의 선택</strong>
-        <p data-pm-choice-copy>안전하게 갈지 승부수를 던질지 선택하세요.</p>
-        <div>
-          <button type="button" data-pm-choice="safe">안전하게</button>
-          <button type="button" data-pm-choice="risk">승부수</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="pm-result-modal" data-pm-result-modal hidden role="dialog" aria-modal="true" aria-label="게임 결과">
-      <div class="pm-result-card">
-        <strong data-pm-result-title>GAME OVER</strong>
-        <p data-pm-result-copy>오늘의 도전은 여기까지입니다.</p>
-        <b data-pm-result-score>0</b>
-        <button type="button" data-pm-result-record>기록하기</button>
-        <button type="button" data-pm-result-restart>다시 시작</button>
-      </div>
-    </div>
-  </div>`;
-}
-
-// 31.209 scope: preserve approved 1200×675 board visuals and connect the existing server game rules.
 export function renderPoliMarblePage({session}={}){
-  const authenticated=!!session?.authenticated;
-  return `<section class="pm-page pm-background-only-page" aria-label="JCS 폴리마블">
-    <div class="pm-ios-landscape-gate" data-pm-ios-gate hidden>
-      <div class="pm-ios-landscape-card">
-        <strong>아이폰 가로 플레이</strong>
-        <p>기기를 돌리지 않아도 게임 화면을 가로로 전환할 수 있어요.</p>
-        <button type="button" data-pm-ios-rotate>↻ 가로 화면으로 플레이</button>
-      </div>
-    </div>
-    <button type="button" class="pm-ios-landscape-exit" data-pm-ios-exit hidden>세로 화면으로 돌아가기</button>
-    <div class="pm-background-stage" data-pm-root data-authenticated="${authenticated?'true':'false'}" aria-label="JCS 폴리마블 1200 × 675 게임 보드">
-      <div class="pm-board-tiles" aria-label="폴리마블 24개 게임 칸">${LAYOUT.map(renderBoardTile).join('')}</div>
-      ${renderPlayerPiece()}
-      ${renderGameHud(authenticated)}
-    </div>
-  </section>`;
+ const authenticated=!!session?.authenticated;
+ return `<section class="pm-v2-page" aria-label="JCS 폴리마블 2.0"><div class="pm-v2-shell" data-pm-root data-authenticated="${authenticated?'true':'false'}">
+  <div class="pm-v2-sky"></div><div class="pm-v2-city"></div><div class="pm-v2-board-frame"><div class="pm-v2-board-floor"></div><div class="pm-v2-tiles">${LAYOUT.map(renderTile).join('')}</div>${renderCenter()}${renderPlayerPiece()}</div>
+  ${renderHud(authenticated)}${renderActionModal()}${renderChoiceModal()}${renderResultModal()}
+  <div class="pm-v2-ios-gate" data-pm-ios-gate hidden><strong>가로 화면으로 플레이</strong><p>폴리마블 2.0은 가로 화면에 최적화되어 있습니다.</p><button type="button" data-pm-ios-rotate>↻ 가로 화면으로 플레이</button></div>
+ </div></section>`;
 }
 
 export function renderPoliMarbleSidebarCard(data={},session={}){
-  const board=data?.leaderboard||data||{};
-  const entries=Array.isArray(board?.entries)?board.entries:[];
-  const king=entries[0];
-  const me=board?.me||entries.find(entry=>entry?.isMe);
-  const kingText=king?`${esc(king.initials||'JCS')} · ${number(king.score)}`:'아직 기록 없음';
-  const meText=me?`${number(me.score)}점 · ${Number(me.rank)||'-'}위`:'기록 없음';
-  const statsClass=session?.authenticated?'pm-side-overlay-stats':'pm-side-overlay-stats is-single';
-  return `<section class="side-card side-polimable">
-    <button type="button" class="pm-side-entry pm-side-entry--overlay" data-layout-route="/polimable" aria-label="JCS 폴리마블 게임 바로가기">
-      <img src="/assets/polimable/sidebar-entry-31-204.webp" alt="JCS 폴리마블">
-      <div class="pm-side-overlay" aria-hidden="true">
-        <div class="pm-side-overlay-brand"><span>TODAY</span></div>
-        <div class="${statsClass}">
-          <div class="pm-side-overlay-panel pm-side-overlay-king"><small>👑 TODAY KING</small><b>${kingText}</b></div>
-          ${session?.authenticated?`<div class="pm-side-overlay-panel pm-side-overlay-me"><small>나의 오늘 기록</small><b>${meText}</b></div>`:''}
-        </div>
-        <div class="pm-side-overlay-cta">GAME START →</div>
-      </div>
-    </button>
-  </section>`;
+ const board=data?.leaderboard||data||{},entries=Array.isArray(board?.entries)?board.entries:[],king=entries[0],me=board?.me||entries.find(e=>e?.isMe);
+ return `<section class="side-card side-polimable"><button type="button" class="pm-side-entry pm-side-entry--overlay" data-layout-route="/polimable"><img src="/assets/polimable/sidebar-entry-31-204.webp" alt="JCS 폴리마블"><div class="pm-side-overlay"><div class="pm-side-overlay-brand"><span>TODAY</span></div><div class="pm-side-overlay-stats${session?.authenticated?'':' is-single'}"><div class="pm-side-overlay-panel"><small>👑 TODAY KING</small><b>${king?`${esc(king.initials||'JCS')} · ${number(king.score)}`:'아직 기록 없음'}</b></div>${session?.authenticated?`<div class="pm-side-overlay-panel"><small>나의 오늘 기록</small><b>${me?`${number(me.score)}점 · ${Number(me.rank)||'-'}위`:'기록 없음'}</b></div>`:''}</div><div class="pm-side-overlay-cta">GAME START →</div></div></button></section>`;
 }
-
-export {CARDS};
+export {CARDS,GROUPS};
