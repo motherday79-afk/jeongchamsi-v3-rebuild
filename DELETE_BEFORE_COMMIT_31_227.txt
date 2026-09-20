@@ -1,0 +1,13 @@
+[MANDATORY DELETE BEFORE COMMIT]
+The following OLD PoliMarble board/background assets must be deleted from the repository.
+Do NOT keep them as stacked/fallback backgrounds.
+
+assets/polimable/polimable-board-base-31-226.png
+assets/polimable/polimable-board-base-31-225.png
+assets/polimable/polimable-board-base-31-224.png
+assets/polimable/polimable-background-1200x675-v31-205.png
+
+If other older polimable board/background images remain from 31.205~31.226, remove them too unless they are unrelated assets (character/sidebar/etc.).
+
+ONLY BOARD/BACKGROUND IMAGE FOR /polimable:
+assets/polimable/polimable-board-base-31-227.png

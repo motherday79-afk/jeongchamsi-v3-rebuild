@@ -1,0 +1,16 @@
+JCS POLIMARBLE 0.0.31.227 OBJECT MAP
+
+VISUAL SOURCE (one image only)
+- assets/polimable/polimable-board-base-31-227.png
+
+INDEPENDENT OBJECTS
+- 32 board-cell objects: data-pm-board-cell="0" ... "31"
+- 5 HUD objects:
+  * data-pm-hud="player-1"
+  * data-pm-hud="player-2"
+  * data-pm-hud="strategy-cards"
+  * data-pm-hud="today-ranking"
+  * data-pm-hud="dice-box"
+
+All objects are transparent in 31.227. They are coordinate containers for the next implementation stages.
+No duplicate visual layer is rendered over the source image.

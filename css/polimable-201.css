@@ -1,172 +1,24 @@
-/* JCS 0.0.31.226 · POLIMARBLE board construction STEP 2
-   DESIGN SOURCE OF TRUTH:
-   1) approved blank 1672×941 board image = only base image
-   2) approved label/icon reference = label visual direction
-   This stage adds only designed labels + icons to 32 existing DOM tile objects.
-   NO gameplay / dice / HUD / characters / ownership / click actions. */
+/* JCS 0.0.31.227 · POLIMARBLE object-base STEP 3
+   STRICT RULE:
+   - polimable-board-base-31-227.png is the ONLY game-board/background image.
+   - do NOT layer any older board/background image above or below it.
+   - 32 cells + 5 HUD panels are independent TRANSPARENT DOM objects.
+   - no gameplay, dice, character, ranking or player data is rendered yet. */
 
-@font-face{
-  font-family:'JCSBoardHeavy';
-  src:url('/assets/fonts/BlackHanSans-Regular.ttf') format('truetype');
-  font-display:swap;
-}
+.pm-board-stage-page{width:100%;margin:0;padding:18px 0 28px;background:#f4f6f8;overflow:hidden}
+.pm-board-stage{position:relative;width:min(100%,1672px);aspect-ratio:1672/941;margin:0 auto;overflow:hidden;background:#fff;line-height:1;isolation:isolate}
+.pm-board-stage-image{position:absolute;inset:0;z-index:1;display:block;width:100%;height:100%;object-fit:fill;user-select:none;-webkit-user-drag:none;pointer-events:none}
+.pm-board-object-layer{position:absolute;inset:0;z-index:2;pointer-events:none}
+.pm-board-cell-object,.pm-hud-object{position:absolute;left:var(--x);top:var(--y);width:var(--w);height:var(--h);box-sizing:border-box;background:transparent;border:0;padding:0;margin:0;pointer-events:none}
+.pm-board-cell-object{overflow:hidden}
+.pm-board-cell-object::before,.pm-board-cell-object::after,.pm-hud-object::before,.pm-hud-object::after{content:none!important}
 
-.pm-board-stage-page{
-  width:100%;
-  margin:0;
-  padding:18px 0 28px;
-  background:#f4f6f8;
-  overflow:hidden;
-}
-.pm-board-stage{
-  position:relative;
-  width:min(100%,1672px);
-  aspect-ratio:1672/941;
-  margin:0 auto;
-  overflow:hidden;
-  background:#fff;
-  line-height:1;
-  isolation:isolate;
-}
-.pm-board-stage-image{
-  position:absolute;
-  inset:0;
-  z-index:1;
-  display:block;
-  width:100%;
-  height:100%;
-  object-fit:fill;
-  user-select:none;
-  -webkit-user-drag:none;
-  pointer-events:none;
-}
-.pm-board-cell-layer{
-  position:absolute;
-  inset:0;
-  z-index:2;
-  pointer-events:none;
-}
-.pm-board-cell-object{
-  position:absolute;
-  left:var(--x);
-  top:var(--y);
-  width:var(--w);
-  height:var(--h);
-  box-sizing:border-box;
-  background:transparent;
-  border:0;
-  padding:0;
-  margin:0;
-  overflow:hidden;
-  pointer-events:none;
-}
-.pm-board-cell-object::before,
-.pm-board-cell-object::after{content:none!important}
+/* Local verification only: add .pm-object-debug manually in devtools. */
+.pm-board-stage.pm-object-debug .pm-board-cell-object{outline:2px solid rgba(255,0,0,.88);outline-offset:-2px;background:rgba(255,255,255,.08)}
+.pm-board-stage.pm-object-debug .pm-hud-object{outline:2px solid rgba(0,120,255,.92);outline-offset:-2px;background:rgba(0,120,255,.08)}
 
-/* Approved-reference label treatment: icon above, heavy centered label below. */
-.pm-board-label{
-  position:absolute;
-  inset:5% 3% 4%;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:2%;
-  text-align:center;
-  transform:translateZ(0);
-  user-select:none;
-}
-.pm-board-label-icon{
-  display:block;
-  flex:0 0 auto;
-  font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif;
-  font-size:clamp(13px,1.55vw,28px);
-  line-height:1;
-  filter:drop-shadow(0 1px 0 rgba(255,255,255,.95)) drop-shadow(0 2px 2px rgba(34,42,99,.18));
-  transform:translateY(-1px);
-}
-.pm-board-label-text{
-  display:block;
-  max-width:98%;
-  color:#15266f;
-  font-family:'JCSBoardHeavy','Malgun Gothic','Apple SD Gothic Neo',sans-serif;
-  font-size:clamp(8px,1.00vw,17px);
-  font-weight:900;
-  line-height:1.05;
-  letter-spacing:-.055em;
-  white-space:nowrap;
-  text-shadow:
-    0 1px 0 rgba(255,255,255,.98),
-    1px 0 0 rgba(255,255,255,.72),
-    -1px 0 0 rgba(255,255,255,.72),
-    0 2px 2px rgba(39,45,106,.18);
-}
+@media(max-width:1024px){.pm-board-stage-page{padding:0;background:#000}.pm-board-stage{width:100vw;max-width:none;margin:0 auto}.product-home-wrap .home-balanced-layout .side-polimable{order:46}}
+@media(max-width:700px) and (orientation:portrait){.pm-board-stage-page{min-height:auto;display:block;background:#f4f6f8}.pm-board-stage{width:100vw;max-width:100vw}}
 
-/* Perspective side cells have a little more horizontal room than top cells. */
-.pm-board-cell-object[data-pm-side="left"] .pm-board-label,
-.pm-board-cell-object[data-pm-side="right"] .pm-board-label{inset:3% 5% 3%}
-.pm-board-cell-object[data-pm-side="left"] .pm-board-label-icon,
-.pm-board-cell-object[data-pm-side="right"] .pm-board-label-icon{font-size:clamp(12px,1.40vw,25px)}
-.pm-board-cell-object[data-pm-side="left"] .pm-board-label-text,
-.pm-board-cell-object[data-pm-side="right"] .pm-board-label-text{font-size:clamp(8px,.96vw,16px)}
-
-/* Tone follows the approved reference without altering the board artwork itself. */
-.pm-board-cell-object.tone-red .pm-board-label-text{color:#7f1521}
-.pm-board-cell-object.tone-green .pm-board-label-text{color:#075c38}
-.pm-board-cell-object.tone-purple .pm-board-label-text{color:#3c208f}
-.pm-board-cell-object.tone-brown .pm-board-label-text{color:#71320d}
-
-/* Four enlarged corner cells. */
-.pm-board-cell-object.is-corner .pm-board-label{inset:7% 5% 6%;gap:2%}
-.pm-board-cell-object.is-corner .pm-board-label-icon{
-  font-size:clamp(24px,2.85vw,51px);
-  filter:drop-shadow(0 2px 0 rgba(255,255,255,.55)) drop-shadow(0 4px 5px rgba(29,21,89,.28));
-}
-.pm-board-cell-object.is-corner .pm-board-label-text{
-  font-size:clamp(14px,1.85vw,32px);
-  color:#fff;
-  letter-spacing:-.05em;
-  text-shadow:
-    -2px -2px 0 #32206f,
-    2px -2px 0 #32206f,
-    -2px 2px 0 #32206f,
-    2px 2px 0 #32206f,
-    0 4px 3px rgba(47,29,90,.28);
-}
-.pm-board-cell-object.tone-corner-start .pm-board-label-text{
-  color:#fff;
-  text-shadow:
-    -2px -2px 0 #8d5000,
-    2px -2px 0 #8d5000,
-    -2px 2px 0 #8d5000,
-    2px 2px 0 #8d5000,
-    0 4px 3px rgba(119,69,0,.28);
-}
-.pm-board-cell-object.tone-corner-plaza .pm-board-label-text{
-  text-shadow:
-    -2px -2px 0 #086b43,
-    2px -2px 0 #086b43,
-    -2px 2px 0 #086b43,
-    2px 2px 0 #086b43,
-    0 4px 3px rgba(0,91,56,.28);
-}
-
-/* Optional local verification only; never active by default. */
-.pm-board-stage.pm-object-debug .pm-board-cell-object{
-  outline:2px solid rgba(255,0,0,.85);
-  outline-offset:-2px;
-  background:rgba(255,255,255,.08);
-}
-
-@media(max-width:1024px){
-  .pm-board-stage-page{padding:0;background:#000}
-  .pm-board-stage{width:100vw;max-width:none;margin:0 auto}
-  .product-home-wrap .home-balanced-layout .side-polimable{order:46}
-}
-@media(max-width:700px) and (orientation:portrait){
-  .pm-board-stage-page{min-height:auto;display:block;background:#f4f6f8}
-  .pm-board-stage{width:100vw;max-width:100vw}
-}
-
-/* Keep the approved home sidebar behavior from 31.222/31.223. */
+/* Keep existing main-page sidebar card behavior. */
 .side-polimable{padding:0!important;overflow:hidden;background:transparent!important;border:0!important;box-shadow:none!important}.pm-side-entry--overlay{position:relative;display:block;width:100%;padding:0;border:0;background:transparent;cursor:pointer;border-radius:18px;overflow:hidden;box-shadow:0 10px 24px rgba(49,25,98,.12)}.pm-side-entry--overlay img{display:block;width:100%;height:auto}.pm-side-overlay{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:12px;pointer-events:none}.pm-side-overlay-brand{display:flex;justify-content:flex-end}.pm-side-overlay-brand span{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.82);color:#6e4ab0;font-size:10px;font-weight:1000}.pm-side-overlay-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:auto;margin-bottom:10px}.pm-side-overlay-stats.is-single{grid-template-columns:1fr}.pm-side-overlay-panel{padding:4px 2px;background:transparent}.pm-side-overlay-panel small,.pm-side-overlay-panel b{display:block;color:#fff;text-shadow:0 2px 8px rgba(45,26,92,.55);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pm-side-overlay-panel small{font-size:10px}.pm-side-overlay-panel b{font-size:13px;margin-top:4px}.pm-side-overlay-cta{display:flex;align-items:center;justify-content:center;min-height:44px;border-radius:14px;background:linear-gradient(180deg,rgba(120,80,200,.96),rgba(88,56,168,.98));color:#fff;font-size:13px;font-weight:1000}

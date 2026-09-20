@@ -1,4 +1,5 @@
-// JCS 0.0.31.226 · visual board stage only.
-// Labels/icons are visible, but ALL gameplay remains intentionally disabled.
+// JCS 0.0.31.227 · object-map stage only.
+// Every board cell and HUD panel exists as an independent transparent DOM object.
+// ALL gameplay/data rendering remains intentionally disabled.
 export async function hydratePoliMarble(){ return; }
 export function bindPoliMarbleInteractions(){ return; }
