@@ -1,0 +1,9 @@
+JCS 0.0.31.225 — REMOVE OLD POLIMARBLE VISUAL ASSET
+
+Delete this old 31.224 artwork from the repository in the SAME commit:
+assets/polimable/DESIGN_SOURCE_OF_TRUTH_31_224.png
+
+The /polimable page in 31.225 uses ONLY:
+assets/polimable/polimable-board-base-31-225.png
+
+Do not keep the old image as a layered background and do not render it behind/above the new image.
