@@ -1,5 +1,5 @@
-import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT} from '../core/polimable-layout.js?v=0.0.31.232';
-// JCS 0.0.31.232 · dice + male2 movement test.
+import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS} from '../core/polimable-layout.js?v=0.0.31.233';
+// JCS 0.0.31.233 · precision center-point movement test.
 // Dice result moves the character one cell at a time. Tile effects/economy rules remain OFF.
 const TEST_STATES = [
   {name:'move', src:'/assets/polimable/characters/male2/male2-move.png'},
@@ -53,10 +53,8 @@ const TOKEN_H=12.7;
 const TOKEN_BOTTOM_ANCHOR=12.25;
 
 function tokenPositionForCell(index){
-  const cell=LAYOUT[index%LAYOUT.length];
-  const cx=cell.x+cell.w/2;
-  const cy=cell.y+cell.h/2;
-  return {left:cx-TOKEN_W/2,top:cy-TOKEN_BOTTOM_ANCHOR};
+  const point=MOVE_ANCHORS[index%MOVE_ANCHORS.length];
+  return {left:point.x-TOKEN_W/2,top:point.y-TOKEN_BOTTOM_ANCHOR};
 }
 
 function placeTokenAtCell(root,index,{instant=false}={}){
@@ -66,7 +64,7 @@ function placeTokenAtCell(root,index,{instant=false}={}){
   token.classList.toggle('is-instant',!!instant);
   token.style.left=`${pos.left}%`;
   token.style.top=`${pos.top}%`;
-  root.dataset.pmCharacterCell=String(index%LAYOUT.length);
+  root.dataset.pmCharacterCell=String(index%MOVE_ANCHORS.length);
   if(instant) requestAnimationFrame(()=>token.classList.remove('is-instant'));
 }
 
@@ -74,11 +72,11 @@ async function moveCharacterBy(root,steps){
   const token=root.querySelector('[data-pm-character-token]');
   const img=root.querySelector('[data-pm-character-token-image]');
   if(!token||!img) return;
-  let index=Number(root.dataset.pmCharacterCell||0)%LAYOUT.length;
+  let index=Number(root.dataset.pmCharacterCell||0)%MOVE_ANCHORS.length;
   img.src='/assets/polimable/characters/male2/male2-move.png';
   token.dataset.moving='1';
   for(let i=0;i<steps;i++){
-    index=(index+1)%LAYOUT.length;
+    index=(index+1)%MOVE_ANCHORS.length;
     token.classList.remove('is-step-hop');
     void token.offsetWidth;
     token.classList.add('is-step-hop');

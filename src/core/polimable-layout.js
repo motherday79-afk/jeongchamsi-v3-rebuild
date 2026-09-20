@@ -1,8 +1,11 @@
-// JCS 0.0.31.232 · POLIMARBLE visual object map
+// JCS 0.0.31.233 · POLIMARBLE visual object map + precision movement anchors
 // DESIGN SOURCE OF TRUTH: polimable-board-base-31-232.png (1672×941)
 // The image is the ONE AND ONLY board/background image.
 // Each board cell + HUD panel is mapped as an independent transparent DOM object.
-// Dice + character movement test only. No tile effects/economy rules are attached.
+// Dice + character movement placement test only. No tile effects/economy rules are attached.
+// IMPORTANT: the approved background currently contains 33 visually distinct board cells (8 normal cells on the bottom edge).
+// To verify character placement without altering/re-generating the approved background, movement anchors map every visible cell precisely.
+// Final 32-rule mapping must be reconciled before economy/special-tile rules are enabled.
 
 const cell=(index,side,corner,x,y,w,h)=>Object.freeze({index,side,corner,x,y,w,h});
 const hud=(id,x,y,w,h)=>Object.freeze({id,x,y,w,h});
@@ -66,3 +69,44 @@ export const POLIMARBLE_HUD_LAYOUT=Object.freeze([
 ]);
 
 export const POLIMARBLE_CORNER_INDICES=Object.freeze([0,8,16,24]);
+
+
+// Precision visual center anchors (percent of the 1672×941 board image).
+// Order follows the visible board clockwise from START toward the left along the bottom,
+// then up the left side, across the top, and down the right side.
+const anchor=(index,x,y,label='')=>Object.freeze({index,x,y,label});
+export const POLIMARBLE_MOVE_ANCHORS=Object.freeze([
+  anchor(0,84.211,72.582,'START'),
+  anchor(1,72.847,72.582,'bottom-1'),
+  anchor(2,66.029,72.582,'bottom-2'),
+  anchor(3,59.330,72.582,'bottom-3'),
+  anchor(4,52.572,72.582,'bottom-4'),
+  anchor(5,45.993,72.582,'bottom-5'),
+  anchor(6,39.414,72.582,'bottom-6'),
+  anchor(7,32.835,72.582,'bottom-7'),
+  anchor(8,26.256,72.582,'bottom-8'),
+  anchor(9,15.730,72.264,'PLAZA'),
+  anchor(10,16.687,63.124,'left-1'),
+  anchor(11,17.105,57.386,'left-2'),
+  anchor(12,17.584,51.329,'left-3'),
+  anchor(13,18.122,45.165,'left-4'),
+  anchor(14,18.720,39.214,'left-5'),
+  anchor(15,19.258,33.050,'left-6'),
+  anchor(16,19.916,26.993,'left-7'),
+  anchor(17,22.368,19.022,'FATE'),
+  anchor(18,30.024,19.022,'top-1'),
+  anchor(19,36.483,19.022,'top-2'),
+  anchor(20,42.763,19.022,'top-3'),
+  anchor(21,49.282,19.022,'top-4'),
+  anchor(22,55.742,19.022,'top-5'),
+  anchor(23,62.201,19.022,'top-6'),
+  anchor(24,68.541,19.022,'top-7'),
+  anchor(25,77.153,18.916,'TOUR'),
+  anchor(26,78.349,26.780,'right-1'),
+  anchor(27,78.947,32.944,'right-2'),
+  anchor(28,79.545,39.001,'right-3'),
+  anchor(29,80.084,45.165,'right-4'),
+  anchor(30,80.682,51.329,'right-5'),
+  anchor(31,81.220,57.493,'right-6'),
+  anchor(32,81.818,63.762,'right-7')
+]);
