@@ -1,0 +1,15 @@
+import fs from 'fs';
+const read=p=>fs.readFileSync(new URL(`../${p}`,import.meta.url),'utf8');
+const css=read('css/polimable-201.css');
+const ui=read('src/ui/polimable-interactions.js');
+const page=read('src/views/polimable-page.js');
+if(!css.includes('left:198px!important;top:52px!important;width:174px!important;height:13px!important')) throw new Error('P1 name box placement missing');
+if(!css.includes('left:198px!important;top:65px!important;width:174px!important;height:22px!important')) throw new Error('P1 mind value placement missing');
+if(!css.includes('font-size:20px!important')) throw new Error('P1 mind font size missing');
+if(!css.includes('left:197px!important;top:98px!important;width:178px!important;height:31px!important')) throw new Error('P1 lap/assets box placement missing');
+if(!css.includes('font-size:17px!important')) throw new Error('P1 lap/assets font size missing');
+if(!ui.includes("cash.textContent=`민심 ${p.cash.toLocaleString('ko-KR')}`")) throw new Error('mind label missing');
+if(!page.includes('data-pm-player-cash="0">민심 10,000</strong>')) throw new Error('initial P1 mind label missing');
+if(!css.includes('.pm-strategy-slots{display:none!important}')) throw new Error('strategy slots should stay hidden');
+if(!css.includes('.pm-ranking-overlay{display:none!important}')) throw new Error('ranking should stay hidden');
+console.log('polimable 31.239 p1 info fit test: OK');

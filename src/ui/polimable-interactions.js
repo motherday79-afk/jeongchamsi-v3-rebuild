@@ -1,4 +1,4 @@
-import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS} from '../core/polimable-layout.js?v=0.0.31.238';
+import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS} from '../core/polimable-layout.js?v=0.0.31.239';
 
 const START_CASH=10000;
 const MAX_CARDS=4;
@@ -125,7 +125,7 @@ function createGame(root){
     state.players.forEach((p,i)=>{
       const cash=root.querySelector(`[data-pm-player-cash="${i}"]`);
       const meta=root.querySelector(`[data-pm-player-meta="${i}"]`);
-      if(cash) cash.textContent=p.cash.toLocaleString('ko-KR');
+      if(cash) cash.textContent=`민심 ${p.cash.toLocaleString('ko-KR')}`;
       if(meta) meta.textContent=`${p.laps}바퀴 · 자산 ${portfolioValue(i).toLocaleString('ko-KR')}`;
     });
     turnPill.textContent=state.gameOver?'GAME OVER':`${state.turn===0?'1P':'2P AI'} TURN`;

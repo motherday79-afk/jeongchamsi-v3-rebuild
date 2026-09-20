@@ -1,4 +1,4 @@
-import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT,POLIMARBLE_HUD_LAYOUT as HUD} from '../core/polimable-layout.js?v=0.0.31.238';
+import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT,POLIMARBLE_HUD_LAYOUT as HUD} from '../core/polimable-layout.js?v=0.0.31.239';
 
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const number=v=>Number(v||0).toLocaleString('ko-KR');
@@ -25,7 +25,7 @@ export function renderPoliMarblePage(){
       <div class="pm-logical-canvas" data-pm-logical-canvas aria-label="1672×941 HUD logical canvas">
         <div class="pm-player-hud pm-player-hud--p1" data-pm-player-hud="0">
           <span class="pm-player-hud-name">PLAYER 1</span>
-          <strong class="pm-player-hud-cash" data-pm-player-cash="0">10,000</strong>
+          <strong class="pm-player-hud-cash" data-pm-player-cash="0">민심 10,000</strong>
           <small class="pm-player-hud-meta" data-pm-player-meta="0">0바퀴 · 자산 0</small>
         </div>
       </div>
