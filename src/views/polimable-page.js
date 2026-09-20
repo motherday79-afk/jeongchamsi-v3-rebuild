@@ -1,7 +1,11 @@
-import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT,POLIMARBLE_HUD_LAYOUT as HUD} from '../core/polimable-layout.js?v=0.0.31.229';
+import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT,POLIMARBLE_HUD_LAYOUT as HUD} from '../core/polimable-layout.js?v=0.0.31.230';
 
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const number=v=>Number(v||0).toLocaleString('ko-KR');
+
+function renderDiePips(){
+  return '<span class="pm-die-pip p1"></span><span class="pm-die-pip p2"></span><span class="pm-die-pip p3"></span><span class="pm-die-pip p4"></span><span class="pm-die-pip p5"></span><span class="pm-die-pip p6"></span><span class="pm-die-pip p7"></span>';
+}
 
 function renderTileObject(cell){
   return `<div class="pm-board-cell-object${cell.corner?' is-corner':''}" data-pm-board-cell="${cell.index}" data-pm-side="${esc(cell.side)}" style="--x:${cell.x}%;--y:${cell.y}%;--w:${cell.w}%;--h:${cell.h}%;"></div>`;
@@ -11,8 +15,8 @@ function renderHudObject(item){
 }
 
 export function renderPoliMarblePage(){
-  return `<section class="pm-board-stage-page" aria-label="JCS 폴리마블 오브젝트 베이스 3단계">
-    <div class="pm-board-stage" data-pm-root data-pm-stage="object-map-only">
+  return `<section class="pm-board-stage-page" aria-label="JCS 폴리마블 주사위 액션 테스트">
+    <div class="pm-board-stage" data-pm-root data-pm-stage="dice-action-test">
       <img class="pm-board-stage-image" src="/assets/polimable/polimable-board-base-31-227.png" alt="JCS 폴리마블 32칸 보드 및 빈 HUD">
       <div class="pm-board-object-layer" aria-hidden="true">
         ${LAYOUT.map(renderTileObject).join('')}
@@ -27,6 +31,21 @@ export function renderPoliMarblePage(){
         </button>
         <div class="pm-character-reaction" data-pm-character-reaction aria-hidden="true">
           <img data-pm-character-reaction-image src="/assets/polimable/characters/male2/male2-emotion.png" alt="남2 캐릭터 반응">
+        </div>
+      </div>
+      <div class="pm-dice-layer" data-pm-dice-layer>
+        <div class="pm-dice-dock" aria-label="주사위 대기 영역">
+          <div class="pm-die pm-die--dock" data-pm-die-dock="1" data-face="1" aria-label="첫 번째 주사위 1">${renderDiePips()}</div>
+          <div class="pm-die pm-die--dock" data-pm-die-dock="2" data-face="1" aria-label="두 번째 주사위 1">${renderDiePips()}</div>
+        </div>
+        <button class="pm-dice-roll-button" type="button" data-pm-dice-roll aria-label="주사위 두 개 굴리기">굴리기</button>
+        <div class="pm-dice-flight" data-pm-dice-flight aria-hidden="true">
+          <div class="pm-die pm-die--flight" data-pm-die-flight="1" data-face="1">${renderDiePips()}</div>
+          <div class="pm-die pm-die--flight" data-pm-die-flight="2" data-face="1">${renderDiePips()}</div>
+        </div>
+        <div class="pm-dice-result" data-pm-dice-result aria-live="polite" aria-hidden="true">
+          <strong data-pm-dice-result-title>합계 2</strong>
+          <span data-pm-dice-result-sub></span>
         </div>
       </div>
     </div>
