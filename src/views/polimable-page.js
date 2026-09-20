@@ -1,4 +1,4 @@
-import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT,POLIMARBLE_HUD_LAYOUT as HUD} from '../core/polimable-layout.js?v=0.0.31.231';
+import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT,POLIMARBLE_HUD_LAYOUT as HUD} from '../core/polimable-layout.js?v=0.0.31.232';
 
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const number=v=>Number(v||0).toLocaleString('ko-KR');
@@ -15,9 +15,9 @@ function renderHudObject(item){
 }
 
 export function renderPoliMarblePage(){
-  return `<section class="pm-board-stage-page" aria-label="JCS 폴리마블 주사위 액션 테스트">
-    <div class="pm-board-stage" data-pm-root data-pm-stage="dice-action-test">
-      <img class="pm-board-stage-image" src="/assets/polimable/polimable-board-base-31-227.png" alt="JCS 폴리마블 32칸 보드 및 빈 HUD">
+  return `<section class="pm-board-stage-page" aria-label="JCS 폴리마블 주사위 및 캐릭터 이동 테스트">
+    <div class="pm-board-stage" data-pm-root data-pm-stage="dice-move-test">
+      <img class="pm-board-stage-image" src="/assets/polimable/polimable-board-base-31-232.png" alt="JCS 폴리마블 32칸 보드 및 빈 HUD">
       <div class="pm-board-object-layer" aria-hidden="true">
         ${LAYOUT.map(renderTileObject).join('')}
         ${HUD.map(renderHudObject).join('')}
@@ -38,7 +38,7 @@ export function renderPoliMarblePage(){
           <div class="pm-die pm-die--dock" data-pm-die-dock="1" data-face="1" aria-label="첫 번째 주사위 1">${renderDiePips()}</div>
           <div class="pm-die pm-die--dock" data-pm-die-dock="2" data-face="1" aria-label="두 번째 주사위 1">${renderDiePips()}</div>
         </div>
-        <button class="pm-dice-roll-button" type="button" data-pm-dice-roll aria-label="주사위 두 개 굴리기"><span class="pm-dice-roll-button__label">주사위 굴리기</span></button>
+        <button class="pm-dice-roll-button" type="button" data-pm-dice-roll aria-label="주사위 두 개 굴리기"></button>
         <div class="pm-dice-flight" data-pm-dice-flight aria-hidden="true">
           <div class="pm-die pm-die--flight" data-pm-die-flight="1" data-face="1">${renderDiePips()}</div>
           <div class="pm-die pm-die--flight" data-pm-die-flight="2" data-face="1">${renderDiePips()}</div>

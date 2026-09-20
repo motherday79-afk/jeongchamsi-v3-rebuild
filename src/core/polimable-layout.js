@@ -1,8 +1,8 @@
-// JCS 0.0.31.227 · POLIMARBLE visual object map
-// DESIGN SOURCE OF TRUTH: polimable-board-base-31-227.png (1672×941)
+// JCS 0.0.31.232 · POLIMARBLE visual object map
+// DESIGN SOURCE OF TRUTH: polimable-board-base-31-232.png (1672×941)
 // The image is the ONE AND ONLY board/background image.
 // Each board cell + HUD panel is mapped as an independent transparent DOM object.
-// No gameplay rules are attached in this stage.
+// Dice + character movement test only. No tile effects/economy rules are attached.
 
 const cell=(index,side,corner,x,y,w,h)=>Object.freeze({index,side,corner,x,y,w,h});
 const hud=(id,x,y,w,h)=>Object.freeze({id,x,y,w,h});

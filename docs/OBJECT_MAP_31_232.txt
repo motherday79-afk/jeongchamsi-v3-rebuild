@@ -1,0 +1,14 @@
+JCS POLIMARBLE 31.232 OBJECT MAP
+
+ONE AND ONLY BOARD/BACKGROUND IMAGE:
+- assets/polimable/polimable-board-base-31-232.png (1672x941)
+
+Independent transparent DOM object groups:
+- 32 board cells: data-pm-board-cell="0" ... "31"
+- 5 HUD regions: player-1, player-2, strategy-cards, today-ranking, dice-box
+- P1 male2 profile
+- male2 moving token
+- two dynamic dice objects + result text
+- fixed background dice button uses a transparent click target only
+
+No previous board image may be layered or referenced.

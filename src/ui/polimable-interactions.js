@@ -1,5 +1,6 @@
-// JCS 0.0.31.231 · dice action test + existing male2 visual test.
-// IMPORTANT: Dice result is NOT connected to character movement or game rules yet.
+import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT} from '../core/polimable-layout.js?v=0.0.31.232';
+// JCS 0.0.31.232 · dice + male2 movement test.
+// Dice result moves the character one cell at a time. Tile effects/economy rules remain OFF.
 const TEST_STATES = [
   {name:'move', src:'/assets/polimable/characters/male2/male2-move.png'},
   {name:'win', src:'/assets/polimable/characters/male2/male2-win.png'},
@@ -26,8 +27,10 @@ function bindCharacterTest(root){
   const reactionImg=root.querySelector('[data-pm-character-reaction-image]');
   if(!token || !tokenImg || !reaction || !reactionImg) return;
   root.dataset.characterBound='1';
+  placeTokenAtCell(root,Number(root.dataset.pmCharacterCell||0),{instant:true});
   let i=0, timer=0;
   token.addEventListener('click',()=>{
+    if(token.dataset.moving==='1') return;
     const state=TEST_STATES[i%TEST_STATES.length]; i+=1;
     clearTimeout(timer);
     reactionImg.src=state.src;
@@ -43,6 +46,49 @@ function bindCharacterTest(root){
       token.classList.remove('is-hop');
     },1400);
   });
+}
+
+const TOKEN_W=7.0;
+const TOKEN_H=12.7;
+const TOKEN_BOTTOM_ANCHOR=12.25;
+
+function tokenPositionForCell(index){
+  const cell=LAYOUT[index%LAYOUT.length];
+  const cx=cell.x+cell.w/2;
+  const cy=cell.y+cell.h/2;
+  return {left:cx-TOKEN_W/2,top:cy-TOKEN_BOTTOM_ANCHOR};
+}
+
+function placeTokenAtCell(root,index,{instant=false}={}){
+  const token=root.querySelector('[data-pm-character-token]');
+  if(!token) return;
+  const pos=tokenPositionForCell(index);
+  token.classList.toggle('is-instant',!!instant);
+  token.style.left=`${pos.left}%`;
+  token.style.top=`${pos.top}%`;
+  root.dataset.pmCharacterCell=String(index%LAYOUT.length);
+  if(instant) requestAnimationFrame(()=>token.classList.remove('is-instant'));
+}
+
+async function moveCharacterBy(root,steps){
+  const token=root.querySelector('[data-pm-character-token]');
+  const img=root.querySelector('[data-pm-character-token-image]');
+  if(!token||!img) return;
+  let index=Number(root.dataset.pmCharacterCell||0)%LAYOUT.length;
+  img.src='/assets/polimable/characters/male2/male2-move.png';
+  token.dataset.moving='1';
+  for(let i=0;i<steps;i++){
+    index=(index+1)%LAYOUT.length;
+    token.classList.remove('is-step-hop');
+    void token.offsetWidth;
+    token.classList.add('is-step-hop');
+    placeTokenAtCell(root,index);
+    await wait(230);
+  }
+  token.classList.remove('is-step-hop');
+  token.dataset.moving='0';
+  img.src='/assets/polimable/characters/male2/male2-token.png';
+  await wait(120);
 }
 
 function bindDiceTest(root){
@@ -97,7 +143,9 @@ function bindDiceTest(root){
     result.classList.toggle('is-double',isDouble);
     result.setAttribute('aria-hidden','false');
     result.classList.add('is-visible');
-    await wait(760);
+    await wait(420);
+    await moveCharacterBy(root,total);
+    await wait(260);
 
     flight.setAttribute('aria-hidden','true');
     flight.classList.remove('is-landed');

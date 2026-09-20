@@ -1,9 +1,9 @@
-/* JCS 0.0.31.231 · POLIMARBLE dice-action test (base from STEP 3)
+/* JCS 0.0.31.232 · POLIMARBLE dice + movement test (base from STEP 3)
    STRICT RULE:
-   - polimable-board-base-31-227.png is the ONLY game-board/background image.
+   - polimable-board-base-31-232.png is the ONLY game-board/background image.
    - do NOT layer any older board/background image above or below it.
    - 32 cells + 5 HUD panels are independent TRANSPARENT DOM objects.
-   - no gameplay, dice, character, ranking or player data is rendered yet. */
+   - only dice + movement test is active; tile effects/economy/ranking rules remain OFF. */
 
 .pm-board-stage-page{width:100%;margin:0;padding:18px 0 28px;background:#f4f6f8;overflow:hidden}
 .pm-board-stage{position:relative;width:min(100%,1672px);aspect-ratio:1672/941;margin:0 auto;overflow:hidden;background:#fff;line-height:1;isolation:isolate}
@@ -30,10 +30,13 @@
 .pm-character-profile{position:absolute;overflow:hidden;pointer-events:none}
 .pm-character-profile--p1{left:4.65%;top:2.35%;width:6.6%;height:11.4%;border-radius:50%}
 .pm-character-profile img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 34%;filter:drop-shadow(0 2px 2px rgba(25,40,90,.15))}
-.pm-character-token{position:absolute;left:83.55%;top:64.0%;width:7.0%;height:12.7%;display:flex;align-items:flex-end;justify-content:center;margin:0;padding:0;border:0;background:transparent;cursor:pointer;pointer-events:auto;z-index:6;transform-origin:50% 100%;-webkit-tap-highlight-color:transparent}
+.pm-character-token{position:absolute;left:83.55%;top:64.0%;width:7.0%;height:12.7%;display:flex;align-items:flex-end;justify-content:center;margin:0;padding:0;border:0;background:transparent;cursor:pointer;pointer-events:auto;z-index:6;transform-origin:50% 100%;-webkit-tap-highlight-color:transparent;transition:left .20s cubic-bezier(.22,.72,.28,1),top .20s cubic-bezier(.22,.72,.28,1)}
 .pm-character-token img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;filter:drop-shadow(0 5px 4px rgba(45,28,80,.35));user-select:none;-webkit-user-drag:none}
 .pm-character-token:focus-visible{outline:3px solid rgba(255,214,71,.95);outline-offset:2px;border-radius:18px}
 .pm-character-token.is-hop{animation:pmMale2Hop .52s cubic-bezier(.2,.8,.2,1) 1}
+.pm-character-token.is-instant{transition:none!important}
+.pm-character-token.is-step-hop img{animation:pmMale2StepHop .22s cubic-bezier(.2,.8,.2,1) 1}
+@keyframes pmMale2StepHop{0%{transform:translateY(0) scale(1)}48%{transform:translateY(-15%) scale(1.035)}100%{transform:translateY(0) scale(1)}}
 @keyframes pmMale2Hop{0%{transform:translateY(0) scale(1)}45%{transform:translateY(-18%) scale(1.05)}100%{transform:translateY(0) scale(1)}}
 .pm-character-reaction{position:absolute;left:37%;top:25%;width:26%;height:47%;display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(2%) scale(.86);transition:opacity .16s ease,transform .22s cubic-bezier(.2,.8,.2,1);pointer-events:none;z-index:7}
 .pm-character-reaction.is-visible{opacity:1;transform:translateY(0) scale(1)}
@@ -59,12 +62,9 @@
 .pm-die[data-face="4"] .pm-die-pip:not(.p1):not(.p3):not(.p7):not(.p9),
 .pm-die[data-face="5"] .pm-die-pip:not(.p1):not(.p3):not(.p5):not(.p7):not(.p9),
 .pm-die[data-face="6"] .pm-die-pip:not(.p1):not(.p3):not(.p4):not(.p6):not(.p7):not(.p9){display:none}
-.pm-dice-roll-button{position:absolute;left:87.75%;top:84.55%;width:9.05%;height:9.75%;display:flex;align-items:center;justify-content:center;border:clamp(1px,.15vw,2px) solid rgba(255,238,166,.82);border-radius:18%;background:linear-gradient(180deg,#ffde72 0%,#ffbd2f 48%,#f29b19 100%);box-shadow:inset 0 .12em .16em rgba(255,255,255,.72),inset 0 -.14em .18em rgba(156,86,2,.18),0 .22em .45em rgba(74,33,130,.30);color:#4a247e;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent;transition:transform .16s ease,filter .16s ease,box-shadow .16s ease;padding:0 .45em;text-align:center}
-.pm-dice-roll-button__label{display:block;width:100%;font-family:inherit;font-size:clamp(9px,1.02vw,18px);font-weight:1000;line-height:1.05;letter-spacing:-.055em;text-align:center;text-shadow:0 1px 0 rgba(255,255,255,.72);transform:translateY(-1%)}
-.pm-dice-roll-button:hover{transform:translateY(-2%);filter:brightness(1.05);box-shadow:inset 0 .12em .16em rgba(255,255,255,.78),0 .3em .56em rgba(74,33,130,.34)}
-.pm-dice-roll-button:active{transform:translateY(2%) scale(.975);box-shadow:inset 0 .09em .14em rgba(136,73,0,.22),0 .11em .2em rgba(74,33,130,.25)}
-.pm-dice-roll-button:disabled{cursor:default;filter:saturate(.72) brightness(.9)}
-.pm-dice-roll-button.is-rolling .pm-dice-roll-button__label{opacity:.62}
+.pm-dice-roll-button{position:absolute;left:87.50%;top:84.55%;width:9.35%;height:9.85%;display:block;border:0;border-radius:18%;background:transparent!important;box-shadow:none!important;color:transparent!important;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent;padding:0;font-size:0;opacity:.001}
+.pm-dice-roll-button:hover,.pm-dice-roll-button:active,.pm-dice-roll-button:disabled,.pm-dice-roll-button.is-rolling{background:transparent!important;box-shadow:none!important;filter:none!important;transform:none!important}
+.pm-dice-roll-button:focus-visible{outline:3px solid rgba(255,238,120,.95);outline-offset:-4px;opacity:.35}
 .pm-dice-flight{position:absolute;left:35%;top:27%;width:30%;height:33%;display:flex;align-items:center;justify-content:center;gap:13%;opacity:0;pointer-events:none;perspective:1100px}
 .pm-dice-flight[aria-hidden="true"]{display:none}
 .pm-dice-flight .pm-die--flight{width:27%;filter:drop-shadow(0 1.1vw .8vw rgba(30,24,90,.38))}
@@ -87,4 +87,4 @@
 .pm-dice-result span{display:inline-flex;align-items:center;justify-content:center;min-width:7.1em;padding:.35em .85em;border-radius:999px;background:rgba(255,255,255,.92);color:#4d338e;border:1px solid rgba(88,58,166,.22);box-shadow:0 .18em .36em rgba(49,30,109,.18);font-size:clamp(9px,.82vw,15px);font-weight:950;line-height:1;letter-spacing:-.03em;text-shadow:none}
 .pm-dice-result.is-double strong{color:#fff4a6;background:linear-gradient(180deg,#6d42ce,#3f227f);filter:drop-shadow(0 0 .45em rgba(255,217,71,.75));animation:pmDoublePop .55s cubic-bezier(.2,.9,.25,1.15) both}
 @keyframes pmDoublePop{0%{transform:scale(.45) rotate(-5deg);opacity:0}55%{transform:scale(1.18) rotate(2deg);opacity:1}100%{transform:scale(1)}}
-@media(max-width:700px){.pm-dice-roll-button__label{font-size:9px}.pm-dice-result strong{font-size:18px}.pm-dice-result span{font-size:9px}}
+@media(max-width:700px){.pm-dice-result strong{font-size:18px}.pm-dice-result span{font-size:9px}}
