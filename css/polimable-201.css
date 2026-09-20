@@ -137,3 +137,27 @@
 .pm-action-kicker{display:block;color:#8d71df;font-weight:1000;font-size:.72em;letter-spacing:.08em}.pm-action-card h3{margin:.28em 0 .46em;font-size:clamp(19px,1.65vw,30px);line-height:1.12}.pm-action-card p{margin:.15em 0 1em;font-size:clamp(11px,.9vw,16px);font-weight:760;line-height:1.45}.pm-action-buttons{display:flex;gap:.6em;justify-content:center;flex-wrap:wrap}.pm-action-btn{min-width:7.1em;padding:.72em 1em;border-radius:999px;border:2px solid #d7cef6;background:#fff;color:#4f389d;font-weight:950;cursor:pointer}.pm-action-btn.is-primary{background:linear-gradient(180deg,#ffd75a,#ffad27);border-color:#e99512;color:#5e3100;box-shadow:0 .22em .45em rgba(129,75,0,.22)}
 
 @media(max-width:700px){.pm-player-hud-meta{font-size:5px}.pm-turn-pill{top:1.2%;font-size:9px}.pm-card-chip small{display:none}.pm-action-card{width:46%;min-width:240px}.pm-toast{max-width:68%;font-size:10px}}
+
+
+/* 0.0.31.237 · player HUD fine tune + dice hitbox + strategy card size tune */
+.pm-player-hud--p1{left:11.18%;top:1.95%;width:12.45%;height:9.75%}
+.pm-player-hud--p2{right:11.18%;top:1.95%;width:12.45%;height:9.75%}
+.pm-player-hud-name{top:11.5%;font-size:clamp(7px,.58vw,11px)}
+.pm-player-hud-cash{top:39.5%;font-size:clamp(12px,1.05vw,20px)}
+.pm-player-hud-meta{top:69.5%;font-size:clamp(6px,.43vw,8px)}
+.pm-player-hud--p1 .pm-player-hud-name,.pm-player-hud--p1 .pm-player-hud-cash,.pm-player-hud--p1 .pm-player-hud-meta{left:36.8%;width:57.5%}
+.pm-player-hud--p2 .pm-player-hud-name,.pm-player-hud--p2 .pm-player-hud-cash,.pm-player-hud--p2 .pm-player-hud-meta{right:36.8%;width:57.5%}
+
+.pm-strategy-slots{left:3.00%;bottom:3.65%;width:23.45%;height:9.85%;gap:2.6%;}
+.pm-card-chip{width:88%;height:88%;justify-self:center;align-self:center;border-radius:11%;padding:.18em .12em;background:linear-gradient(180deg,rgba(255,255,255,.97),rgba(227,236,255,.98));}
+.pm-card-chip b{font-size:clamp(6px,.53vw,10px);line-height:1.05;text-align:center;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pm-card-chip small{display:none!important}
+
+/* The visual button is baked into the approved background. Only this transparent hitbox is interactive. */
+.pm-dice-roll-button{left:88.15%!important;top:84.15%!important;width:8.55%!important;height:8.95%!important;min-width:0!important;min-height:0!important;border:0!important;background:transparent!important;box-shadow:none!important;border-radius:18%!important;pointer-events:auto!important;z-index:30!important;cursor:pointer!important;}
+.pm-dice-roll-button:disabled{cursor:default!important;pointer-events:none!important;opacity:1!important}
+.pm-dice-layer{pointer-events:none!important}
+.pm-dice-roll-button{pointer-events:auto!important}
+
+/* Optional developer-only hitbox visualization: add .pm-debug-hitbox to [data-pm-root]. */
+.pm-debug-hitbox .pm-dice-roll-button{background:rgba(255,0,0,.18)!important;outline:2px dashed rgba(255,0,0,.85)!important}
