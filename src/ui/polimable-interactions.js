@@ -7,7 +7,9 @@ const TEST_STATES = [
   {name:'emotion', src:'/assets/polimable/characters/male2/male2-emotion.png'}
 ];
 
-export async function hydratePoliMarble(){ return; }
+export async function hydratePoliMarble(){
+  bindPoliMarbleInteractions();
+}
 
 export function bindPoliMarbleInteractions(){
   const root=document.querySelector('[data-pm-root]');
