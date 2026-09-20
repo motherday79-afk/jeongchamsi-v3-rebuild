@@ -1,4 +1,4 @@
-import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS} from '../core/polimable-layout.js?v=0.0.31.235';
+import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS} from '../core/polimable-layout.js?v=0.0.31.236';
 
 const START_CASH=10000;
 const MAX_CARDS=4;
@@ -114,7 +114,7 @@ function createGame(root){
   function renderCards(){
     const el=root.querySelector('[data-pm-strategy-slots]'); if(!el)return;
     const cards=state.players[0].cards;
-    el.innerHTML=[0,1,2,3].map(i=>cards[i]?`<button type="button" class="pm-card-chip" data-card-index="${i}" title="${cards[i].desc}"><b>${cards[i].name}</b><small>${cards[i].desc}</small></button>`:`<span class="pm-card-chip is-empty"></span>`).join('');
+    el.innerHTML=[0,1,2,3].map(i=>cards[i]?`<button type="button" class="pm-card-chip" data-card-index="${i}" title="${cards[i].desc}"><b>${cards[i].name}</b></button>`:`<span class="pm-card-chip is-empty"></span>`).join('');
   }
 
   function renderRanking(){

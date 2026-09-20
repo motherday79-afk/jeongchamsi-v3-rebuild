@@ -1,0 +1,13 @@
+import fs from 'fs';
+const read=p=>fs.readFileSync(new URL(`../${p}`,import.meta.url),'utf8');
+const css=read('css/polimable-201.css');
+const js=read('src/ui/polimable-interactions.js');
+if(!css.includes('0.0.31.236 · HUD pixel alignment pass 2')) throw new Error('236 hud block missing');
+if(!css.includes('.pm-card-chip:nth-child(4){left:20.44%}')) throw new Error('strategy slot 4 anchor missing');
+if(!css.includes('.pm-rank-row:nth-child(3){top:92.70%}')) throw new Error('ranking row 3 anchor missing');
+if(!css.includes('.pm-player-hud--p1 .pm-player-hud-cash{left:11.62%;top:6.96%')) throw new Error('p1 cash anchor missing');
+if(!css.includes('.pm-player-hud--p2 .pm-player-hud-meta{left:77.92%;top:10.28%')) throw new Error('p2 meta anchor missing');
+if(!css.includes('overflow:hidden!important')) throw new Error('owner badge overflow fix missing');
+if(!js.includes('const MAX_CARDS=4;')) throw new Error('4-card capacity lost');
+if(js.includes('<small>${cards[i].desc}</small>')) throw new Error('card description still rendered on board');
+console.log('polimable 31.236 HUD pixel alignment 2 test: OK');
