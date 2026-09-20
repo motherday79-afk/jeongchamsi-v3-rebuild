@@ -1,4 +1,4 @@
-import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS} from '../core/polimable-layout.js?v=0.0.31.239';
+import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS} from '../core/polimable-layout.js?v=0.0.31.240';
 
 const START_CASH=10000;
 const MAX_CARDS=4;

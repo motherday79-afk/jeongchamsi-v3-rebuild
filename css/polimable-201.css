@@ -186,3 +186,43 @@
 @media(max-width:700px){
   .pm-logical-canvas .pm-player-hud-meta{display:flex!important;font-size:17px!important}
 }
+
+
+/* 0.0.31.240 · STEP 2: P2 information only, fitted to the baked 1672×941 panel.
+   P1 coordinates from 31.239 are frozen and MUST NOT change here.
+   Upper white box = AI name + current public-sentiment balance.
+   Lower white box = lap count + total asset value.
+   Other validation HUD (strategy / ranking / ownership badges) stays hidden. */
+.pm-logical-canvas .pm-player-hud--p2{
+  display:block!important;
+  position:absolute!important;
+  left:0!important;top:0!important;width:1672px!important;height:941px!important;
+  right:auto!important;color:#a12a88!important;
+  text-shadow:0 1px 0 rgba(255,255,255,.96)!important;
+  pointer-events:none!important;
+}
+/* P2 upper white box: x≈1298..1489, y≈49..88 */
+.pm-logical-canvas .pm-player-hud--p2 .pm-player-hud-name{
+  position:absolute!important;left:1302px!important;top:52px!important;width:182px!important;height:13px!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  font-size:12px!important;font-weight:1000!important;line-height:1!important;color:#a1328e!important;
+  letter-spacing:.15px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+}
+.pm-logical-canvas .pm-player-hud--p2 .pm-player-hud-cash{
+  position:absolute!important;left:1302px!important;top:65px!important;width:182px!important;height:22px!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  font-size:20px!important;font-weight:1000!important;line-height:1!important;color:#9f2786!important;
+  letter-spacing:-.45px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+}
+/* P2 lower white box: x≈1297..1488, y≈94..136 */
+.pm-logical-canvas .pm-player-hud--p2 .pm-player-hud-meta{
+  position:absolute!important;left:1300px!important;top:98px!important;width:186px!important;height:31px!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  font-size:17px!important;font-weight:1000!important;line-height:1!important;color:#a33b91!important;
+  letter-spacing:-.25px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+}
+/* Keep AI portrait intentionally hidden in this text-only validation step. */
+.pm-ai-profile{display:none!important}
+@media(max-width:700px){
+  .pm-logical-canvas .pm-player-hud--p2 .pm-player-hud-meta{display:flex!important;font-size:17px!important}
+}
