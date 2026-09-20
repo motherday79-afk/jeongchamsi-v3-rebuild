@@ -42,6 +42,11 @@ const TILE_RULES=[
   {i:32,type:'gain',name:'민심 급등',amount:700}
 ];
 
+
+const CARD_ICONS=Object.freeze({
+  shield:'🛡️',reroll:'🎲',upgrade:'⭐',buyout:'🤝',teleport:'🧭',boost:'⚡'
+});
+
 const CARD_DECK=[
   {id:'shield',name:'방어권',desc:'다음 민심 영향 1회 면제'},
   {id:'reroll',name:'재도전',desc:'다음 1P 턴에 주사위를 한 번 더 굴림'},
@@ -136,7 +141,7 @@ function createGame(root){
   function renderCards(){
     const el=root.querySelector('[data-pm-strategy-slots]'); if(!el)return;
     const cards=state.players[0].cards;
-    el.innerHTML=[0,1,2,3].map(i=>cards[i]?`<button type="button" class="pm-card-chip" data-card-index="${i}" title="${cards[i].desc}"><b>${cards[i].name}</b></button>`:`<span class="pm-card-chip is-empty"></span>`).join('');
+    el.innerHTML=[0,1,2,3].map(i=>cards[i]?`<button type="button" class="pm-card-chip" data-card-index="${i}" title="${cards[i].desc}"><span class="pm-card-icon" aria-hidden="true">${CARD_ICONS[cards[i].id]||'★'}</span><b>${cards[i].name}</b></button>`:`<span class="pm-card-chip is-empty"></span>`).join('');
   }
 
   function renderRanking(){

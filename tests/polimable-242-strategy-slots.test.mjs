@@ -1,0 +1,13 @@
+import fs from 'fs';
+const read=p=>fs.readFileSync(new URL(`../${p}`,import.meta.url),'utf8');
+const css=read('css/polimable-201.css');
+const js=read('src/ui/polimable-interactions.js');
+const page=read('src/views/polimable-page.js');
+if(!page.includes('pm-logical-canvas')||!page.includes('data-pm-strategy-slots')) throw new Error('strategy slots not in logical canvas view');
+if(!css.includes('.pm-logical-canvas .pm-strategy-slots .pm-card-chip:nth-child(1){left:52px!important}')) throw new Error('slot1 pixel coordinate missing');
+if(!css.includes('.pm-logical-canvas .pm-strategy-slots .pm-card-chip:nth-child(4){left:340px!important}')) throw new Error('slot4 pixel coordinate missing');
+if(!css.includes('width:68px!important')||!css.includes('height:82px!important')) throw new Error('card size missing');
+if(!js.includes('const MAX_CARDS=4;')) throw new Error('max cards is not 4');
+if(!js.includes('CARD_ICONS')) throw new Error('card icon mapping missing');
+if(!js.includes('[0,1,2,3].map')) throw new Error('four slot rendering missing');
+console.log('polimable 31.242 strategy 4-slot test: OK');
