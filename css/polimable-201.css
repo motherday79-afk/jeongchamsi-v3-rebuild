@@ -161,3 +161,23 @@
 
 /* Optional developer-only hitbox visualization: add .pm-debug-hitbox to [data-pm-root]. */
 .pm-debug-hitbox .pm-dice-roll-button{background:rgba(255,0,0,.18)!important;outline:2px dashed rgba(255,0,0,.85)!important}
+
+/* 0.0.31.238 · STEP 1: fixed 1672×941 logical canvas + 1P HUD only.
+   Do not touch gameplay/dice/AI/movement. Other unstable HUD overlays are hidden for coordinate validation. */
+.pm-logical-canvas{position:absolute;left:0;top:0;width:1672px;height:941px;z-index:14;transform-origin:0 0;pointer-events:none;overflow:visible}
+.pm-logical-canvas .pm-player-hud--p1{position:absolute!important;left:0!important;top:0!important;width:1672px!important;height:941px!important;right:auto!important;color:#1f4e9f!important;text-shadow:0 1px 0 rgba(255,255,255,.9)!important;pointer-events:none!important}
+.pm-logical-canvas .pm-player-hud--p1 .pm-player-hud-name{position:absolute!important;left:191px!important;top:49px!important;width:160px!important;height:18px!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:11px!important;font-weight:1000!important;line-height:1!important;color:#2552a3!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.pm-logical-canvas .pm-player-hud--p1 .pm-player-hud-cash{position:absolute!important;left:191px!important;top:65px!important;width:160px!important;height:31px!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:23px!important;font-weight:1000!important;line-height:1!important;color:#17479a!important;letter-spacing:-.7px!important;white-space:nowrap!important}
+.pm-logical-canvas .pm-player-hud--p1 .pm-player-hud-meta{position:absolute!important;left:191px!important;top:98px!important;width:160px!important;height:22px!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:9px!important;font-weight:900!important;line-height:1!important;color:#315da8!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+
+/* Temporarily hide HUD pieces that are NOT part of 31.238 validation. */
+.pm-game-overlay-layer .pm-player-hud--p2{display:none!important}
+.pm-ai-profile{display:none!important}
+.pm-strategy-slots{display:none!important}
+.pm-ranking-overlay{display:none!important}
+.pm-board-cell-object.owned-p1::after,.pm-board-cell-object.owned-p2::after{content:none!important;display:none!important}
+
+/* Prevent older mobile rules from moving/scaling the logical 1P text independently. */
+@media(max-width:700px){
+  .pm-logical-canvas .pm-player-hud-meta{display:flex!important;font-size:9px!important}
+}

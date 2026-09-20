@@ -1,4 +1,4 @@
-import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS} from '../core/polimable-layout.js?v=0.0.31.237';
+import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS} from '../core/polimable-layout.js?v=0.0.31.238';
 
 const START_CASH=10000;
 const MAX_CARDS=4;
@@ -52,10 +52,32 @@ const CARD_DECK=[
 ];
 
 export async function hydratePoliMarble(){bindPoliMarbleInteractions();}
+
+function bindLogicalCanvas(root){
+  const canvas=root.querySelector('[data-pm-logical-canvas]');
+  if(!canvas)return;
+  const sync=()=>{
+    const rect=root.getBoundingClientRect();
+    if(!rect.width||!rect.height)return;
+    const sx=rect.width/1672;
+    const sy=rect.height/941;
+    canvas.style.transform=`scale(${sx},${sy})`;
+  };
+  sync();
+  if(typeof ResizeObserver!=='undefined'){
+    const ro=new ResizeObserver(sync);
+    ro.observe(root);
+    root._pmLogicalResizeObserver=ro;
+  }else if(typeof window!=='undefined'){
+    window.addEventListener('resize',sync,{passive:true});
+  }
+}
+
 export function bindPoliMarbleInteractions(){
   const root=document.querySelector('[data-pm-root]');
   if(!root||root.dataset.gameBound==='1') return;
   root.dataset.gameBound='1';
+  bindLogicalCanvas(root);
   const game=createGame(root);
   root._pmGame=game;
   game.init();

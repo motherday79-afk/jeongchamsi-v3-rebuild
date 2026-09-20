@@ -1,4 +1,4 @@
-import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT,POLIMARBLE_HUD_LAYOUT as HUD} from '../core/polimable-layout.js?v=0.0.31.237';
+import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT,POLIMARBLE_HUD_LAYOUT as HUD} from '../core/polimable-layout.js?v=0.0.31.238';
 
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const number=v=>Number(v||0).toLocaleString('ko-KR');
@@ -22,12 +22,15 @@ export function renderPoliMarblePage(){
         ${HUD.map(renderHudObject).join('')}
       </div>
 
-      <div class="pm-game-overlay-layer">
+      <div class="pm-logical-canvas" data-pm-logical-canvas aria-label="1672×941 HUD logical canvas">
         <div class="pm-player-hud pm-player-hud--p1" data-pm-player-hud="0">
           <span class="pm-player-hud-name">PLAYER 1</span>
           <strong class="pm-player-hud-cash" data-pm-player-cash="0">10,000</strong>
           <small class="pm-player-hud-meta" data-pm-player-meta="0">0바퀴 · 자산 0</small>
         </div>
+      </div>
+
+      <div class="pm-game-overlay-layer">
         <div class="pm-player-hud pm-player-hud--p2" data-pm-player-hud="1">
           <span class="pm-player-hud-name">AI 시민</span>
           <strong class="pm-player-hud-cash" data-pm-player-cash="1">10,000</strong>
