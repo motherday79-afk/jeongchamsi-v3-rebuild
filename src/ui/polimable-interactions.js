@@ -1,4 +1,4 @@
-import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS} from '../core/polimable-layout.js?v=0.0.31.240';
+import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS,POLIMARBLE_OWNER_BADGE_POINTS as OWNER_BADGES} from '../core/polimable-layout.js?v=0.0.31.244';
 
 const START_CASH=10000;
 const MAX_CARDS=4;
@@ -127,15 +127,25 @@ function createGame(root){
   }
 
   function render(){
-    state.players.forEach((p,i)=>{
-      const cash=root.querySelector(`[data-pm-player-cash="${i}"]`);
-      const meta=root.querySelector(`[data-pm-player-meta="${i}"]`);
-      if(cash) cash.textContent=`민심 ${p.cash.toLocaleString('ko-KR')}`;
-      if(meta) meta.textContent=`${p.laps}바퀴 · 자산 ${portfolioValue(i).toLocaleString('ko-KR')}`;
-    });
-    turnPill.textContent=state.gameOver?'GAME OVER':`${state.turn===0?'1P':'2P AI'} TURN`;
-    button.disabled=state.turn!==0||state.rolling||state.gameOver;
-    renderCards();renderRanking();renderOwnership();
+    // 31.244 HOTFIX: visual/HUD rendering must never interrupt the turn engine.
+    // Each UI block is isolated so a marker/HUD failure cannot stop AI scheduling.
+    try{
+      state.players.forEach((p,i)=>{
+        const cash=root.querySelector(`[data-pm-player-cash="${i}"]`);
+        const meta=root.querySelector(`[data-pm-player-meta="${i}"]`);
+        if(cash) cash.textContent=`민심 ${p.cash.toLocaleString('ko-KR')}`;
+        if(meta) meta.textContent=`${p.laps}바퀴 · 자산 ${portfolioValue(i).toLocaleString('ko-KR')}`;
+      });
+      if(turnPill) turnPill.textContent=state.gameOver?'GAME OVER':`${state.turn===0?'1P':'2P AI'} TURN`;
+      if(button) button.disabled=state.turn!==0||state.rolling||state.gameOver;
+    }catch(error){console.error('[POLIMARBLE 31.244] base HUD render failed',error);}
+    safeUiRender(renderCards,'strategy-cards');
+    safeUiRender(renderRanking,'today-ranking');
+    safeUiRender(renderOwnership,'ownership-markers');
+  }
+
+  function safeUiRender(fn,label){
+    try{fn();}catch(error){console.error(`[POLIMARBLE 31.244] ${label} render failed`,error);}
   }
 
   function renderCards(){
