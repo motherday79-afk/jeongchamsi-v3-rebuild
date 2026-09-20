@@ -1,4 +1,4 @@
-// JCS 0.0.31.230 · dice action test + existing male2 visual test.
+// JCS 0.0.31.231 · dice action test + existing male2 visual test.
 // IMPORTANT: Dice result is NOT connected to character movement or game rules yet.
 const TEST_STATES = [
   {name:'move', src:'/assets/polimable/characters/male2/male2-move.png'},
@@ -92,8 +92,8 @@ function bindDiceTest(root){
     root.dataset.lastDiceDouble=isDouble?'1':'0';
     window.dispatchEvent(new CustomEvent('polimable:dice-result',{detail:{dice:final,total,double:isDouble}}));
 
-    resultTitle.textContent=isDouble?'DOUBLE!':`합계 ${total}`;
-    resultSub.textContent=isDouble?`${final[0]} + ${final[1]} · 합계 ${total}`:`${final[0]} + ${final[1]}`;
+    resultTitle.textContent=`합계 ${total}`;
+    resultSub.textContent=isDouble?`DOUBLE · ${final[0]} + ${final[1]}`:`${final[0]} + ${final[1]}`;
     result.classList.toggle('is-double',isDouble);
     result.setAttribute('aria-hidden','false');
     result.classList.add('is-visible');

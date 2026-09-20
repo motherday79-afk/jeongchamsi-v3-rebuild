@@ -1,0 +1,13 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const view=fs.readFileSync(new URL('../src/views/polimable-page.js',import.meta.url),'utf8');
+const css=fs.readFileSync(new URL('../css/polimable-201.css',import.meta.url),'utf8');
+const ui=fs.readFileSync(new URL('../src/ui/polimable-interactions.js',import.meta.url),'utf8');
+assert.match(view,/pm-die-pip p9/);
+assert.match(view,/주사위 굴리기/);
+assert.match(css,/\.pm-die::before/);
+assert.match(css,/\.pm-die-pip\.p5\{left:42\.5%;top:42\.5%\}/);
+assert.match(css,/display:flex;align-items:center;justify-content:center/);
+assert.match(ui,/resultTitle\.textContent=`합계 \$\{total\}`/);
+assert.match(ui,/DOUBLE ·/);
+console.log('31.231 dice visual test passed');

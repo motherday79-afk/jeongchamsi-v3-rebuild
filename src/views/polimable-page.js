@@ -1,10 +1,10 @@
-import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT,POLIMARBLE_HUD_LAYOUT as HUD} from '../core/polimable-layout.js?v=0.0.31.230';
+import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT,POLIMARBLE_HUD_LAYOUT as HUD} from '../core/polimable-layout.js?v=0.0.31.231';
 
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const number=v=>Number(v||0).toLocaleString('ko-KR');
 
 function renderDiePips(){
-  return '<span class="pm-die-pip p1"></span><span class="pm-die-pip p2"></span><span class="pm-die-pip p3"></span><span class="pm-die-pip p4"></span><span class="pm-die-pip p5"></span><span class="pm-die-pip p6"></span><span class="pm-die-pip p7"></span>';
+  return '<span class="pm-die-pip p1"></span><span class="pm-die-pip p2"></span><span class="pm-die-pip p3"></span><span class="pm-die-pip p4"></span><span class="pm-die-pip p5"></span><span class="pm-die-pip p6"></span><span class="pm-die-pip p7"></span><span class="pm-die-pip p8"></span><span class="pm-die-pip p9"></span>';
 }
 
 function renderTileObject(cell){
@@ -38,7 +38,7 @@ export function renderPoliMarblePage(){
           <div class="pm-die pm-die--dock" data-pm-die-dock="1" data-face="1" aria-label="첫 번째 주사위 1">${renderDiePips()}</div>
           <div class="pm-die pm-die--dock" data-pm-die-dock="2" data-face="1" aria-label="두 번째 주사위 1">${renderDiePips()}</div>
         </div>
-        <button class="pm-dice-roll-button" type="button" data-pm-dice-roll aria-label="주사위 두 개 굴리기">굴리기</button>
+        <button class="pm-dice-roll-button" type="button" data-pm-dice-roll aria-label="주사위 두 개 굴리기"><span class="pm-dice-roll-button__label">주사위 굴리기</span></button>
         <div class="pm-dice-flight" data-pm-dice-flight aria-hidden="true">
           <div class="pm-die pm-die--flight" data-pm-die-flight="1" data-face="1">${renderDiePips()}</div>
           <div class="pm-die pm-die--flight" data-pm-die-flight="2" data-face="1">${renderDiePips()}</div>
