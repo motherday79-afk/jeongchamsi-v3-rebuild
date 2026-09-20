@@ -1,4 +1,4 @@
-// JCS 0.0.31.233 · POLIMARBLE visual object map + precision movement anchors
+// JCS 0.0.31.234 · POLIMARBLE visual object map + precision movement anchors
 // DESIGN SOURCE OF TRUTH: polimable-board-base-31-232.png (1672×941)
 // The image is the ONE AND ONLY board/background image.
 // Each board cell + HUD panel is mapped as an independent transparent DOM object.
