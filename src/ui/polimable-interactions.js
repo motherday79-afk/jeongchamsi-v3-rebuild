@@ -1,7 +1,7 @@
-import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS} from '../core/polimable-layout.js?v=0.0.31.233';
+import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS} from '../core/polimable-layout.js?v=0.0.31.235';
 
 const START_CASH=10000;
-const MAX_CARDS=3;
+const MAX_CARDS=4;
 const RENT_RATE=[0,.40,.80,1.50,2.50];
 const UPGRADE_RATE=[0,0,.60,.90,1.20];
 const TRACK_LEN=MOVE_ANCHORS.length; // current approved visual board = 33 visible cells
@@ -114,13 +114,18 @@ function createGame(root){
   function renderCards(){
     const el=root.querySelector('[data-pm-strategy-slots]'); if(!el)return;
     const cards=state.players[0].cards;
-    el.innerHTML=[0,1,2].map(i=>cards[i]?`<button type="button" class="pm-card-chip" data-card-index="${i}" title="${cards[i].desc}"><b>${cards[i].name}</b><small>${cards[i].desc}</small></button>`:`<span class="pm-card-chip is-empty"></span>`).join('');
+    el.innerHTML=[0,1,2,3].map(i=>cards[i]?`<button type="button" class="pm-card-chip" data-card-index="${i}" title="${cards[i].desc}"><b>${cards[i].name}</b><small>${cards[i].desc}</small></button>`:`<span class="pm-card-chip is-empty"></span>`).join('');
   }
 
   function renderRanking(){
     const el=root.querySelector('[data-pm-ranking-overlay]');if(!el)return;
     const ranked=state.players.map((p,i)=>({i,p,score:p.cash+portfolioValue(i)})).sort((a,b)=>b.score-a.score);
-    el.innerHTML=ranked.map((r,idx)=>`<div class="pm-rank-row"><b>${idx+1}</b><span>${r.p.name}</span><strong>${r.score.toLocaleString('ko-KR')}</strong></div>`).join('')+'<div class="pm-rank-row is-empty"></div>';
+    el.innerHTML=Array.from({length:3},(_,idx)=>{
+      const r=ranked[idx];
+      return r
+        ? `<div class="pm-rank-row"><b>${idx+1}</b><span>${r.p.name}</span><strong>${r.score.toLocaleString('ko-KR')}</strong></div>`
+        : `<div class="pm-rank-row is-empty"><b>${idx+1}</b><span>-</span><strong>-</strong></div>`;
+    }).join('');
   }
 
   function renderOwnership(){
