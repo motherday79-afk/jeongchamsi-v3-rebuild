@@ -83,6 +83,14 @@ function renderGameHud(authenticated){
 export function renderPoliMarblePage({session}={}){
   const authenticated=!!session?.authenticated;
   return `<section class="pm-page pm-background-only-page" aria-label="JCS 폴리마블">
+    <div class="pm-ios-landscape-gate" data-pm-ios-gate hidden>
+      <div class="pm-ios-landscape-card">
+        <strong>아이폰 가로 플레이</strong>
+        <p>기기를 돌리지 않아도 게임 화면을 가로로 전환할 수 있어요.</p>
+        <button type="button" data-pm-ios-rotate>↻ 가로 화면으로 플레이</button>
+      </div>
+    </div>
+    <button type="button" class="pm-ios-landscape-exit" data-pm-ios-exit hidden>세로 화면으로 돌아가기</button>
     <div class="pm-background-stage" data-pm-root data-authenticated="${authenticated?'true':'false'}" aria-label="JCS 폴리마블 1200 × 675 게임 보드">
       <div class="pm-board-tiles" aria-label="폴리마블 24개 게임 칸">${LAYOUT.map(renderBoardTile).join('')}</div>
       ${renderPlayerPiece()}

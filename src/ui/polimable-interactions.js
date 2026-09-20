@@ -4,6 +4,30 @@ const DICE_FACES=['⚀','⚁','⚂','⚃','⚄','⚅'];
 const STEP_MS=265;
 const SESSION_KEY='jcs:polimable:active-session';
 const contexts=new WeakMap();
+const isIPhoneLike=()=>/iPhone|iPod/i.test(navigator.userAgent||'')||((navigator.platform==='MacIntel')&&navigator.maxTouchPoints>1&&Math.min(screen.width,screen.height)<900);
+function syncIosLandscapeState(){
+  const page=document.querySelector('.pm-background-only-page');
+  if(!page)return;
+  const portrait=window.innerHeight>window.innerWidth;
+  const iphone=isIPhoneLike();
+  document.body.classList.toggle('pm-ios-portrait-ready',iphone&&portrait&&!document.body.classList.contains('pm-ios-landscape-active'));
+  const gate=page.querySelector('[data-pm-ios-gate]');
+  if(gate)gate.hidden=!(iphone&&portrait&&!document.body.classList.contains('pm-ios-landscape-active'));
+  if(document.body.classList.contains('pm-ios-landscape-active')){
+    const scale=Math.min(window.innerHeight/1200,window.innerWidth/675)*.985;
+    document.documentElement.style.setProperty('--pm-ios-scale',String(Math.max(.2,scale)));
+  }
+}
+function enterIosLandscape(){
+  document.body.classList.remove('pm-ios-portrait-ready');
+  document.body.classList.add('pm-ios-landscape-active');
+  syncIosLandscapeState();
+}
+function exitIosLandscape(){
+  document.body.classList.remove('pm-ios-landscape-active');
+  document.documentElement.style.removeProperty('--pm-ios-scale');
+  syncIosLandscapeState();
+}
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const clone=value=>typeof structuredClone==='function'?structuredClone(value):JSON.parse(JSON.stringify(value));
 const number=value=>Number(value||0).toLocaleString('ko-KR');
@@ -338,14 +362,19 @@ export async function hydratePoliMarble(root,client,session){
     }
   }
   paintState(mount,ctx);
+  syncIosLandscapeState();
 }
 
 export function bindPoliMarbleInteractions(root,{client,navigate}={}){
   if(root.__jcsPolimable209Bound)return;
   root.__jcsPolimable209Bound=true;
+  if(!window.__jcsPmIosLandscapeBound){window.__jcsPmIosLandscapeBound=true;window.addEventListener('resize',syncIosLandscapeState,{passive:true});window.addEventListener('orientationchange',()=>setTimeout(syncIosLandscapeState,120),{passive:true});}
+  queueMicrotask(syncIosLandscapeState);
   root.addEventListener('click',event=>{
-    const button=event.target.closest?.('[data-pm-main-action],[data-pm-cashout],[data-pm-card-slot],[data-pm-choice],[data-pm-result-record],[data-pm-result-restart]');
+    const button=event.target.closest?.('[data-pm-main-action],[data-pm-cashout],[data-pm-card-slot],[data-pm-choice],[data-pm-result-record],[data-pm-result-restart],[data-pm-ios-rotate],[data-pm-ios-exit]');
     if(!button)return;
+    if(button.hasAttribute('data-pm-ios-rotate')){event.preventDefault();enterIosLandscape();return;}
+    if(button.hasAttribute('data-pm-ios-exit')){event.preventDefault();exitIosLandscape();return;}
     const mount=button.closest('[data-pm-root]');
     if(!mount)return;
     const ctx=contexts.get(mount);

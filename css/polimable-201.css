@@ -96,11 +96,7 @@
   .pm-background-stage{width:100%;height:auto;flex:0 1 auto;aspect-ratio:16/9;background-size:100% 100%}
 }
 
-/* mobile portrait = rotate request; landscape keeps exactly the same 16:9 board */
-@media(max-width:720px) and (orientation:portrait){
-  .pm-background-only-page::before{content:"가로모드로 돌려서 플레이해 주세요 ↻";position:absolute;z-index:30;inset:0;display:grid;place-items:center;background:#eef3ff;color:#53368e;font-size:18px;font-weight:1000;text-align:center;padding:28px}
-  .pm-background-stage{visibility:hidden}
-}
+/* mobile portrait behavior handled by iPhone landscape helper in 0.0.31.223 */
 
 /* === JCS 0.0.31.209 · SERVER GAME RULE HUD ===
    The approved board/background/tile geometry above remains unchanged.
@@ -261,4 +257,26 @@
 .pm-side-overlay-me{background:transparent!important}
 @media (max-width:767px){
   .pm-side-overlay-panel{padding:2px 1px!important}
+}
+
+
+/* 0.0.31.223 - iPhone portrait: software landscape mode */
+.pm-ios-landscape-gate,.pm-ios-landscape-exit{display:none}
+body.pm-ios-portrait-ready .pm-ios-landscape-gate{position:absolute;inset:0;z-index:40;display:grid;place-items:center;padding:24px;background:rgba(238,243,255,.96)}
+.pm-ios-landscape-card{width:min(320px,88vw);padding:22px 20px;border:1px solid #ded4f2;border-radius:20px;background:#fff;text-align:center;box-shadow:0 16px 40px rgba(58,35,112,.18)}
+.pm-ios-landscape-card strong{display:block;color:#4f3290;font-size:19px;font-weight:1000}
+.pm-ios-landscape-card p{margin:9px 0 16px;color:#6f6580;font-size:14px;line-height:1.45;font-weight:700}
+.pm-ios-landscape-card button{width:100%;min-height:48px;border:0;border-radius:14px;background:linear-gradient(180deg,#7850c8,#5b38a8);color:#fff;font-size:15px;font-weight:1000;cursor:pointer}
+body.pm-ios-portrait-ready .pm-background-stage{visibility:hidden}
+body.pm-ios-landscape-active{overflow:hidden!important}
+body.pm-ios-landscape-active .site-shell>header,
+body.pm-ios-landscape-active .site-shell>footer,
+body.pm-ios-landscape-active .page-wrap>*:not(.pm-background-only-page){visibility:hidden!important}
+body.pm-ios-landscape-active .pm-background-only-page{position:fixed!important;inset:0!important;z-index:99990!important;margin:0!important;padding:0!important;background:#111!important;display:block!important;overflow:hidden!important}
+body.pm-ios-landscape-active .pm-ios-landscape-gate{display:none!important}
+body.pm-ios-landscape-active .pm-background-stage{position:fixed!important;left:50%!important;top:50%!important;width:1200px!important;height:675px!important;visibility:visible!important;transform-origin:center center!important;transform:translate(-50%,-50%) rotate(90deg) scale(var(--pm-ios-scale, .5))!important;z-index:99991!important}
+body.pm-ios-landscape-active .pm-ios-landscape-exit{position:fixed;right:10px;top:10px;z-index:99999;display:block!important;min-height:42px;padding:0 13px;border:0;border-radius:12px;background:rgba(33,24,66,.9);color:#fff;font-size:12px;font-weight:1000;box-shadow:0 5px 16px rgba(0,0,0,.22)}
+@media (orientation:landscape){
+  body.pm-ios-portrait-ready .pm-ios-landscape-gate{display:none!important}
+  body.pm-ios-portrait-ready .pm-background-stage{visibility:visible!important}
 }
