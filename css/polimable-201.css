@@ -226,3 +226,74 @@
 @media(max-width:700px){
   .pm-logical-canvas .pm-player-hud--p2 .pm-player-hud-meta{display:flex!important;font-size:17px!important}
 }
+
+/* 0.0.31.241 · STEP 3: TODAY RANKING precise pixel placement.
+   P1 (31.239) and P2 (31.240) coordinates are frozen.
+   Ranking is now part of the 1672×941 logical canvas and each row has its own fixed pixel center. */
+.pm-logical-canvas .pm-ranking-overlay{
+  display:block!important;
+  position:absolute!important;
+  left:0!important;top:0!important;width:1672px!important;height:941px!important;
+  pointer-events:none!important;
+  z-index:6!important;
+}
+.pm-logical-canvas .pm-ranking-overlay .pm-rank-row{
+  position:absolute!important;
+  left:650px!important;
+  width:435px!important;
+  height:31px!important;
+  display:block!important;
+  padding:0!important;
+  margin:0!important;
+  border-radius:999px!important;
+  background:transparent!important;
+  color:#6d5128!important;
+  font-size:16px!important;
+  font-weight:950!important;
+  line-height:31px!important;
+  text-shadow:0 1px 0 rgba(255,255,255,.9)!important;
+  overflow:hidden!important;
+}
+.pm-logical-canvas .pm-ranking-overlay .pm-rank-row:nth-child(1){top:788px!important}
+.pm-logical-canvas .pm-ranking-overlay .pm-rank-row:nth-child(2){top:827px!important}
+.pm-logical-canvas .pm-ranking-overlay .pm-rank-row:nth-child(3){top:866px!important}
+.pm-logical-canvas .pm-ranking-overlay .pm-rank-row b,
+.pm-logical-canvas .pm-ranking-overlay .pm-rank-row span,
+.pm-logical-canvas .pm-ranking-overlay .pm-rank-row strong{
+  position:absolute!important;
+  top:0!important;
+  height:31px!important;
+  display:flex!important;
+  align-items:center!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.pm-logical-canvas .pm-ranking-overlay .pm-rank-row b{
+  left:8px!important;
+  width:34px!important;
+  justify-content:center!important;
+  background:transparent!important;
+  color:#8c5b18!important;
+  font-size:17px!important;
+  font-weight:1000!important;
+  border-radius:0!important;
+}
+.pm-logical-canvas .pm-ranking-overlay .pm-rank-row span{
+  left:57px!important;
+  width:245px!important;
+  justify-content:flex-start!important;
+  padding:0!important;
+  color:#6b502d!important;
+  font-size:16px!important;
+  font-weight:950!important;
+}
+.pm-logical-canvas .pm-ranking-overlay .pm-rank-row strong{
+  right:14px!important;
+  width:112px!important;
+  justify-content:flex-end!important;
+  color:#6b502d!important;
+  font-size:16px!important;
+  font-weight:1000!important;
+}
+.pm-logical-canvas .pm-ranking-overlay .pm-rank-row.is-empty{opacity:0!important}

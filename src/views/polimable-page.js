@@ -1,4 +1,4 @@
-import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT,POLIMARBLE_HUD_LAYOUT as HUD} from '../core/polimable-layout.js?v=0.0.31.240';
+import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT,POLIMARBLE_HUD_LAYOUT as HUD} from '../core/polimable-layout.js?v=0.0.31.241';
 
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const number=v=>Number(v||0).toLocaleString('ko-KR');
@@ -33,13 +33,13 @@ export function renderPoliMarblePage(){
           <strong class="pm-player-hud-cash" data-pm-player-cash="1">민심 10,000</strong>
           <small class="pm-player-hud-meta" data-pm-player-meta="1">0바퀴 · 자산 0</small>
         </div>
+        <div class="pm-ranking-overlay" data-pm-ranking-overlay aria-label="TODAY RANKING"></div>
       </div>
 
       <div class="pm-game-overlay-layer">
         <div class="pm-turn-pill" data-pm-turn-pill>1P TURN</div>
 
         <div class="pm-strategy-slots" data-pm-strategy-slots aria-label="1P 보유 전략카드"></div>
-        <div class="pm-ranking-overlay" data-pm-ranking-overlay></div>
         <div class="pm-toast" data-pm-toast aria-live="polite"></div>
       </div>
 
