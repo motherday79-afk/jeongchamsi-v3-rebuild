@@ -382,3 +382,11 @@
 
 /* Disable legacy pseudo-element ownership badges permanently. */
 .pm-board-cell-object.owned-p1::after,.pm-board-cell-object.owned-p2::after{content:none!important;display:none!important}
+
+/* 0.0.31.245 · POLIMARBLE audio control. Existing board/HUD coordinates are untouched. */
+.pm-sound-toggle{position:absolute;left:59.4%;top:1.85%;z-index:32;width:34px;height:34px;display:flex;align-items:center;justify-content:center;padding:0;border-radius:50%;border:2px solid rgba(255,218,79,.95);background:rgba(49,37,116,.90);box-shadow:0 3px 9px rgba(26,24,77,.28),inset 0 1px 0 rgba(255,255,255,.18);color:#fff;font-size:18px;line-height:1;cursor:pointer;pointer-events:auto;transition:transform .12s ease,opacity .12s ease,background .12s ease}
+.pm-sound-toggle:hover{transform:scale(1.06)}
+.pm-sound-toggle:active{transform:scale(.96)}
+.pm-sound-toggle.is-muted{background:rgba(85,78,115,.78);opacity:.82}
+.pm-sound-toggle:focus-visible{outline:3px solid rgba(255,235,132,.9);outline-offset:2px}
+@media(max-width:700px){.pm-sound-toggle{width:28px;height:28px;font-size:15px;top:1.25%;left:60.2%}}

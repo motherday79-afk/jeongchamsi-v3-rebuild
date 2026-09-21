@@ -1,4 +1,4 @@
-import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT,POLIMARBLE_HUD_LAYOUT as HUD} from '../core/polimable-layout.js?v=0.0.31.244';
+import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT,POLIMARBLE_HUD_LAYOUT as HUD} from '../core/polimable-layout.js?v=0.0.31.245';
 
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const number=v=>Number(v||0).toLocaleString('ko-KR');
@@ -40,6 +40,7 @@ export function renderPoliMarblePage(){
 
       <div class="pm-game-overlay-layer">
         <div class="pm-turn-pill" data-pm-turn-pill>1P TURN</div>
+        <button class="pm-sound-toggle" type="button" data-pm-sound-toggle aria-label="폴리마블 소리 끄기" aria-pressed="false" title="소리 끄기">🔊</button>
         <div class="pm-toast" data-pm-toast aria-live="polite"></div>
       </div>
 

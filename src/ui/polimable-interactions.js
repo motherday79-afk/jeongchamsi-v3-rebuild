@@ -1,4 +1,5 @@
-import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS,POLIMARBLE_OWNER_BADGE_POINTS as OWNER_BADGES} from '../core/polimable-layout.js?v=0.0.31.244';
+import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS,POLIMARBLE_OWNER_BADGE_POINTS as OWNER_BADGES} from '../core/polimable-layout.js?v=0.0.31.245';
+import {createPoliMarbleAudio} from '../core/polimable-audio.js?v=0.0.31.245';
 
 const START_CASH=10000;
 const MAX_CARDS=4;
@@ -106,6 +107,7 @@ function createGame(root){
   const actions=root.querySelector('[data-pm-action-buttons]');
   const toast=root.querySelector('[data-pm-toast]');
   const turnPill=root.querySelector('[data-pm-turn-pill]');
+  const audio=createPoliMarbleAudio(root);
 
   const state={
     turn:0,rolling:false,gameOver:false,
@@ -118,6 +120,7 @@ function createGame(root){
   };
 
   function init(){
+    audio.init();
     placeToken(0,0,true);placeToken(1,0,true);render();
     button?.addEventListener('click',()=>{ if(state.turn===0&&!state.rolling&&!state.gameOver) runTurn(0); });
     root.querySelector('[data-pm-strategy-slots]')?.addEventListener('click',ev=>{
@@ -196,11 +199,12 @@ function createGame(root){
   }
 
   async function animateDice(){
+    audio.play('diceRoll');
     result.classList.remove('is-visible','is-double');result.setAttribute('aria-hidden','true');
     flight.setAttribute('aria-hidden','false');flight.classList.remove('is-rolling','is-landed');void flight.offsetWidth;flight.classList.add('is-rolling');
     const final=[fairDie(),fairDie()],started=performance.now();
     while(performance.now()-started<760){setDieFace(flightDice[0],fairDie());setDieFace(flightDice[1],fairDie());await wait(68);}
-    setDieFace(flightDice[0],final[0]);setDieFace(flightDice[1],final[1]);flight.classList.remove('is-rolling');flight.classList.add('is-landed');await wait(320);
+    setDieFace(flightDice[0],final[0]);setDieFace(flightDice[1],final[1]);flight.classList.remove('is-rolling');flight.classList.add('is-landed');audio.play('diceLand');await wait(320);
     dockDice.forEach((die,i)=>setDieFace(die,final[i]));
     return final;
   }
@@ -208,6 +212,7 @@ function createGame(root){
   function showDiceResult(dice,total,dbl){
     resultTitle.textContent=`합계 ${total}`;resultSub.textContent=dbl?`DOUBLE · ${dice[0]} + ${dice[1]}`:`${dice[0]} + ${dice[1]}`;
     result.classList.toggle('is-double',dbl);result.setAttribute('aria-hidden','false');result.classList.add('is-visible');
+    if(dbl)audio.play('double');
   }
 
   async function moveBy(playerIndex,steps){
@@ -215,10 +220,10 @@ function createGame(root){
     setMovingVisual(playerIndex,true);
     for(let s=0;s<steps;s++){
       const prev=p.pos; p.pos=(p.pos+1)%TRACK_LEN;
-      if(prev===TRACK_LEN-1&&p.pos===0){p.laps++;const salary=salaryForLap(p.laps);p.cash+=salary;showToast(`${p.name} START 통과 · 민심 +${salary.toLocaleString('ko-KR')}`);render();}
-      placeToken(playerIndex,p.pos,false); await wait(215);
+      if(prev===TRACK_LEN-1&&p.pos===0){p.laps++;const salary=salaryForLap(p.laps);p.cash+=salary;audio.play('start');showToast(`${p.name} START 통과 · 민심 +${salary.toLocaleString('ko-KR')}`);render();}
+      placeToken(playerIndex,p.pos,false); audio.play('step'); await wait(215);
     }
-    setMovingVisual(playerIndex,false); await wait(100);render();
+    setMovingVisual(playerIndex,false); audio.play('land'); await wait(100);render();
   }
 
   function placeToken(playerIndex,index,instant=false){
@@ -241,9 +246,9 @@ function createGame(root){
   async function resolveTile(playerIndex){
     const p=state.players[playerIndex],tile=TILE_RULES[p.pos]||{type:'noop',name:`칸 ${p.pos}`};
     if(tile.type==='start'){showToast(`${p.name} START 도착`);return;}
-    if(tile.type==='gain'||tile.type==='plaza'){p.cash+=tile.amount;showToast(`${tile.name} · 민심 +${tile.amount.toLocaleString('ko-KR')}`);reaction(playerIndex,'win');render();return;}
+    if(tile.type==='gain'||tile.type==='plaza'){p.cash+=tile.amount;audio.play('gain');showToast(`${tile.name} · 민심 +${tile.amount.toLocaleString('ko-KR')}`);reaction(playerIndex,'win');render();return;}
     if(tile.type==='loss'){await takeCash(playerIndex,tile.amount,tile.name);reaction(playerIndex,'fail');render();return;}
-    if(tile.type==='issue'){const amount=[-700,-400,400,700][Math.floor(Math.random()*4)];if(amount>=0){p.cash+=amount;showToast(`긴급이슈 반전 · 민심 +${amount}`);reaction(playerIndex,'emotion');}else{await takeCash(playerIndex,-amount,'긴급이슈');reaction(playerIndex,'fail');}render();return;}
+    if(tile.type==='issue'){const amount=[-700,-400,400,700][Math.floor(Math.random()*4)];if(amount>=0){p.cash+=amount;audio.play('gain');showToast(`긴급이슈 반전 · 민심 +${amount}`);reaction(playerIndex,'emotion');}else{await takeCash(playerIndex,-amount,'긴급이슈');reaction(playerIndex,'fail');}render();return;}
     if(tile.type==='card'){await drawCard(playerIndex);render();return;}
     if(tile.type==='fate'){await resolveFate(playerIndex);render();return;}
     if(tile.type==='tour'){await resolveTour(playerIndex);render();return;}
@@ -280,18 +285,18 @@ function createGame(root){
     if(p.cash>=buyout){const ok=await ask(`거점 인수`,`민심 ${buyout.toLocaleString('ko-KR')}으로 <b>${tile.name}</b>을 인수하시겠습니까?`,[['인수',true],['아니오',false]]);if(ok){p.buyoutDiscount=false;transferOwnership(playerIndex,tile,prop,buyout);}}
   }
 
-  function buyProperty(pi,tile){const p=state.players[pi];if(p.cash<tile.price){showToast('민심이 부족합니다.');return;}p.cash-=tile.price;state.props[tile.i]={owner:pi,level:1,invested:tile.price};showToast(`${p.name} · ${tile.name} 영향력 확보`);reaction(pi,'win');}
-  function upgradeProperty(pi,tile,prop){const p=state.players[pi],cost=upgradeCost(tile,prop,p);if(p.cash<cost)return;p.cash-=cost;prop.level++;prop.invested+=cost;p.upgradeDiscount=false;showToast(`${tile.name} L${prop.level} 강화`);reaction(pi,'win');}
-  function sellProperty(pi,tile,prop){const value=sellValue(tile,prop);state.players[pi].cash+=value;delete state.props[tile.i];showToast(`${tile.name} 매각 · 민심 +${value.toLocaleString('ko-KR')}`);}
-  function transferOwnership(pi,tile,prop,cost){const old=prop.owner;state.players[pi].cash-=cost;state.players[old].cash+=cost;prop.owner=pi;showToast(`${state.players[pi].name}이 ${tile.name} 인수`);reaction(pi,'win');}
+  function buyProperty(pi,tile){const p=state.players[pi];if(p.cash<tile.price){showToast('민심이 부족합니다.');return;}p.cash-=tile.price;state.props[tile.i]={owner:pi,level:1,invested:tile.price};audio.play('purchase');showToast(`${p.name} · ${tile.name} 영향력 확보`);reaction(pi,'win');}
+  function upgradeProperty(pi,tile,prop){const p=state.players[pi],cost=upgradeCost(tile,prop,p);if(p.cash<cost)return;p.cash-=cost;prop.level++;prop.invested+=cost;p.upgradeDiscount=false;audio.play('purchase');showToast(`${tile.name} L${prop.level} 강화`);reaction(pi,'win');}
+  function sellProperty(pi,tile,prop){const value=sellValue(tile,prop);state.players[pi].cash+=value;delete state.props[tile.i];audio.play('gain');showToast(`${tile.name} 매각 · 민심 +${value.toLocaleString('ko-KR')}`);}
+  function transferOwnership(pi,tile,prop,cost){const old=prop.owner;state.players[pi].cash-=cost;state.players[old].cash+=cost;prop.owner=pi;audio.play('purchase');showToast(`${state.players[pi].name}이 ${tile.name} 인수`);reaction(pi,'win');}
   function upgradeCost(tile,prop,p){let c=Math.round(tile.price*UPGRADE_RATE[prop.level+1]);if(p.upgradeDiscount)c=Math.round(c*.5);return c;}
   function sellValue(tile,prop){return Math.round(prop.invested*.70);}
 
   async function resolveFate(pi){
     if(pi===1){const risky=Math.random()<.5;if(risky){const win=Math.random()<.5,amt=1200;if(win)state.players[pi].cash+=amt;else await takeCash(pi,amt,'운명의 선택');}else state.players[pi].cash+=300;showToast('AI가 운명의 선택을 마쳤습니다.');return;}
     const c=await ask('운명의 선택','안전하게 민심 +300을 받을까요, 위험을 감수해 ±1,200에 도전할까요?',[['안전 +300','safe'],['도전 ±1,200','risk']]);
-    if(c==='safe'){state.players[pi].cash+=300;showToast('안전한 선택 · 민심 +300');}
-    else{const win=Math.random()<.5;if(win){state.players[pi].cash+=1200;showToast('운명의 선택 성공 · 민심 +1,200');reaction(pi,'win');}else{await takeCash(pi,1200,'운명의 선택 실패');reaction(pi,'fail');}}
+    if(c==='safe'){state.players[pi].cash+=300;audio.play('gain');showToast('안전한 선택 · 민심 +300');}
+    else{const win=Math.random()<.5;if(win){state.players[pi].cash+=1200;audio.play('gain');showToast('운명의 선택 성공 · 민심 +1,200');reaction(pi,'win');}else{await takeCash(pi,1200,'운명의 선택 실패');reaction(pi,'fail');}}
   }
 
   async function resolveTour(pi){
@@ -345,8 +350,8 @@ function createGame(root){
   }
   function autoUseAiCard(pi){const p=state.players[pi];if(!p.cards.length)return;const card=p.cards[0];if(card.id==='shield')p.shield=true;else if(card.id==='upgrade')p.upgradeDiscount=true;else if(card.id==='buyout')p.buyoutDiscount=true;else if(card.id==='boost')p.boost=true;else if(card.id==='reroll')p.reroll=true;else return;p.cards.shift();}
 
-  async function takeCash(pi,amount,label){const p=state.players[pi];if(p.shield){p.shield=false;showToast(`${p.name} 방어권 사용 · ${label} 면제`);return;}p.cash-=amount;showToast(`${label} · ${p.name} 민심 -${amount.toLocaleString('ko-KR')}`);if(p.cash<=0)endGame(1-pi);}
-  async function transferCash(from,to,amount,label){const a=state.players[from],b=state.players[to];a.cash-=amount;b.cash+=amount;showToast(`${label} · ${a.name} -${amount.toLocaleString()} / ${b.name} +${amount.toLocaleString()}`);if(a.cash<=0)endGame(to);}
+  async function takeCash(pi,amount,label){const p=state.players[pi];if(p.shield){p.shield=false;showToast(`${p.name} 방어권 사용 · ${label} 면제`);return;}p.cash-=amount;audio.play('loss');showToast(`${label} · ${p.name} 민심 -${amount.toLocaleString('ko-KR')}`);if(p.cash<=0)endGame(1-pi);}
+  async function transferCash(from,to,amount,label){const a=state.players[from],b=state.players[to];a.cash-=amount;b.cash+=amount;audio.play('loss');showToast(`${label} · ${a.name} -${amount.toLocaleString()} / ${b.name} +${amount.toLocaleString()}`);if(a.cash<=0)endGame(to);}
   function endGame(winner){state.gameOver=true;showToast(`${state.players[winner].name} 승리`);reaction(winner,'win');}
 
   function hasNetwork(owner,group){const groupTiles=TILE_RULES.filter(t=>t.type==='property'&&t.group===group);return groupTiles.length>=2&&groupTiles.every(t=>state.props[t.i]?.owner===owner);}
