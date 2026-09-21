@@ -1,6 +1,6 @@
-import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS,POLIMARBLE_OWNER_BADGE_POINTS as OWNER_BADGES} from '../core/polimable-layout.js?v=0.0.31.245';
+import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS,POLIMARBLE_OWNER_BADGE_POINTS as OWNER_BADGES} from '../core/polimable-layout.js?v=0.0.31.249';
 import {createPoliMarbleAudio} from '../core/polimable-audio.js?v=0.0.31.245';
-import {calculatePoliMarbleStage} from '../core/polimable-viewport.js?v=0.0.31.248';
+import {calculatePoliMarbleStage} from '../core/polimable-viewport.js?v=0.0.31.249';
 
 const START_CASH=10000;
 const MAX_CARDS=4;
@@ -10,38 +10,37 @@ const TRACK_LEN=MOVE_ANCHORS.length; // current approved visual board = 33 visib
 
 const TILE_RULES=[
   {i:0,type:'start',name:'START'},
-  {i:1,type:'gain',name:'민심 급등',amount:700},
-  {i:2,type:'property',name:'정책연구원',group:'policy',price:1300},
-  {i:3,type:'property',name:'공공전략실',group:'policy',price:1600},
-  {i:4,type:'gain',name:'참여의 시간',amount:500},
-  {i:5,type:'card',name:'정책카드'},
-  {i:6,type:'loss',name:'민심 급락',amount:500},
-  {i:7,type:'property',name:'현장 취재',group:'media',price:1100},
-  {i:8,type:'property',name:'언론 토론회',group:'media',price:900},
-  {i:9,type:'plaza',name:'정참시 광장',amount:500},
-  {i:10,type:'property',name:'정당연구소',group:'policy',price:1900},
-  {i:11,type:'property',name:'시민참여센터',group:'civic',price:700},
-  {i:12,type:'property',name:'NGO연합',group:'ngo',price:750},
-  {i:13,type:'issue',name:'긴급이슈'},
-  {i:14,type:'property',name:'환경연대',group:'ngo',price:900},
-  {i:15,type:'property',name:'인권네트워크',group:'ngo',price:1050},
-  {i:16,type:'card',name:'전략카드'},
-  {i:17,type:'fate',name:'운명의 선택'},
-  {i:18,type:'property',name:'시민포럼',group:'civic',price:600},
-  {i:19,type:'property',name:'지역연대',group:'civic',price:850},
-  {i:20,type:'card',name:'민심카드'},
-  {i:21,type:'property',name:'공익네트워크',group:'ngo',price:1200},
-  {i:22,type:'issue',name:'긴급이슈'},
-  {i:23,type:'property',name:'사회혁신랩',group:'civic',price:1000},
-  {i:24,type:'property',name:'현장소통',group:'media',price:1350},
-  {i:25,type:'tour',name:'정참시 투어'},
-  {i:26,type:'property',name:'시민일보',group:'press',price:1100},
-  {i:27,type:'property',name:'공론신문',group:'press',price:1500},
-  {i:28,type:'loss',name:'메시지 혼선',amount:700},
-  {i:29,type:'property',name:'공공방송센터',group:'media',price:1600},
-  {i:30,type:'property',name:'미디어허브',group:'media',price:1850},
-  {i:31,type:'card',name:'전략카드'},
-  {i:32,type:'gain',name:'민심 급등',amount:700}
+  {i:1,type:'property',name:'임팩트G',group:'ngo',price:750},
+  {i:2,type:'property',name:'굿파트너스',group:'ngo',price:900},
+  {i:3,type:'property',name:'핀임팩트',group:'ngo',price:1050},
+  {i:4,type:'card',name:'전략카드'},
+  {i:5,type:'property',name:'휴먼링크',group:'ngo',price:1200},
+  {i:6,type:'property',name:'인브릿지',group:'ngo',price:1400},
+  {i:7,type:'property',name:'온케어',group:'ngo',price:1600},
+  {i:8,type:'hope',name:'희망의 재단'},
+  {i:9,type:'property',name:'키워크',group:'civic',price:600},
+  {i:10,type:'property',name:'시트너스',group:'civic',price:750},
+  {i:11,type:'property',name:'컴웨이',group:'civic',price:900},
+  {i:12,type:'card',name:'전략카드'},
+  {i:13,type:'property',name:'퍼브릿지',group:'civic',price:1100},
+  {i:14,type:'property',name:'시민링크',group:'civic',price:1300},
+  {i:15,type:'property',name:'로컬온',group:'civic',price:1500},
+  {i:16,type:'fate20',name:'운명의 선택'},
+  {i:17,type:'property',name:'JCS RS',group:'policy',price:1300},
+  {i:18,type:'property',name:'JCS TV',group:'policy',price:1500},
+  {i:19,type:'property',name:'E퍼블릭',group:'policy',price:1700},
+  {i:20,type:'card',name:'전략카드'},
+  {i:21,type:'property',name:'폴리시빅',group:'policy',price:1900},
+  {i:22,type:'property',name:'넥스트랩',group:'policy',price:2150},
+  {i:23,type:'property',name:'폴리피아',group:'policy',price:2400},
+  {i:24,type:'desire',name:'욕망의 굴레'},
+  {i:25,type:'property',name:'MBU',group:'media',price:2000},
+  {i:26,type:'property',name:'KCA',group:'media',price:1750},
+  {i:27,type:'property',name:'BCS',group:'media',price:1500},
+  {i:28,type:'card',name:'전략카드'},
+  {i:29,type:'property',name:'웨이브',group:'media',price:1300},
+  {i:30,type:'property',name:'프레스윈',group:'media',price:1100},
+  {i:31,type:'property',name:'온데일리',group:'media',price:900}
 ];
 
 
@@ -208,15 +207,17 @@ function createGame(root){
   const state={
     turn:0,rolling:false,gameOver:false,
     players:[
-      {name:'PLAYER 1',cash:START_CASH,pos:0,laps:0,cards:[],shield:false,upgradeDiscount:false,buyoutDiscount:false,boost:false,reroll:false},
-      {name:'AI 시민',cash:START_CASH,pos:0,laps:0,cards:[],shield:false,upgradeDiscount:false,buyoutDiscount:false,boost:false,reroll:false}
+      {name:'PLAYER 1',cash:START_CASH,pos:0,laps:0,cards:[],shield:false,upgradeDiscount:false,buyoutDiscount:false,boost:false,reroll:false,trappedTurns:0},
+      {name:'AI 시민',cash:START_CASH,pos:0,laps:0,cards:[],shield:false,upgradeDiscount:false,buyoutDiscount:false,boost:false,reroll:false,trappedTurns:0}
     ],
     props:{},
-    pot:0
+    pot:0,
+    hopeWaiting:false
   };
 
   function init(){
     audio.init();
+    if(new URLSearchParams(globalThis.location?.search||'').get('pmdebug')==='1')root.classList.add('pm-object-debug');
     placeToken(0,0,true);placeToken(1,0,true);render();
     button?.addEventListener('click',()=>{ if(state.turn===0&&!state.rolling&&!state.gameOver) runTurn(0); });
     root.querySelector('[data-pm-strategy-slots]')?.addEventListener('click',ev=>{
@@ -284,8 +285,15 @@ function createGame(root){
     showDiceResult(dice,total,dbl);
     await wait(420);
     flight.setAttribute('aria-hidden','true');flight.classList.remove('is-landed');
-    await moveBy(playerIndex,total);
-    await resolveTile(playerIndex);
+    const activePlayer=state.players[playerIndex];
+    if(activePlayer.trappedTurns>0&&!dbl){
+      activePlayer.trappedTurns=Math.max(0,activePlayer.trappedTurns-1);
+      showToast(`${activePlayer.name} · 욕망의 굴레 ${activePlayer.trappedTurns}턴 남음`);
+    }else{
+      if(activePlayer.trappedTurns>0&&dbl){activePlayer.trappedTurns=0;showToast(`${activePlayer.name} DOUBLE · 욕망의 굴레 탈출`);}
+      await moveBy(playerIndex,total);
+      await resolveTile(playerIndex);
+    }
     if(state.gameOver){state.rolling=false;render();return;}
     const p=state.players[playerIndex];
     if(playerIndex===0&&p.reroll){p.reroll=false;showToast('재도전 카드 발동 · 1P가 한 번 더 굴립니다.');state.rolling=false;render();return;}
@@ -346,6 +354,9 @@ function createGame(root){
     if(tile.type==='loss'){await takeCash(playerIndex,tile.amount,tile.name);reaction(playerIndex,'fail');render();return;}
     if(tile.type==='issue'){const amount=[-700,-400,400,700][Math.floor(Math.random()*4)];if(amount>=0){p.cash+=amount;audio.play('gain');showToast(`긴급이슈 반전 · 민심 +${amount}`);reaction(playerIndex,'emotion');}else{await takeCash(playerIndex,-amount,'긴급이슈');reaction(playerIndex,'fail');}render();return;}
     if(tile.type==='card'){await drawCard(playerIndex);render();return;}
+    if(tile.type==='hope'){await resolveHope(playerIndex);render();return;}
+    if(tile.type==='fate20'){await resolveFate20(playerIndex);render();return;}
+    if(tile.type==='desire'){state.players[playerIndex].trappedTurns=2;showToast(`${state.players[playerIndex].name} · 욕망의 굴레 2턴`);reaction(playerIndex,'fail');render();return;}
     if(tile.type==='fate'){await resolveFate(playerIndex);render();return;}
     if(tile.type==='tour'){await resolveTour(playerIndex);render();return;}
     if(tile.type==='property'){await resolveProperty(playerIndex,tile);render();return;}
@@ -387,6 +398,24 @@ function createGame(root){
   function transferOwnership(pi,tile,prop,cost){const old=prop.owner;state.players[pi].cash-=cost;state.players[old].cash+=cost;prop.owner=pi;audio.play('purchase');showToast(`${state.players[pi].name}이 ${tile.name} 인수`);reaction(pi,'win');}
   function upgradeCost(tile,prop,p){let c=Math.round(tile.price*UPGRADE_RATE[prop.level+1]);if(p.upgradeDiscount)c=Math.round(c*.5);return c;}
   function sellValue(tile,prop){return Math.round(prop.invested*.70);}
+
+  async function resolveHope(pi){
+    const p=state.players[pi];
+    if(!state.hopeWaiting){
+      const donation=Math.max(1,Math.round(p.cash*.10));
+      p.cash-=donation;state.pot=donation;state.hopeWaiting=true;
+      audio.play('loss');showToast(`희망의 재단 · ${p.name} 민심 ${donation.toLocaleString('ko-KR')} 기부`);reaction(pi,'emotion');
+      if(p.cash<=0)endGame(1-pi);return;
+    }
+    const reward=state.pot;state.pot=0;state.hopeWaiting=false;p.cash+=reward;
+    audio.play('gain');showToast(`희망의 재단 · ${p.name} 기부 민심 +${reward.toLocaleString('ko-KR')}`);reaction(pi,'win');
+  }
+
+  async function resolveFate20(pi){
+    const p=state.players[pi],amount=Math.max(1,Math.round(p.cash*.20));
+    if(Math.random()<.5){p.cash+=amount;audio.play('gain');showToast(`운명의 선택 성공 · 민심 +${amount.toLocaleString('ko-KR')}`);reaction(pi,'win');}
+    else{await takeCash(pi,amount,'운명의 선택');reaction(pi,'fail');}
+  }
 
   async function resolveFate(pi){
     if(pi===1){const risky=Math.random()<.5;if(risky){const win=Math.random()<.5,amt=1200;if(win)state.players[pi].cash+=amt;else await takeCash(pi,amt,'운명의 선택');}else state.players[pi].cash+=300;showToast('AI가 운명의 선택을 마쳤습니다.');return;}

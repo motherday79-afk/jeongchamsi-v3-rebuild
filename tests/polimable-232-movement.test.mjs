@@ -2,7 +2,7 @@ import fs from 'node:fs';
 const page=fs.readFileSync(new URL('../src/views/polimable-page.js',import.meta.url),'utf8');
 const ui=fs.readFileSync(new URL('../src/ui/polimable-interactions.js',import.meta.url),'utf8');
 const css=fs.readFileSync(new URL('../css/polimable-201.css',import.meta.url),'utf8');
-if(!page.includes('polimable-board-base-31-232.png')) throw new Error('new background missing');
+if(!page.includes('polimable-board-base-31-249.png')) throw new Error('new background missing');
 if(page.includes('polimable-board-base-31-227.png')) throw new Error('old background still referenced');
 if(!ui.includes('moveCharacterBy(root,total)')) throw new Error('dice-to-movement link missing');
 if(!ui.includes("male2-move.png")) throw new Error('move pose missing');

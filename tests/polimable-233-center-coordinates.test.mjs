@@ -2,7 +2,7 @@ import fs from 'node:fs';
 const layout=fs.readFileSync(new URL('../src/core/polimable-layout.js',import.meta.url),'utf8');
 const ui=fs.readFileSync(new URL('../src/ui/polimable-interactions.js',import.meta.url),'utf8');
 const anchors=[...layout.matchAll(/anchor\((\d+),([\d.]+),([\d.]+),/g)];
-if(anchors.length!==33) throw new Error(`expected 33 precision visual anchors, got ${anchors.length}`);
+if(anchors.length!==32) throw new Error(`expected 32 precision visual anchors, got ${anchors.length}`);
 for(const [,i,x,y] of anchors){
   const nx=Number(x), ny=Number(y);
   if(nx<0||nx>100||ny<0||ny>100) throw new Error(`anchor ${i} out of bounds`);

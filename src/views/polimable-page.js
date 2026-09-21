@@ -1,4 +1,4 @@
-import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT,POLIMARBLE_HUD_LAYOUT as HUD} from '../core/polimable-layout.js?v=0.0.31.245';
+import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT,POLIMARBLE_HUD_LAYOUT as HUD} from '../core/polimable-layout.js?v=0.0.31.249';
 
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const number=v=>Number(v||0).toLocaleString('ko-KR');
@@ -7,22 +7,21 @@ function renderDiePips(){
   return '<span class="pm-die-pip p1"></span><span class="pm-die-pip p2"></span><span class="pm-die-pip p3"></span><span class="pm-die-pip p4"></span><span class="pm-die-pip p5"></span><span class="pm-die-pip p6"></span><span class="pm-die-pip p7"></span><span class="pm-die-pip p8"></span><span class="pm-die-pip p9"></span>';
 }
 function renderTileObject(cell){
-  return `<div class="pm-board-cell-object${cell.corner?' is-corner':''}" data-pm-board-cell="${cell.index}" data-pm-side="${esc(cell.side)}" style="--x:${cell.x}%;--y:${cell.y}%;--w:${cell.w}%;--h:${cell.h}%;"></div>`;
+  return `<div class="pm-board-cell-object${cell.corner?' is-corner':''}" data-pm-board-cell="${cell.index}" data-pm-tile-no="${cell.tileNo}" data-pm-type="${esc(cell.type)}" data-pm-label="${esc(cell.label)}" data-pm-side="${esc(cell.side)}" style="--cx:${cell.cx}px;--cy:${cell.cy}px;--w:${cell.w}px;--h:${cell.h}px;--rot:${cell.rot}deg;"></div>`;
 }
 function renderHudObject(item){
-  return `<div class="pm-hud-object" data-pm-hud="${esc(item.id)}" style="--x:${item.x}%;--y:${item.y}%;--w:${item.w}%;--h:${item.h}%;"></div>`;
+  return `<div class="pm-hud-object" data-pm-hud="${esc(item.id)}" style="--cx:${item.cx}px;--cy:${item.cy}px;--w:${item.w}px;--h:${item.h}px;--rot:${item.rot||0}deg;"></div>`;
 }
 
 export function renderPoliMarblePage(){
   return `<section class="pm-board-stage-page" aria-label="JCS 폴리마블 1P 대 AI 게임룰 테스트">
     <div class="pm-board-stage" data-pm-root data-pm-stage="gameplay-test">
-      <img class="pm-board-stage-image" src="/assets/polimable/polimable-board-base-31-232.png" alt="JCS 폴리마블 게임보드">
-      <div class="pm-board-object-layer" aria-hidden="true">
-        ${LAYOUT.map(renderTileObject).join('')}
-        ${HUD.map(renderHudObject).join('')}
-      </div>
-
-      <div class="pm-logical-canvas" data-pm-logical-canvas aria-label="1672×941 HUD logical canvas">
+      <img class="pm-board-stage-image" src="/assets/polimable/polimable-board-base-31-249.png" alt="JCS 폴리마블 게임보드">
+      <div class="pm-logical-canvas" data-pm-logical-canvas aria-label="1672×941 폴리마블 논리 캔버스">
+        <div class="pm-board-object-layer" data-pm-board-object-layer aria-label="32칸 독립 객체 레이어">
+          ${LAYOUT.map(renderTileObject).join('')}
+          ${HUD.map(renderHudObject).join('')}
+        </div>
         <div class="pm-player-hud pm-player-hud--p1" data-pm-player-hud="0">
           <span class="pm-player-hud-name">PLAYER 1</span>
           <strong class="pm-player-hud-cash" data-pm-player-cash="0">민심 10,000</strong>

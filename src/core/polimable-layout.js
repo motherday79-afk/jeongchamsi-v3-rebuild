@@ -1,137 +1,83 @@
-// JCS 0.0.31.234 · POLIMARBLE visual object map + precision movement anchors
-// DESIGN SOURCE OF TRUTH: polimable-board-base-31-232.png (1672×941)
-// The image is the ONE AND ONLY board/background image.
-// Each board cell + HUD panel is mapped as an independent transparent DOM object.
-// Dice + character movement placement test only. No tile effects/economy rules are attached.
-// IMPORTANT: the approved background currently contains 33 visually distinct board cells (8 normal cells on the bottom edge).
-// To verify character placement without altering/re-generating the approved background, movement anchors map every visible cell precisely.
-// Final 32-rule mapping must be reconciled before economy/special-tile rules are enabled.
+// JCS 0.0.31.249 · Diamond board object map
+// DESIGN SOURCE OF TRUTH: polimable-board-base-31-249.png (1672×941)
+// Exactly 32 movement positions: 28 same-size small cells + 4 same-size corner cells.
+// Internal index 0 is START (= logical tile no. 32). Then 1..31 follow counter-clockwise.
+// Strategy-card cells are logical tile nos. 4, 12, 20, 28.
 
-const cell=(index,side,corner,x,y,w,h)=>Object.freeze({index,side,corner,x,y,w,h});
-const hud=(id,x,y,w,h)=>Object.freeze({id,x,y,w,h});
+const cell=(index,tileNo,side,corner,cx,cy,w,h,rot,label,type='property')=>Object.freeze({index,tileNo,side,corner,cx,cy,w,h,rot,label,type});
+const hud=(id,cx,cy,w,h,rot=0)=>Object.freeze({id,cx,cy,w,h,rot});
+
+const SW=132, SH=58, CW=192, CH=102;
 
 export const POLIMARBLE_32_TILE_LAYOUT=Object.freeze([
-  // 0 START corner / bottom-right
-  cell(0,'bottom',true,79.665,68.650,14.115,15.197),
+  // 32 · START (bottom corner)
+  cell(0,32,'corner',true,813,817,CW,CH,0,'START','start'),
 
-  // bottom: right -> left
-  cell(1,'bottom',false,71.352,73.007,8.433,12.115),
-  cell(2,'bottom',false,62.919,72.901,8.672,12.221),
-  cell(3,'bottom',false,54.426,72.795,8.732,12.434),
-  cell(4,'bottom',false,45.993,72.689,8.732,12.646),
-  cell(5,'bottom',false,37.500,72.582,8.672,12.752),
-  cell(6,'bottom',false,28.947,72.476,8.792,12.965),
-  cell(7,'bottom',false,20.096,72.264,9.091,13.284),
+  // 1~7 · START -> left corner (green line)
+  cell(1,1,'green',false,682,758,SW,SH,27,'임팩트G'),
+  cell(2,2,'green',false,607,718,SW,SH,27,'굿파트너스'),
+  cell(3,3,'green',false,533,679,SW,SH,27,'핀임팩트'),
+  cell(4,4,'green',false,461,640,SW,SH,27,'전략카드','card'),
+  cell(5,5,'green',false,389,600,SW,SH,27,'휴먼링크'),
+  cell(6,6,'green',false,318,561,SW,SH,27,'인브릿지'),
+  cell(7,7,'green',false,253,523,SW,SH,27,'온케어'),
 
-  // 8 plaza corner / bottom-left
-  cell(8,'bottom',true,5.622,68.650,14.175,15.303),
+  // 8 · left corner
+  cell(8,8,'corner',true,213,482,CW,CH,0,'희망의 재단','hope'),
 
-  // left: bottom -> top
-  cell(9,'left',false,9.988,62.380,10.825,7.226),
-  cell(10,'left',false,10.407,55.473,10.885,7.439),
-  cell(11,'left',false,10.825,48.672,11.005,7.439),
-  cell(12,'left',false,11.244,41.764,11.124,7.439),
-  cell(13,'left',false,11.663,34.750,11.244,7.545),
-  cell(14,'left',false,12.141,27.843,11.364,7.545),
-  cell(15,'left',false,12.620,20.829,11.423,7.651),
+  // 9~15 · left corner -> top corner (blue line)
+  cell(9,9,'blue',false,302,429,SW,SH,-27,'키워크'),
+  cell(10,10,'blue',false,376,393,SW,SH,-27,'시트너스'),
+  cell(11,11,'blue',false,447,359,SW,SH,-27,'컴웨이'),
+  cell(12,12,'blue',false,520,324,SW,SH,-27,'전략카드','card'),
+  cell(13,13,'blue',false,592,292,SW,SH,-27,'퍼브릿지'),
+  cell(14,14,'blue',false,656,260,SW,SH,-27,'시민링크'),
+  cell(15,15,'blue',false,721,229,SW,SH,-27,'로컬온'),
 
-  // 16 fate corner / top-left
-  cell(16,'top',true,14.533,11.052,11.722,11.052),
+  // 16 · top corner
+  cell(16,16,'corner',true,819,197,CW,CH,0,'운명의 선택','fate'),
 
-  // top: left -> right
-  cell(17,'top',false,25.718,12.540,6.878,10.733),
-  cell(18,'top',false,32.356,12.540,6.818,10.840),
-  cell(19,'top',false,38.935,12.540,6.938,10.840),
-  cell(20,'top',false,45.574,12.540,7.057,10.840),
-  cell(21,'top',false,52.392,12.540,6.998,10.840),
-  cell(22,'top',false,59.151,12.540,7.057,10.840),
-  cell(23,'top',false,65.969,12.540,7.117,10.840),
+  // 17~23 · top corner -> right corner (purple/pink line)
+  cell(17,17,'purple',false,910,230,SW,SH,27,'JCS RS'),
+  cell(18,18,'purple',false,975,262,SW,SH,27,'JCS TV'),
+  cell(19,19,'purple',false,1038,294,SW,SH,27,'E퍼블릭'),
+  cell(20,20,'purple',false,1104,328,SW,SH,27,'전략카드','card'),
+  cell(21,21,'purple',false,1172,362,SW,SH,27,'폴리시빅'),
+  cell(22,22,'purple',false,1237,395,SW,SH,27,'넥스트랩'),
+  cell(23,23,'purple',false,1304,429,SW,SH,27,'폴리피아'),
 
-  // 24 tour corner / top-right
-  cell(24,'top',true,72.309,11.052,11.065,11.371),
+  // 24 · right corner
+  cell(24,24,'corner',true,1445,482,CW,CH,0,'욕망의 굴레','desire'),
 
-  // right: top -> bottom
-  cell(25,'right',false,76.435,20.935,9.629,7.758),
-  cell(26,'right',false,77.033,27.843,9.809,7.651),
-  cell(27,'right',false,77.632,34.750,9.928,7.651),
-  cell(28,'right',false,78.230,41.658,10.048,7.651),
-  cell(29,'right',false,78.828,48.565,10.167,7.758),
-  cell(30,'right',false,79.486,55.473,10.227,7.864),
-  cell(31,'right',false,80.084,62.380,10.407,7.970)
+  // 25~31 · right corner -> START (orange line)
+  cell(25,25,'orange',false,1388,526,SW,SH,-27,'MBU'),
+  cell(26,26,'orange',false,1323,562,SW,SH,-27,'KCA'),
+  cell(27,27,'orange',false,1256,601,SW,SH,-27,'BCS'),
+  cell(28,28,'orange',false,1187,640,SW,SH,-27,'전략카드','card'),
+  cell(29,29,'orange',false,1115,678,SW,SH,-27,'웨이브'),
+  cell(30,30,'orange',false,1041,717,SW,SH,-27,'프레스윈'),
+  cell(31,31,'orange',false,967,759,SW,SH,-27,'온데일리')
 ]);
 
+// Independent fixed UI objects in the new background.
 export const POLIMARBLE_HUD_LAYOUT=Object.freeze([
-  hud('player-1',1.10,0.80,24.50,15.20),
-  hud('player-2',74.20,0.80,24.70,15.20),
-  hud('strategy-cards',0.70,77.40,26.00,21.60),
-  hud('today-ranking',29.20,77.10,41.60,22.10),
-  hud('dice-box',72.40,77.20,26.70,21.80)
+  hud('player-1',207,105,385,168,0),
+  hud('player-2',1464,105,385,168,0),
+  hud('dice-roll',1488,834,286,104,0)
 ]);
 
 export const POLIMARBLE_CORNER_INDICES=Object.freeze([0,8,16,24]);
+export const POLIMARBLE_STRATEGY_INDICES=Object.freeze([4,12,20,28]);
 
+const anchor=(index,x,y,label='')=>Object.freeze({index,x:(x/1672)*100,y:(y/941)*100,label});
+export const POLIMARBLE_MOVE_ANCHORS=Object.freeze(POLIMARBLE_32_TILE_LAYOUT.map(t=>anchor(t.index,t.cx,t.cy,t.label)));
 
-// Precision visual center anchors (percent of the 1672×941 board image).
-// Order follows the visible board clockwise from START toward the left along the bottom,
-// then up the left side, across the top, and down the right side.
-const anchor=(index,x,y,label='')=>Object.freeze({index,x,y,label});
-export const POLIMARBLE_MOVE_ANCHORS=Object.freeze([
-  anchor(0,84.211,72.582,'START'),
-  anchor(1,72.847,72.582,'bottom-1'),
-  anchor(2,66.029,72.582,'bottom-2'),
-  anchor(3,59.330,72.582,'bottom-3'),
-  anchor(4,52.572,72.582,'bottom-4'),
-  anchor(5,45.993,72.582,'bottom-5'),
-  anchor(6,39.414,72.582,'bottom-6'),
-  anchor(7,32.835,72.582,'bottom-7'),
-  anchor(8,26.256,72.582,'bottom-8'),
-  anchor(9,15.730,72.264,'PLAZA'),
-  anchor(10,16.687,63.124,'left-1'),
-  anchor(11,17.105,57.386,'left-2'),
-  anchor(12,17.584,51.329,'left-3'),
-  anchor(13,18.122,45.165,'left-4'),
-  anchor(14,18.720,39.214,'left-5'),
-  anchor(15,19.258,33.050,'left-6'),
-  anchor(16,19.916,26.993,'left-7'),
-  anchor(17,22.368,19.022,'FATE'),
-  anchor(18,30.024,19.022,'top-1'),
-  anchor(19,36.483,19.022,'top-2'),
-  anchor(20,42.763,19.022,'top-3'),
-  anchor(21,49.282,19.022,'top-4'),
-  anchor(22,55.742,19.022,'top-5'),
-  anchor(23,62.201,19.022,'top-6'),
-  anchor(24,68.541,19.022,'top-7'),
-  anchor(25,77.153,18.916,'TOUR'),
-  anchor(26,78.349,26.780,'right-1'),
-  anchor(27,78.947,32.944,'right-2'),
-  anchor(28,79.545,39.001,'right-3'),
-  anchor(29,80.084,45.165,'right-4'),
-  anchor(30,80.682,51.329,'right-5'),
-  anchor(31,81.220,57.493,'right-6'),
-  anchor(32,81.818,63.762,'right-7')
-]);
-
-
-// 0.0.31.243 · ownership badge points in the same fixed 1672×941 logical canvas.
-// Only purchasable property tiles receive a point; event/card/corner cells never render ownership.
+// Ownership markers use the exact same tile center system, nudged toward the inner edge.
+// Event/card/corner cells are excluded by gameplay code.
 const owner=(x,y)=>Object.freeze({x,y});
 export const POLIMARBLE_OWNER_BADGE_POINTS=Object.freeze({
-  2:owner(1104,715),
-  3:owner(992,715),
-  7:owner(543,715),
-  8:owner(433,715),
-  10:owner(274,617),
-  11:owner(282,560),
-  12:owner(290,502),
-  14:owner(310,390),
-  15:owner(318,333),
-  18:owner(502,208),
-  19:owner(610,208),
-  21:owner(826,208),
-  23:owner(1042,208),
-  24:owner(1148,208),
-  26:owner(1318,278),
-  27:owner(1327,336),
-  29:owner(1346,452),
-  30:owner(1355,510)
+  1:owner(682,738),2:owner(607,698),3:owner(533,659),5:owner(389,580),6:owner(318,541),7:owner(253,503),
+  9:owner(322,429),10:owner(396,393),11:owner(467,359),13:owner(612,292),14:owner(676,260),15:owner(741,229),
+  17:owner(890,230),18:owner(955,262),19:owner(1018,294),21:owner(1152,362),22:owner(1217,395),23:owner(1284,429),
+  25:owner(1368,526),26:owner(1303,562),27:owner(1236,601),29:owner(1095,678),30:owner(1021,717),31:owner(947,759)
 });
