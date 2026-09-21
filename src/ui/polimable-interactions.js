@@ -1,12 +1,12 @@
-import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS,POLIMARBLE_OWNER_BADGE_POINTS as OWNER_BADGES} from '../core/polimable-layout.js?v=0.0.31.249';
+import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS,POLIMARBLE_PROPERTY_OBJECT_POINTS as OBJECT_POINTS} from '../core/polimable-layout.js?v=0.0.31.250';
 import {createPoliMarbleAudio} from '../core/polimable-audio.js?v=0.0.31.245';
-import {calculatePoliMarbleStage} from '../core/polimable-viewport.js?v=0.0.31.249';
+import {calculatePoliMarbleStage} from '../core/polimable-viewport.js?v=0.0.31.250';
 
 const START_CASH=10000;
 const MAX_CARDS=4;
 const RENT_RATE=[0,.40,.80,1.50,2.50];
 const UPGRADE_RATE=[0,0,.60,.90,1.20];
-const TRACK_LEN=MOVE_ANCHORS.length; // current approved visual board = 33 visible cells
+const TRACK_LEN=MOVE_ANCHORS.length; // exact 32-position diamond board
 
 const TILE_RULES=[
   {i:0,type:'start',name:'START'},
@@ -185,9 +185,10 @@ export function bindPoliMarbleInteractions(){
 }
 
 function createGame(root){
-  const token1=root.querySelector('[data-pm-character-token]');
-  const token1Img=root.querySelector('[data-pm-character-token-image]');
-  const token2=root.querySelector('[data-pm-ai-token]');
+  const token1=root.querySelector('[data-pm-character-token="0"]');
+  const token1Img=root.querySelector('[data-pm-character-token-image="0"]');
+  const token2=root.querySelector('[data-pm-character-token="1"]');
+  const token2Img=root.querySelector('[data-pm-character-token-image="1"]');
   const button=root.querySelector('[data-pm-dice-roll]');
   const flight=root.querySelector('[data-pm-dice-flight]');
   const flightDice=[...root.querySelectorAll('[data-pm-die-flight]')];
@@ -207,7 +208,7 @@ function createGame(root){
   const state={
     turn:0,rolling:false,gameOver:false,
     players:[
-      {name:'PLAYER 1',cash:START_CASH,pos:0,laps:0,cards:[],shield:false,upgradeDiscount:false,buyoutDiscount:false,boost:false,reroll:false,trappedTurns:0},
+      {name:'JCS 유저',cash:START_CASH,pos:0,laps:0,cards:[],shield:false,upgradeDiscount:false,buyoutDiscount:false,boost:false,reroll:false,trappedTurns:0},
       {name:'AI 시민',cash:START_CASH,pos:0,laps:0,cards:[],shield:false,upgradeDiscount:false,buyoutDiscount:false,boost:false,reroll:false,trappedTurns:0}
     ],
     props:{},
@@ -268,13 +269,24 @@ function createGame(root){
   function renderOwnership(){
     const layer=root.querySelector('[data-pm-owner-marker-layer]');
     if(!layer)return;
-    const markers=[];
+    const objects=[];
     for(const [idxStr,prop] of Object.entries(state.props)){
-      const idx=Number(idxStr),tile=TILE_RULES[idx],point=OWNER_BADGES[idx];
+      const idx=Number(idxStr),tile=TILE_RULES[idx],point=OBJECT_POINTS[idx];
       if(!tile||tile.type!=='property'||!point)continue;
-      markers.push(`<div class="pm-owner-marker ${prop.owner===0?'is-p1':'is-p2'} level-${prop.level}" style="left:${point.x}px;top:${point.y}px" aria-label="${prop.owner===0?'1P':'AI'} 소유 ${tile.name} 레벨 ${prop.level}"><span>${prop.owner===0?'1P':'AI'}</span><b>L${prop.level}</b></div>`);
+      let src='',kind='',label='';
+      if(prop.level<=1){
+        src=prop.owner===0?'/assets/polimable/objects/flag-p1.png':'/assets/polimable/objects/flag-p2.png';
+        kind='flag'; label=`${prop.owner===0?'1P':'2P'} 소유 ${tile.name}`;
+      }else if(prop.level===2){
+        src='/assets/polimable/objects/building-1.png';kind='building-1';label=`${tile.name} 강화 1단계`;
+      }else if(prop.level===3){
+        src='/assets/polimable/objects/building-2.png';kind='building-2';label=`${tile.name} 강화 2단계`;
+      }else{
+        src='/assets/polimable/objects/building-3.png';kind='building-3';label=`${tile.name} 강화 3단계 · 고정자산`;
+      }
+      objects.push(`<div class="pm-property-state-object is-${kind} side-${point.side}" data-pm-property-object="${idx}" style="left:${point.x}px;top:${point.y}px" aria-label="${label}"><img src="${src}" alt=""></div>`);
     }
-    layer.innerHTML=markers.join('');
+    layer.innerHTML=objects.join('');
   }
 
   async function runTurn(playerIndex){
@@ -331,20 +343,32 @@ function createGame(root){
   }
 
   function placeToken(playerIndex,index,instant=false){
+    const p=state.players[playerIndex];
+    if(p)p.pos=index%TRACK_LEN;
+    placeAllTokens(instant);
+  }
+
+  function placeAllTokens(instant=false){
+    const same=state.players[0].pos===state.players[1].pos;
+    placeOneToken(0,state.players[0].pos,same?-1.55:0,instant);
+    placeOneToken(1,state.players[1].pos,same?1.55:0,instant);
+  }
+
+  function placeOneToken(playerIndex,index,xOffsetPct=0,instant=false){
     const point=MOVE_ANCHORS[index%TRACK_LEN];
-    if(playerIndex===0){
-      const w=7.0,bottom=12.25;
-      token1.classList.toggle('is-instant',instant);token1.style.left=`${point.x-w/2}%`;token1.style.top=`${point.y-bottom}%`;
-      if(instant)requestAnimationFrame(()=>token1.classList.remove('is-instant'));
-    }else{
-      token2.style.left=`${point.x}%`;token2.style.top=`${point.y}%`;
-    }
+    const token=playerIndex===0?token1:token2;
+    if(!token||!point)return;
+    token.classList.toggle('is-instant',instant);
+    token.style.left=`${point.x+xOffsetPct}%`;
+    token.style.top=`${point.y}%`;
+    if(instant)requestAnimationFrame(()=>token.classList.remove('is-instant'));
   }
 
   function setMovingVisual(playerIndex,on){
-    if(playerIndex===0&&token1Img)token1Img.src=on?'/assets/polimable/characters/male2/male2-move.png':'/assets/polimable/characters/male2/male2-token.png';
-    if(playerIndex===0)token1?.classList.toggle('is-step-hop',on);
-    else token2?.classList.toggle('is-moving',on);
+    const token=playerIndex===0?token1:token2;
+    const img=playerIndex===0?token1Img:token2Img;
+    if(img)img.src=playerIndex===0?'/assets/polimable/characters/player1/token.png':'/assets/polimable/characters/player2/token.png';
+    token?.classList.toggle('is-step-hop',on);
   }
 
   async function resolveTile(playerIndex){
@@ -374,9 +398,10 @@ function createGame(root){
       const upCost=upgradeCost(tile,prop,p);
       if(playerIndex===1){if(prop.level<maxLevel&&p.cash>=upCost*2)upgradeProperty(playerIndex,tile,prop);return;}
       const options=[];
-      if(prop.level<maxLevel)options.push([`강화 ${upCost.toLocaleString()}`, 'upgrade']);
+      if(prop.level<maxLevel)options.push([`강화 ${Math.max(1,prop.level)}단계 · ${upCost.toLocaleString()}`, 'upgrade']);
       options.push([`매각 ${sellValue(tile,prop).toLocaleString()}`,'sell'],['그대로','skip']);
-      const choice=await ask(`내 거점 · ${tile.name}`,`현재 L${prop.level} · 투자 ${prop.invested.toLocaleString('ko-KR')} 민심`,options);
+      const currentLabel=prop.level===1?'소유':prop.level>=4?'고정자산':`강화 ${prop.level-1}단계`;
+      const choice=await ask(`내 거점 · ${tile.name}`,`현재 ${currentLabel} · 투자 ${prop.invested.toLocaleString('ko-KR')} 민심`,options);
       if(choice==='upgrade')upgradeProperty(playerIndex,tile,prop); else if(choice==='sell')sellProperty(playerIndex,tile,prop);return;
     }
     const owner=state.players[prop.owner];
@@ -393,7 +418,19 @@ function createGame(root){
   }
 
   function buyProperty(pi,tile){const p=state.players[pi];if(p.cash<tile.price){showToast('민심이 부족합니다.');return;}p.cash-=tile.price;state.props[tile.i]={owner:pi,level:1,invested:tile.price};audio.play('purchase');showToast(`${p.name} · ${tile.name} 영향력 확보`);reaction(pi,'win');}
-  function upgradeProperty(pi,tile,prop){const p=state.players[pi],cost=upgradeCost(tile,prop,p);if(p.cash<cost)return;p.cash-=cost;prop.level++;prop.invested+=cost;p.upgradeDiscount=false;audio.play('purchase');showToast(`${tile.name} L${prop.level} 강화`);reaction(pi,'win');}
+  function upgradeProperty(pi,tile,prop){
+    const p=state.players[pi],cost=upgradeCost(tile,prop,p);
+    if(p.cash<cost)return;
+    p.cash-=cost;prop.level++;prop.invested+=cost;p.upgradeDiscount=false;audio.play('purchase');
+    const stage=Math.max(1,prop.level-1);
+    showToast(`${tile.name} 강화 ${stage}단계`);
+    if(prop.level>=4)showFixedAssetEffect(); else reaction(pi,'win');
+  }
+  function showFixedAssetEffect(){
+    const box=root.querySelector('[data-pm-fixed-asset-effect]');if(!box)return;
+    box.setAttribute('aria-hidden','false');box.classList.remove('is-visible');void box.offsetWidth;box.classList.add('is-visible');
+    setTimeout(()=>{box.classList.remove('is-visible');box.setAttribute('aria-hidden','true');},1500);
+  }
   function sellProperty(pi,tile,prop){const value=sellValue(tile,prop);state.players[pi].cash+=value;delete state.props[tile.i];audio.play('gain');showToast(`${tile.name} 매각 · 민심 +${value.toLocaleString('ko-KR')}`);}
   function transferOwnership(pi,tile,prop,cost){const old=prop.owner;state.players[pi].cash-=cost;state.players[old].cash+=cost;prop.owner=pi;audio.play('purchase');showToast(`${state.players[pi].name}이 ${tile.name} 인수`);reaction(pi,'win');}
   function upgradeCost(tile,prop,p){let c=Math.round(tile.price*UPGRADE_RATE[prop.level+1]);if(p.upgradeDiscount)c=Math.round(c*.5);return c;}
@@ -443,7 +480,7 @@ function createGame(root){
         if(Number.isInteger(choice))p.cards.splice(choice,1);
       }
     }
-    p.cards.push(card);showToast(`${p.name} 전략카드 획득 · ${card.name}`);reaction(pi,'emotion');
+    p.cards.push(card);showToast(`${p.name} 전략카드 획득 · ${card.name}`);reaction(pi,'surprise');
     if(pi===1)autoUseAiCard(pi);
   }
 
@@ -475,8 +512,8 @@ function createGame(root){
   }
   function autoUseAiCard(pi){const p=state.players[pi];if(!p.cards.length)return;const card=p.cards[0];if(card.id==='shield')p.shield=true;else if(card.id==='upgrade')p.upgradeDiscount=true;else if(card.id==='buyout')p.buyoutDiscount=true;else if(card.id==='boost')p.boost=true;else if(card.id==='reroll')p.reroll=true;else return;p.cards.shift();}
 
-  async function takeCash(pi,amount,label){const p=state.players[pi];if(p.shield){p.shield=false;showToast(`${p.name} 방어권 사용 · ${label} 면제`);return;}p.cash-=amount;audio.play('loss');showToast(`${label} · ${p.name} 민심 -${amount.toLocaleString('ko-KR')}`);if(p.cash<=0)endGame(1-pi);}
-  async function transferCash(from,to,amount,label){const a=state.players[from],b=state.players[to];a.cash-=amount;b.cash+=amount;audio.play('loss');showToast(`${label} · ${a.name} -${amount.toLocaleString()} / ${b.name} +${amount.toLocaleString()}`);if(a.cash<=0)endGame(to);}
+  async function takeCash(pi,amount,label){const p=state.players[pi];if(p.shield){p.shield=false;showToast(`${p.name} 방어권 사용 · ${label} 면제`);return;}p.cash-=amount;audio.play('loss');showToast(`${label} · ${p.name} 민심 -${amount.toLocaleString('ko-KR')}`);reaction(pi,'sad');if(p.cash<=0)endGame(1-pi);}
+  async function transferCash(from,to,amount,label){const a=state.players[from],b=state.players[to];a.cash-=amount;b.cash+=amount;audio.play('loss');showToast(`${label} · ${a.name} -${amount.toLocaleString()} / ${b.name} +${amount.toLocaleString()}`);reaction(from,'angry');if(a.cash<=0)endGame(to);}
   function endGame(winner){state.gameOver=true;showToast(`${state.players[winner].name} 승리`);reaction(winner,'win');}
 
   function hasNetwork(owner,group){const groupTiles=TILE_RULES.filter(t=>t.type==='property'&&t.group===group);return groupTiles.length>=2&&groupTiles.every(t=>state.props[t.i]?.owner===owner);}
@@ -495,7 +532,17 @@ function createGame(root){
 
   let toastTimer=0;
   function showToast(msg){clearTimeout(toastTimer);toast.textContent=msg;toast.classList.add('is-visible');toastTimer=setTimeout(()=>toast.classList.remove('is-visible'),1800);}
-  function reaction(pi,type){if(pi!==0)return;const box=root.querySelector('[data-pm-character-reaction]'),img=root.querySelector('[data-pm-character-reaction-image]');if(!box||!img)return;const src={win:'male2-win.png',fail:'male2-fail.png',emotion:'male2-emotion.png'}[type]||'male2-emotion.png';img.src=`/assets/polimable/characters/male2/${src}`;box.setAttribute('aria-hidden','false');box.classList.add('is-visible');setTimeout(()=>{box.classList.remove('is-visible');box.setAttribute('aria-hidden','true');},1050);}
+  function reaction(pi,type){
+    const box=root.querySelector(`[data-pm-character-reaction="${pi}"]`);
+    const img=root.querySelector(`[data-pm-character-reaction-image="${pi}"]`);
+    if(!box||!img)return;
+    const fileMap={happy:'happy.png',win:'win.png',surprise:'surprise.png',angry:'angry.png',sad:'sad.png',fail:'sad.png',emotion:'happy.png'};
+    const folder=pi===0?'player1':'player2';
+    img.src=`/assets/polimable/characters/${folder}/${fileMap[type]||'happy.png'}`;
+    box.setAttribute('aria-hidden','false');box.classList.remove('is-visible');void box.offsetWidth;box.classList.add('is-visible');
+    setTimeout(()=>{box.classList.remove('is-visible');box.setAttribute('aria-hidden','true');},1100);
+  }
+
   return {init,state};
 }
 

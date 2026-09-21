@@ -1,4 +1,4 @@
-import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT,POLIMARBLE_HUD_LAYOUT as HUD} from '../core/polimable-layout.js?v=0.0.31.249';
+import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT,POLIMARBLE_HUD_LAYOUT as HUD} from '../core/polimable-layout.js?v=0.0.31.250';
 
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const number=v=>Number(v||0).toLocaleString('ko-KR');
@@ -23,7 +23,7 @@ export function renderPoliMarblePage(){
           ${HUD.map(renderHudObject).join('')}
         </div>
         <div class="pm-player-hud pm-player-hud--p1" data-pm-player-hud="0">
-          <span class="pm-player-hud-name">PLAYER 1</span>
+          <span class="pm-player-hud-name">JCS 유저</span>
           <strong class="pm-player-hud-cash" data-pm-player-cash="0">민심 10,000</strong>
           <small class="pm-player-hud-meta" data-pm-player-meta="0">0바퀴 · 자산 0</small>
         </div>
@@ -34,27 +34,37 @@ export function renderPoliMarblePage(){
         </div>
         <div class="pm-ranking-overlay" data-pm-ranking-overlay aria-label="TODAY RANKING"></div>
         <div class="pm-strategy-slots" data-pm-strategy-slots aria-label="1P 보유 전략카드"></div>
-        <div class="pm-owner-marker-layer" data-pm-owner-marker-layer aria-label="거점 소유 표시"></div>
+        <div class="pm-owner-marker-layer" data-pm-owner-marker-layer aria-label="거점 소유 및 강화 오브젝트"></div>
+
+        <div class="pm-character-layer" data-pm-character-layer>
+          <div class="pm-character-profile pm-character-profile--p1" aria-label="1P 캐릭터 프로필">
+            <img src="/assets/polimable/characters/player1/profile.png" alt="1P 캐릭터 프로필">
+          </div>
+          <div class="pm-character-profile pm-character-profile--p2" aria-label="2P 캐릭터 프로필">
+            <img src="/assets/polimable/characters/player2/profile.png" alt="2P 캐릭터 프로필">
+          </div>
+          <button class="pm-character-token pm-character-token--p1" type="button" data-pm-character-token="0" aria-label="1P 게임말">
+            <img data-pm-character-token-image="0" src="/assets/polimable/characters/player1/token.png" alt="1P 게임말">
+          </button>
+          <div class="pm-character-token pm-character-token--p2" data-pm-character-token="1" aria-label="2P 게임말">
+            <img data-pm-character-token-image="1" src="/assets/polimable/characters/player2/token.png" alt="2P 게임말">
+          </div>
+          <div class="pm-character-reaction" data-pm-character-reaction="0" aria-hidden="true">
+            <img data-pm-character-reaction-image="0" src="/assets/polimable/characters/player1/happy.png" alt="1P 캐릭터 감정표현">
+          </div>
+          <div class="pm-character-reaction pm-character-reaction--p2" data-pm-character-reaction="1" aria-hidden="true">
+            <img data-pm-character-reaction-image="1" src="/assets/polimable/characters/player2/happy.png" alt="2P 캐릭터 감정표현">
+          </div>
+          <div class="pm-fixed-asset-effect" data-pm-fixed-asset-effect aria-hidden="true">
+            <img src="/assets/polimable/objects/fixed-asset-effect.png" alt="고정자산 획득">
+          </div>
+        </div>
       </div>
 
       <div class="pm-game-overlay-layer">
         <div class="pm-turn-pill" data-pm-turn-pill>1P TURN</div>
         <button class="pm-sound-toggle" type="button" data-pm-sound-toggle aria-label="폴리마블 소리 끄기" aria-pressed="false" title="소리 끄기">🔊</button>
         <div class="pm-toast" data-pm-toast aria-live="polite"></div>
-      </div>
-
-      <div class="pm-character-layer" data-pm-character-test="male2">
-        <div class="pm-character-profile pm-character-profile--p1" aria-label="1P 남2 캐릭터 프로필">
-          <img src="/assets/polimable/characters/male2/male2-profile.png" alt="남2 캐릭터 프로필">
-        </div>
-        <div class="pm-ai-profile" aria-hidden="true">AI</div>
-        <button class="pm-character-token" type="button" data-pm-character-token aria-label="1P 게임말">
-          <img data-pm-character-token-image src="/assets/polimable/characters/male2/male2-token.png" alt="남2 게임말">
-        </button>
-        <div class="pm-ai-token" data-pm-ai-token aria-label="AI 게임말">AI</div>
-        <div class="pm-character-reaction" data-pm-character-reaction aria-hidden="true">
-          <img data-pm-character-reaction-image src="/assets/polimable/characters/male2/male2-emotion.png" alt="남2 캐릭터 반응">
-        </div>
       </div>
 
       <div class="pm-dice-layer" data-pm-dice-layer>

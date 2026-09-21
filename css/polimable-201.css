@@ -559,3 +559,61 @@ body.pm-polimable-mobile-lock{
 /* The title occupies the top center; keep turn/sound controls compact and away from it. */
 .pm-turn-pill{top:15.8%!important;min-width:7.6em!important;font-size:clamp(9px,.74vw,13px)!important;padding:.38em .92em!important}
 .pm-sound-toggle{left:auto!important;right:2.0%!important;top:78.3%!important}
+
+/* =========================================================
+   JCS 0.0.31.250 · OBJECT SYSTEM
+   Approved transparent objects: flags, 3 upgrade stages,
+   fixed-asset effect, 1P/2P profile/token/emotions.
+   Existing 31.249 board image stays the single background.
+   ========================================================= */
+
+/* Player information: high contrast over the dark HUD bars. */
+.pm-logical-canvas .pm-player-hud--p1 .pm-player-hud-name,
+.pm-logical-canvas .pm-player-hud--p2 .pm-player-hud-name{
+  color:#fff!important;text-shadow:0 1px 2px rgba(15,25,78,.82)!important;font-size:12px!important
+}
+.pm-logical-canvas .pm-player-hud--p1 .pm-player-hud-cash,
+.pm-logical-canvas .pm-player-hud--p2 .pm-player-hud-cash{
+  color:#fff4a6!important;text-shadow:0 1px 2px rgba(15,25,78,.9)!important;font-size:18px!important
+}
+.pm-logical-canvas .pm-player-hud--p1 .pm-player-hud-meta,
+.pm-logical-canvas .pm-player-hud--p2 .pm-player-hud-meta{
+  color:#fff!important;text-shadow:0 1px 2px rgba(15,25,78,.82)!important;font-size:13px!important
+}
+
+/* Approved character profile objects. */
+.pm-logical-canvas .pm-character-layer{position:absolute!important;inset:0!important;width:1672px!important;height:941px!important;z-index:15!important;pointer-events:none!important}
+.pm-logical-canvas .pm-character-profile{position:absolute!important;overflow:visible!important;border-radius:50%!important;pointer-events:none!important;z-index:16!important}
+.pm-logical-canvas .pm-character-profile--p1{left:50px!important;top:77px!important;width:112px!important;height:112px!important}
+.pm-logical-canvas .pm-character-profile--p2{left:1506px!important;top:77px!important;width:112px!important;height:112px!important}
+.pm-logical-canvas .pm-character-profile img{width:100%!important;height:100%!important;object-fit:contain!important;object-position:center!important;filter:drop-shadow(0 3px 4px rgba(20,30,80,.22))!important}
+
+/* Both player tokens share the exact 32 tile anchors. */
+.pm-logical-canvas .pm-character-token{position:absolute!important;width:78px!important;height:110px!important;left:50%!important;top:50%!important;display:flex!important;align-items:flex-end!important;justify-content:center!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;z-index:18!important;transform:translate(-50%,-88%)!important;transform-origin:50% 100%!important;transition:left .20s cubic-bezier(.22,.72,.28,1),top .20s cubic-bezier(.22,.72,.28,1)!important;pointer-events:none!important}
+.pm-logical-canvas .pm-character-token--p1{pointer-events:auto!important;cursor:pointer!important}
+.pm-logical-canvas .pm-character-token img{display:block!important;max-width:100%!important;max-height:100%!important;width:auto!important;height:auto!important;object-fit:contain!important;filter:drop-shadow(0 5px 5px rgba(35,25,82,.30))!important}
+.pm-logical-canvas .pm-character-token.is-step-hop img{animation:pm250TokenHop .22s cubic-bezier(.2,.8,.2,1) 1}
+@keyframes pm250TokenHop{0%{transform:translateY(0) scale(1)}50%{transform:translateY(-13px) scale(1.045)}100%{transform:translateY(0) scale(1)}}
+
+/* Five emotion objects for BOTH players; shown dynamically in the center. */
+.pm-logical-canvas .pm-character-reaction{position:absolute!important;left:50%!important;top:50%!important;width:300px!important;height:300px!important;display:flex!important;align-items:center!important;justify-content:center!important;opacity:0!important;transform:translate(-50%,-48%) scale(.82)!important;transition:opacity .14s ease,transform .20s cubic-bezier(.2,.8,.2,1)!important;pointer-events:none!important;z-index:31!important}
+.pm-logical-canvas .pm-character-reaction.is-visible{opacity:1!important;transform:translate(-50%,-50%) scale(1)!important}
+.pm-logical-canvas .pm-character-reaction img{max-width:100%!important;max-height:100%!important;object-fit:contain!important;filter:drop-shadow(0 12px 12px rgba(24,26,80,.3))!important}
+
+/* Ownership flag / upgrade building: ONE final-state object per owned company. */
+.pm-logical-canvas .pm-owner-marker-layer{display:block!important;position:absolute!important;left:0!important;top:0!important;width:1672px!important;height:941px!important;z-index:13!important;pointer-events:none!important;overflow:visible!important}
+.pm-logical-canvas .pm-owner-marker{display:none!important}
+.pm-logical-canvas .pm-property-state-object{position:absolute!important;display:flex!important;align-items:flex-end!important;justify-content:center!important;transform:translate(-50%,-100%)!important;transform-origin:50% 100%!important;pointer-events:none!important;z-index:13!important;filter:drop-shadow(0 4px 5px rgba(29,30,72,.24))!important}
+.pm-logical-canvas .pm-property-state-object img{display:block!important;width:100%!important;height:auto!important;object-fit:contain!important;user-select:none!important;-webkit-user-drag:none!important}
+.pm-logical-canvas .pm-property-state-object.is-flag{width:43px!important}
+.pm-logical-canvas .pm-property-state-object.is-building-1{width:60px!important}
+.pm-logical-canvas .pm-property-state-object.is-building-2{width:72px!important}
+.pm-logical-canvas .pm-property-state-object.is-building-3{width:90px!important;filter:drop-shadow(0 0 8px rgba(255,214,70,.55)) drop-shadow(0 4px 5px rgba(29,30,72,.24))!important}
+
+/* Fixed asset acquisition: central celebration object only, never baked into background. */
+.pm-logical-canvas .pm-fixed-asset-effect{position:absolute!important;left:50%!important;top:51%!important;width:660px!important;height:330px!important;display:flex!important;align-items:center!important;justify-content:center!important;opacity:0!important;visibility:hidden!important;transform:translate(-50%,-50%) scale(.55)!important;pointer-events:none!important;z-index:40!important;transition:opacity .14s ease,transform .28s cubic-bezier(.18,.9,.25,1.12)!important}
+.pm-logical-canvas .pm-fixed-asset-effect.is-visible{opacity:1!important;visibility:visible!important;transform:translate(-50%,-50%) scale(1)!important}
+.pm-logical-canvas .pm-fixed-asset-effect img{display:block!important;max-width:100%!important;max-height:100%!important;object-fit:contain!important;filter:drop-shadow(0 10px 18px rgba(53,30,117,.36))!important}
+
+/* The old AI circle/token is fully retired. */
+.pm-ai-profile,.pm-ai-token{display:none!important}
