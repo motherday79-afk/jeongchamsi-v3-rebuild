@@ -20,5 +20,5 @@ const ui=fs.readFileSync(path.join(root,'src/ui/polimable-interactions.js'),'utf
 for(const s of ['flag-p1.png','flag-p2.png','building-1.png','building-2.png','building-3.png']) if(!ui.includes(s)) throw new Error(`UI missing ${s}`);
 const view=fs.readFileSync(path.join(root,'src/views/polimable-page.js'),'utf8');
 if(!view.includes('fixed-asset-effect.png')) throw new Error('view missing fixed asset effect');
-if(!ui.includes('same?-1.55:0')||!ui.includes('same?1.55:0')) throw new Error('same-tile token offset missing');
+if(!(ui.includes('TOKEN_POINTS')&&ui.includes("same?'p1':'solo'")&&ui.includes("same?'p2':'solo'"))) throw new Error('same-tile token placement missing');
 console.log('polimable 31.250 object system test: OK');

@@ -1,4 +1,4 @@
-// JCS 0.0.31.250 · Diamond board + dynamic object anchor map
+// JCS 0.0.31.251 · Diamond precision remap: token / profile / ownership anchors
 // DESIGN SOURCE OF TRUTH: polimable-board-base-31-249.png (1672×941)
 // Exactly 32 movement positions: 28 same-size small cells + 4 same-size corner cells.
 // Internal index 0 is START (= logical tile no. 32). Then 1..31 follow counter-clockwise.
@@ -72,27 +72,35 @@ export const POLIMARBLE_STRATEGY_INDICES=Object.freeze([4,12,20,28]);
 const anchor=(index,x,y,label='')=>Object.freeze({index,x:(x/1672)*100,y:(y/941)*100,label});
 export const POLIMARBLE_MOVE_ANCHORS=Object.freeze(POLIMARBLE_32_TILE_LAYOUT.map(t=>anchor(t.index,t.cx,t.cy,t.label)));
 
-// Ownership markers use the exact same tile center system, nudged toward the inner edge.
-// Event/card/corner cells are excluded by gameplay code.
-const owner=(x,y)=>Object.freeze({x,y});
-// External ownership / upgrade-object anchors. These sit outside the company-name area.
-// Acquisition = player flag. Upgrade 1/2/3 = building 1/2/3 at the SAME anchor.
-const objectPoint=(x,y,side)=>Object.freeze({x,y,side});
-export const POLIMARBLE_PROPERTY_OBJECT_POINTS=Object.freeze({
-  // green line · outside = lower-left
-  1:objectPoint(644,812,'green'),2:objectPoint(569,772,'green'),3:objectPoint(495,733,'green'),
-  5:objectPoint(351,654,'green'),6:objectPoint(280,615,'green'),7:objectPoint(215,577,'green'),
-  // blue line · outside = upper-left
-  9:objectPoint(258,377,'blue'),10:objectPoint(332,341,'blue'),11:objectPoint(403,307,'blue'),
-  13:objectPoint(548,240,'blue'),14:objectPoint(612,208,'blue'),15:objectPoint(677,177,'blue'),
-  // purple line · outside = upper-right
-  17:objectPoint(954,178,'purple'),18:objectPoint(1019,210,'purple'),19:objectPoint(1082,242,'purple'),
-  21:objectPoint(1216,310,'purple'),22:objectPoint(1281,343,'purple'),23:objectPoint(1348,377,'purple'),
-  // orange line · outside = lower-right
-  25:objectPoint(1432,580,'orange'),26:objectPoint(1367,616,'orange'),27:objectPoint(1300,655,'orange'),
-  29:objectPoint(1159,732,'orange'),30:objectPoint(1085,771,'orange'),31:objectPoint(1011,813,'orange')
-});
+// Precise character landing coordinates.  Every tile has a solo point and a pair of
+// side-by-side points.  This prevents 1P / 2P overlap when both players land together.
+const tokenPlacement=t=>{
+  const angle=(t.corner?0:t.rot)*Math.PI/180;
+  const spread=t.corner?42:36;
+  const dx=Math.cos(angle)*spread,dy=Math.sin(angle)*spread;
+  return Object.freeze({
+    index:t.index,tileNo:t.tileNo,label:t.label,
+    solo:Object.freeze({x:t.cx,y:t.cy}),
+    p1:Object.freeze({x:t.cx-dx,y:t.cy-dy}),
+    p2:Object.freeze({x:t.cx+dx,y:t.cy+dy})
+  });
+};
+export const POLIMARBLE_TOKEN_POINTS=Object.freeze(POLIMARBLE_32_TILE_LAYOUT.map(tokenPlacement));
+
+// One shared external object position per purchasable company.
+// The same position is reused for ownership flag -> building 1 -> building 2 -> building 3.
+// Points are derived from the exact tile center and pushed outward from the diamond centre,
+// so the company name remains readable and the ownership object stays visually attached.
+const BOARD_CENTER=Object.freeze({x:836,y:474});
+const propertyObjectPoint=t=>{
+  const vx=t.cx-BOARD_CENTER.x,vy=t.cy-BOARD_CENTER.y;
+  const len=Math.hypot(vx,vy)||1;
+  const distance=54;
+  return Object.freeze({x:Math.round(t.cx+vx/len*distance),y:Math.round(t.cy+vy/len*distance),side:t.side});
+};
+export const POLIMARBLE_PROPERTY_OBJECT_POINTS=Object.freeze(Object.fromEntries(
+  POLIMARBLE_32_TILE_LAYOUT.filter(t=>!t.corner&&t.type==='property').map(t=>[t.index,propertyObjectPoint(t)])
+));
 
 // Backward-compatible alias for older code/tests.
 export const POLIMARBLE_OWNER_BADGE_POINTS=POLIMARBLE_PROPERTY_OBJECT_POINTS;
-

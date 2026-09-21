@@ -589,7 +589,7 @@ body.pm-polimable-mobile-lock{
 .pm-logical-canvas .pm-character-profile img{width:100%!important;height:100%!important;object-fit:contain!important;object-position:center!important;filter:drop-shadow(0 3px 4px rgba(20,30,80,.22))!important}
 
 /* Both player tokens share the exact 32 tile anchors. */
-.pm-logical-canvas .pm-character-token{position:absolute!important;width:78px!important;height:110px!important;left:50%!important;top:50%!important;display:flex!important;align-items:flex-end!important;justify-content:center!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;z-index:18!important;transform:translate(-50%,-88%)!important;transform-origin:50% 100%!important;transition:left .20s cubic-bezier(.22,.72,.28,1),top .20s cubic-bezier(.22,.72,.28,1)!important;pointer-events:none!important}
+.pm-logical-canvas .pm-character-token{position:absolute!important;width:78px!important;height:110px!important;left:var(--pm-token-x,813px)!important;top:var(--pm-token-y,817px)!important;display:flex!important;align-items:flex-end!important;justify-content:center!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;z-index:18!important;transform:translate(-50%,-88%)!important;transform-origin:50% 100%!important;transition:left .20s cubic-bezier(.22,.72,.28,1),top .20s cubic-bezier(.22,.72,.28,1)!important;pointer-events:none!important}
 .pm-logical-canvas .pm-character-token--p1{pointer-events:auto!important;cursor:pointer!important}
 .pm-logical-canvas .pm-character-token img{display:block!important;max-width:100%!important;max-height:100%!important;width:auto!important;height:auto!important;object-fit:contain!important;filter:drop-shadow(0 5px 5px rgba(35,25,82,.30))!important}
 .pm-logical-canvas .pm-character-token.is-step-hop img{animation:pm250TokenHop .22s cubic-bezier(.2,.8,.2,1) 1}
@@ -617,3 +617,67 @@ body.pm-polimable-mobile-lock{
 
 /* The old AI circle/token is fully retired. */
 .pm-ai-profile,.pm-ai-token{display:none!important}
+
+/* =========================================================
+   JCS 0.0.31.251 · DIAMOND PRECISION REMAP
+   - player HUD/profile pixel fit
+   - exact 32-tile token placements
+   - same-tile P1/P2 split anchors
+   - precise company object anchors
+   ========================================================= */
+
+/* Player profile circles: fit inside the baked HUD circles without covering the rim. */
+.pm-logical-canvas .pm-character-profile--p1{left:56px!important;top:82px!important;width:100px!important;height:100px!important}
+.pm-logical-canvas .pm-character-profile--p2{left:1517px!important;top:82px!important;width:100px!important;height:100px!important}
+.pm-logical-canvas .pm-character-profile img{object-fit:contain!important;object-position:center center!important}
+
+/* Pixel-locked 1P HUD text. */
+.pm-logical-canvas .pm-player-hud--p1 .pm-player-hud-name{
+  left:202px!important;top:101px!important;width:112px!important;height:14px!important;
+  font-size:12px!important;font-weight:950!important;color:#fff!important;text-shadow:0 1px 3px #123a89!important
+}
+.pm-logical-canvas .pm-player-hud--p1 .pm-player-hud-cash{
+  left:199px!important;top:115px!important;width:120px!important;height:23px!important;
+  font-size:18px!important;font-weight:1000!important;color:#fff5a8!important;text-shadow:0 1px 3px #123a89!important
+}
+.pm-logical-canvas .pm-player-hud--p1 .pm-player-hud-meta{
+  left:193px!important;top:146px!important;width:132px!important;height:23px!important;
+  font-size:13px!important;font-weight:950!important;color:#fff!important;text-shadow:0 1px 3px #123a89!important
+}
+
+/* Pixel-locked 2P HUD text. */
+.pm-logical-canvas .pm-player-hud--p2 .pm-player-hud-name{
+  left:1367px!important;top:101px!important;width:115px!important;height:14px!important;
+  font-size:12px!important;font-weight:950!important;color:#fff!important;text-shadow:0 1px 3px #761d69!important
+}
+.pm-logical-canvas .pm-player-hud--p2 .pm-player-hud-cash{
+  left:1363px!important;top:115px!important;width:123px!important;height:23px!important;
+  font-size:18px!important;font-weight:1000!important;color:#fff5a8!important;text-shadow:0 1px 3px #761d69!important
+}
+.pm-logical-canvas .pm-player-hud--p2 .pm-player-hud-meta{
+  left:1357px!important;top:146px!important;width:134px!important;height:23px!important;
+  font-size:13px!important;font-weight:950!important;color:#fff!important;text-shadow:0 1px 3px #761d69!important
+}
+
+/* Tokens now follow ONLY JS-controlled logical-canvas variables. The old 50/50 center lock is retired. */
+.pm-logical-canvas .pm-character-token{
+  width:68px!important;height:96px!important;
+  left:var(--pm-token-x,813px)!important;
+  top:var(--pm-token-y,817px)!important;
+  transform:translate(-50%,-88%)!important;
+}
+.pm-logical-canvas .pm-character-token--p1{--pm-token-x:771px;--pm-token-y:817px}
+.pm-logical-canvas .pm-character-token--p2{--pm-token-x:855px;--pm-token-y:817px}
+
+/* Ownership / upgrade object stays in one shared point per company and never covers the company label. */
+.pm-logical-canvas .pm-property-state-object{
+  transform:translate(-50%,-50%)!important;
+}
+.pm-logical-canvas .pm-property-state-object.is-flag{width:38px!important}
+.pm-logical-canvas .pm-property-state-object.is-building-1{width:54px!important}
+.pm-logical-canvas .pm-property-state-object.is-building-2{width:66px!important}
+.pm-logical-canvas .pm-property-state-object.is-building-3{width:82px!important}
+
+/* Optional developer-only anchor visualization. Enabled by ?pmdebug=1. */
+.pm-board-stage.pm-object-debug .pm-character-token{outline:2px dashed rgba(0,255,255,.9)!important}
+.pm-board-stage.pm-object-debug .pm-property-state-object{outline:2px dashed rgba(255,215,0,.95)!important}

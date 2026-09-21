@@ -1,6 +1,6 @@
-import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS,POLIMARBLE_PROPERTY_OBJECT_POINTS as OBJECT_POINTS} from '../core/polimable-layout.js?v=0.0.31.250';
+import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS,POLIMARBLE_TOKEN_POINTS as TOKEN_POINTS,POLIMARBLE_PROPERTY_OBJECT_POINTS as OBJECT_POINTS} from '../core/polimable-layout.js?v=0.0.31.251';
 import {createPoliMarbleAudio} from '../core/polimable-audio.js?v=0.0.31.245';
-import {calculatePoliMarbleStage} from '../core/polimable-viewport.js?v=0.0.31.250';
+import {calculatePoliMarbleStage} from '../core/polimable-viewport.js?v=0.0.31.251';
 
 const START_CASH=10000;
 const MAX_CARDS=4;
@@ -239,14 +239,14 @@ function createGame(root){
       });
       if(turnPill) turnPill.textContent=state.gameOver?'GAME OVER':`${state.turn===0?'1P':'2P AI'} TURN`;
       if(button) button.disabled=state.turn!==0||state.rolling||state.gameOver;
-    }catch(error){console.error('[POLIMARBLE 31.244] base HUD render failed',error);}
+    }catch(error){console.error('[POLIMARBLE 31.251] base HUD render failed',error);}
     safeUiRender(renderCards,'strategy-cards');
     safeUiRender(renderRanking,'today-ranking');
     safeUiRender(renderOwnership,'ownership-markers');
   }
 
   function safeUiRender(fn,label){
-    try{fn();}catch(error){console.error(`[POLIMARBLE 31.244] ${label} render failed`,error);}
+    try{fn();}catch(error){console.error(`[POLIMARBLE 31.251] ${label} render failed`,error);}
   }
 
   function renderCards(){
@@ -350,17 +350,20 @@ function createGame(root){
 
   function placeAllTokens(instant=false){
     const same=state.players[0].pos===state.players[1].pos;
-    placeOneToken(0,state.players[0].pos,same?-1.55:0,instant);
-    placeOneToken(1,state.players[1].pos,same?1.55:0,instant);
+    placeOneToken(0,state.players[0].pos,same?'p1':'solo',instant);
+    placeOneToken(1,state.players[1].pos,same?'p2':'solo',instant);
   }
 
-  function placeOneToken(playerIndex,index,xOffsetPct=0,instant=false){
-    const point=MOVE_ANCHORS[index%TRACK_LEN];
+  function placeOneToken(playerIndex,index,slot='solo',instant=false){
+    const placement=TOKEN_POINTS[index%TRACK_LEN];
+    const point=placement?.[slot]||placement?.solo;
     const token=playerIndex===0?token1:token2;
     if(!token||!point)return;
     token.classList.toggle('is-instant',instant);
-    token.style.left=`${point.x+xOffsetPct}%`;
-    token.style.top=`${point.y}%`;
+    token.style.setProperty('--pm-token-x',`${point.x}px`);
+    token.style.setProperty('--pm-token-y',`${point.y}px`);
+    token.dataset.pmTile=String(index%TRACK_LEN);
+    token.dataset.pmSlot=slot;
     if(instant)requestAnimationFrame(()=>token.classList.remove('is-instant'));
   }
 
