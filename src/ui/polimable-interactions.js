@@ -1,5 +1,6 @@
 import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS,POLIMARBLE_OWNER_BADGE_POINTS as OWNER_BADGES} from '../core/polimable-layout.js?v=0.0.31.245';
 import {createPoliMarbleAudio} from '../core/polimable-audio.js?v=0.0.31.245';
+import {calculatePoliMarbleStage} from '../core/polimable-viewport.js?v=0.0.31.247';
 
 const START_CASH=10000;
 const MAX_CARDS=4;
@@ -82,14 +83,24 @@ function bindResponsiveStage(root){
       return;
     }
     const cs=getComputedStyle(page);
-    const fit=calculatePoliMarbleStage(vw,vh,{
-      left:readPx(cs.paddingLeft),right:readPx(cs.paddingRight),
-      top:readPx(cs.paddingTop),bottom:readPx(cs.paddingBottom),gutter:4
-    });
-    root.style.width=`${fit.width}px`;
-    root.style.height=`${fit.height}px`;
-    root.dataset.pmFitMode=fit.mode;
-    root.style.setProperty('--pm-stage-scale',String(fit.scale));
+    try{
+      const fit=calculatePoliMarbleStage(vw,vh,{
+        left:readPx(cs.paddingLeft),right:readPx(cs.paddingRight),
+        top:readPx(cs.paddingTop),bottom:readPx(cs.paddingBottom),gutter:4
+      });
+      root.style.width=`${fit.width}px`;
+      root.style.height=`${fit.height}px`;
+      root.dataset.pmFitMode=fit.mode;
+      root.style.setProperty('--pm-stage-scale',String(fit.scale));
+    }catch(error){
+      // Never allow a viewport calculation error to collapse the stage to a black screen.
+      const safeScale=Math.max(.05,Math.min(1,vw/1672,vh/941));
+      root.style.width=`${1672*safeScale}px`;
+      root.style.height=`${941*safeScale}px`;
+      root.dataset.pmFitMode='fallback-fit';
+      root.style.setProperty('--pm-stage-scale',String(safeScale));
+      console.error('[PoliMarble] responsive stage fallback',error);
+    }
   };
   sync();
   window.addEventListener('resize',sync,{passive:true});

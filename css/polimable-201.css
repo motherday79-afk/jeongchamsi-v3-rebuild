@@ -421,7 +421,7 @@
   max-width:none!important;
   max-height:none!important;
   margin:0!important;
-  aspect-ratio:auto!important;
+  aspect-ratio:1672/941!important;
 }
 
 /* Older phone-specific overrides are neutralized inside the new one-canvas fitter. */
