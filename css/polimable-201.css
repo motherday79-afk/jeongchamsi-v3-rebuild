@@ -467,3 +467,51 @@
 /* Device categories intentionally share one fit algorithm:
    standard iPhone/Galaxy, Max/Ultra, Fold closed = usually height-fit;
    Fold open/square screens = usually width-fit with natural letterboxing. */
+
+/* 0.0.31.248 · MOBILE LANDSCAPE TRUE FULLSCREEN CENTER
+   The mobile game is detached from normal document flow and centered in the visual viewport.
+   No internal 1672×941 coordinates are changed. */
+html.pm-polimable-mobile-lock,
+body.pm-polimable-mobile-lock{
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+  max-width:100%!important;
+  max-height:100%!important;
+}
+body.pm-polimable-mobile-lock{
+  margin:0!important;
+}
+.pm-board-stage-page.pm-mobile-fit{
+  z-index:2147483000!important;
+  box-sizing:border-box!important;
+  min-width:0!important;
+  min-height:0!important;
+  max-width:none!important;
+  max-height:none!important;
+  margin:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+  background:#111226!important;
+}
+.pm-board-stage-page.pm-mobile-fit.pm-landscape-fullscreen{
+  touch-action:none;
+}
+.pm-board-stage-page.pm-mobile-fit.pm-landscape-fullscreen .pm-board-stage{
+  position:relative!important;
+  flex:none!important;
+  margin:0!important;
+  transform-origin:center center!important;
+}
+.pm-board-stage-page.pm-mobile-fit.pm-landscape-fullscreen .pm-dice-roll-button,
+.pm-board-stage-page.pm-mobile-fit.pm-landscape-fullscreen .pm-card-chip,
+.pm-board-stage-page.pm-mobile-fit.pm-landscape-fullscreen .pm-sound-toggle,
+.pm-board-stage-page.pm-mobile-fit.pm-landscape-fullscreen .pm-action-btn{
+  touch-action:manipulation;
+}
+/* Portrait guard is also visual-viewport fixed, so rotating never requires page scrolling. */
+.pm-board-stage-page.pm-mobile-fit.pm-portrait-mode{
+  touch-action:none;
+}

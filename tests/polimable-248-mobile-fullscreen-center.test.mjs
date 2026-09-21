@@ -1,0 +1,16 @@
+import fs from 'fs';
+const read=p=>fs.readFileSync(new URL(`../${p}`,import.meta.url),'utf8');
+const ui=read('src/ui/polimable-interactions.js');
+const css=read('css/polimable-201.css');
+if(!ui.includes("page.classList.toggle('pm-landscape-fullscreen',landscape)")) throw new Error('landscape fullscreen class missing');
+if(!ui.includes("page.style.position='fixed'")) throw new Error('visual viewport fixed positioning missing');
+if(!ui.includes("page.style.left=`${offsetLeft}px`")) throw new Error('visual viewport horizontal offset missing');
+if(!ui.includes("page.style.top=`${offsetTop}px`")) throw new Error('visual viewport vertical offset missing');
+if(!ui.includes("document.documentElement.classList.add('pm-polimable-mobile-lock')")) throw new Error('document scroll lock missing');
+if(!ui.includes("window.visualViewport?.addEventListener('scroll',sync")) throw new Error('visualViewport scroll sync missing');
+if(!ui.includes('window.setTimeout(sync,240)')) throw new Error('delayed orientation resync missing');
+if(!css.includes('body.pm-polimable-mobile-lock')) throw new Error('body mobile scroll lock CSS missing');
+if(!css.includes('.pm-board-stage-page.pm-mobile-fit.pm-landscape-fullscreen')) throw new Error('landscape fullscreen CSS missing');
+if(!css.includes('align-items:center!important')) throw new Error('vertical centering missing');
+if(!css.includes('justify-content:center!important')) throw new Error('horizontal centering missing');
+console.log('polimable 31.248 mobile fullscreen center test: OK');

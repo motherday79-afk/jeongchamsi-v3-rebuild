@@ -1,6 +1,6 @@
 import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS,POLIMARBLE_OWNER_BADGE_POINTS as OWNER_BADGES} from '../core/polimable-layout.js?v=0.0.31.245';
 import {createPoliMarbleAudio} from '../core/polimable-audio.js?v=0.0.31.245';
-import {calculatePoliMarbleStage} from '../core/polimable-viewport.js?v=0.0.31.247';
+import {calculatePoliMarbleStage} from '../core/polimable-viewport.js?v=0.0.31.248';
 
 const START_CASH=10000;
 const MAX_CARDS=4;
@@ -69,19 +69,59 @@ function bindResponsiveStage(root){
   const page=root.closest('.pm-board-stage-page');
   if(!page||typeof window==='undefined')return;
   const coarse=window.matchMedia?.('(hover: none) and (pointer: coarse)');
+  let wasLandscape=false;
+
+  const clearViewportStyles=()=>{
+    for(const prop of ['position','left','top','width','height','right','bottom'])page.style.removeProperty(prop);
+    document.documentElement.classList.remove('pm-polimable-mobile-lock');
+    document.body?.classList.remove('pm-polimable-mobile-lock');
+  };
+
   const sync=()=>{
+    if(!root.isConnected){
+      clearViewportStyles();
+      return;
+    }
     const vv=window.visualViewport;
     const vw=Math.max(1,vv?.width||window.innerWidth||document.documentElement.clientWidth||1);
     const vh=Math.max(1,vv?.height||window.innerHeight||document.documentElement.clientHeight||1);
+    const offsetLeft=Math.max(0,vv?.offsetLeft||0);
+    const offsetTop=Math.max(0,vv?.offsetTop||0);
     const mobile=Boolean(coarse?.matches) && Math.min(vw,vh)<=1200;
+    const portrait=mobile&&vh>vw;
+    const landscape=mobile&&!portrait;
+
     page.classList.toggle('pm-mobile-fit',mobile);
-    page.classList.toggle('pm-portrait-mode',mobile&&vh>vw);
+    page.classList.toggle('pm-portrait-mode',portrait);
+    page.classList.toggle('pm-landscape-fullscreen',landscape);
+
     if(!mobile){
+      clearViewportStyles();
       root.style.removeProperty('width');
       root.style.removeProperty('height');
+      root.style.removeProperty('--pm-stage-scale');
       root.removeAttribute('data-pm-fit-mode');
+      wasLandscape=false;
       return;
     }
+
+    // The polimable route becomes a true visual-viewport screen on mobile.
+    // This prevents the game from living lower in the normal document and removes any need to scroll.
+    page.style.position='fixed';
+    page.style.left=`${offsetLeft}px`;
+    page.style.top=`${offsetTop}px`;
+    page.style.width=`${vw}px`;
+    page.style.height=`${vh}px`;
+    page.style.right='auto';
+    page.style.bottom='auto';
+    document.documentElement.classList.add('pm-polimable-mobile-lock');
+    document.body?.classList.add('pm-polimable-mobile-lock');
+
+    if(landscape&&!wasLandscape){
+      try{window.scrollTo({left:0,top:0,behavior:'instant'});}catch{window.scrollTo(0,0);}
+    }
+    wasLandscape=landscape;
+
     const cs=getComputedStyle(page);
     try{
       const fit=calculatePoliMarbleStage(vw,vh,{
@@ -93,7 +133,6 @@ function bindResponsiveStage(root){
       root.dataset.pmFitMode=fit.mode;
       root.style.setProperty('--pm-stage-scale',String(fit.scale));
     }catch(error){
-      // Never allow a viewport calculation error to collapse the stage to a black screen.
       const safeScale=Math.max(.05,Math.min(1,vw/1672,vh/941));
       root.style.width=`${1672*safeScale}px`;
       root.style.height=`${941*safeScale}px`;
@@ -102,13 +141,20 @@ function bindResponsiveStage(root){
       console.error('[PoliMarble] responsive stage fallback',error);
     }
   };
+
+  const deferredSync=()=>{
+    sync();
+    window.setTimeout(sync,80);
+    window.setTimeout(sync,240);
+  };
+
   sync();
   window.addEventListener('resize',sync,{passive:true});
-  window.addEventListener('orientationchange',sync,{passive:true});
+  window.addEventListener('orientationchange',deferredSync,{passive:true});
   window.visualViewport?.addEventListener('resize',sync,{passive:true});
+  window.visualViewport?.addEventListener('scroll',sync,{passive:true});
   root._pmViewportSync=sync;
 }
-
 function bindLogicalCanvas(root){
   const canvas=root.querySelector('[data-pm-logical-canvas]');
   if(!canvas)return;
