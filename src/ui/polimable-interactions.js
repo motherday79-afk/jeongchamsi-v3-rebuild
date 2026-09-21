@@ -59,15 +59,53 @@ const CARD_DECK=[
 
 export async function hydratePoliMarble(){bindPoliMarbleInteractions();}
 
+function readPx(value){
+  const n=Number.parseFloat(value);
+  return Number.isFinite(n)?n:0;
+}
+
+function bindResponsiveStage(root){
+  const page=root.closest('.pm-board-stage-page');
+  if(!page||typeof window==='undefined')return;
+  const coarse=window.matchMedia?.('(hover: none) and (pointer: coarse)');
+  const sync=()=>{
+    const vv=window.visualViewport;
+    const vw=Math.max(1,vv?.width||window.innerWidth||document.documentElement.clientWidth||1);
+    const vh=Math.max(1,vv?.height||window.innerHeight||document.documentElement.clientHeight||1);
+    const mobile=Boolean(coarse?.matches) && Math.min(vw,vh)<=1200;
+    page.classList.toggle('pm-mobile-fit',mobile);
+    page.classList.toggle('pm-portrait-mode',mobile&&vh>vw);
+    if(!mobile){
+      root.style.removeProperty('width');
+      root.style.removeProperty('height');
+      root.removeAttribute('data-pm-fit-mode');
+      return;
+    }
+    const cs=getComputedStyle(page);
+    const fit=calculatePoliMarbleStage(vw,vh,{
+      left:readPx(cs.paddingLeft),right:readPx(cs.paddingRight),
+      top:readPx(cs.paddingTop),bottom:readPx(cs.paddingBottom),gutter:4
+    });
+    root.style.width=`${fit.width}px`;
+    root.style.height=`${fit.height}px`;
+    root.dataset.pmFitMode=fit.mode;
+    root.style.setProperty('--pm-stage-scale',String(fit.scale));
+  };
+  sync();
+  window.addEventListener('resize',sync,{passive:true});
+  window.addEventListener('orientationchange',sync,{passive:true});
+  window.visualViewport?.addEventListener('resize',sync,{passive:true});
+  root._pmViewportSync=sync;
+}
+
 function bindLogicalCanvas(root){
   const canvas=root.querySelector('[data-pm-logical-canvas]');
   if(!canvas)return;
   const sync=()=>{
     const rect=root.getBoundingClientRect();
     if(!rect.width||!rect.height)return;
-    const sx=rect.width/1672;
-    const sy=rect.height/941;
-    canvas.style.transform=`scale(${sx},${sy})`;
+    const scale=Math.min(rect.width/1672,rect.height/941);
+    canvas.style.transform=`scale(${scale})`;
   };
   sync();
   if(typeof ResizeObserver!=='undefined'){
@@ -83,6 +121,7 @@ export function bindPoliMarbleInteractions(){
   const root=document.querySelector('[data-pm-root]');
   if(!root||root.dataset.gameBound==='1') return;
   root.dataset.gameBound='1';
+  bindResponsiveStage(root);
   bindLogicalCanvas(root);
   const game=createGame(root);
   root._pmGame=game;

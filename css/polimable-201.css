@@ -390,3 +390,80 @@
 .pm-sound-toggle.is-muted{background:rgba(85,78,115,.78);opacity:.82}
 .pm-sound-toggle:focus-visible{outline:3px solid rgba(255,235,132,.9);outline-offset:2px}
 @media(max-width:700px){.pm-sound-toggle{width:28px;height:28px;font-size:15px;top:1.25%;left:60.2%}}
+
+/* 0.0.31.246 · MOBILE/FOLD LANDSCAPE FIT FOUNDATION
+   RULE: never reposition internal game objects by device model.
+   The frozen 1672×941 stage is uniformly fitted as ONE unit to the safe viewport. */
+.pm-board-stage{--pm-stage-scale:1}
+.pm-orientation-guard{display:none}
+
+.pm-board-stage-page.pm-mobile-fit{
+  box-sizing:border-box;
+  width:100vw;
+  height:100vh;
+  height:100dvh;
+  min-height:100svh;
+  margin:0;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-right:env(safe-area-inset-right,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  padding-left:env(safe-area-inset-left,0px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  background:#111226;
+  overscroll-behavior:none;
+  touch-action:manipulation;
+}
+.pm-board-stage-page.pm-mobile-fit .pm-board-stage{
+  flex:0 0 auto;
+  max-width:none!important;
+  max-height:none!important;
+  margin:0!important;
+  aspect-ratio:auto!important;
+}
+
+/* Older phone-specific overrides are neutralized inside the new one-canvas fitter. */
+.pm-board-stage-page.pm-mobile-fit .pm-character-token{width:7.0%;height:12.7%}
+.pm-board-stage-page.pm-mobile-fit .pm-character-reaction{left:37%;top:25%;width:26%;height:47%}
+.pm-board-stage-page.pm-mobile-fit .pm-logical-canvas .pm-player-hud-meta{display:flex!important}
+.pm-board-stage-page.pm-mobile-fit .pm-turn-pill{top:1.9%;font-size:clamp(10px,.88vw,16px)}
+.pm-board-stage-page.pm-mobile-fit .pm-card-chip small{display:none!important}
+.pm-board-stage-page.pm-mobile-fit .pm-sound-toggle{
+  width:calc(34px * var(--pm-stage-scale));
+  height:calc(34px * var(--pm-stage-scale));
+  min-width:20px;min-height:20px;
+  font-size:calc(18px * var(--pm-stage-scale));
+  top:1.85%;left:59.4%;
+}
+
+/* Keep the dice/button and every approved pixel coordinate inside the scaled stage. */
+.pm-board-stage-page.pm-mobile-fit .pm-dice-roll-button{touch-action:manipulation}
+
+/* Portrait is intentionally blocked: gameplay is designed for landscape. */
+.pm-board-stage-page.pm-mobile-fit.pm-portrait-mode .pm-board-stage{
+  visibility:hidden;
+  pointer-events:none!important;
+}
+.pm-board-stage-page.pm-mobile-fit.pm-portrait-mode .pm-orientation-guard{
+  display:flex;
+  position:absolute;
+  inset:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);
+  z-index:100;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  box-sizing:border-box;
+  background:#111226;
+  color:#fff;
+  text-align:center;
+}
+.pm-orientation-guard-card{display:flex;flex-direction:column;align-items:center;gap:8px}
+.pm-orientation-guard-card .pm-orientation-icon{display:block;font-size:48px;line-height:1;color:#ffd85a}
+.pm-orientation-guard-card strong{font-size:20px;font-weight:1000}
+.pm-orientation-guard-card small{font-size:13px;font-weight:750;opacity:.78}
+
+/* Device categories intentionally share one fit algorithm:
+   standard iPhone/Galaxy, Max/Ultra, Fold closed = usually height-fit;
+   Fold open/square screens = usually width-fit with natural letterboxing. */

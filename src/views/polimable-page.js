@@ -83,6 +83,13 @@ export function renderPoliMarblePage(){
         </div>
       </div>
     </div>
+    <div class="pm-orientation-guard" data-pm-orientation-guard aria-hidden="true">
+      <div class="pm-orientation-guard-card">
+        <span class="pm-orientation-icon" aria-hidden="true">↻</span>
+        <strong>가로 화면으로 플레이</strong>
+        <small>기기를 가로로 돌려주세요</small>
+      </div>
+    </div>
   </section>`;
 }
 
