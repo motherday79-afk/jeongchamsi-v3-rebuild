@@ -1,3 +1,4 @@
+import {mountHudEditor} from './polimable-hud-editor.js?v=0.0.31.252';
 import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS,POLIMARBLE_TOKEN_POINTS as TOKEN_POINTS,POLIMARBLE_PROPERTY_OBJECT_POINTS as OBJECT_POINTS} from '../core/polimable-layout.js?v=0.0.31.251';
 import {createPoliMarbleAudio} from '../core/polimable-audio.js?v=0.0.31.245';
 import {calculatePoliMarbleStage} from '../core/polimable-viewport.js?v=0.0.31.251';
@@ -77,6 +78,7 @@ function bindResponsiveStage(root){
   };
 
   const sync=()=>{
+    if(root.dataset.pmHudEditing==='1')return;
     if(!root.isConnected){
       clearViewportStyles();
       return;
@@ -182,6 +184,7 @@ export function bindPoliMarbleInteractions(){
   const game=createGame(root);
   root._pmGame=game;
   game.init();
+  void mountHudEditor(root);
 }
 
 function createGame(root){
@@ -216,13 +219,17 @@ function createGame(root){
     hopeWaiting:false
   };
 
+  let layoutEditing=false;
+  function canLayoutEdit(){return !state.rolling&&(state.turn===0||state.gameOver)&&!modal.classList.contains('is-visible');}
+  function setLayoutEditing(on){if(on&&!canLayoutEdit())return false;layoutEditing=Boolean(on);render();return true;}
+
   function init(){
     audio.init();
     if(new URLSearchParams(globalThis.location?.search||'').get('pmdebug')==='1')root.classList.add('pm-object-debug');
     placeToken(0,0,true);placeToken(1,0,true);render();
-    button?.addEventListener('click',()=>{ if(state.turn===0&&!state.rolling&&!state.gameOver) runTurn(0); });
+    button?.addEventListener('click',()=>{ if(!layoutEditing&&state.turn===0&&!state.rolling&&!state.gameOver) runTurn(0); });
     root.querySelector('[data-pm-strategy-slots]')?.addEventListener('click',ev=>{
-      const b=ev.target.closest('[data-card-index]'); if(!b||state.turn!==0||state.rolling) return;
+      const b=ev.target.closest('[data-card-index]'); if(!b||layoutEditing||state.turn!==0||state.rolling) return;
       void useCard(0,Number(b.dataset.cardIndex));
     });
   }
@@ -238,11 +245,12 @@ function createGame(root){
         if(meta) meta.textContent=`${p.laps}바퀴 · 자산 ${portfolioValue(i).toLocaleString('ko-KR')}`;
       });
       if(turnPill) turnPill.textContent=state.gameOver?'GAME OVER':`${state.turn===0?'1P':'2P AI'} TURN`;
-      if(button) button.disabled=state.turn!==0||state.rolling||state.gameOver;
+      if(button) button.disabled=layoutEditing||state.turn!==0||state.rolling||state.gameOver;
     }catch(error){console.error('[POLIMARBLE 31.251] base HUD render failed',error);}
     safeUiRender(renderCards,'strategy-cards');
     safeUiRender(renderRanking,'today-ranking');
     safeUiRender(renderOwnership,'ownership-markers');
+    root.dispatchEvent(new CustomEvent('polimable:hud-update'));
   }
 
   function safeUiRender(fn,label){
@@ -290,7 +298,7 @@ function createGame(root){
   }
 
   async function runTurn(playerIndex){
-    if(state.rolling||state.gameOver)return;
+    if(layoutEditing||state.rolling||state.gameOver)return;
     state.rolling=true;render();
     const dice=await animateDice();
     const total=dice[0]+dice[1]; const dbl=dice[0]===dice[1];
@@ -546,7 +554,7 @@ function createGame(root){
     setTimeout(()=>{box.classList.remove('is-visible');box.setAttribute('aria-hidden','true');},1100);
   }
 
-  return {init,state};
+  return {init,state,canLayoutEdit,setLayoutEditing};
 }
 
 const wait=ms=>new Promise(r=>setTimeout(r,ms));

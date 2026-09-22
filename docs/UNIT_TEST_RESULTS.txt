@@ -1,0 +1,58 @@
+TAP version 13
+# Subtest: layout module exists
+ok 1 - layout module exists
+  ---
+  duration_ms: 0.728879
+  type: 'test'
+  ...
+# Subtest: 14 independent valid HUD elements
+ok 2 - 14 independent valid HUD elements
+  ---
+  duration_ms: 1.845993
+  type: 'test'
+  ...
+# Subtest: reject invalid schema / foreign board / extra keys / invalid sizes
+ok 3 - reject invalid schema / foreign board / extra keys / invalid sizes
+  ---
+  duration_ms: 0.733376
+  type: 'test'
+  ...
+# Subtest: inverse screen coordinate mapping
+ok 4 - inverse screen coordinate mapping
+  ---
+  duration_ms: 0.143937
+  type: 'test'
+  ...
+# Subtest: clamp and square profile
+ok 5 - clamp and square profile
+  ---
+  duration_ms: 0.297188
+  type: 'test'
+  ...
+# Subtest: non-admin / suspended / foreign origin cannot publish
+ok 6 - non-admin / suspended / foreign origin cannot publish
+  ---
+  duration_ms: 0.771293
+  type: 'test'
+  ...
+# Subtest: publish, public read, conflict protection, rollback
+ok 7 - publish, public read, conflict protection, rollback
+  ---
+  duration_ms: 1.345449
+  type: 'test'
+  ...
+# Subtest: storage errors never return success
+ok 8 - storage errors never return success
+  ---
+  duration_ms: 0.449769
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 78.69242
