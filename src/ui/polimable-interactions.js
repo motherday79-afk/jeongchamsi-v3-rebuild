@@ -1,4 +1,4 @@
-import {mountHudEditor} from './polimable-hud-editor.js?v=0.0.31.252';
+import {mountHudEditor} from './polimable-hud-editor.js?v=0.0.31.253';
 import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS,POLIMARBLE_TOKEN_POINTS as TOKEN_POINTS,POLIMARBLE_PROPERTY_OBJECT_POINTS as OBJECT_POINTS} from '../core/polimable-layout.js?v=0.0.31.251';
 import {createPoliMarbleAudio} from '../core/polimable-audio.js?v=0.0.31.245';
 import {calculatePoliMarbleStage} from '../core/polimable-viewport.js?v=0.0.31.251';
