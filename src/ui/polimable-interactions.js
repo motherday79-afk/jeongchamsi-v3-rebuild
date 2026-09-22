@@ -1,4 +1,5 @@
-import {mountHudEditor} from './polimable-hud-editor.js?v=0.0.31.254';
+import {tileName,escapeText} from '../core/polimable-tile-design.js';
+import {mountHudEditor} from './polimable-hud-editor.js?v=0.0.31.255';
 import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS,POLIMARBLE_TOKEN_POINTS as TOKEN_POINTS,POLIMARBLE_PROPERTY_OBJECT_POINTS as OBJECT_POINTS} from '../core/polimable-layout.js?v=0.0.31.251';
 import {createPoliMarbleAudio} from '../core/polimable-audio.js?v=0.0.31.245';
 import {calculatePoliMarbleStage} from '../core/polimable-viewport.js?v=0.0.31.251';
@@ -9,7 +10,7 @@ const RENT_RATE=[0,.40,.80,1.50,2.50];
 const UPGRADE_RATE=[0,0,.60,.90,1.20];
 const TRACK_LEN=MOVE_ANCHORS.length; // exact 32-position diamond board
 
-const TILE_RULES=[
+const DEFAULT_TILE_RULES=[
   {i:0,type:'start',name:'START'},
   {i:1,type:'property',name:'임팩트G',group:'ngo',price:750},
   {i:2,type:'property',name:'굿파트너스',group:'ngo',price:900},
@@ -188,6 +189,7 @@ export function bindPoliMarbleInteractions(){
 }
 
 function createGame(root){
+  const TILE_RULES=DEFAULT_TILE_RULES.map(t=>({...t,get name(){return tileName(root._pmSceneLayout,t.i);}}));
   const token1=root.querySelector('[data-pm-character-token="0"]');
   const token1Img=root.querySelector('[data-pm-character-token-image="0"]');
   const token2=root.querySelector('[data-pm-character-token="1"]');
@@ -292,7 +294,7 @@ function createGame(root){
       }else{
         src='/assets/polimable/objects/building-3.png';kind='building-3';label=`${tile.name} 강화 3단계 · 고정자산`;
       }
-      objects.push(`<div class="pm-property-state-object is-${kind} side-${point.side}" data-pm-property-object="${idx}" style="left:${point.x}px;top:${point.y}px;${custom?`width:${custom.w}px!important;height:${custom.h}px!important;${custom.hidden?'display:none!important;':''}`:''}" aria-label="${label}"><img src="${src}" alt=""></div>`);
+      objects.push(`<div class="pm-property-state-object is-${kind} side-${point.side}" data-pm-property-object="${idx}" style="left:${point.x}px;top:${point.y}px;${custom?`width:${custom.w}px!important;height:${custom.h}px!important;${custom.hidden?'display:none!important;':''}`:''}" aria-label="${escapeText(label)}"><img src="${src}" alt=""></div>`);
     }
     layer.innerHTML=objects.join('');
   }
@@ -308,9 +310,9 @@ function createGame(root){
     const activePlayer=state.players[playerIndex];
     if(activePlayer.trappedTurns>0&&!dbl){
       activePlayer.trappedTurns=Math.max(0,activePlayer.trappedTurns-1);
-      showToast(`${activePlayer.name} · 욕망의 굴레 ${activePlayer.trappedTurns}턴 남음`);
+      showToast(`${activePlayer.name} · ${TILE_RULES[24].name} ${activePlayer.trappedTurns}턴 남음`);
     }else{
-      if(activePlayer.trappedTurns>0&&dbl){activePlayer.trappedTurns=0;showToast(`${activePlayer.name} DOUBLE · 욕망의 굴레 탈출`);}
+      if(activePlayer.trappedTurns>0&&dbl){activePlayer.trappedTurns=0;showToast(`${activePlayer.name} DOUBLE · ${TILE_RULES[24].name} 탈출`);}
       await moveBy(playerIndex,total);
       await resolveTile(playerIndex);
     }
@@ -344,7 +346,7 @@ function createGame(root){
     setMovingVisual(playerIndex,true);
     for(let s=0;s<steps;s++){
       const prev=p.pos; p.pos=(p.pos+1)%TRACK_LEN;
-      if(prev===TRACK_LEN-1&&p.pos===0){p.laps++;const salary=salaryForLap(p.laps);p.cash+=salary;audio.play('start');showToast(`${p.name} START 통과 · 민심 +${salary.toLocaleString('ko-KR')}`);render();}
+      if(prev===TRACK_LEN-1&&p.pos===0){p.laps++;const salary=salaryForLap(p.laps);p.cash+=salary;audio.play('start');showToast(`${p.name} ${TILE_RULES[0].name} 통과 · 민심 +${salary.toLocaleString('ko-KR')}`);render();}
       placeToken(playerIndex,p.pos,false); audio.play('step'); await wait(215);
     }
     setMovingVisual(playerIndex,false); audio.play('land'); await wait(100);render();
@@ -384,14 +386,14 @@ function createGame(root){
 
   async function resolveTile(playerIndex){
     const p=state.players[playerIndex],tile=TILE_RULES[p.pos]||{type:'noop',name:`칸 ${p.pos}`};
-    if(tile.type==='start'){showToast(`${p.name} START 도착`);return;}
+    if(tile.type==='start'){showToast(`${p.name} ${TILE_RULES[0].name} 도착`);return;}
     if(tile.type==='gain'||tile.type==='plaza'){p.cash+=tile.amount;audio.play('gain');showToast(`${tile.name} · 민심 +${tile.amount.toLocaleString('ko-KR')}`);reaction(playerIndex,'win');render();return;}
     if(tile.type==='loss'){await takeCash(playerIndex,tile.amount,tile.name);reaction(playerIndex,'fail');render();return;}
     if(tile.type==='issue'){const amount=[-700,-400,400,700][Math.floor(Math.random()*4)];if(amount>=0){p.cash+=amount;audio.play('gain');showToast(`긴급이슈 반전 · 민심 +${amount}`);reaction(playerIndex,'emotion');}else{await takeCash(playerIndex,-amount,'긴급이슈');reaction(playerIndex,'fail');}render();return;}
     if(tile.type==='card'){await drawCard(playerIndex);render();return;}
     if(tile.type==='hope'){await resolveHope(playerIndex);render();return;}
     if(tile.type==='fate20'){await resolveFate20(playerIndex);render();return;}
-    if(tile.type==='desire'){state.players[playerIndex].trappedTurns=2;showToast(`${state.players[playerIndex].name} · 욕망의 굴레 2턴`);reaction(playerIndex,'fail');render();return;}
+    if(tile.type==='desire'){state.players[playerIndex].trappedTurns=2;showToast(`${state.players[playerIndex].name} · ${TILE_RULES[24].name} 2턴`);reaction(playerIndex,'fail');render();return;}
     if(tile.type==='fate'){await resolveFate(playerIndex);render();return;}
     if(tile.type==='tour'){await resolveTour(playerIndex);render();return;}
     if(tile.type==='property'){await resolveProperty(playerIndex,tile);render();return;}
@@ -401,7 +403,7 @@ function createGame(root){
     const prop=state.props[tile.i],p=state.players[playerIndex];
     if(!prop){
       if(playerIndex===1){if(p.cash>=tile.price*1.8){buyProperty(playerIndex,tile);}else showToast(`AI가 ${tile.name} 구매를 보류했습니다.`);return;}
-      const ok=await ask(`영향력 거점`,`<b>${tile.name}</b><br>민심 ${tile.price.toLocaleString('ko-KR')}을 사용해 확보하시겠습니까?`,[['구매',true],['지나가기',false]]);
+      const ok=await ask(`영향력 거점`,`<b>${escapeText(tile.name)}</b><br>민심 ${tile.price.toLocaleString('ko-KR')}을 사용해 확보하시겠습니까?`,[['구매',true],['지나가기',false]]);
       if(ok)buyProperty(playerIndex,tile);return;
     }
     if(prop.owner===playerIndex){
@@ -425,7 +427,7 @@ function createGame(root){
     let buyout=prop.invested*2;
     if(p.buyoutDiscount){buyout=Math.round(buyout*.7);}
     if(playerIndex===1){if(p.cash>buyout*1.8){p.buyoutDiscount=false;transferOwnership(playerIndex,tile,prop,buyout);}return;}
-    if(p.cash>=buyout){const ok=await ask(`거점 인수`,`민심 ${buyout.toLocaleString('ko-KR')}으로 <b>${tile.name}</b>을 인수하시겠습니까?`,[['인수',true],['아니오',false]]);if(ok){p.buyoutDiscount=false;transferOwnership(playerIndex,tile,prop,buyout);}}
+    if(p.cash>=buyout){const ok=await ask(`거점 인수`,`민심 ${buyout.toLocaleString('ko-KR')}으로 <b>${escapeText(tile.name)}</b>을 인수하시겠습니까?`,[['인수',true],['아니오',false]]);if(ok){p.buyoutDiscount=false;transferOwnership(playerIndex,tile,prop,buyout);}}
   }
 
   function buyProperty(pi,tile){const p=state.players[pi];if(p.cash<tile.price){showToast('민심이 부족합니다.');return;}p.cash-=tile.price;state.props[tile.i]={owner:pi,level:1,invested:tile.price};audio.play('purchase');showToast(`${p.name} · ${tile.name} 영향력 확보`);reaction(pi,'win');}
@@ -452,11 +454,11 @@ function createGame(root){
     if(!state.hopeWaiting){
       const donation=Math.max(1,Math.round(p.cash*.10));
       p.cash-=donation;state.pot=donation;state.hopeWaiting=true;
-      audio.play('loss');showToast(`희망의 재단 · ${p.name} 민심 ${donation.toLocaleString('ko-KR')} 기부`);reaction(pi,'emotion');
+      audio.play('loss');showToast(`${TILE_RULES[8].name} · ${p.name} 민심 ${donation.toLocaleString('ko-KR')} 기부`);reaction(pi,'emotion');
       if(p.cash<=0)endGame(1-pi);return;
     }
     const reward=state.pot;state.pot=0;state.hopeWaiting=false;p.cash+=reward;
-    audio.play('gain');showToast(`희망의 재단 · ${p.name} 기부 민심 +${reward.toLocaleString('ko-KR')}`);reaction(pi,'win');
+    audio.play('gain');showToast(`${TILE_RULES[8].name} · ${p.name} 기부 민심 +${reward.toLocaleString('ko-KR')}`);reaction(pi,'win');
   }
 
   async function resolveFate20(pi){
@@ -534,7 +536,7 @@ function createGame(root){
   function ask(head,html,opts){
     return new Promise(resolve=>{
       kicker.textContent='JCS POLIMARBLE';title.textContent=head;body.innerHTML=html;
-      actions.innerHTML=opts.map(([label,value,disabled],i)=>`<button type="button" class="pm-action-btn${i===0?' is-primary':''}" data-value="${String(value)}"${disabled?' disabled aria-disabled="true"':''}>${label}</button>`).join('');
+      actions.innerHTML=opts.map(([label,value,disabled],i)=>`<button type="button" class="pm-action-btn${i===0?' is-primary':''}" data-value="${String(value)}"${disabled?' disabled aria-disabled="true"':''}>${escapeText(label)}</button>`).join('');
       modal.setAttribute('aria-hidden','false');modal.classList.add('is-visible');
       const handler=ev=>{const b=ev.target.closest('[data-value]');if(!b||b.disabled)return;actions.removeEventListener('click',handler);modal.classList.remove('is-visible');modal.setAttribute('aria-hidden','true');let v=b.dataset.value;if(v==='true')v=true;else if(v==='false')v=false;else if(/^\d+$/.test(v))v=Number(v);resolve(v);};
       actions.addEventListener('click',handler);

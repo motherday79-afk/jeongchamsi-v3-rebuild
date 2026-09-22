@@ -1,1 +1,1 @@
-export * from './polimable-scene-layout.js';
+export * from './polimable-tile-design.js';
