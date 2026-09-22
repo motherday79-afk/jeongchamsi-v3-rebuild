@@ -1,4 +1,4 @@
-import {mountHudEditor} from './polimable-hud-editor.js?v=0.0.31.253';
+import {mountHudEditor} from './polimable-hud-editor.js?v=0.0.31.254';
 import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS,POLIMARBLE_TOKEN_POINTS as TOKEN_POINTS,POLIMARBLE_PROPERTY_OBJECT_POINTS as OBJECT_POINTS} from '../core/polimable-layout.js?v=0.0.31.251';
 import {createPoliMarbleAudio} from '../core/polimable-audio.js?v=0.0.31.245';
 import {calculatePoliMarbleStage} from '../core/polimable-viewport.js?v=0.0.31.251';
@@ -279,7 +279,7 @@ function createGame(root){
     if(!layer)return;
     const objects=[];
     for(const [idxStr,prop] of Object.entries(state.props)){
-      const idx=Number(idxStr),tile=TILE_RULES[idx],point=OBJECT_POINTS[idx];
+      const idx=Number(idxStr),tile=TILE_RULES[idx],base=OBJECT_POINTS[idx],slot=prop.level<=1?'flag':`building${Math.min(3,prop.level-1)}`,custom=root._pmSceneLayout?.items?.[`tile.${idx}.${slot}`],point=custom?{...base,...custom}:base;
       if(!tile||tile.type!=='property'||!point)continue;
       let src='',kind='',label='';
       if(prop.level<=1){
@@ -292,7 +292,7 @@ function createGame(root){
       }else{
         src='/assets/polimable/objects/building-3.png';kind='building-3';label=`${tile.name} 강화 3단계 · 고정자산`;
       }
-      objects.push(`<div class="pm-property-state-object is-${kind} side-${point.side}" data-pm-property-object="${idx}" style="left:${point.x}px;top:${point.y}px" aria-label="${label}"><img src="${src}" alt=""></div>`);
+      objects.push(`<div class="pm-property-state-object is-${kind} side-${point.side}" data-pm-property-object="${idx}" style="left:${point.x}px;top:${point.y}px;${custom?`width:${custom.w}px!important;height:${custom.h}px!important;${custom.hidden?'display:none!important;':''}`:''}" aria-label="${label}"><img src="${src}" alt=""></div>`);
     }
     layer.innerHTML=objects.join('');
   }
@@ -364,10 +364,10 @@ function createGame(root){
 
   function placeOneToken(playerIndex,index,slot='solo',instant=false){
     const placement=TOKEN_POINTS[index%TRACK_LEN];
-    const point=placement?.[slot]||placement?.solo;
+    const custom=root._pmSceneLayout?.items?.[`tile.${index%TRACK_LEN}.${slot}`],point=custom||placement?.[slot]||placement?.solo;
     const token=playerIndex===0?token1:token2;
     if(!token||!point)return;
-    token.classList.toggle('is-instant',instant);
+    if(custom){token.style.setProperty('width',custom.w+'px','important');token.style.setProperty('height',custom.h+'px','important');token.style.setProperty('visibility',custom.hidden?'hidden':'visible');}token.classList.toggle('is-instant',instant);
     token.style.setProperty('--pm-token-x',`${point.x}px`);
     token.style.setProperty('--pm-token-y',`${point.y}px`);
     token.dataset.pmTile=String(index%TRACK_LEN);
@@ -554,7 +554,7 @@ function createGame(root){
     setTimeout(()=>{box.classList.remove('is-visible');box.setAttribute('aria-hidden','true');},1100);
   }
 
-  return {init,state,canLayoutEdit,setLayoutEditing};
+  return {init,state,canLayoutEdit,setLayoutEditing,refreshLayout(){placeAllTokens(true);renderOwnership();}};
 }
 
 const wait=ms=>new Promise(r=>setTimeout(r,ms));

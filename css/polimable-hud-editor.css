@@ -1,4 +1,19 @@
 /* Independent HUD/editor namespace; the board and game coordinates stay untouched. */
+.pmle-hud .pmle-item[hidden]{display:none!important}
+.pmle-anchor{display:flex;align-items:flex-end;justify-content:center;overflow:visible}
+.pmle-anchor img{width:100%;height:100%;object-fit:contain;object-position:center bottom;pointer-events:none}
+.pm-logical-canvas .pm-property-state-object img{width:100%!important;height:100%!important;object-fit:contain}
+.pmle-logo{overflow:hidden}
+.pmle-logo-art{width:495px;height:181px;background:url('/assets/polimable/polimable-board-base-31-249.png') -590px 0/1672px 941px no-repeat;transform-origin:0 0;clip-path:polygon(0 0,100% 0,100% 100%,74% 94%,50% 81%,24% 94%,0 100%)}
+.pmle-logo-cover{position:absolute;inset:0;width:1672px;height:941px;pointer-events:none;background:url('/assets/polimable/editor/logo-background-254.png') 0 0/1672px 941px no-repeat;clip-path:polygon(590px 0,1085px 0,1085px 181px,956px 170px,837px 147px,709px 170px,590px 181px);z-index:2}
+.pmle-editing .pmle-item.is-hidden-item{opacity:.25;outline:2px dashed #ec4899}
+.pmle-editing:not(.pmle-preview) .pm-board-cell-object{pointer-events:auto!important;cursor:crosshair}
+.pmle-tile-edit .pm-character-token,.pmle-tile-edit .pm-owner-marker-layer{visibility:hidden!important}
+@media(max-width:900px) and (orientation:landscape){
+ body.pmle-open .pm-board-stage-page.pmle-editing-page{width:calc(100vw - 258px)!important;height:calc(100dvh - 68px)!important}
+ body.pmle-open .pmle-side{display:block;top:62px;left:auto;right:6px;bottom:6px;width:240px;height:auto;overflow-x:hidden;overflow-y:auto;touch-action:pan-y}
+ body.pmle-open .pmle-side>label,body.pmle-open .pmle-side>section{margin-bottom:12px}
+}
 [data-pm-hud-v2="1"] .pm-logical-canvas .pm-player-hud,[data-pm-hud-v2="1"] .pm-logical-canvas .pm-character-profile{display:none!important}
 .pmle-hud{position:absolute;inset:0;width:1672px;height:941px;z-index:30;pointer-events:none}
 .pmle-hud .pmle-item{position:absolute;box-sizing:border-box;padding:0!important;margin:0!important;border:0;background:none;pointer-events:none;min-width:0;min-height:0;max-width:none;max-height:none;transform:none;transition:none;user-select:none}

@@ -3,7 +3,7 @@ const U=new URL('../src/core/polimable-hud-layout.js',import.meta.url);
 test('layout module exists',()=>assert.ok(fs.existsSync(U)));
 if(fs.existsSync(U)){
 const m=await import(U);
-test('14 independent valid HUD elements',()=>{let d=m.defaults();assert.equal(Object.keys(d.items).length,14);assert.deepEqual(m.validate(d),d);});
+test('14 independent valid HUD elements',()=>{let d=m.defaults();assert.equal(Object.keys(d.items).filter(k=>/^p[12]\./.test(k)).length,14);assert.deepEqual(m.validate(d),d);});
 test('reject invalid schema / foreign board / extra keys / invalid sizes',()=>{for(const f of [d=>d.board='old',d=>d.items.extra={},d=>d.items['p1.cash'].x=NaN,d=>d.items['p1.profile'].h=20,d=>d.items['p1.name'].color='url(evil)']){let d=m.defaults();f(d);assert.throws(()=>m.validate(d));}});
 test('inverse screen coordinate mapping',()=>assert.deepEqual(m.point(150,100,{left:50,top:50,width:836,height:470.5}),{x:200,y:100}));
 test('clamp and square profile',()=>{let d=m.adjust('p1.profile',m.defaults().items['p1.profile'],{x:-1,y:9000,w:90});assert.equal(d.x,0);assert.equal(d.y,851);assert.equal(d.h,d.w);});
