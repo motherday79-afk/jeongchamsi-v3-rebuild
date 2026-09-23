@@ -19,6 +19,7 @@ export function renderPoliMarblePage({session={}}={}){
     <div class="pm-board-stage" data-pm-root data-pm-can-edit="${session?.user?.role==='admin'?'true':'false'}" data-pm-stage="gameplay-test">
       <img class="pm-board-stage-image" src="/assets/polimable/editor/tile-clean-255.png" alt="JCS 폴리마블 게임보드">
       <div class="pm-logical-canvas" data-pm-logical-canvas aria-label="1672×941 폴리마블 논리 캔버스">
+        <div class="pm-plaza-layer" aria-hidden="true"><img src="/assets/polimable/editor/central-plaza-263.png" alt=""><div class="pm-plaza-logo">정참시<br><strong>폴리마블</strong></div></div>
         <div class="pm-board-object-layer" data-pm-board-object-layer aria-label="32칸 독립 객체 레이어">
           ${LAYOUT.map(renderTileObject).join('')}
           ${HUD.map(renderHudObject).join('')}
@@ -88,7 +89,7 @@ export function renderPoliMarblePage({session={}}={}){
         <div class="pm-action-card" role="dialog" aria-modal="true" aria-labelledby="pm-action-title">
           <small class="pm-action-kicker" data-pm-action-kicker>JCS POLIMARBLE</small>
           <h3 id="pm-action-title" data-pm-action-title>선택</h3>
-          <p data-pm-action-body></p>
+          <div class="pm-action-body" data-pm-action-body></div>
           <div class="pm-action-buttons" data-pm-action-buttons></div>
         </div>
       </div>

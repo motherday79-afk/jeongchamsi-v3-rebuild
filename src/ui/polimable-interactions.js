@@ -1,3 +1,4 @@
+import {propertyQuote,quoteMarkup,PROPERTY_RENT_RATES,PROPERTY_UPGRADE_RATES} from '../core/polimable-property-quote.js?v=0.0.31.263';
 import {mountGameMotion,setCubeFace} from './polimable-motion.js?v=0.0.31.261';
 import {stepTiming} from '../core/polimable-motion.js?v=0.0.31.261';
 import {tileName,escapeText} from '../core/polimable-tile-design.js';
@@ -8,8 +9,8 @@ import {calculatePoliMarbleStage} from '../core/polimable-viewport.js?v=0.0.31.2
 
 const START_CASH=10000;
 const MAX_CARDS=4;
-const RENT_RATE=[0,.40,.80,1.50,2.50];
-const UPGRADE_RATE=[0,0,.60,.90,1.20];
+const RENT_RATE=PROPERTY_RENT_RATES;
+const UPGRADE_RATE=PROPERTY_UPGRADE_RATES;
 const TRACK_LEN=MOVE_ANCHORS.length; // exact 32-position diamond board
 
 const DEFAULT_TILE_RULES=[
@@ -327,22 +328,23 @@ function createGame(root){
     if(tile.type==='property'){await resolveProperty(playerIndex,tile);render();return;}
   }
 
+  function quoteFor(kind,pi,tile,prop){const p=state.players[pi],group=TILE_RULES.filter(t=>t.type==='property'&&t.group===tile.group),network=group.length>=2&&group.every(t=>t.i===tile.i||state.props[t.i]?.owner===pi);return propertyQuote({kind,tile,cash:p.cash,prop,network,boost:p.boost,discount:kind==='upgrade'?p.upgradeDiscount:kind==='buyout'?p.buyoutDiscount:false});}
   async function resolveProperty(playerIndex,tile){
     const prop=state.props[tile.i],p=state.players[playerIndex];
     if(!prop){
       if(playerIndex===1){if(p.cash>=tile.price*1.8){buyProperty(playerIndex,tile);}else showToast(`AI가 ${tile.name} 구매를 보류했습니다.`);return;}
-      const ok=await ask(`영향력 거점`,`<b>${escapeText(tile.name)}</b><br>민심 ${tile.price.toLocaleString('ko-KR')}을 사용해 확보하시겠습니까?`,[['구매',true],['지나가기',false]]);
+      const q=quoteFor('buy',playerIndex,tile);const ok=await ask('거점 구매',quoteMarkup(q),[[`${q.cost.toLocaleString('ko-KR')} 구매`,true,!q.affordable],['지나가기',false]]);
       if(ok)buyProperty(playerIndex,tile);return;
     }
     if(prop.owner===playerIndex){
       const maxLevel=Math.min(4,p.laps+1);
       const upCost=upgradeCost(tile,prop,p);
       if(playerIndex===1){if(prop.level<maxLevel&&p.cash>=upCost*2)upgradeProperty(playerIndex,tile,prop);return;}
-      const options=[];
-      if(prop.level<maxLevel)options.push([`강화 ${Math.max(1,prop.level)}단계 · ${upCost.toLocaleString()}`, 'upgrade']);
+      const canUpgrade=prop.level<maxLevel,q=quoteFor(canUpgrade?'upgrade':'hold',playerIndex,tile,prop),options=[];
+      if(canUpgrade)options.push([`${q.cost.toLocaleString('ko-KR')} 강화`,'upgrade',!q.affordable]);
       options.push([`매각 ${sellValue(tile,prop).toLocaleString()}`,'sell'],['그대로','skip']);
-      const currentLabel=prop.level===1?'소유':prop.level>=4?'고정자산':`강화 ${prop.level-1}단계`;
-      const choice=await ask(`내 거점 · ${tile.name}`,`현재 ${currentLabel} · 투자 ${prop.invested.toLocaleString('ko-KR')} 민심`,options);
+      const limitNote=!canUpgrade&&prop.level<4?'<small class="pm-property-note">다음 바퀴를 완료하면 추가 강화가 가능합니다.</small>':'';
+      const choice=await ask(canUpgrade?'거점 강화':'내 거점',quoteMarkup(q)+limitNote,options);
       if(choice==='upgrade')upgradeProperty(playerIndex,tile,prop); else if(choice==='sell')sellProperty(playerIndex,tile,prop);return;
     }
     const owner=state.players[prop.owner];
@@ -352,10 +354,9 @@ function createGame(root){
     if(p.shield){p.shield=false;showToast(`${p.name} 방어권 사용 · 민심 영향 면제`);}else{await transferCash(playerIndex,prop.owner,rent,`${tile.name} 민심 영향`);}
     if(state.gameOver)return;
     if(prop.level>=4)return;
-    let buyout=prop.invested*2;
-    if(p.buyoutDiscount){buyout=Math.round(buyout*.7);}
+    const q=quoteFor('buyout',playerIndex,tile,prop),buyout=q.cost;
     if(playerIndex===1){if(p.cash>buyout*1.8){p.buyoutDiscount=false;transferOwnership(playerIndex,tile,prop,buyout);}return;}
-    if(p.cash>=buyout){const ok=await ask(`거점 인수`,`민심 ${buyout.toLocaleString('ko-KR')}으로 <b>${escapeText(tile.name)}</b>을 인수하시겠습니까?`,[['인수',true],['아니오',false]]);if(ok){p.buyoutDiscount=false;transferOwnership(playerIndex,tile,prop,buyout);}}
+    const ok=await ask('거점 인수',quoteMarkup(q),[[`${buyout.toLocaleString('ko-KR')} 인수`,true,!q.affordable],['아니오',false]]);if(ok){p.buyoutDiscount=false;transferOwnership(playerIndex,tile,prop,buyout);}
   }
 
   function buyProperty(pi,tile){const p=state.players[pi];if(p.cash<tile.price){showToast('민심이 부족합니다.');return;}p.cash-=tile.price;state.props[tile.i]={owner:pi,level:1,invested:tile.price};audio.play('purchase');showToast(`${p.name} · ${tile.name} 영향력 확보`);reaction(pi,'win');}
@@ -374,7 +375,7 @@ function createGame(root){
   }
   function sellProperty(pi,tile,prop){const value=sellValue(tile,prop);state.players[pi].cash+=value;delete state.props[tile.i];audio.play('gain');showToast(`${tile.name} 매각 · 민심 +${value.toLocaleString('ko-KR')}`);}
   function transferOwnership(pi,tile,prop,cost){const old=prop.owner;state.players[pi].cash-=cost;state.players[old].cash+=cost;prop.owner=pi;audio.play('purchase');showToast(`${state.players[pi].name}이 ${tile.name} 인수`);reaction(pi,'win');}
-  function upgradeCost(tile,prop,p){let c=Math.round(tile.price*UPGRADE_RATE[prop.level+1]);if(p.upgradeDiscount)c=Math.round(c*.5);return c;}
+  function upgradeCost(tile,prop,p){return propertyQuote({kind:'upgrade',tile,prop,cash:p.cash,discount:p.upgradeDiscount}).cost;}
   function sellValue(tile,prop){return Math.round(prop.invested*.70);}
 
   async function resolveHope(pi){
@@ -463,7 +464,7 @@ function createGame(root){
 
   function ask(head,html,opts){
     return new Promise(resolve=>{
-      kicker.textContent='JCS POLIMARBLE';title.textContent=head;body.innerHTML=html;
+      modal.classList.toggle('pm-property-modal',html.includes('pm-property-summary'));kicker.textContent=html.includes('pm-property-summary')?'POLIMARBLE':'JCS POLIMARBLE';title.textContent=head;body.innerHTML=html;
       actions.innerHTML=opts.map(([label,value,disabled],i)=>`<button type="button" class="pm-action-btn${i===0?' is-primary':''}" data-value="${String(value)}"${disabled?' disabled aria-disabled="true"':''}>${escapeText(label)}</button>`).join('');
       modal.setAttribute('aria-hidden','false');modal.classList.add('is-visible');
       const handler=ev=>{const b=ev.target.closest('[data-value]');if(!b||b.disabled)return;actions.removeEventListener('click',handler);modal.classList.remove('is-visible');modal.setAttribute('aria-hidden','true');let v=b.dataset.value;if(v==='true')v=true;else if(v==='false')v=false;else if(/^\d+$/.test(v))v=Number(v);resolve(v);};

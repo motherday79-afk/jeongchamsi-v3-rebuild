@@ -690,3 +690,29 @@ html:has(.pm-game-shell),body:has(.pm-game-shell){overflow:hidden!important;marg
 .pm-game-nav a,.pm-game-nav button{display:flex;align-items:center;justify-content:center;min-height:34px;padding:6px 12px;border:1px solid #e8c87b88;border-radius:9px;background:#251644e8;color:#fff5d5;font:700 12px/1.2 Arial,sans-serif;text-decoration:none;cursor:pointer;box-sizing:border-box;touch-action:manipulation}
 .pm-game-nav [hidden]{display:none!important}
 .pmle-editing-page .pm-game-nav{display:none}
+
+/* 263: calm centre and readable property decisions. */
+.pm-plaza-layer{position:absolute;inset:0;width:1672px;height:941px;z-index:1;pointer-events:none;clip-path:polygon(835px 274px,1348px 500px,821px 730px,311px 500px)}
+.pm-plaza-layer>img{display:block;width:100%;height:100%;object-fit:fill}
+.pm-plaza-logo{position:absolute;left:50%;top:53%;transform:translate(-50%,-50%) scaleY(.68);text-align:center;font:800 32px/1.1 Arial,'Malgun Gothic',sans-serif;color:#65517b;opacity:.35;text-shadow:0 1px 0 #fff9,0 -1px 0 #53405455;transition:opacity .2s}
+.pm-plaza-logo strong{font-size:50px;letter-spacing:2px}
+.pm-board-stage:has(.pm-dice-flight[aria-hidden="false"]) .pm-plaza-logo,.pm-board-stage:has(.pm-card-reveal[aria-hidden="false"]) .pm-plaza-logo,.pm-board-stage:has(.pm-action-modal.is-visible) .pm-plaza-logo{opacity:.06}
+.pm-action-body{font-size:clamp(11px,.9vw,16px);line-height:1.45}
+.pm-property-modal{position:fixed;inset:0;z-index:120;background:#160f2d99;padding:8px;box-sizing:border-box}
+.pm-property-modal .pm-action-card{box-sizing:border-box;width:min(460px,100%);min-width:0;max-height:calc(100dvh - 16px);overflow-y:auto;overscroll-behavior:contain;padding:16px 20px;border:2px solid #d7b866;border-radius:18px;background:linear-gradient(160deg,#fffdf4,#f2edf8);box-shadow:0 14px 50px #08031b88;color:#35234e;font:600 14px/1.35 Arial,'Malgun Gothic',sans-serif}
+.pm-property-modal .pm-action-kicker{color:#8e729b;font-size:10px;letter-spacing:2px}
+.pm-property-modal .pm-action-card h3{font-size:24px;margin:3px 0 10px;color:#40275f}
+.pm-property-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border-radius:10px;background:#e6dcf0;margin-bottom:8px;text-align:left}
+.pm-property-name{font-size:21px;color:#442269;word-break:keep-all}
+.pm-property-state{font-size:12px;text-align:right;color:#6c5185}
+.pm-price-list{font-size:14px;line-height:1.4}
+.pm-price-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:7px 4px;border-bottom:1px solid #74618d20;text-align:left}
+.pm-price-row strong{font-size:17px;white-space:nowrap;color:#35234e}
+.pm-price-row.is-discount{color:#416c55}.pm-price-row.is-discount strong{color:#28784d}
+.pm-price-row.is-total{margin-top:5px;padding:10px 12px;background:#f9e4a8;border-radius:9px;border:0;font-weight:800}.pm-price-row.is-total strong{font-size:24px;color:#764500}
+.pm-price-row.is-balance strong{color:#513598}.pm-price-row.is-shortage strong{color:#bd3b45}.pm-price-row.is-income strong{color:#3d7155}
+.pm-property-note{display:block;margin:9px 0;color:#7a6d86;font-size:11px;line-height:1.5;text-align:left}
+.pm-property-modal .pm-action-buttons{margin-top:12px;gap:8px}
+.pm-property-modal .pm-action-btn{min-width:0;flex:1;padding:10px 8px;border-radius:10px;font-size:15px;white-space:nowrap;min-height:42px}
+.pm-property-modal .pm-action-btn.is-primary{flex:1.5}
+@media(max-height:500px){.pm-property-modal .pm-action-card{padding:10px 16px}.pm-property-modal .pm-action-card h3{font-size:20px;margin-bottom:5px}.pm-property-summary{padding:6px 10px;margin-bottom:3px}.pm-price-row{padding:4px}.pm-price-row.is-total{padding:6px 10px}.pm-property-note{margin:5px 0;font-size:10px}.pm-property-modal .pm-action-buttons{margin-top:6px}.pm-property-modal .pm-action-btn{padding:7px;min-height:36px}}
