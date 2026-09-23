@@ -44,10 +44,10 @@ export function renderPoliMarblePage({session={}}={}){
             <img src="/assets/polimable/characters/player2/profile.png" alt="2P 캐릭터 프로필">
           </div>
           <button class="pm-character-token pm-character-token--p1" type="button" data-pm-character-token="0" aria-label="1P 게임말">
-            <img data-pm-character-token-image="0" src="/assets/polimable/characters/player1/token.png" alt="1P 게임말">
+            <img data-pm-character-token-image="0" src="/assets/polimable/characters/player1/token-257.png" alt="1P 게임말">
           </button>
           <div class="pm-character-token pm-character-token--p2" data-pm-character-token="1" aria-label="2P 게임말">
-            <img data-pm-character-token-image="1" src="/assets/polimable/characters/player2/token.png" alt="2P 게임말">
+            <img data-pm-character-token-image="1" src="/assets/polimable/characters/player2/token-257.png" alt="2P 게임말">
           </div>
           <div class="pm-character-reaction" data-pm-character-reaction="0" aria-hidden="true">
             <img data-pm-character-reaction-image="0" src="/assets/polimable/characters/player1/happy.png" alt="1P 캐릭터 감정표현">

@@ -1,0 +1,5 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {diceOrientation,pips,pressFrames,stepTiming,ownerColor} from '../src/core/polimable-motion.js';
+test('all six dice values have the right pip count and a distinct final orientation',()=>{const seen=new Set();for(let v=1;v<=6;v++){assert.equal(pips(v).length,v);assert.equal(new Set(pips(v)).size,v);seen.add(diceOrientation(v));}assert.equal(seen.size,6);for(const bad of [0,7,NaN])assert.throws(()=>diceOrientation(bad));});
+test('tile press moves downward and returns without altering placement coordinates',()=>{for(const last of [false,true]){const f=pressFrames(last,false);assert.equal(f[0].translate,'0 0px');assert.ok(f.some(v=>parseFloat(v.translate.split(' ')[1])>0));assert.equal(f.at(-1).translate,'0 0px');}assert.deepEqual(pressFrames(true,true),[{translate:'0 0px'},{translate:'0 0px'}]);});
+test('movement waits for landing and owner colors distinguish both players',()=>{assert.ok(stepTiming.travel>0);assert.ok(stepTiming.contact>0);assert.ok(stepTiming.landing>stepTiming.contact);assert.notEqual(ownerColor(0),ownerColor(1));assert.equal(ownerColor(null),'transparent');});

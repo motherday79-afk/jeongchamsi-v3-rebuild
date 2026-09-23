@@ -1,5 +1,7 @@
+import {mountGameMotion,setCubeFace} from './polimable-motion.js?v=0.0.31.257';
+import {stepTiming} from '../core/polimable-motion.js';
 import {tileName,escapeText} from '../core/polimable-tile-design.js';
-import {mountHudEditor} from './polimable-hud-editor.js?v=0.0.31.256';
+import {mountHudEditor} from './polimable-hud-editor.js?v=0.0.31.257';
 import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS,POLIMARBLE_TOKEN_POINTS as TOKEN_POINTS,POLIMARBLE_PROPERTY_OBJECT_POINTS as OBJECT_POINTS} from '../core/polimable-layout.js?v=0.0.31.251';
 import {createPoliMarbleAudio} from '../core/polimable-audio.js?v=0.0.31.245';
 import {calculatePoliMarbleStage} from '../core/polimable-viewport.js?v=0.0.31.251';
@@ -208,7 +210,7 @@ function createGame(root){
   const actions=root.querySelector('[data-pm-action-buttons]');
   const toast=root.querySelector('[data-pm-toast]');
   const turnPill=root.querySelector('[data-pm-turn-pill]');
-  const audio=createPoliMarbleAudio(root);
+  const audio=createPoliMarbleAudio(root);const motion=mountGameMotion(root);
 
   const state={
     turn:0,rolling:false,gameOver:false,
@@ -223,7 +225,7 @@ function createGame(root){
 
   let layoutEditing=false;
   function canLayoutEdit(){return !state.rolling&&(state.turn===0||state.gameOver)&&!modal.classList.contains('is-visible');}
-  function setLayoutEditing(on){if(on&&!canLayoutEdit())return false;layoutEditing=Boolean(on);render();return true;}
+  function setLayoutEditing(on){if(on&&!canLayoutEdit())return false;layoutEditing=Boolean(on);if(on)motion.stop();render();return true;}
 
   function init(){
     audio.init();
@@ -249,7 +251,7 @@ function createGame(root){
       if(turnPill) turnPill.textContent=state.gameOver?'GAME OVER':`${state.turn===0?'1P':'2P AI'} TURN`;
       if(button) button.disabled=layoutEditing||state.turn!==0||state.rolling||state.gameOver;
     }catch(error){console.error('[POLIMARBLE 31.251] base HUD render failed',error);}
-    safeUiRender(renderCards,'strategy-cards');
+    motion.turn(state.turn);safeUiRender(renderCards,'strategy-cards');
     safeUiRender(renderRanking,'today-ranking');
     safeUiRender(renderOwnership,'ownership-markers');
     root.dispatchEvent(new CustomEvent('polimable:hud-update'));
@@ -296,7 +298,7 @@ function createGame(root){
       }
       objects.push(`<div class="pm-property-state-object is-${kind} side-${point.side}" data-pm-property-object="${idx}" style="left:${point.x}px;top:${point.y}px;${custom?`width:${custom.w}px!important;height:${custom.h}px!important;${custom.hidden?'display:none!important;':''}`:''}" aria-label="${escapeText(label)}"><img src="${src}" alt=""></div>`);
     }
-    layer.innerHTML=objects.join('');
+    layer.innerHTML=objects.join('');motion.ownership(state.props);
   }
 
   async function runTurn(playerIndex){
@@ -329,7 +331,7 @@ function createGame(root){
     result.classList.remove('is-visible','is-double');result.setAttribute('aria-hidden','true');
     flight.setAttribute('aria-hidden','false');flight.classList.remove('is-rolling','is-landed');void flight.offsetWidth;flight.classList.add('is-rolling');
     const final=[fairDie(),fairDie()],started=performance.now();
-    while(performance.now()-started<760){setDieFace(flightDice[0],fairDie());setDieFace(flightDice[1],fairDie());await wait(68);}
+    while(performance.now()-started<(motion.reduced()?100:880)){setDieFace(flightDice[0],fairDie());setDieFace(flightDice[1],fairDie());await wait(68);}
     setDieFace(flightDice[0],final[0]);setDieFace(flightDice[1],final[1]);flight.classList.remove('is-rolling');flight.classList.add('is-landed');audio.play('diceLand');await wait(320);
     dockDice.forEach((die,i)=>setDieFace(die,final[i]));
     return final;
@@ -347,7 +349,7 @@ function createGame(root){
     for(let s=0;s<steps;s++){
       const prev=p.pos; p.pos=(p.pos+1)%TRACK_LEN;
       if(prev===TRACK_LEN-1&&p.pos===0){p.laps++;const salary=salaryForLap(p.laps);p.cash+=salary;audio.play('start');showToast(`${p.name} ${TILE_RULES[0].name} 통과 · 민심 +${salary.toLocaleString('ko-KR')}`);render();}
-      placeToken(playerIndex,p.pos,false); audio.play('step'); await wait(215);
+      placeToken(playerIndex,p.pos,false);motion.hop(playerIndex);audio.play('step');await wait(stepTiming.travel);motion.press(p.pos,playerIndex,s===steps-1);await wait(s===steps-1?stepTiming.landing:stepTiming.contact);
     }
     setMovingVisual(playerIndex,false); audio.play('land'); await wait(100);render();
   }
@@ -380,8 +382,8 @@ function createGame(root){
   function setMovingVisual(playerIndex,on){
     const token=playerIndex===0?token1:token2;
     const img=playerIndex===0?token1Img:token2Img;
-    if(img)img.src=playerIndex===0?'/assets/polimable/characters/player1/token.png':'/assets/polimable/characters/player2/token.png';
-    token?.classList.toggle('is-step-hop',on);
+    if(img)img.src=playerIndex===0?'/assets/polimable/characters/player1/token-257.png':'/assets/polimable/characters/player2/token-257.png';
+    token?.classList.toggle('pm-is-walking',on);
   }
 
   async function resolveTile(playerIndex){
@@ -480,7 +482,7 @@ function createGame(root){
     const target=await ask('정참시 투어','이동할 대표 거점을 선택하세요.',choices);
     if(Number.isInteger(target)){await moveDirect(pi,target);showToast(`정참시 투어 · ${TILE_RULES[target].name} 이동`);}
   }
-  async function moveDirect(pi,target){state.players[pi].pos=target;placeToken(pi,target,false);await wait(300);}
+  async function moveDirect(pi,target){state.players[pi].pos=target;placeToken(pi,target,false);motion.hop(pi);await wait(stepTiming.travel);motion.press(target,pi,true);await wait(stepTiming.landing);}
 
   async function drawCard(pi){
     const p=state.players[pi],card={...CARD_DECK[Math.floor(Math.random()*CARD_DECK.length)]};
@@ -493,7 +495,7 @@ function createGame(root){
         if(Number.isInteger(choice))p.cards.splice(choice,1);
       }
     }
-    p.cards.push(card);showToast(`${p.name} 전략카드 획득 · ${card.name}`);reaction(pi,'surprise');
+    p.cards.push(card);await motion.reveal(card,CARD_ICONS[card.id]||'★');showToast(`${p.name} 전략카드 획득 · ${card.name}`);reaction(pi,'surprise');
     if(pi===1)autoUseAiCard(pi);
   }
 
@@ -545,7 +547,7 @@ function createGame(root){
 
   let toastTimer=0;
   function showToast(msg){clearTimeout(toastTimer);toast.textContent=msg;toast.classList.add('is-visible');toastTimer=setTimeout(()=>toast.classList.remove('is-visible'),1800);}
-  function reaction(pi,type){
+  function reaction(pi,type){motion.react(pi,type);
     const box=root.querySelector(`[data-pm-character-reaction="${pi}"]`);
     const img=root.querySelector(`[data-pm-character-reaction-image="${pi}"]`);
     if(!box||!img)return;
@@ -561,4 +563,4 @@ function createGame(root){
 
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 function fairDie(){if(globalThis.crypto?.getRandomValues){const a=new Uint8Array(1);let x=255;while(x>=252){globalThis.crypto.getRandomValues(a);x=a[0];}return x%6+1;}return Math.floor(Math.random()*6)+1;}
-function setDieFace(el,value){const face=Math.max(1,Math.min(6,Number(value)||1));el.dataset.face=String(face);el.setAttribute('aria-label',`주사위 ${face}`);}
+function setDieFace(el,value){const face=Math.max(1,Math.min(6,Number(value)||1));el.dataset.face=String(face);setCubeFace(el,face);el.setAttribute('aria-label',`주사위 ${face}`);}
