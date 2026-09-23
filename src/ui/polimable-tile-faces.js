@@ -1,14 +1,21 @@
 import {TILES,labelDefaults} from '../core/polimable-tile-design.js';
-import {tileOutline,sideTransform} from '../core/polimable-tile-outline.js?v=0.0.31.261';
+import {tileOutline,sideTransform,roundPolygon} from '../core/polimable-tile-outline.js?v=0.0.31.261';
 const ns='http://www.w3.org/2000/svg';
 const node=(name,attrs={})=>{const e=document.createElementNS(ns,name);for(const [k,v]of Object.entries(attrs))e.setAttribute(k,String(v));return e;};
 const isStrategy=i=>[4,12,20,28].includes(i);
+// Cover the source artwork's full side depth, with a narrow overlap at its edges.
+function surfaceGeometry(i){const geo=tileOutline(i);if(!isStrategy(i))return geo;
+ const cx=geo.points.reduce((n,p)=>n+p[0],0)/4,cy=geo.points.reduce((n,p)=>n+p[1],0)/4;
+ const points=geo.points.map(([x,y])=>[cx+(x-cx)*1.022,cy+(y-cy)*1.035]);
+ const thickness={4:16,12:13,20:14,28:15}[i], [top,right,bottom,left]=points;
+ return {points,thickness,top:roundPolygon(points,4),footprint:roundPolygon([top,right,[right[0],right[1]+thickness],[bottom[0],bottom[1]+thickness],[left[0],left[1]+thickness],left],4)};
+}
 const texture=()=>node('image',{href:'/assets/polimable/editor/tile-clean-255.png',width:1672,height:941,preserveAspectRatio:'none'});
 export function mountTileFaces(canvas){
  const svg=node('svg',{viewBox:'0 0 1672 941','aria-hidden':'true'});svg.classList.add('pmle-tile-faces');const defs=node('defs');svg.append(defs);const groups=new Map();
  const clip=(id,d)=>{const c=node('clipPath',{id});c.append(node('path',{d}));defs.append(c);return `url(#${id})`;};
  for(const t of [...TILES].sort((a,b)=>tileOutline(a.index).points[2][1]-tileOutline(b.index).points[2][1])){
-  const i=t.index,silver=isStrategy(i),geo=tileOutline(i),topClip=clip(`pm-top-${i}`,geo.top),wholeClip=clip(`pm-whole-${i}`,geo.footprint),[top,right,bottom,left]=geo.points;
+  const i=t.index,silver=isStrategy(i),geo=surfaceGeometry(i),topClip=clip(`pm-top-${i}`,geo.top),wholeClip=clip(`pm-whole-${i}`,geo.footprint),[top,right,bottom,left]=geo.points;
   const gradient=node('linearGradient',{id:`pmcolor-${i}`,x1:0,y1:0,x2:0,y2:1}),stops=[0,.5,.5,1].map(offset=>{const s=node('stop',{offset});gradient.append(s);return s;});defs.append(gradient);
   const color=()=>{const g=node('g',{'clip-path':topClip}),rect=node('path',{d:geo.top,fill:`url(#${gradient.id})`}),shade=rect.cloneNode();rect.style.mixBlendMode='color';shade.setAttribute('opacity','.42');g.append(rect,shade);return g;};
   const idleColor=color();svg.append(idleColor);
