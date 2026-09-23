@@ -716,3 +716,6 @@ html:has(.pm-game-shell),body:has(.pm-game-shell){overflow:hidden!important;marg
 .pm-property-modal .pm-action-btn{min-width:0;flex:1;padding:10px 8px;border-radius:10px;font-size:15px;white-space:nowrap;min-height:42px}
 .pm-property-modal .pm-action-btn.is-primary{flex:1.5}
 @media(max-height:500px){.pm-property-modal .pm-action-card{padding:10px 16px}.pm-property-modal .pm-action-card h3{font-size:20px;margin-bottom:5px}.pm-property-summary{padding:6px 10px;margin-bottom:3px}.pm-price-row{padding:4px}.pm-price-row.is-total{padding:6px 10px}.pm-property-note{margin:5px 0;font-size:10px}.pm-property-modal .pm-action-buttons{margin-top:6px}.pm-property-modal .pm-action-btn{padding:7px;min-height:36px}}
+
+/* 264: dice and totals sit above the logical board/plaza (14), below cards (36) and dialogs (40). */
+.pm-board-stage > .pm-dice-layer{z-index:24}
