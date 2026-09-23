@@ -1,5 +1,5 @@
 import {editItem,syncBuildings,alignRow} from '../core/polimable-batch-edit.js?v=0.0.31.261';
-import {mountTileFaces} from './polimable-tile-faces.js?v=0.0.31.268';
+import {mountTileFaces} from './polimable-tile-faces.js?v=0.0.31.269';
 import {BOARD,W,H,KEYS,HUD_KEYS,TILES,SLOTS,isAnchor,isImage,fieldTitle,itemRect,assetFor,isLabel,tileName,escapeText,defaults,copy,validate,adjust,point} from '../core/polimable-hud-layout.js?v=0.0.31.261';
 
 const errors={ADMIN_REQUIRED:'관리자로 다시 로그인해주세요.',LAYOUT_CHANGED:'다른 관리자가 먼저 반영했습니다. 내 작업은 임시저장되어 있습니다. 새로고침 후 최신 배치를 확인해주세요.',STORAGE_UNAVAILABLE:'서버 저장에 실패했습니다. 임시저장은 유지됩니다.',NO_PREVIOUS:'복구할 이전 배치가 없습니다.'};

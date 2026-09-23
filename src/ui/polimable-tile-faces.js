@@ -1,4 +1,4 @@
-import {strategyGeometry} from '../core/polimable-strategy-geometry.js?v=0.0.31.268';
+import {strategyGeometry} from '../core/polimable-strategy-geometry.js?v=0.0.31.269';
 import {TILES,labelDefaults} from '../core/polimable-tile-design.js';
 import {tileOutline,sideTransform,roundPolygon} from '../core/polimable-tile-outline.js?v=0.0.31.261';
 const ns='http://www.w3.org/2000/svg';
@@ -19,7 +19,8 @@ export function mountTileFaces(canvas){
   active.append(node('image',{href:'/assets/polimable/editor/tile-platform-260.png',width:1672,height:941,preserveAspectRatio:'none','clip-path':wholeClip}));
   const sideParts=[[left,bottom],[bottom,right]].map(([a,b],part)=>{const d=`M${a}L${b}L${b[0]},${b[1]+geo.thickness}L${a[0]},${a[1]+geo.thickness}Z`,g=node('g',{'clip-path':clip(`pm-side-${i}-${part}`,d)});if(silver){
    // Keep the real bevel/side shading, recoloured to silver, inside its traced silhouette.
-   const mask=`M${a}L${b}L${b[0]},${b[1]+30}L${a[0]},${a[1]+30}Z`;
+   const seam=i===4?0:1.25;
+   const mask=`M${a[0]},${a[1]-seam}L${b[0]},${b[1]-seam}L${b[0]},${b[1]+30}L${a[0]},${a[1]+30}Z`;
    g.setAttribute('clip-path',clip(`pm-real-side-${i}-${part}`,mask));
    const body=node('g',{'clip-path':wholeClip}),art=texture();art.setAttribute('filter','url(#pm-silver-source)');body.append(art);g.append(body);
   }else g.append(texture());const outer=node('g');outer.append(g);active.append(outer);return {a,b,outer};});
