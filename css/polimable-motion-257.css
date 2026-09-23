@@ -2,8 +2,6 @@
 .pm-logical-canvas .pm-character-token{overflow:visible!important;isolation:isolate;transition:left .16s ease-out,top .16s ease-out!important}
 .pm-logical-canvas .pm-character-token img{width:100%!important;height:100%!important;object-fit:contain!important;object-position:center bottom!important;position:relative;z-index:2;pointer-events:none}
 .pm-token-shadow{position:absolute;left:18%;bottom:2%;width:64%;height:12%;border-radius:50%;background:radial-gradient(ellipse,#1422388a,transparent 72%);z-index:0;pointer-events:none}
-.pm-active-player::after{content:'';position:absolute;left:9%;bottom:0;width:82%;height:14%;border:2px solid #ffe89c;border-radius:50%;box-shadow:0 0 8px #ffdc65;z-index:1;pointer-events:none}
-.pm-character-token--p2.pm-active-player::after{border-color:#ff98df;box-shadow:0 0 8px #ff79ce}
 .pmle-tile-faces{overflow:visible}
 [data-pm-tile-surface]{will-change:auto}
 .pm-dice-flight .pm-die-3d{--dice-edge:clamp(36px,6.3vw,100px);width:var(--dice-edge)!important;height:var(--dice-edge)!important;aspect-ratio:1;background:none!important;border:0!important;box-shadow:none!important;filter:drop-shadow(0 15px 9px #160d3a55);perspective:900px}
