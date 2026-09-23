@@ -719,3 +719,10 @@ html:has(.pm-game-shell),body:has(.pm-game-shell){overflow:hidden!important;marg
 
 /* 264: dice and totals sit above the logical board/plaza (14), below cards (36) and dialogs (40). */
 .pm-board-stage > .pm-dice-layer{z-index:24}
+
+/* 270: artwork-free background and independent rectangular board objects. */
+.pm-board-stage .pmle-logo-cover,.pm-board-stage .pmle-logo{display:none!important}
+.pm-board-stage .pm-plaza-layer{clip-path:none}
+.pm-board-stage .pm-plaza-layer>img{display:none}
+.pm-board-stage .pm-plaza-logo{top:49%;opacity:.28}
+.pm-board-stage .pm-board-cell-object{cursor:default}

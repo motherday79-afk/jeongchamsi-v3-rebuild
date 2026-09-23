@@ -1,7 +1,2 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
-import {mountTileFaces} from '../src/ui/polimable-tile-faces.js';
-import {defaults} from '../src/core/polimable-tile-design.js';
-class Element{constructor(tag){this.tag=tag;this.attrs={};this.children=[];this.style={};this.dataset={};this.classList={add(){}};}setAttribute(k,v){this.attrs[k]=String(v);if(k==='id')this.id=v;}append(...n){this.children.push(...n);}cloneNode(){const n=new Element(this.tag);n.attrs={...this.attrs};return n;}}
-const all=n=>[n,...n.children.flatMap(all)];
-test('four silver blocks stay visible and compress their sides together with the cap',()=>{const before=globalThis.document;globalThis.document={createElementNS:(_,tag)=>new Element(tag)};try{const canvas=new Element('div'),faces=mountTileFaces(canvas);faces.paint(defaults());const nodes=all(canvas),surfaces=nodes.filter(n=>'data-pm-tile-surface' in n.attrs);assert.equal(surfaces.length,32);for(const i of [4,12,20,28]){const s=surfaces.find(n=>n.attrs['data-pm-tile-surface']===String(i));assert.equal(s.style.display,'');assert.equal(all(s).filter(n=>n.attrs.href?.endsWith('strategy-silver-266.png')).length,2);assert.equal(all(s).filter(n=>n.attrs.filter==='url(#pm-silver-source)').length,2);faces.contact(i,7);assert.equal(s.children.at(-1).attrs.transform,'translate(0 7)');assert.match(s.children[1].attrs.transform,/^matrix/);faces.contact(i,0);assert.equal(s.style.display,'');assert.equal(s.children.at(-1).attrs.transform,'translate(0 0)');}faces.contact(1,7);const normal=surfaces.find(n=>n.attrs['data-pm-tile-surface']==='1');assert.equal(normal.style.display,'');faces.contact(1,0);assert.equal(normal.style.display,'none');}finally{globalThis.document=before;}});
+// Strategy tiles are now covered together with all other independent blocks.
+import './board270.test.mjs';

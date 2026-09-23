@@ -1,8 +1,9 @@
+import {projectItem} from '../core/polimable-board-geometry.js?v=0.0.31.270';
 import {propertyQuote,quoteMarkup,PROPERTY_RENT_RATES,PROPERTY_UPGRADE_RATES} from '../core/polimable-property-quote.js?v=0.0.31.263';
 import {mountGameMotion,setCubeFace} from './polimable-motion.js?v=0.0.31.261';
 import {stepTiming} from '../core/polimable-motion.js?v=0.0.31.261';
 import {tileName,escapeText} from '../core/polimable-tile-design.js';
-import {mountHudEditor} from './polimable-hud-editor.js?v=0.0.31.269';
+import {mountHudEditor} from './polimable-hud-editor.js?v=0.0.31.270';
 import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS,POLIMARBLE_TOKEN_POINTS as TOKEN_POINTS,POLIMARBLE_PROPERTY_OBJECT_POINTS as OBJECT_POINTS} from '../core/polimable-layout.js?v=0.0.31.251';
 import {createPoliMarbleAudio} from '../core/polimable-audio.js?v=0.0.31.245';
 import {calculatePoliMarbleStage} from '../core/polimable-viewport.js?v=0.0.31.262';
@@ -210,7 +211,7 @@ function createGame(root){
     if(!layer)return;
     const objects=[];
     for(const [idxStr,prop] of Object.entries(state.props)){
-      const idx=Number(idxStr),tile=TILE_RULES[idx],base=OBJECT_POINTS[idx],slot=prop.level<=1?'flag':`building${Math.min(3,prop.level-1)}`,custom=root._pmSceneLayout?.items?.[`tile.${idx}.${slot}`],point=custom?{...base,...custom}:base;
+      const idx=Number(idxStr),tile=TILE_RULES[idx],base=OBJECT_POINTS[idx],slot=prop.level<=1?'flag':`building${Math.min(3,prop.level-1)}`,custom=root._pmSceneLayout?.items?.[`tile.${idx}.${slot}`],point=projectItem(`tile.${idx}.${slot}`,custom?{...base,...custom}:base);
       if(!tile||tile.type!=='property'||!point)continue;
       let src='',kind='',label='';
       if(prop.level<=1){
@@ -223,7 +224,7 @@ function createGame(root){
       }else{
         src=`/assets/polimable/objects/building-3-p${prop.owner===0?1:2}-265.png`;kind='building-3';label=`${prop.owner===0?'1P':'2P'} 소유 ${tile.name} 강화 3단계 · 고정자산`;
       }
-      objects.push(`<div class="pm-property-state-object is-${kind} side-${point.side}" data-pm-property-object="${idx}" style="left:${point.x}px;top:${point.y}px;${custom?`width:${custom.w}px!important;height:${custom.h}px!important;${custom.hidden?'display:none!important;':''}`:''}" aria-label="${escapeText(label)}"><img src="${src}" alt=""></div>`);
+      objects.push(`<div class="pm-property-state-object is-${kind} side-${point.side}" data-pm-property-object="${idx}" style="left:${point.x}px;top:${point.y}px;${custom?`width:${point.w}px!important;height:${point.h}px!important;${custom.hidden?'display:none!important;':''}`:''}" aria-label="${escapeText(label)}"><img src="${src}" alt=""></div>`);
     }
     layer.innerHTML=objects.join('');motion.ownership(state.props);
   }
@@ -295,10 +296,10 @@ function createGame(root){
 
   function placeOneToken(playerIndex,index,slot='solo',instant=false){
     const placement=TOKEN_POINTS[index%TRACK_LEN];
-    const custom=root._pmSceneLayout?.items?.[`tile.${index%TRACK_LEN}.${slot}`],point=custom||placement?.[slot]||placement?.solo;
+    const custom=root._pmSceneLayout?.items?.[`tile.${index%TRACK_LEN}.${slot}`],point=projectItem(`tile.${index%TRACK_LEN}.${slot}`,custom||{...placement?.[slot]||placement?.solo,w:68,h:96});
     const token=playerIndex===0?token1:token2;
     if(!token||!point)return;
-    if(custom){token.style.setProperty('width',custom.w+'px','important');token.style.setProperty('height',custom.h+'px','important');token.style.setProperty('visibility',custom.hidden?'hidden':'visible');}token.classList.toggle('is-instant',instant);
+    if(custom){token.style.setProperty('width',point.w+'px','important');token.style.setProperty('height',point.h+'px','important');token.style.setProperty('visibility',custom.hidden?'hidden':'visible');}token.classList.toggle('is-instant',instant);
     token.style.setProperty('--pm-token-x',`${point.x}px`);
     token.style.setProperty('--pm-token-y',`${point.y}px`);
     token.dataset.pmTile=String(index%TRACK_LEN);
