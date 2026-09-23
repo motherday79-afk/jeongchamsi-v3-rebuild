@@ -15,7 +15,7 @@ import { refreshFontScale } from './ui/font-scale.js?v=0.0.31.56';
 import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.178';
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.56';
 import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.194';
-import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.274';
+import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.275';
 import { focusCageCompose, setupHomeCompare, setupPoliticianAutocomplete, setupLayoutInteractions, setupPoliticianPhotoFallback, setupNowCarousel, setupCageCountdown, setupDesktopHomeViewport } from './ui/interactions.js?v=0.0.31.165';
 import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.200';
 import { createContentService, loadNavigationDashboard, loadPersonNavigation } from './core/content.js?v=0.0.31.178';
@@ -166,6 +166,7 @@ function setupMemberBadgeManagers(){
 
 async function render({preserveScroll=false,refreshHome=false,freshSession=false}={}){
   const renderId=++renderSequence,r=route(),p=parts(r);
+  if(p[0]==='mine'){location.replace('/mine'+(p[1]==='ad'?'/ad':''));return;}
   if(p[0]==='polimable'||p[0]==='polimarble'){location.replace('/');return;}
   if(freshSession)await auth.session({fresh:true});
   if(!p.length&&!refreshHome&&homeSnapshot){
@@ -453,6 +454,7 @@ document.addEventListener('submit',async event=>{
   if(result?.ok&&type==='comment'){await render({preserveScroll:true});return;}
   if(result?.ok)dialog?.close();
   if(result?.status===401&&type!=='migration'&&type!=='login'){navigation.navigate('/login');return;}
+  if(result?.ok&&type==='login'&&new URLSearchParams(route().split('?')[1]||'').get('return')==='/mine'){location.assign('/mine');return;}
   if(result?.ok&&['login','join'].includes(type)){navigation.navigate(type==='login'?(groupLoginReturn(route())||cageLoginReturn(route())||'/mypage'):'/mypage');return;}
   if(result?.route){navigation.navigate(result.route);return;}
   if(result?.ok&&['migration','politician-migration'].includes(type)){await render();return;}

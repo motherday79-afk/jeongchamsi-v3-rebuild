@@ -18,6 +18,14 @@
   ],
   "rewrites": [
     {
+      "source": "/mine",
+      "destination": "/mine/index.html"
+    },
+    {
+      "source": "/mine/ad",
+      "destination": "/mine/index.html"
+    },
+    {
       "source": "/api/v3/:path*",
       "destination": "/api/gateway?path=:path*"
     },
