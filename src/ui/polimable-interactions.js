@@ -217,11 +217,11 @@ function createGame(root){
         src=prop.owner===0?'/assets/polimable/objects/flag-p1.png':'/assets/polimable/objects/flag-p2.png';
         kind='flag'; label=`${prop.owner===0?'1P':'2P'} 소유 ${tile.name}`;
       }else if(prop.level===2){
-        src='/assets/polimable/objects/building-1.png';kind='building-1';label=`${tile.name} 강화 1단계`;
+        src=`/assets/polimable/objects/building-1-p${prop.owner===0?1:2}-265.png`;kind='building-1';label=`${prop.owner===0?'1P':'2P'} 소유 ${tile.name} 강화 1단계`;
       }else if(prop.level===3){
-        src='/assets/polimable/objects/building-2.png';kind='building-2';label=`${tile.name} 강화 2단계`;
+        src=`/assets/polimable/objects/building-2-p${prop.owner===0?1:2}-265.png`;kind='building-2';label=`${prop.owner===0?'1P':'2P'} 소유 ${tile.name} 강화 2단계`;
       }else{
-        src='/assets/polimable/objects/building-3.png';kind='building-3';label=`${tile.name} 강화 3단계 · 고정자산`;
+        src=`/assets/polimable/objects/building-3-p${prop.owner===0?1:2}-265.png`;kind='building-3';label=`${prop.owner===0?'1P':'2P'} 소유 ${tile.name} 강화 3단계 · 고정자산`;
       }
       objects.push(`<div class="pm-property-state-object is-${kind} side-${point.side}" data-pm-property-object="${idx}" style="left:${point.x}px;top:${point.y}px;${custom?`width:${custom.w}px!important;height:${custom.h}px!important;${custom.hidden?'display:none!important;':''}`:''}" aria-label="${escapeText(label)}"><img src="${src}" alt=""></div>`);
     }
@@ -478,9 +478,9 @@ function createGame(root){
     const box=root.querySelector(`[data-pm-character-reaction="${pi}"]`);
     const img=root.querySelector(`[data-pm-character-reaction-image="${pi}"]`);
     if(!box||!img)return;
-    const fileMap={happy:'happy.png',win:'win.png',surprise:'surprise.png',angry:'angry.png',sad:'sad.png',fail:'sad.png',emotion:'happy.png'};
+    const fileMap={happy:'happy-265.png',win:'win-265.png',surprise:'surprise-265.png',angry:'angry-265.png',sad:'sad-265.png',fail:'sad-265.png',emotion:'happy-265.png'};
     const folder=pi===0?'player1':'player2';
-    img.src=`/assets/polimable/characters/${folder}/${fileMap[type]||'happy.png'}`;
+    img.src=`/assets/polimable/characters/${folder}/${fileMap[type]||'happy-265.png'}`;
     box.setAttribute('aria-hidden','false');box.classList.remove('is-visible');void box.offsetWidth;box.classList.add('is-visible');
     setTimeout(()=>{box.classList.remove('is-visible');box.setAttribute('aria-hidden','true');},1100);
   }

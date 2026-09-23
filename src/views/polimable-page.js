@@ -52,10 +52,10 @@ export function renderPoliMarblePage({session={}}={}){
             <img data-pm-character-token-image="1" src="/assets/polimable/characters/player2/token-257.png" alt="2P 게임말">
           </div>
           <div class="pm-character-reaction" data-pm-character-reaction="0" aria-hidden="true">
-            <img data-pm-character-reaction-image="0" src="/assets/polimable/characters/player1/happy.png" alt="1P 캐릭터 감정표현">
+            <img data-pm-character-reaction-image="0" src="/assets/polimable/characters/player1/happy-265.png" alt="1P 캐릭터 감정표현">
           </div>
           <div class="pm-character-reaction pm-character-reaction--p2" data-pm-character-reaction="1" aria-hidden="true">
-            <img data-pm-character-reaction-image="1" src="/assets/polimable/characters/player2/happy.png" alt="2P 캐릭터 감정표현">
+            <img data-pm-character-reaction-image="1" src="/assets/polimable/characters/player2/happy-265.png" alt="2P 캐릭터 감정표현">
           </div>
           <div class="pm-fixed-asset-effect" data-pm-fixed-asset-effect aria-hidden="true">
             <img src="/assets/polimable/objects/fixed-asset-effect.png" alt="고정자산 획득">

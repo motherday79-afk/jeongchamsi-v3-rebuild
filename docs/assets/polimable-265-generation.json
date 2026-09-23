@@ -1,0 +1,101 @@
+{
+  "tool": "builtin image_gen",
+  "jobs": [
+    {
+      "key": "player1-happy",
+      "path": "characters/player1/happy.png",
+      "prompt": "Use case: background-extraction / identity-preserve. Edit attached reaction sprite. Restore cropped silhouette of THIS SAME brown-haired boy with gold J crown, blue gold-trim jacket and white J shirt. Preserve exact happy facial expression, pose, outfit, face identity and glossy chibi 3D illustration style. SINGLE complete waist-up bust, both hands, ALL hair and crown/bow intact. Reconstruct clipped edges, remove ALL neighboring character scraps, dirty background flecks and extraneous light beams. Character occupies about 85% of image height, centered, transparent padding on all sides; no silhouette touches edges. Genuine transparent alpha background, no checkerboard illustration, no frame, no text labels. Crisp finished isolated game sprite.",
+      "generated": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-b42c55ec-a9c7-42eb-baa3-59e7a9090598.png"
+    },
+    {
+      "key": "player1-win",
+      "path": "characters/player1/win.png",
+      "prompt": "Use case: background-extraction / identity-preserve. Edit attached reaction sprite. Restore cropped silhouette of THIS SAME brown-haired boy with gold J crown, blue gold-trim jacket and white J shirt. Preserve exact win facial expression, pose, outfit, face identity and glossy chibi 3D illustration style. SINGLE complete waist-up bust, both hands, ALL hair and crown/bow intact. Reconstruct clipped edges, remove ALL neighboring character scraps, dirty background flecks and extraneous light beams. Character occupies about 85% of image height, centered, transparent padding on all sides; no silhouette touches edges. Genuine transparent alpha background, no checkerboard illustration, no frame, no text labels. Crisp finished isolated game sprite.",
+      "generated": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-96ede621-17b8-43dd-a840-57b1c6bfe344.png"
+    },
+    {
+      "key": "player1-surprise",
+      "path": "characters/player1/surprise.png",
+      "prompt": "Use case: background-extraction / identity-preserve. Edit attached reaction sprite. Restore cropped silhouette of THIS SAME brown-haired boy with gold J crown, blue gold-trim jacket and white J shirt. Preserve exact surprise facial expression, pose, outfit, face identity and glossy chibi 3D illustration style. SINGLE complete waist-up bust, both hands, ALL hair and crown/bow intact. Reconstruct clipped edges, remove ALL neighboring character scraps, dirty background flecks and extraneous light beams. Character occupies about 85% of image height, centered, transparent padding on all sides; no silhouette touches edges. Genuine transparent alpha background, no checkerboard illustration, no frame, no text labels. Crisp finished isolated game sprite.",
+      "generated": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-20d08865-3c6e-4cd2-aebd-8e88ecd7a9fe.png"
+    },
+    {
+      "key": "player1-angry",
+      "path": "characters/player1/angry.png",
+      "prompt": "Use case: background-extraction / identity-preserve. Edit attached reaction sprite. Restore cropped silhouette of THIS SAME brown-haired boy with gold J crown, blue gold-trim jacket and white J shirt. Preserve exact angry facial expression, pose, outfit, face identity and glossy chibi 3D illustration style. SINGLE complete waist-up bust, both hands, ALL hair and crown/bow intact. Reconstruct clipped edges, remove ALL neighboring character scraps, dirty background flecks and extraneous light beams. Character occupies about 85% of image height, centered, transparent padding on all sides; no silhouette touches edges. Genuine transparent alpha background, no checkerboard illustration, no frame, no text labels. Crisp finished isolated game sprite.",
+      "generated": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-2dcccb56-e370-479d-9d96-d9a9381501e3.png"
+    },
+    {
+      "key": "player1-sad",
+      "path": "characters/player1/sad.png",
+      "prompt": "Use case: background-extraction / identity-preserve. Edit attached reaction sprite. Restore cropped silhouette of THIS SAME brown-haired boy with gold J crown, blue gold-trim jacket and white J shirt. Preserve exact sad facial expression, pose, outfit, face identity and glossy chibi 3D illustration style. SINGLE complete waist-up bust, both hands, ALL hair and crown/bow intact. Reconstruct clipped edges, remove ALL neighboring character scraps, dirty background flecks and extraneous light beams. Character occupies about 85% of image height, centered, transparent padding on all sides; no silhouette touches edges. Genuine transparent alpha background, no checkerboard illustration, no frame, no text labels. Crisp finished isolated game sprite.",
+      "generated": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-5a93072d-ba0c-412a-a986-e50944942a80.png"
+    },
+    {
+      "key": "player2-happy",
+      "path": "characters/player2/happy.png",
+      "prompt": "Use case: background-extraction / identity-preserve. Edit attached reaction sprite. Restore cropped silhouette of THIS SAME brown-haired girl with pink gold-heart bow, heart earrings, pink gold-trim jacket and heart shirt. Preserve exact happy facial expression, pose, outfit, face identity and glossy chibi 3D illustration style. SINGLE complete waist-up bust, both hands, ALL hair and crown/bow intact. Reconstruct clipped edges, remove ALL neighboring character scraps, dirty background flecks and extraneous light beams. Character occupies about 85% of image height, centered, transparent padding on all sides; no silhouette touches edges. Genuine transparent alpha background, no checkerboard illustration, no frame, no text labels. Crisp finished isolated game sprite.",
+      "generated": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-0ba87ef5-977a-4201-b464-9f9c563e55a8.png"
+    },
+    {
+      "key": "player2-win",
+      "path": "characters/player2/win.png",
+      "prompt": "Use case: background-extraction / identity-preserve. Edit attached reaction sprite. Restore cropped silhouette of THIS SAME brown-haired girl with pink gold-heart bow, heart earrings, pink gold-trim jacket and heart shirt. Preserve exact win facial expression, pose, outfit, face identity and glossy chibi 3D illustration style. SINGLE complete waist-up bust, both hands, ALL hair and crown/bow intact. Reconstruct clipped edges, remove ALL neighboring character scraps, dirty background flecks and extraneous light beams. Character occupies about 85% of image height, centered, transparent padding on all sides; no silhouette touches edges. Genuine transparent alpha background, no checkerboard illustration, no frame, no text labels. Crisp finished isolated game sprite.",
+      "generated": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-fd62462d-1a22-4b29-b478-4695610bf21a.png"
+    },
+    {
+      "key": "player2-surprise",
+      "path": "characters/player2/surprise.png",
+      "prompt": "Use case: background-extraction / identity-preserve. Edit attached reaction sprite. Restore cropped silhouette of THIS SAME brown-haired girl with pink gold-heart bow, heart earrings, pink gold-trim jacket and heart shirt. Preserve exact surprise facial expression, pose, outfit, face identity and glossy chibi 3D illustration style. SINGLE complete waist-up bust, both hands, ALL hair and crown/bow intact. Reconstruct clipped edges, remove ALL neighboring character scraps, dirty background flecks and extraneous light beams. Character occupies about 85% of image height, centered, transparent padding on all sides; no silhouette touches edges. Genuine transparent alpha background, no checkerboard illustration, no frame, no text labels. Crisp finished isolated game sprite.",
+      "generated": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-0a13125a-f297-4fc1-a67d-518e27f9f2ff.png"
+    },
+    {
+      "key": "player2-angry",
+      "path": "characters/player2/angry.png",
+      "prompt": "Use case: background-extraction / identity-preserve. Edit attached reaction sprite. Restore cropped silhouette of THIS SAME brown-haired girl with pink gold-heart bow, heart earrings, pink gold-trim jacket and heart shirt. Preserve exact angry facial expression, pose, outfit, face identity and glossy chibi 3D illustration style. SINGLE complete waist-up bust, both hands, ALL hair and crown/bow intact. Reconstruct clipped edges, remove ALL neighboring character scraps, dirty background flecks and extraneous light beams. Character occupies about 85% of image height, centered, transparent padding on all sides; no silhouette touches edges. Genuine transparent alpha background, no checkerboard illustration, no frame, no text labels. Crisp finished isolated game sprite.",
+      "generated": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-f362dfe2-06a6-426c-9498-124831935fa5.png"
+    },
+    {
+      "key": "player2-sad",
+      "path": "characters/player2/sad.png",
+      "prompt": "Use case: background-extraction / identity-preserve. Edit attached reaction sprite. Restore cropped silhouette of THIS SAME brown-haired girl with pink gold-heart bow, heart earrings, pink gold-trim jacket and heart shirt. Preserve exact sad facial expression, pose, outfit, face identity and glossy chibi 3D illustration style. SINGLE complete waist-up bust, both hands, ALL hair and crown/bow intact. Reconstruct clipped edges, remove ALL neighboring character scraps, dirty background flecks and extraneous light beams. Character occupies about 85% of image height, centered, transparent padding on all sides; no silhouette touches edges. Genuine transparent alpha background, no checkerboard illustration, no frame, no text labels. Crisp finished isolated game sprite.",
+      "generated": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-34d73d82-2fa9-42c1-b86c-93d95662b1d3.png"
+    },
+    {
+      "key": "building-1-p1",
+      "path": "objects/building-1.png",
+      "prompt": "Use case: background-extraction / precise-object-edit. Attached edit target: tier 1 glossy isometric blue-and-gold civic game building. ONE clean isolated building sprite with genuine transparent alpha background. Keep exact central building architecture, camera perspective, gold J signs, stars, ivory stone walls, landscaping and complete pedestal. Remove ALL adjacent building fragments, HUD bars, scattered source residue and background glow outside silhouette. Retain vivid BLUE roof, banners and accent panels for player 1. Preserve building identity and shape exactly. Entire pedestal and topmost star visible. Center horizontally, pedestal bottom near 94% canvas height, 6% transparent safety margin on all sides. No extra objects, frame or labels. Export transparent PNG.",
+      "generated": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-6e991b9a-94b3-4f78-bd94-d8479631fa18.png"
+    },
+    {
+      "key": "building-1-p2",
+      "path": "objects/building-1.png",
+      "prompt": "Use case: background-extraction / precise-object-edit. Attached edit target: tier 1 glossy isometric blue-and-gold civic game building. ONE clean isolated building sprite with genuine transparent alpha background. Keep exact central building architecture, camera perspective, gold J signs, stars, ivory stone walls, landscaping and complete pedestal. Remove ALL adjacent building fragments, HUD bars, scattered source residue and background glow outside silhouette. Change ONLY blue roof tiles, blue dome, blue cloth banners/awning, blue sign backgrounds and blue carpet/accent surfaces to vivid saturated PINK/MAGENTA for player 2. Keep gold gold, ivory white and plants green. Preserve building identity and shape exactly. Entire pedestal and topmost star visible. Center horizontally, pedestal bottom near 94% canvas height, 6% transparent safety margin on all sides. No extra objects, frame or labels. Export transparent PNG.",
+      "generated": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-80c35ce8-0524-4e5c-bfa9-14bc981c3ff6.png"
+    },
+    {
+      "key": "building-2-p1",
+      "path": "objects/building-2.png",
+      "prompt": "Use case: background-extraction / precise-object-edit. Attached edit target: tier 2 glossy isometric blue-and-gold civic game building. ONE clean isolated building sprite with genuine transparent alpha background. Keep exact central building architecture, camera perspective, gold J signs, stars, ivory stone walls, landscaping and complete pedestal. Remove ALL adjacent building fragments, HUD bars, scattered source residue and background glow outside silhouette. Retain vivid BLUE roof, banners and accent panels for player 1. Preserve building identity and shape exactly. Entire pedestal and topmost star visible. Center horizontally, pedestal bottom near 94% canvas height, 6% transparent safety margin on all sides. No extra objects, frame or labels. Export transparent PNG.",
+      "generated": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-e9802672-b8d7-4f38-b26d-38e3acc32e11.png"
+    },
+    {
+      "key": "building-2-p2",
+      "path": "objects/building-2.png",
+      "prompt": "Use case: background-extraction / precise-object-edit. Attached edit target: tier 2 glossy isometric blue-and-gold civic game building. ONE clean isolated building sprite with genuine transparent alpha background. Keep exact central building architecture, camera perspective, gold J signs, stars, ivory stone walls, landscaping and complete pedestal. Remove ALL adjacent building fragments, HUD bars, scattered source residue and background glow outside silhouette. Change ONLY blue roof tiles, blue dome, blue cloth banners/awning, blue sign backgrounds and blue carpet/accent surfaces to vivid saturated PINK/MAGENTA for player 2. Keep gold gold, ivory white and plants green. Preserve building identity and shape exactly. Entire pedestal and topmost star visible. Center horizontally, pedestal bottom near 94% canvas height, 6% transparent safety margin on all sides. No extra objects, frame or labels. Export transparent PNG.",
+      "generated": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-ae9887aa-4450-4890-b912-bfb4e02b9e08.png"
+    },
+    {
+      "key": "building-3-p1",
+      "path": "objects/building-3.png",
+      "prompt": "Use case: background-extraction / precise-object-edit. Attached edit target: tier 3 glossy isometric blue-and-gold civic game building. ONE clean isolated building sprite with genuine transparent alpha background. Keep exact central building architecture, camera perspective, gold J signs, stars, ivory stone walls, landscaping and complete pedestal. Remove ALL adjacent building fragments, HUD bars, scattered source residue and background glow outside silhouette. Retain vivid BLUE roof, banners and accent panels for player 1. Preserve building identity and shape exactly. Entire pedestal and topmost star visible. Center horizontally, pedestal bottom near 94% canvas height, 6% transparent safety margin on all sides. No extra objects, frame or labels. Export transparent PNG.",
+      "generated": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-a6eeec70-5fc9-4a9a-bed4-a60ae6f9e809.png"
+    },
+    {
+      "key": "building-3-p2",
+      "path": "objects/building-3.png",
+      "prompt": "Use case: background-extraction / precise-object-edit. Attached edit target: tier 3 glossy isometric blue-and-gold civic game building. ONE clean isolated building sprite with genuine transparent alpha background. Keep exact central building architecture, camera perspective, gold J signs, stars, ivory stone walls, landscaping and complete pedestal. Remove ALL adjacent building fragments, HUD bars, scattered source residue and background glow outside silhouette. Change ONLY blue roof tiles, blue dome, blue cloth banners/awning, blue sign backgrounds and blue carpet/accent surfaces to vivid saturated PINK/MAGENTA for player 2. Keep gold gold, ivory white and plants green. Preserve building identity and shape exactly. Entire pedestal and topmost star visible. Center horizontally, pedestal bottom near 94% canvas height, 6% transparent safety margin on all sides. No extra objects, frame or labels. Export transparent PNG.",
+      "generated": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-4b94271b-0ff3-4429-a55f-ca2c0b10fde4.png"
+    }
+  ]
+}
