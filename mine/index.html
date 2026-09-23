@@ -5,10 +5,10 @@
  <meta name="theme-color" content="#231627"><meta name="robots" content="noindex">
  <title>나의 광산 · 정참시</title>
  <link rel="preload" as="image" href="/assets/mine/cave.webp">
- <link rel="stylesheet" href="/mine/mine.css?v=276">
+ <link rel="stylesheet" href="/mine/mine.css?v=277">
 </head>
 <body>
- <main class="mine-game" id="mine-game" data-version="276">
+ <main class="mine-game" id="mine-game" data-version="277">
   <div class="mine-scenery" aria-hidden="true"></div><div class="mine-shade" aria-hidden="true"></div>
   <header class="mine-header">
    <a class="home-link" href="/" aria-label="정참시 메인으로 돌아가기">‹ <span>정참시</span></a>
@@ -16,10 +16,11 @@
    <div class="gold-wallet"><span>광산 골드</span><strong data-gold>0 <small>G</small></strong></div>
    <button class="icon-button" data-panel="help" aria-label="게임 도움말">?</button>
   </header>
+  <button class="jackpot-sign" data-panel="jackpot" aria-label="공동 잭팟 보기"><span>공동 잭팟</span><strong data-jackpot-count>—</strong><small>브론즈 · 실버 · 골드</small></button>
   <aside class="sponsor-sign"><span class="ad-tag" data-ad-tag>광산 소식</span><strong data-ad-name>정참시 광산</strong><p data-ad-copy>나만의 광산을 키워보세요</p></aside>
   <div class="mine-stage" aria-label="광부의 채굴 장면">
    <img class="mine-ore" src="/assets/mine/ore.webp" alt="금을 품은 광맥" data-ore-rock>
-   <div class="worker-actor"><div class="sprite worker-sprite" data-worker></div><span class="actor-badge">자동채굴 인부 <b data-worker-level>Lv.1</b></span></div>
+   <div class="worker-actor"><div class="sprite worker-sprite" data-worker role="img" aria-label="철로에 앉아 쉬는 자동채굴 인부"></div><span class="actor-badge">인부 휴식 중 <b data-worker-level>Lv.1</b></span></div>
    <div class="player-actor" data-player-actor><div class="sprite" data-player role="img" aria-label="플레이어 광부"></div><span class="actor-badge"><b data-character-name>건장한 광부</b><span data-tool-name>기본 곡괭이</span></span></div>
    <div class="strike-effects" data-effects aria-hidden="true"></div>
   </div>
@@ -41,6 +42,6 @@
   <dialog class="mine-dialog" data-dialog><div class="dialog-head"><h2 data-dialog-title></h2><button class="icon-button" data-close aria-label="닫기">×</button></div><div data-dialog-body></div></dialog>
   <noscript><div class="mine-noscript">게임을 실행하려면 브라우저의 JavaScript를 켜주세요. <a href="/">정참시 돌아가기</a></div></noscript>
  </main>
- <script type="module" src="/mine/mine.js?v=276"></script>
+ <script type="module" src="/mine/mine.js?v=277"></script>
 </body>
 </html>

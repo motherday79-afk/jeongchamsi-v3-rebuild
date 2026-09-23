@@ -11,6 +11,7 @@ export function memoryMineStore(){
    const [script,count,...rest]=a,keys=rest.slice(0,Number(count)),argv=rest.slice(Number(count));
    if(!script.includes('MINE_CAS_275')&&!script.includes('MINE_VISIT_275'))throw Error('Unexpected Lua');
    if((values.get(keys[0])||'')!==argv[0])return 0;
+   if(script.includes('MINE_CAS_275')&&keys.length>1)values.set(keys[1],String(Number(values.get(keys[1])||0)+Number(argv[2])));
    values.set(keys[0],argv[1]);
    if(script.includes('MINE_VISIT_275')&&argv[2]==='1'){
     const h=hashes.get(keys[1])||new Map();h.set('visits',(h.get('visits')||0)+1);hashes.set(keys[1],h);
