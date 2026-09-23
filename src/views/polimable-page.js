@@ -16,7 +16,7 @@ function renderHudObject(item){
 export function renderPoliMarblePage({session={}}={}){
   return `<section class="pm-board-stage-page" aria-label="JCS 폴리마블 1P 대 AI 게임룰 테스트">
     <div class="pm-board-stage" data-pm-root data-pm-can-edit="${session?.user?.role==='admin'?'true':'false'}" data-pm-stage="gameplay-test">
-      <img class="pm-board-stage-image" src="/assets/polimable/polimable-board-base-31-249.png" alt="JCS 폴리마블 게임보드">
+      <img class="pm-board-stage-image" src="/assets/polimable/editor/tile-clean-255.png" alt="JCS 폴리마블 게임보드">
       <div class="pm-logical-canvas" data-pm-logical-canvas aria-label="1672×941 폴리마블 논리 캔버스">
         <div class="pm-board-object-layer" data-pm-board-object-layer aria-label="32칸 독립 객체 레이어">
           ${LAYOUT.map(renderTileObject).join('')}

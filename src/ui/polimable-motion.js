@@ -1,5 +1,5 @@
-import {mountContactEffects} from './polimable-contact.js?v=0.0.31.260';
-import {diceOrientation,pips,stepTiming} from '../core/polimable-motion.js?v=0.0.31.260';
+import {mountContactEffects} from './polimable-contact.js?v=0.0.31.261';
+import {diceOrientation,pips,stepTiming} from '../core/polimable-motion.js?v=0.0.31.261';
 export function mountGameMotion(root){
  const reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches,animations=new Set(),owners=new Map();let dead=false;const contact=mountContactEffects(root);
  const play=(el,frames,options)=>{if(!el||dead||!root.isConnected)return null;const a=el.animate(frames,options);animations.add(a);a.finished.catch(()=>{}).finally(()=>{animations.delete(a);a.cancel();});return a;};

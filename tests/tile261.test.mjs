@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {tileOutline,sideTransform} from '../src/core/polimable-tile-outline.js';
+test('all original tile outlines have rounded caps and finite coordinates',()=>{for(let i=0;i<32;i++){const g=tileOutline(i);assert.equal(g.points.length,4);assert.ok(g.top.includes('Q'));assert.ok(!g.top.includes('NaN'));assert.ok(g.thickness>8);}});
+test('textured side affine transform fixes its bottom while top follows the cap',()=>{for(let i=0;i<32;i++){const g=tileOutline(i);for(const [a,b]of [[g.points[3],g.points[2]],[g.points[2],g.points[1]]]){for(const depth of [0,3,7]){const m=sideTransform(a,b,g.thickness,depth),y=([x,y])=>m[1]*x+m[3]*y+m[5];for(const p of [a,b]){assert.ok(Math.abs(y(p)-p[1]-depth)<1e-7);assert.ok(Math.abs(y([p[0],p[1]+g.thickness])-p[1]-g.thickness)<1e-7);}}}}});
