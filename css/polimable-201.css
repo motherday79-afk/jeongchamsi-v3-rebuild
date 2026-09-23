@@ -681,3 +681,12 @@ body.pm-polimable-mobile-lock{
 /* Optional developer-only anchor visualization. Enabled by ?pmdebug=1. */
 .pm-board-stage.pm-object-debug .pm-character-token{outline:2px dashed rgba(0,255,255,.9)!important}
 .pm-board-stage.pm-object-debug .pm-property-state-object{outline:2px dashed rgba(255,215,0,.95)!important}
+
+/* 262: dedicated game viewport; the board remains one uniformly scaled object. */
+html:has(.pm-game-shell),body:has(.pm-game-shell){overflow:hidden!important;margin:0!important}
+.pm-game-screen{position:fixed;inset:0;z-index:2147483000;box-sizing:border-box!important;margin:0!important;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)!important;width:100vw;height:100dvh;min-height:0!important;display:flex!important;align-items:center;justify-content:center;background:#17112b!important;overflow:hidden!important}
+.pm-game-screen .pm-board-stage{flex:none;max-width:none!important;max-height:none!important;margin:0!important}
+.pm-game-nav{position:absolute;top:max(8px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:100;display:flex;gap:6px;white-space:nowrap}
+.pm-game-nav a,.pm-game-nav button{display:flex;align-items:center;justify-content:center;min-height:34px;padding:6px 12px;border:1px solid #e8c87b88;border-radius:9px;background:#251644e8;color:#fff5d5;font:700 12px/1.2 Arial,sans-serif;text-decoration:none;cursor:pointer;box-sizing:border-box;touch-action:manipulation}
+.pm-game-nav [hidden]{display:none!important}
+.pmle-editing-page .pm-game-nav{display:none}

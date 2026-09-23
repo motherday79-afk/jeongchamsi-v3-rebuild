@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {calculatePoliMarbleStage as fit} from '../src/core/polimable-viewport.js';
+test('game fills available desktop and phone space without cropping or stretching',()=>{for(const [w,h]of [[1920,1080],[2560,1440],[844,390],[390,844]]){const f=fit(w,h,{gutter:0});assert.ok(f.width<=w+.01&&f.height<=h+.01);assert.ok(Math.abs(f.width/f.height-1672/941)<1e-8);assert.ok(Math.abs(f.width-w)<.01||Math.abs(f.height-h)<.01);}assert.ok(fit(2560,1440,{gutter:0}).scale>1);});

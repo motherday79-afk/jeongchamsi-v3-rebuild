@@ -15,7 +15,7 @@ export function calculatePoliMarbleStage(viewportWidth,viewportHeight,insets={})
   const availableHeight=Math.max(1,Number(viewportHeight)||1)-top-bottom-(gutter*2);
   const widthScale=availableWidth/POLIMARBLE_LOGICAL_WIDTH;
   const heightScale=availableHeight/POLIMARBLE_LOGICAL_HEIGHT;
-  const scale=Math.max(.05,Math.min(1,widthScale,heightScale));
+  const scale=Math.max(.05,Math.min(widthScale,heightScale));
   return Object.freeze({
     scale,
     width:POLIMARBLE_LOGICAL_WIDTH*scale,

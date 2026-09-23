@@ -14,7 +14,8 @@ function renderHudObject(item){
 }
 
 export function renderPoliMarblePage({session={}}={}){
-  return `<section class="pm-board-stage-page" aria-label="JCS 폴리마블 1P 대 AI 게임룰 테스트">
+  return `<section class="pm-board-stage-page pm-game-screen" aria-label="JCS 폴리마블 1P 대 AI 게임룰 테스트">
+    <nav class="pm-game-nav" aria-label="게임 메뉴"><a href="/">← 정참시 홈</a><button type="button" data-pm-fullscreen hidden>전체화면</button></nav>
     <div class="pm-board-stage" data-pm-root data-pm-can-edit="${session?.user?.role==='admin'?'true':'false'}" data-pm-stage="gameplay-test">
       <img class="pm-board-stage-image" src="/assets/polimable/editor/tile-clean-255.png" alt="JCS 폴리마블 게임보드">
       <div class="pm-logical-canvas" data-pm-logical-canvas aria-label="1672×941 폴리마블 논리 캔버스">
