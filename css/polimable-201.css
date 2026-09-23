@@ -743,3 +743,7 @@ html:has(.pm-game-shell),body:has(.pm-game-shell){overflow:hidden!important;marg
 /* 272: bright civic park, with subdued plaza branding behind dice/cards. */
 .pm-board-stage .pm-plaza-logo{color:#546b53;opacity:.40;text-shadow:0 1px 0 #ffffffaa,0 -1px 0 #344c3933}
 .pm-game-screen{background:#8bb9b3!important}
+
+/* 273: keep navigation clear of the upright fate orb. */
+.pm-game-nav{left:38%}
+

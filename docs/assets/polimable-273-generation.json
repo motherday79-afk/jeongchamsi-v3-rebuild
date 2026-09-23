@@ -1,0 +1,23 @@
+[
+  {
+    "key": "world",
+    "prompt": "Edit this exact isometric riverside park into a unified game foundation and central plaza. Preserve outer river roads trees buildings perspective and light. In normalized 1672x941 canvas game ring outer diamond vertices (836,55),(1608,453),(836,851),(64,453); inner diamond (836,180),(1368,453),(836,727),(304,453). Under entire ring create a continuous pale limestone paved foundation integrated flush with surrounding promenade, no floating table, no thick raised wall. Within inner diamond create quiet lawn plaza with elegant circular stone walkway about 470px wide projected elliptical at (836,453), blank centre. ONE coherent rendered world with same stylized 3D materials and daylight. No text logos UI board squares colored tiles characters central structures. Do not paint tiles: movable tiles will be added by code. Exact widescreen composition.",
+    "ref": "C:/Users/user/.codex/generated_images/01a0a9f6-0ec5-7441-a773-bd413c42083e/exec-0a580222-1106-4a03-9eb1-2f99d0fa3f49.png",
+    "path": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-6b680cd3-3460-4eef-b4c9-58657ed5310f.png"
+  },
+  {
+    "key": "hope",
+    "prompt": "Production game sprite on true transparent alpha background. Luminous glossy pink heart above two cupped ivory hands, warm pink rim glow. Premium polished stylized 3D Korean casual boardgame art. Elevated FRONT threequarter view 25 degrees looking down, object STANDING UP not a floor texture. Soft daylight upper left, purple gold accents. Centered complete silhouette fills80% square with ample margin, fully visible glow. No square tile, floor plate, scenery, text title or border. Readable at110px, clean dimensional silhouette.",
+    "path": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-c4457511-c8d0-45af-b73f-c45a582e7578.png"
+  },
+  {
+    "key": "fate",
+    "prompt": "Production game sprite on true transparent alpha background. Luminous purple crystal orb with one gold question mark on small gold crescent cradle. Premium polished stylized 3D Korean casual boardgame art. Elevated FRONT threequarter view 25 degrees looking down, object STANDING UP not a floor texture. Soft daylight upper left, purple gold accents. Centered complete silhouette fills80% square with ample margin, fully visible glow. No square tile, floor plate, scenery, text title or border. Readable at110px, clean dimensional silhouette.",
+    "path": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-21e5a2c1-3328-49e3-8dec-61d6d4c50d29.png"
+  },
+  {
+    "key": "bond",
+    "prompt": "Production game sprite on true transparent alpha background. Two thick dark silver handcuffs and short heavy chain arranged as upright sculpture, restrained crimson ember glow. Premium polished stylized 3D Korean casual boardgame art. Elevated FRONT threequarter view 25 degrees looking down, object STANDING UP not a floor texture. Soft daylight upper left, purple gold accents. Centered complete silhouette fills80% square with ample margin, fully visible glow. No square tile, floor plate, scenery, text title or border. Readable at110px, clean dimensional silhouette.",
+    "path": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-d6b5929e-1ea1-4c58-9806-8b32d6205719.png"
+  }
+]

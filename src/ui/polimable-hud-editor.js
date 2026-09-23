@@ -1,6 +1,6 @@
-import {projectItem,unprojectDelta,ITEM_SCALE} from '../core/polimable-board-geometry.js?v=0.0.31.272';
+import {projectItem,unprojectDelta,ITEM_SCALE} from '../core/polimable-board-geometry.js?v=0.0.31.273';
 import {editItem,syncBuildings,alignRow} from '../core/polimable-batch-edit.js?v=0.0.31.261';
-import {mountTileFaces} from './polimable-tile-faces.js?v=0.0.31.272';
+import {mountTileFaces} from './polimable-tile-faces.js?v=0.0.31.273';
 import {BOARD,W,H,KEYS,HUD_KEYS,TILES,SLOTS,isAnchor,isImage,fieldTitle,itemRect as storedItemRect,assetFor,isLabel,tileName,escapeText,defaults,copy,validate,adjust,point} from '../core/polimable-hud-layout.js?v=0.0.31.261';
 
 const itemRect=(k,v)=>storedItemRect(k,projectItem(k,v));
