@@ -726,3 +726,16 @@ html:has(.pm-game-shell),body:has(.pm-game-shell){overflow:hidden!important;marg
 .pm-board-stage .pm-plaza-layer>img{display:none}
 .pm-board-stage .pm-plaza-logo{top:49%;opacity:.28}
 .pm-board-stage .pm-board-cell-object{cursor:default}
+
+/* 271: one art direction; independent scenery, board, HUD frames and roll button. */
+.pm271-player-frames{position:absolute;inset:0;z-index:25;pointer-events:none}
+.pm271-player-frames img{position:absolute!important;top:20px!important;width:400px!important;height:171px!important;object-fit:fill;max-width:none!important;filter:drop-shadow(0 8px 12px #08031388)}
+.pm271-frame-p1{left:20px}.pm271-frame-p2{right:20px}
+.pm-board-stage .pm-plaza-layer{z-index:5}
+.pm-board-stage .pm-plaza-logo{top:48%;color:#ead5a0;opacity:.26;text-shadow:0 2px 1px #080212,0 -1px 0 #fff3ce;letter-spacing:3px}
+.pm-board-stage .pm-dice-roll-button{opacity:1!important;left:80%!important;top:83%!important;width:19%!important;height:13%!important;background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;overflow:visible!important}
+.pm-dice-roll-button>img{display:block!important;width:100%!important;height:100%!important;object-fit:contain;pointer-events:none;filter:drop-shadow(0 7px 10px #08021499);transition:transform .15s,filter .15s}
+.pm-dice-roll-button:hover:not(:disabled)>img{transform:translateY(-3px);filter:drop-shadow(0 9px 14px #d0a65755)}
+.pm-dice-roll-button:active:not(:disabled)>img{transform:translateY(2px)}
+.pm-dice-roll-button:disabled>img{opacity:.55}
+.pm-dice-roll-button:focus-visible{outline:2px solid #ffe4a6!important;outline-offset:1px}

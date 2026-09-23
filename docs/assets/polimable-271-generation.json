@@ -1,0 +1,52 @@
+[
+  {
+    "key": "backboard",
+    "prompt": "ONE square orthographic TOP VIEW texture for a premium Korean fantasy property board game. A beautifully crafted deep amethyst-purple velvet and lacquer playing surface, restrained gold inlaid filigree only near its outer perimeter, subtle circular embossed geometric medallion in the center, center mostly uncluttered dark purple with extremely subtle texture. Solid square fills entire canvas edge-to-edge. Rich material realism, silky reflected studio light, expensive physical tabletop game feel. NO tiles, NO grid, NO dice, NO buildings, NO scenery, NO text, NO logo, NO camera perspective. The entire image will be projected into an isometric diamond by code. Keep center quiet and legible for game animations. 1024 square.",
+    "path": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-f4207c8f-f4fc-47a5-9fc7-9dffba0b2cfe.png"
+  },
+  {
+    "key": "scenery",
+    "prompt": "Wide 16:9 premium 3D illustrated game BACKDROP only. Twilight Korean riverside city, elegant softly glowing Seoul-inspired skyline across the far upper edge, subdued plum indigo sky, a few distant warm windows, softly reflected river and sparse cherry blossom branches only at far bottom corners. Center 85% is a very quiet dark amethyst tabletop-like open foreground fading into distant river, no busy flowers or props in central area. Cohesive sophisticated royal purple and warm gold palette, polished charming mobile board game visual quality, soft atmospheric depth. This backdrop will sit behind a large separate diamond game board. NO board, NO platform, NO tiles, NO HUD, NO buttons, NO text, NO logos, NO people. Beautiful atmosphere but low contrast especially in middle.",
+    "path": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-e81a10de-e056-4e1a-9aaa-c7e6957ced2e.png"
+  },
+  {
+    "key": "tile",
+    "prompt": "ONE orthographic top-down square game tile FACE texture, not an entire board. Exquisitely polished white pearl ceramic inset in a narrow champagne-gold metal rim, rounded corners, soft bevels with a jewel-like specular glint in upper left and softly shaded lower right. Large smooth luminous ivory central area completely blank, very faint guilloche texture at perimeter only. Premium glossy 3D mobile board game asset, substantial tactile physical quality. Square tile fills entire canvas, no backdrop beyond corners, no side perspective. No text, no symbols, no grid. It will be tinted and stretched into a rectangular game tile by the engine.",
+    "path": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-9c8b58b9-1278-4913-991b-0b9c9f2c8a9c.png"
+  },
+  {
+    "key": "hud-blue",
+    "prompt": "ONE isolated horizontal player status panel game UI asset, width to height ratio 2.3:1, transparent alpha background. Luxury purple lacquer body and delicately sculpted champagne-gold rounded frame, electric sapphire blue accent along upper edge. Empty circular portrait socket on LEFT occupying 29% panel width, aligned vertically center, dark purple inside. On RIGHT two long dark amethyst rounded inset bars stacked for money and asset values, with one tiny gold coin emblem at the left of top bar and one tiny gold star emblem at the left of bottom bar. Small sapphire crest above upper-left portrait area reads exactly '1P'. No other text, no numbers, no character. Entire beautiful frame isolated with thin transparent safety margin, all edges intact. Premium illustrated 3D board game style, crisp readable clean silhouette.",
+    "path": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-6857cad9-5f67-440a-a1a8-874530f679bf.png"
+  },
+  {
+    "key": "hud-pink",
+    "prompt": "ONE isolated horizontal player status panel game UI asset, width to height ratio 2.3:1, transparent alpha background. Luxury purple lacquer body and delicately sculpted champagne-gold rounded frame, vivid rose-pink accent along upper edge. Empty circular portrait socket on RIGHT occupying 29% panel width, aligned vertically center, dark purple inside. On LEFT two long dark amethyst rounded inset bars stacked for money and asset values, with one tiny gold coin emblem at the left of top bar and one tiny gold star emblem at the left of bottom bar. Small rose-pink crest above upper-right portrait area reads exactly '2P'. No other text, no numbers, no character. Entire beautiful frame isolated with thin transparent safety margin, all edges intact. Premium illustrated 3D board game style, crisp readable clean silhouette.",
+    "path": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-636510fc-178c-49cf-b528-61c3d375d8fa.png"
+  },
+  {
+    "key": "roll",
+    "prompt": "ONE isolated premium mobile board game button on transparent alpha background, wide horizontal pill rectangle 3:1 ratio, royal purple glossy enamel center, sculpted thick warm gold beveled rim, rich dimensional tactile highlights and small soft shadow. A pair of small ivory dice with dark purple pips at left, large highly readable ivory Korean typography at right reading exactly '주사위 굴리기'. Fits cohesive luxury amethyst-and-gold game art style, not orange. Full button and shadow intact with clear transparent safety margins, no other text, no background, no UI screen.",
+    "path": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-d044c25d-e678-4f1c-9a04-f1d81e6f2ba8.png"
+  },
+  {
+    "key": "corner-0",
+    "prompt": "ONE square orthographic top-view special board game tile FACE art. Deep royal amethyst enamel with ornate sculpted gold square border and a jewel-like central relief illustration of a gold J monogram above a small understated forward arrow, start destination, no words. Same premium glossy richly shaded 3D mobile board game style, polished metal and luminous gemstone, restrained detailing. Illustration occupies upper 65% of square leaving lower 25% dark purple blank for a separate game label. Square fills entire canvas edge-to-edge, no perspective and no surrounding backdrop, no side walls. No Korean text, no labels, no extra characters. Designed for isometric projection into a corner tile.",
+    "path": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-c49f1748-003a-48a7-959f-7783e896f7b1.png"
+  },
+  {
+    "key": "corner-8",
+    "prompt": "ONE square orthographic top-view special board game tile FACE art. Deep royal amethyst enamel with ornate sculpted gold square border and a jewel-like central relief illustration of two elegant hands cradling a glowing pink heart, hope and charity, no words. Same premium glossy richly shaded 3D mobile board game style, polished metal and luminous gemstone, restrained detailing. Illustration occupies upper 65% of square leaving lower 25% dark purple blank for a separate game label. Square fills entire canvas edge-to-edge, no perspective and no surrounding backdrop, no side walls. No Korean text, no labels, no extra characters. Designed for isometric projection into a corner tile.",
+    "path": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-a3744bd5-190d-4c1c-a403-1bd3541769af.png"
+  },
+  {
+    "key": "corner-16",
+    "prompt": "ONE square orthographic top-view special board game tile FACE art. Deep royal amethyst enamel with ornate sculpted gold square border and a jewel-like central relief illustration of a luminous amethyst crystal orb with a large gold question mark, destiny and mystery, no words. Same premium glossy richly shaded 3D mobile board game style, polished metal and luminous gemstone, restrained detailing. Illustration occupies upper 65% of square leaving lower 25% dark purple blank for a separate game label. Square fills entire canvas edge-to-edge, no perspective and no surrounding backdrop, no side walls. No Korean text, no labels, no extra characters. Designed for isometric projection into a corner tile.",
+    "path": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-0067e57f-d7f3-4177-8821-a5728f4c03d3.png"
+  },
+  {
+    "key": "corner-24",
+    "prompt": "ONE square orthographic top-view special board game tile FACE art. Deep royal amethyst enamel with ornate sculpted gold square border and a jewel-like central relief illustration of a stylized dark steel handcuff and broken golden chain with a subtle crimson crystal glow, temptation, no words. Same premium glossy richly shaded 3D mobile board game style, polished metal and luminous gemstone, restrained detailing. Illustration occupies upper 65% of square leaving lower 25% dark purple blank for a separate game label. Square fills entire canvas edge-to-edge, no perspective and no surrounding backdrop, no side walls. No Korean text, no labels, no extra characters. Designed for isometric projection into a corner tile.",
+    "path": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-0208718b-c6fc-47ba-bfc0-96c70999dbd0.png"
+  }
+]

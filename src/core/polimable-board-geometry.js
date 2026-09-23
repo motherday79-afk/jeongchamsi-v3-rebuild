@@ -16,7 +16,9 @@ export function boardTile(i){
 const basis=p=>{const[a,b,c,d]=p;return {x:(a[0]+b[0]+c[0]+d[0])/4,y:(a[1]+b[1]+c[1]+d[1])/4,ux:(b[0]-a[0]+c[0]-d[0])/2,uy:(b[1]-a[1]+c[1]-d[1])/2,vx:(d[0]-a[0]+c[0]-b[0])/2,vy:(d[1]-a[1]+c[1]-b[1])/2};};
 export function remapPoint(i,p,inverse=false){const old=basis(tileOutline(i).points),next=basis(boardTile(i).points),a=inverse?next:old,b=inverse?old:next,dx=p.x-a.x,dy=p.y-a.y,det=a.ux*a.vy-a.uy*a.vx,u=(dx*a.vy-dy*a.vx)/det,v=(dy*a.ux-dx*a.uy)/det;return {x:b.x+b.ux*u+b.vx*v,y:b.y+b.uy*u+b.vy*v};}
 export const ITEM_SCALE=1.08;
-export function projectItem(key,value){if(!key.startsWith('tile.'))return {...value};const i=Number(key.split('.')[1]);return {...value,...remapPoint(i,value),w:value.w*ITEM_SCALE,h:value.h*ITEM_SCALE,...('font'in value?{font:value.font*ITEM_SCALE}:{})};}
+// Display-only offsets align existing saved HUD positions to the new independent frames.
+const hudOffsets={'p1.profile':[9,-29],'p1.mind':[12,-25],'p1.cash':[20,-25],'p1.assetLabel':[11.7,-22],'p1.assets':[9,-22],'p2.profile':[3,-23],'p2.mind':[-70,-31],'p2.cash':[-63,-31],'p2.assetLabel':[-72.5,-23],'p2.assets':[-69.9,-22.8]};
+export function projectItem(key,value){if(!key.startsWith('tile.')){const [dx,dy]=hudOffsets[key]||[0,0];return {...value,x:value.x+dx,y:value.y+dy};}const i=Number(key.split('.')[1]);return {...value,...remapPoint(i,value),w:value.w*ITEM_SCALE,h:value.h*ITEM_SCALE,...('font'in value?{font:value.font*ITEM_SCALE}:{})};}
 export function unprojectDelta(key,dx,dy){if(!key.startsWith('tile.'))return {x:dx,y:dy};const i=Number(key.split('.')[1]),c=boardTile(i).center,a=remapPoint(i,{x:c[0],y:c[1]},true),b=remapPoint(i,{x:c[0]+dx,y:c[1]+dy},true);return {x:b.x-a.x,y:b.y-a.y};}
 // Exact affine mapping between corresponding triangles. Used for legacy corner artwork.
 export function triangleMatrix(src,dst){const[a,b,c]=src,[p,q,r]=dst,ux=b[0]-a[0],uy=b[1]-a[1],vx=c[0]-a[0],vy=c[1]-a[1],det=ux*vy-uy*vx,A=((q[0]-p[0])*vy-(r[0]-p[0])*uy)/det,B=((q[1]-p[1])*vy-(r[1]-p[1])*uy)/det,C=((r[0]-p[0])*ux-(q[0]-p[0])*vx)/det,D=((r[1]-p[1])*ux-(q[1]-p[1])*vx)/det;return [A,B,C,D,p[0]-A*a[0]-C*a[1],p[1]-B*a[0]-D*a[1]];}
