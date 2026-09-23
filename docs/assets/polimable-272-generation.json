@@ -1,0 +1,17 @@
+[
+  {
+    "key": "scenery",
+    "prompt": "Create a polished stylized 3D mobile board game environment background, 16:9 wide composition. Bright Korean Han River civic park diorama seen in strict elevated isometric orthographic view, axes slope +/-0.515, no horizon, no sky. Cheerful late morning natural light from upper left. Crucial composition: leave a huge uninterrupted flat grass diamond centered (50%,48%) whose corners are approximately (50%,4%),(98%,48%),(50%,96%),(2%,48%). This area is an empty level platform where a separate board will be placed; absolutely NO board, tiles, markings, logo or objects inside this diamond. Outside diamond, connect a narrow pale stone promenade following its edges to small tidy roads, soft green trees, low Korean civic buildings at outer image edges, turquoise Han river along outer left and upper edges and a small bridge far upper left. Keep all scenery small and peripheral, no foreground flowers, no tall objects overlapping central diamond. Rounded premium game art, soft realistic contact shadows, clean detailed textures at small scale. More city miniature than painting or photograph. No text, no UI, no characters, no buttons, no gold palace, no ornamental purple table.",
+    "path": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-0a580222-1106-4a03-9eb1-2f99d0fa3f49.png"
+  },
+  {
+    "key": "plaza",
+    "prompt": "Create a square orthographic straight-down texture for the centre of a premium stylized 3D Korean civic park board game. Exactly square, entire image a flat park surface, no perspective at all. Soft short light green lawn with one elegant broad circular pale warm grey stone walkway centered on the square, circle diameter 72% of image. Smaller fine ring inset 45% diameter in the grass, modest understated compass paving medallion in centre without symbols. Walkway paving highly polished game quality tiny individual stone blocks, soft ambient lighting upper left, calm uncluttered matte grass. Thin square perimeter stone paving strip 5% imagewidth, all corners flat. NO buildings, trees, raised monuments, flowers, game tiles, text, logos, people or objects. Clear open lawn ideal for overlaying animated dice and cards. Match bright isometric mobile city boardgame aesthetic but output a topdown texture to be projected by code. Not ornate, not dark, not shiny.",
+    "path": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-f28c8c25-8b42-482b-9b62-abe87d00c6d0.png"
+  },
+  {
+    "key": "tile",
+    "prompt": "Single production texture for a premium 3D mobile board game tile, orthographic directly top down, full square canvas. A clean blank smooth matte ivory ceramic slab with subtly rounded corners, soft broad bevel catching upper-left daylight, very narrow cool pale grey rim. Surface entirely blank with delicate clean material only, NO engraving, NO lines across surface, NO ornament, NO gold, no glitter, no symbols, no text, no icon, no background scenery. The tile fills 99% of canvas edge to edge, transparent outside corners if any. Designed for later tinting blue green pink yellow and stretching to rectangular game squares. Friendly solid molded toy block, not a gemstone or luxury jewellery tile. High quality stylized 3D render.",
+    "path": "C:\\Users\\user\\.codex\\generated_images\\01a0a9f6-0ec5-7441-a773-bd413c42083e\\exec-73193d60-6cce-46b2-8fd2-521a9209fd75.png"
+  }
+]

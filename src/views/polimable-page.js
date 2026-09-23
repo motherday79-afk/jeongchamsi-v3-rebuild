@@ -1,4 +1,4 @@
-import {boardTile} from '../core/polimable-board-geometry.js?v=0.0.31.271';
+import {boardTile} from '../core/polimable-board-geometry.js?v=0.0.31.272';
 import {POLIMARBLE_32_TILE_LAYOUT as LAYOUT,POLIMARBLE_HUD_LAYOUT as HUD} from '../core/polimable-layout.js?v=0.0.31.251';
 
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -20,7 +20,7 @@ export function renderPoliMarblePage({session={}}={}){
   return `<section class="pm-board-stage-page pm-game-screen" aria-label="JCS 폴리마블 1P 대 AI 게임룰 테스트">
     <nav class="pm-game-nav" aria-label="게임 메뉴"><a href="/">← 정참시 홈</a><button type="button" data-pm-fullscreen hidden>전체화면</button></nav>
     <div class="pm-board-stage" data-pm-root data-pm-can-edit="${session?.user?.role==='admin'?'true':'false'}" data-pm-stage="gameplay-test">
-      <img class="pm-board-stage-image" src="/assets/polimable/design271/scenery.png" alt="JCS 폴리마블 게임보드">
+      <img class="pm-board-stage-image" src="/assets/polimable/design272/scenery.png" alt="JCS 폴리마블 게임보드">
       <div class="pm-logical-canvas" data-pm-logical-canvas aria-label="1672×941 폴리마블 논리 캔버스">
         <div class="pm271-player-frames" aria-hidden="true"><img class="pm271-frame-p1" src="/assets/polimable/design271/hud-blue.png" alt=""><img class="pm271-frame-p2" src="/assets/polimable/design271/hud-pink.png" alt=""></div>
         <div class="pm-plaza-layer" aria-hidden="true"><img src="/assets/polimable/editor/central-plaza-263.png" alt=""><div class="pm-plaza-logo">정참시<br><strong>폴리마블</strong></div></div>

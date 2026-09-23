@@ -1,9 +1,9 @@
-import {projectItem} from '../core/polimable-board-geometry.js?v=0.0.31.271';
+import {projectItem} from '../core/polimable-board-geometry.js?v=0.0.31.272';
 import {propertyQuote,quoteMarkup,PROPERTY_RENT_RATES,PROPERTY_UPGRADE_RATES} from '../core/polimable-property-quote.js?v=0.0.31.263';
 import {mountGameMotion,setCubeFace} from './polimable-motion.js?v=0.0.31.261';
 import {stepTiming} from '../core/polimable-motion.js?v=0.0.31.261';
 import {tileName,escapeText} from '../core/polimable-tile-design.js';
-import {mountHudEditor} from './polimable-hud-editor.js?v=0.0.31.271';
+import {mountHudEditor} from './polimable-hud-editor.js?v=0.0.31.272';
 import {POLIMARBLE_MOVE_ANCHORS as MOVE_ANCHORS,POLIMARBLE_TOKEN_POINTS as TOKEN_POINTS,POLIMARBLE_PROPERTY_OBJECT_POINTS as OBJECT_POINTS} from '../core/polimable-layout.js?v=0.0.31.251';
 import {createPoliMarbleAudio} from '../core/polimable-audio.js?v=0.0.31.245';
 import {calculatePoliMarbleStage} from '../core/polimable-viewport.js?v=0.0.31.262';

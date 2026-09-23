@@ -739,3 +739,7 @@ html:has(.pm-game-shell),body:has(.pm-game-shell){overflow:hidden!important;marg
 .pm-dice-roll-button:active:not(:disabled)>img{transform:translateY(2px)}
 .pm-dice-roll-button:disabled>img{opacity:.55}
 .pm-dice-roll-button:focus-visible{outline:2px solid #ffe4a6!important;outline-offset:1px}
+
+/* 272: bright civic park, with subdued plaza branding behind dice/cards. */
+.pm-board-stage .pm-plaza-logo{color:#546b53;opacity:.40;text-shadow:0 1px 0 #ffffffaa,0 -1px 0 #344c3933}
+.pm-game-screen{background:#8bb9b3!important}
