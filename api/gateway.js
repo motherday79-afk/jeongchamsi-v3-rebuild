@@ -2,7 +2,6 @@ import {createAiPanelService} from '../lib/ai-panel-service.js';
 import {aiPanelRequest} from '../lib/ai-panel-http.js';
 import {createHumanPollService} from '../lib/human-poll-service.js';
 import {createFortuneService} from '../lib/fortune-service.js';
-import {createPoliMarbleService,polimableErrorStatus} from '../lib/polimable-service.js';
 import {humanPollRequest} from '../lib/human-poll-http.js';
 import { createMediaSpreadService } from '../lib/media-spread-service.js';
 import { createGroupService } from '../lib/group-service.js';
@@ -192,24 +191,6 @@ export async function dispatchBadgeRequest(route,method,user,body,service,target
     return {status:result.ok?200:badgeErrorStatus(result.error),body:result};
   }
   return null;
-}
-
-async function handlePolimable(req,res,route,command,url){
-  const action=String(route||'').replace(/^polimable\/?/,'');
-  const user=await currentUser(req,command);
-  const service=createPoliMarbleService({command});
-  try{
-    if(action==='leaderboard'&&req.method==='GET'){const scope=String(url.searchParams.get('scope')||'today');return json(res,200,{ok:true,leaderboard:await service.leaderboard(scope,user?.id||'')});}
-    if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});
-    if(action==='session'&&req.method==='GET'){const result=await service.resume(user,url.searchParams.get('sessionId')||'');return json(res,200,{ok:true,...result});}
-    if(action==='start'&&req.method==='POST')return json(res,200,{ok:true,...await service.start(user,bodyOf(req))});
-    if(action==='roll'&&req.method==='POST')return json(res,200,{ok:true,...await service.roll(user,bodyOf(req))});
-    if(action==='choice'&&req.method==='POST')return json(res,200,{ok:true,...await service.choice(user,bodyOf(req))});
-    if(action==='asset'&&req.method==='POST')return json(res,200,{ok:true,...await service.asset(user,bodyOf(req))});
-    if(action==='card'&&req.method==='POST')return json(res,200,{ok:true,...await service.card(user,bodyOf(req))});
-    if(action==='cashout'&&req.method==='POST')return json(res,200,{ok:true,...await service.cashout(user,bodyOf(req))});
-    return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
-  }catch(error){const code=String(error?.message||'POLIMARBLE_FAILED');return json(res,polimableErrorStatus(error),{ok:false,error:code});}
 }
 
 async function handleUser(req,res,route,command,url){
@@ -481,6 +462,7 @@ async function handleAdmin(req,res,route,command){
 export default async function handler(req,res){
   const url=new URL(req.url||'/',`https://${req.headers.host||'localhost'}`);const route=String(req.query?.path||url.searchParams.get('path')||url.pathname.replace(/^\/api\/v3\/?/,'')).replace(/^\/+|\/+$/g,'');
   try{
+    if(route==='polimable'||route.startsWith('polimable/')||route==='polimarble'||route.startsWith('polimarble/'))return json(res,410,{ok:false,error:'FEATURE_REMOVED'});
     if(route.startsWith('migration/'))return handleMigration(req,res,route);
     const command=rebuildRedisCommand();
     if(route==='ai-panel-human'){
@@ -505,7 +487,7 @@ export default async function handler(req,res){
       const result=await campaignRequest(req,{service:createCampaignService({command}),user:protectedRequest?await currentUser(req,command):null,url});
       return json(res,result.status,result.data);
     }
-    if(route.startsWith('polimable/'))return handlePolimable(req,res,route,command,url);
+
     if(route.startsWith('user/')){const handled=await handleUser(req,res,route,command,url);if(handled!==false)return handled;}
     if(route==='inquiries'){
       const service=createInquiryService({command}),user=await currentUser(req,command);
