@@ -62,7 +62,7 @@ export function renderPoliMarblePage({session={}}={}){
       </div>
 
       <div class="pm-game-overlay-layer">
-        <div class="pm-turn-pill" data-pm-turn-pill>1P TURN</div>
+
         <button class="pm-sound-toggle" type="button" data-pm-sound-toggle aria-label="폴리마블 소리 끄기" aria-pressed="false" title="소리 끄기">🔊</button>
         <div class="pm-toast" data-pm-toast aria-live="polite"></div>
       </div>

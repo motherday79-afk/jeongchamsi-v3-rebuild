@@ -1,6 +1,6 @@
-import {editItem,syncBuildings,alignRow} from '../core/polimable-batch-edit.js?v=0.0.31.259';
-import {mountTileFaces} from './polimable-tile-faces.js?v=0.0.31.259';
-import {BOARD,W,H,KEYS,HUD_KEYS,TILES,SLOTS,isAnchor,isImage,fieldTitle,itemRect,assetFor,isLabel,tileName,escapeText,defaults,copy,validate,adjust,point} from '../core/polimable-hud-layout.js?v=0.0.31.259';
+import {editItem,syncBuildings,alignRow} from '../core/polimable-batch-edit.js?v=0.0.31.260';
+import {mountTileFaces} from './polimable-tile-faces.js?v=0.0.31.260';
+import {BOARD,W,H,KEYS,HUD_KEYS,TILES,SLOTS,isAnchor,isImage,fieldTitle,itemRect,assetFor,isLabel,tileName,escapeText,defaults,copy,validate,adjust,point} from '../core/polimable-hud-layout.js?v=0.0.31.260';
 
 const errors={ADMIN_REQUIRED:'관리자로 다시 로그인해주세요.',LAYOUT_CHANGED:'다른 관리자가 먼저 반영했습니다. 내 작업은 임시저장되어 있습니다. 새로고침 후 최신 배치를 확인해주세요.',STORAGE_UNAVAILABLE:'서버 저장에 실패했습니다. 임시저장은 유지됩니다.',NO_PREVIOUS:'복구할 이전 배치가 없습니다.'};
 async function request(method='GET',body){const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),8000);try{const r=await fetch('/api/polimable-hud-layout',{method,credentials:'same-origin',cache:'no-store',headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined,signal:ctrl.signal});if(!r.headers.get('content-type')?.includes('application/json'))throw Error('배치 API 파일이 함께 배포되었는지 확인해주세요.');const d=await r.json();if(!r.ok||!d.ok)throw Error(errors[d.error]||'배치를 불러오거나 저장하지 못했습니다.');return d;}catch(e){if(e.name==='AbortError')throw Error('서버 응답이 늦어 저장을 완료하지 못했습니다.');throw e;}finally{clearTimeout(timer);}}

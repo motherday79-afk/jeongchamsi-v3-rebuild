@@ -38,3 +38,5 @@
 .pm-logical-canvas .pm-strategy-slots .pm-card-chip b{position:static!important;display:block!important;white-space:normal!important;overflow:visible!important;color:#fff4cf!important;font-size:11px!important;line-height:1.2!important;text-align:center!important}
 .pmle-editing .pm-card-reveal{display:none!important}
 @media(prefers-reduced-motion:reduce){.pm-dice-flight.is-rolling .pm-die-3d,.pm-dice-flight.is-landed .pm-die-3d,.pm-dice-flight.is-rolling .pm-dice-cube{animation:none!important}.pm-dice-cube{transition:none}.pm-active-player::after{box-shadow:none}}
+
+.pm-contact-fx{position:absolute;inset:0;width:1672px;height:941px;overflow:visible;pointer-events:none;z-index:16}.pmle-editing .pm-contact-fx{display:none}
