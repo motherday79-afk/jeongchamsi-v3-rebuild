@@ -5,10 +5,10 @@
  <meta name="theme-color" content="#231627"><meta name="robots" content="noindex">
  <title>나의 광산 · 정참시</title>
  <link rel="preload" as="image" href="/assets/mine/cave.webp">
- <link rel="stylesheet" href="/mine/mine.css?v=277">
+ <link rel="stylesheet" href="/mine/mine.css?v=278"><link rel="stylesheet" href="/mine/scratch-card.css?v=278">
 </head>
 <body>
- <main class="mine-game" id="mine-game" data-version="277">
+ <main class="mine-game" id="mine-game" data-version="278">
   <div class="mine-scenery" aria-hidden="true"></div><div class="mine-shade" aria-hidden="true"></div>
   <header class="mine-header">
    <a class="home-link" href="/" aria-label="정참시 메인으로 돌아가기">‹ <span>정참시</span></a>
@@ -17,11 +17,11 @@
    <button class="icon-button" data-panel="help" aria-label="게임 도움말">?</button>
   </header>
   <button class="jackpot-sign" data-panel="jackpot" aria-label="공동 잭팟 보기"><span>공동 잭팟</span><strong data-jackpot-count>—</strong><small>브론즈 · 실버 · 골드</small></button>
-  <aside class="sponsor-sign"><span class="ad-tag" data-ad-tag>광산 소식</span><strong data-ad-name>정참시 광산</strong><p data-ad-copy>나만의 광산을 키워보세요</p></aside>
+  <a class="sponsor-sign" data-sponsor-link aria-disabled="true"><span class="ad-tag" data-ad-tag>광산 소식</span><strong data-ad-name>정참시 광산</strong><p data-ad-copy>나만의 광산을 키워보세요</p><small data-ad-visit>광고 준비 중</small></a>
   <div class="mine-stage" aria-label="광부의 채굴 장면">
-   <img class="mine-ore" src="/assets/mine/ore.webp" alt="금을 품은 광맥" data-ore-rock>
+   <img class="mine-ore mine-seam" src="/assets/mine/ore-seam-278.webp" alt="벽면을 따라 이어지는 넓은 금광맥" data-ore-rock>
    <div class="worker-actor"><div class="sprite worker-sprite" data-worker role="img" aria-label="철로에 앉아 쉬는 자동채굴 인부"></div><span class="actor-badge">인부 휴식 중 <b data-worker-level>Lv.1</b></span></div>
-   <div class="player-actor" data-player-actor><div class="sprite" data-player role="img" aria-label="플레이어 광부"></div><span class="actor-badge"><b data-character-name>건장한 광부</b><span data-tool-name>기본 곡괭이</span></span></div>
+   <div class="player-actor" data-player-actor><div class="player-body"><div class="sprite" data-player role="img" aria-label="플레이어 광부"></div><svg class="pick-decoration" data-pick-decoration viewBox="0 0 540 710" aria-hidden="true" hidden></svg></div><span class="actor-badge"><b data-character-name>건장한 광부</b><span data-tool-name>기본 곡괭이</span></span></div>
    <div class="strike-effects" data-effects aria-hidden="true"></div>
   </div>
   <section class="mine-console" aria-label="채굴과 회수">
@@ -33,15 +33,16 @@
   </section>
   <div class="mine-toast" role="status" aria-live="polite" data-toast></div>
   <nav class="mine-dock" aria-label="광산 메뉴">
+   <button class="lottery-dock-button" data-panel="lottery"><span aria-hidden="true">🎟</span><b>복권 긁기</b><small data-lottery-left>20G</small></button>
    <button data-panel="pick"><span aria-hidden="true">⛏</span><b>곡괭이</b><small data-pick-level>Lv.1</small></button>
    <button data-panel="worker"><span aria-hidden="true">♟</span><b>인부</b><small data-dock-worker>Lv.1</small></button>
    <button data-panel="storage"><span aria-hidden="true">▣</span><b>저장고</b><small data-dock-storage>Lv.1</small></button>
    <button data-panel="characters"><span aria-hidden="true">♙</span><b>캐릭터</b><small>변경</small></button>
-   <button data-panel="admin" data-admin hidden><span aria-hidden="true">⚙</span><b>관리</b><small>광고 설정</small></button>
+   <button data-panel="admin" data-admin hidden><span aria-hidden="true">⚙</span><b>관리</b><small>광고·회차</small></button>
   </nav>
   <dialog class="mine-dialog" data-dialog><div class="dialog-head"><h2 data-dialog-title></h2><button class="icon-button" data-close aria-label="닫기">×</button></div><div data-dialog-body></div></dialog>
   <noscript><div class="mine-noscript">게임을 실행하려면 브라우저의 JavaScript를 켜주세요. <a href="/">정참시 돌아가기</a></div></noscript>
  </main>
- <script type="module" src="/mine/mine.js?v=277"></script>
+ <script type="module" src="/mine/mine.js?v=278"></script>
 </body>
 </html>
