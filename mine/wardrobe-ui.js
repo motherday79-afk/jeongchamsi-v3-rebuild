@@ -1,0 +1,9 @@
+import {costumeFor,renderCharacter} from './character-rig.js?v=281';
+const labels={strong:'건장한 광부',glamour:'하이힐 광부',elf:'미니미 엘프'};
+const slots={top:'상의',bottom:'하의',head:'헬멧',gloves:'장갑',boots:'신발'};
+export function wardrobeMarkup(state){
+ const current=costumeFor(state),elf=state.character==='elf';
+ return `<form data-wardrobe-form><div class="wardrobe-layout"><div class="wardrobe-preview" data-wardrobe-preview role="img" aria-label="${labels[state.character]} 의상 미리보기"></div><div class="wardrobe-options"><p class="dialog-copy">${labels[state.character]} · 선택한 의상을 미리 보고 저장하세요.</p>${Object.entries(slots).map(([slot,label])=>`<label>${label}<select name="${slot}">${['classic',...(['top','bottom'].includes(slot)?['alternate']:[]),'none'].map(id=>`<option value="${id}" ${current[slot]===id?'selected':''} ${!elf&&['top','bottom'].includes(slot)&&id==='none'?'disabled':''}>${id==='classic'?'기본 작업복':id==='alternate'?(state.character==='strong'?'네이비':elf?'포레스트':'퍼플'):'해제'}${!elf&&['top','bottom'].includes(slot)&&id==='none'?' · 기본형 미완성':''}</option>`).join('')}</select></label>`).join('')}<p class="dialog-copy">${elf?'겉옷을 해제해도 크림색 내복은 유지됩니다.':'성인 기본형 이미지가 완성되지 않아 상·하의 해제는 아직 사용할 수 없습니다. 헬멧·장갑·신발 해제와 작업복 교체는 가능합니다.'}</p><button class="purple-action" type="button" data-wardrobe-motion>채굴 동작 미리보기</button><button class="gold-action" type="submit">이 의상으로 저장</button><p class="panel-error" data-wardrobe-status role="status"></p></div></div></form>`;
+}
+export function wardrobeDraft(form,state){const values=new FormData(form);return {...state,costumes:{...state.costumes,[state.character]:Object.fromEntries(Object.keys(slots).map(slot=>[slot,values.get(slot)]))}};}
+export function refreshWardrobe(form,state){renderCharacter(form.querySelector('[data-wardrobe-preview]'),wardrobeDraft(form,state),0);}
