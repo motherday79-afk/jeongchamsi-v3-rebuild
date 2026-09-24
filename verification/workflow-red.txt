@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/2c41bbae2f63/qa167-sdkfix/verify-workflows.py", line 10, in <module>
+    assert 'tools' not in packages,(path,'obsolete default tools requested')
+           ^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: (PosixPath('qa167-sdkfix/main-workflow-before.yml'), 'obsolete default tools requested')

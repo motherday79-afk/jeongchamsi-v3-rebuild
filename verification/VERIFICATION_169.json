@@ -1,0 +1,21 @@
+{
+  "version": "1.1.169-purple-gold",
+  "base": "1.1.168-purple-gold",
+  "homeUrl": "https://www.jeongchamsi.com/",
+  "previousApexNoAOrAAAA": true,
+  "correctWwwHttp200": true,
+  "iconBackground": "#FFFFFF",
+  "compiledIconBackgroundVerified": true,
+  "approvedGoldPixelsUnchanged": true,
+  "introUnchanged": true,
+  "protectedFilesUnchanged": 20,
+  "pythonTests": 17,
+  "startupAndAnimationChecks": 3406,
+  "actualSdkBuild": true,
+  "apkV2V3SignatureVerified": true,
+  "correctHomeUrlInCompiledDex": true,
+  "deviceVerified": false,
+  "remoteSourceChanged": false,
+  "mainWorkflowChanged": false,
+  "websiteChanged": false
+}

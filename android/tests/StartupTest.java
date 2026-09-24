@@ -1,0 +1,100 @@
+package com.jeongchamsi.preview;
+public final class StartupTest {
+    private static int checks;
+    static void expect(boolean b,String name){checks++;if(!b)throw new AssertionError(name);}
+    public static void main(String[] args){
+        StartupGate fast=new StartupGate(1000);
+        fast.ready();
+        expect(fast.state(3299)==StartupGate.WAIT,"fast page stays for full intro");
+        expect(fast.state(3300)==StartupGate.CONTENT,"fast page revealed after intro");
+        fast.navigating(3300);
+        expect(fast.state(3300)==StartupGate.WAIT,"new navigation clears already-ready page");
+        fast.ready();expect(fast.state(3500)==StartupGate.CONTENT,"new page readiness releases intro");
+        StartupGate slow=new StartupGate(0);
+        expect(slow.state(2300)==StartupGate.WAIT,"animation completion is not page readiness");
+        slow.ready();expect(slow.state(2800)==StartupGate.CONTENT,"ready content revealed");
+        StartupGate fail=new StartupGate(0);fail.failed();
+        expect(fail.state(1000)==StartupGate.WAIT,"early error does not cut intro");
+        expect(fail.state(2300)==StartupGate.ERROR,"error after intro");
+        StartupGate hung=new StartupGate(100);
+        expect(hung.state(15099)==StartupGate.WAIT,"bounded wait before timeout");
+        expect(hung.state(15100)==StartupGate.SLOW,"delay must not be diagnosed as a network failure");
+        hung.ready();expect(hung.state(16100)==StartupGate.CONTENT,"late real content removes delay panel");
+        StartupGate verySlow=new StartupGate(0);
+        expect(verySlow.state(60000)==StartupGate.SLOW,"long delay remains recoverable");
+        verySlow.ready();expect(verySlow.state(61000)==StartupGate.CONTENT,"content recovers after a minute");
+        StartupGate retry=new StartupGate(20000,false);
+        expect(retry.state(20000)==StartupGate.WAIT,"retry gets a new loading state without replaying intro");
+        retry.ready();expect(retry.state(20001)==StartupGate.CONTENT,"retry can immediately reveal painted content");
+        retry.navigating(21000);retry.failed();
+        expect(retry.state(21000)==StartupGate.ERROR,"actual failure is reported immediately on retry");
+        retry.ready();expect(retry.state(22000)==StartupGate.ERROR,"stale ready callback cannot hide a real failure");
+        retry.navigating(23000);retry.ready();
+        expect(retry.state(23001)==StartupGate.CONTENT,"new successful navigation clears failure");
+        StartupGate redirect=new StartupGate(0);
+        redirect.navigating(14000);
+        expect(redirect.state(15000)==StartupGate.WAIT,"new document gets its own loading interval");
+        expect(redirect.state(29000)==StartupGate.SLOW,"delay is measured from current document");
+        String home="https://jeongchamsi.com/";
+        expect(DocumentFailure.affectsPage(true,home,home),"main document network/HTTP failure is reported");
+        expect(!DocumentFailure.affectsPage(false,home,home),"subframe failure cannot cover the page");
+        expect(!DocumentFailure.affectsPage(true,home,home+"campaigns"),"abandoned navigation error ignored");
+        expect(!DocumentFailure.sameDocument(home+"assets/photo.png",home),"image SSL error does not cover whole app");
+        expect(!DocumentFailure.sameDocument("https://images.example.com/",home),"external asset SSL error not page error");
+        expect(DocumentFailure.sameDocument("https://JEONGCHAMSI.com:443",home+"#home"),"origin normalization and fragment ignored");
+        expect(!DocumentFailure.sameDocument(home+"?q=a",home+"?q=b"),"different page query is not current document");
+        expect(!DocumentFailure.sameDocument(null,home),"missing URL is not main-document evidence");
+        expect(!DocumentFailure.sameDocument("not a url",home),"malformed URL is not main-document evidence");
+        DocumentNavigation documents=new DocumentNavigation(home);
+        expect(documents.awaitingStart(),"fresh load cannot probe an old DOM before onPageStarted");
+        expect(documents.error(true,home,"HTTP_503"),"early home HTTP failure is recognized");
+        expect(documents.started(home).equals("HTTP_503"),"commit-time page start preserves early HTTP failure");
+        expect(!documents.awaitingStart(),"new document can now be probed");
+        documents.finished(home);
+        documents.expect(home);
+        expect(documents.awaitingStart(),"same-URL retry blocks old ready DOM");
+        expect(documents.started(home).isEmpty(),"retry drops old failure");
+        documents.expect(home+"campaigns");
+        expect(!documents.error(true,home,"NETWORK_-1"),"abandoned old document cannot fail pending navigation");
+        expect(documents.started(home+"campaigns").isEmpty(),"unrelated staged error discarded on commit");
+        documents.expect(home+"login");
+        expect(documents.matches(home+"login"),"pending URL supports pre-commit SSL classification");
+        expect(!documents.matches(home+"assets/photo.png"),"asset SSL remains excluded during pending navigation");
+        documents.error(true,home+"login","SSL_3");
+        expect(documents.started(home+"login").equals("SSL_3"),"matching SSL error survives page-start ordering");
+        documents.finished(home+"login");
+        expect(!documents.error(true,home+"redirect","HTTP_500"),"unannounced main-frame error staged without covering previous page");
+        expect(documents.started(home+"redirect").equals("HTTP_500"),"unannounced error only applied after matching page start");
+        documents.expect(home);
+        expect(documents.started(home).isEmpty(),"explicit new attempt clears staged redirect failure");
+        expect(!documents.error(false,home,"HTTP_404"),"subresource HTTP never staged");
+        expect(documents.started(home).isEmpty(),"subresource error cannot reappear at page start");
+        documents.error(true,home,"HTTP_503");documents.finished(home);
+        expect(documents.started(home).isEmpty(),"finished document does not retain early error for an unrelated reload");
+        documents.expect(home+"campaigns");
+        documents.error(true,home+"campaigns","HTTP_503");
+        documents.error(true,home,"NETWORK_-1");
+        expect(documents.started(home+"campaigns").equals("HTTP_503"),"unrelated late error cannot erase expected document failure");
+        documents.error(true,home+"redirect","HTTP_500");
+        documents.error(true,home,"NETWORK_-2");
+        expect(documents.started(home+"redirect").equals("HTTP_500"),"unannounced target failure survives an unrelated late error");
+        documents.expect(home);documents.error(true,home,"HTTP_503");
+        for(int i=0;i<20;i++)documents.error(true,home+"old/"+i,"NETWORK_-1");
+        expect(documents.started(home).equals("HTTP_503"),"bounded staging retains known destination failure");
+        for(long t=0;t<=2300;t+=10){
+            for(int ray=0;ray<8;ray++){
+                float p=IntroTimeline.ray(t,ray);
+                expect(p>=0&&p<=1,"ray bounded");
+                if(t>=720)expect(p==1,"rays locked before text");
+            }
+            expect(IntroTimeline.name(t)>=0&&IntroTimeline.name(t)<=1,"name bounded");
+        }
+        expect(IntroTimeline.tagline(700)==0,"tagline after rays");
+        expect(IntroTimeline.tagline(1000)==1,"tagline settled");
+        expect(IntroTimeline.name(1030)==0,"name after tagline");
+        expect(IntroTimeline.name(1400)==1,"name settles before light");
+        expect(IntroTimeline.light(1449)==0,"light waits for lock");
+        expect(IntroTimeline.light(2250)==1,"light finishes inside intro");
+        System.out.println("Startup/animation: "+checks+" checks passed");
+    }
+}
