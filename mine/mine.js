@@ -77,7 +77,7 @@ function cooldown(){if(!state)return;const active=running();q('[data-strike]').d
  q('[data-cooldown]').textContent=active?'1.5초마다 자동 타격 중':'1.5초마다 한 번';q('[data-cooldown-fill]').style.width=active?((Date.now()-lastManual)%1500/1500*100)+'%':'100%';}
 async function sync(){
  if(busy||!user||disposed)return;busy=true;paint();
- try{const retry=pending,data=await request('mine',retry||undefined);accept(data);if(retry&&data.state)storePending(null);
+ try{const retry=pending,data=await request('mine',retry||undefined);if(data.error==='MINE_FORBIDDEN'){accessDenied();return;}accept(data);if(retry&&data.state)storePending(null);
   if(!data.ok){if(data.error==='LOGIN_REQUIRED'){user=null;login();}else toast(errors[data.error]||'광산을 불러오지 못했어요. 다시 연결해 주세요.');}
   else if(retry?.action==='collect'&&data.result?.visitUrl){location.assign(data.result.visitUrl);return;}
   else if(retry?.action?.startsWith('lottery-'))showPanel('lottery');
@@ -90,7 +90,7 @@ async function action(actionName,extra={}){
  const body={action:actionName,requestId:crypto.randomUUID(),campaignId:campaign?.id,...extra};storePending(body);paint();
  if(actionName==='strike'){lastManual=Date.now();swing(q('[data-player]'));}
  try{
-  const data=await request('mine',body);accept(data);if(data.state)storePending(null);
+  const data=await request('mine',body);if(data.error==='MINE_FORBIDDEN'){accessDenied();return;}accept(data);if(data.state)storePending(null);
   if(!data.ok){if(data.error==='MINE_SESSION'){onlineToken=null;toast('채굴 연결이 종료됐어요. 도움말의 다시 연결을 눌러주세요.');}else toast(errors[data.error]||'작업을 처리하지 못했어요. 다시 시도해 주세요.');if(actionName.startsWith('lottery-'))showPanel('lottery');return;}
   if(data.result?.autoGained)effect(data.result.autoGained,false);
   if(actionName==='auto-start')lastManual=Date.now();
@@ -205,14 +205,22 @@ root.addEventListener('submit',async event=>{if(!event.target.matches('[data-ad-
 dialog.addEventListener('cancel',()=>panel='');
 dialog.addEventListener('close',()=>{scratchCleanup?.();scratchCleanup=null;panel='';});
 async function boot(){
+ let session;
+ try{session=await request('user/session');if(!session.authenticated||session.user?.role!=='admin'){accessDenied();return;}}catch{accessDenied();return;}
+ root.style.visibility='visible';
  if(location.pathname.replace(/\/$/,'')==='/mine/ad'){
   document.title='광고 이동 체험 · 정참시';document.body.innerHTML='<main class="test-ad-page"><section class="test-ad-card"><small>광고 이동 체험</small><h1>광물 회수를 마쳤어요</h1><p>실제 광고주 주소가 아직 연결되지 않아<br>이 안내 페이지로 이동했습니다.</p><p>브라우저의 뒤로가기를 누르면<br>진행 중인 광산으로 돌아갑니다.</p><button class="gold-action" id="back-to-mine">광산으로 돌아가기</button></section></main>';document.getElementById('back-to-mine').onclick=()=>{if(history.length>1)history.back();else location.replace('/mine');};return;
  }
  try{
-  const session=await request('user/session');if(!session.authenticated){login();return;}user=session.user;q('[data-admin]').hidden=user.role!=='admin';
+  user=session.user;q('[data-admin]').hidden=user.role!=='admin';
   try{const saved=JSON.parse(sessionStorage.getItem(storageKey())||'null');if(saved?.requestId)pending=saved;}catch{}
   await sync();await enterGame();if(state&&!state.chosen&&!pending)showPanel('characters');
  }catch{open('광산 연결','<p class="dialog-copy">연결을 확인하지 못했습니다. 잠시 후 다시 입장해 주세요.</p><a href="/mine" class="gold-action" style="display:block;text-align:center">다시 입장하기</a>');}
+}
+function accessDenied(){
+ disposed=true;user=null;state=null;onlineToken=null;scratchCleanup?.();minerMotion.stop();
+ root.style.visibility='visible';root.className='test-ad-page';
+ root.innerHTML='<section class="test-ad-card"><h1>권한이 없습니다.</h1><p>관리자에게 권한을 요청해 주세요.</p><a class="gold-action" href="/">정참시 메인으로 돌아가기</a></section>';
 }
 const ticker=setInterval(()=>{
  if(disposed||document.hidden||!state)return;cooldown();

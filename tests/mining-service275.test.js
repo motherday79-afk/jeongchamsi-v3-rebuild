@@ -41,13 +41,13 @@ test('advertiser destination must be an external HTTPS URL with no embedded cred
 test('HTTP requires authentication, JSON, same-origin writes and admin role',async()=>{
  const {service}=setup(),url=new URL('https://jcs.test/api/v3/mine');
  assert.equal((await miningRequest({method:'GET'},{service,url})).status,401);
- assert.equal((await miningRequest({method:'POST',headers:{origin:'https://evil.test','content-type':'application/json'},body:{}},{service,url,user:member})).status,403);
- assert.equal((await miningRequest({method:'POST',headers:{'content-type':'text/plain'},body:{}},{service,url,user:member})).status,415);
- assert.equal((await miningRequest({method:'DELETE'},{service,url,user:member})).status,405);
+ assert.equal((await miningRequest({method:'POST',headers:{origin:'https://evil.test','content-type':'application/json'},body:{}},{service,url,user:admin})).status,403);
+ assert.equal((await miningRequest({method:'POST',headers:{'content-type':'text/plain'},body:{}},{service,url,user:admin})).status,415);
+ assert.equal((await miningRequest({method:'DELETE'},{service,url,user:admin})).status,405);
  assert.equal((await miningRequest({method:'GET'},{service,url:new URL(url+'/admin'),user:member})).status,403);
 });
 test('HTTP malformed JSON and internal storage failures never expose implementation secrets',async()=>{
  const {service}=setup(),url=new URL('https://jcs.test/api/v3/mine');
- const bad=await miningRequest({method:'POST',headers:{'content-type':'application/json'},body:'{'},{service,url,user:member});assert.equal(bad.status,400);
- const broken=await miningRequest({method:'GET'},{service:{run:()=>{throw Error('secret-redis-password');}},url,user:member});assert.equal(broken.status,503);assert.doesNotMatch(JSON.stringify(broken),/secret-redis/);
+ const bad=await miningRequest({method:'POST',headers:{'content-type':'application/json'},body:'{'},{service,url,user:admin});assert.equal(bad.status,400);
+ const broken=await miningRequest({method:'GET'},{service:{run:()=>{throw Error('secret-redis-password');}},url,user:admin});assert.equal(broken.status,503);assert.doesNotMatch(JSON.stringify(broken),/secret-redis/);
 });
