@@ -1,7 +1,21 @@
 // Dedicated painted dark VFX: four frames each of flame, cleave and rupture.
 let sheet=null,loading=false,failed=false;const listeners=new Set(),CELL=384,TAU=Math.PI*2;
-export function loadDarkEffects(ready){if(sheet)return sheet;if(ready)listeners.add(ready);if(loading||failed)return null;loading=true;const img=new Image();img.onload=()=>{sheet=img;loading=false;for(const fn of listeners)fn();listeners.clear();};img.onerror=()=>{failed=true;loading=false;listeners.clear();};img.src='/assets/mine/effects-294/dark-atlas.webp';return null;}
-function cell(c,row,frame,x,y,w,h,alpha=1){if(!sheet)return;c.save();c.globalAlpha*=Math.max(0,Math.min(1,alpha));c.drawImage(sheet,(frame%4)*CELL,row*CELL,CELL,CELL,x,y,w,h);c.restore();}
+let frames=[];
+function softenFrames(image){
+ const result=[];
+ for(let row=0;row<3;row++)for(let col=0;col<4;col++){
+  const tile=document.createElement('canvas');tile.width=tile.height=CELL;const c=tile.getContext('2d');
+  c.drawImage(image,col*CELL,row*CELL,CELL,CELL,0,0,CELL,CELL);
+  c.globalCompositeOperation='destination-in';
+  let g=c.createLinearGradient(0,0,0,CELL);
+  g.addColorStop(0,'#0000');g.addColorStop(.08,'#000');g.addColorStop(row===0?.66:.88,'#000');g.addColorStop(1,'#0000');
+  c.fillStyle=g;c.fillRect(0,0,CELL,CELL);
+  g=c.createLinearGradient(0,0,CELL,0);g.addColorStop(0,'#0000');g.addColorStop(.08,'#000');g.addColorStop(.92,'#000');g.addColorStop(1,'#0000');
+  c.fillStyle=g;c.fillRect(0,0,CELL,CELL);result.push(tile);
+ }return result;
+}
+export function loadDarkEffects(ready){if(sheet)return sheet;if(ready)listeners.add(ready);if(loading||failed)return null;loading=true;const img=new Image();img.onload=()=>{frames=softenFrames(img);sheet=img;loading=false;for(const fn of listeners)fn();listeners.clear();};img.onerror=()=>{failed=true;loading=false;listeners.clear();};img.src='/assets/mine/effects-294/dark-atlas.webp';return null;}
+function cell(c,row,frame,x,y,w,h,alpha=1){if(!sheet)return;c.save();c.globalAlpha*=Math.max(0,Math.min(1,alpha));c.drawImage(frames[row*4+(frame%4)],x,y,w,h);c.restore();}
 function sequence(c,row,frame,x,y,w,h,alpha=1,loop=false){const f=Math.max(0,Math.min(loop?3.999:3,frame)),i=Math.floor(f),mix=f-i;cell(c,row,i,x,y,w,h,alpha*(1-mix));if(mix)cell(c,row,loop?(i+1)%4:Math.min(3,i+1),x,y,w,h,alpha*mix);}
 function redGlow(c,x,y,r,alpha){c.save();c.globalCompositeOperation='lighter';const g=c.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,'#ff7687');g.addColorStop(.12,'#ff1646');g.addColorStop(.42,'#9e002b99');g.addColorStop(1,'#41000e00');c.globalAlpha*=alpha;c.fillStyle=g;c.fillRect(x-r,y-r,r*2,r*2);c.restore();}
 export function darkAura(front,back,a,now,charge,quiet){

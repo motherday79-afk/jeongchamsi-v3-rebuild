@@ -1,4 +1,4 @@
-import {loadDarkEffects,darkAura,darkSlash,darkImpact} from './dark-effects.js?v=294';
+import {loadDarkEffects,darkAura,darkSlash,darkImpact} from './dark-effects.js?v=295';
 import {drawWeaponAura,drawWeaponMote} from './weapon-aura.js?v=293';
 import {WEAPON_ANCHORS} from './weapon-anchors.js?v=290';
 import {equippedPick} from './pick-catalog.js?v=285';
