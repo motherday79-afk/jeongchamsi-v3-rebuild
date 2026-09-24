@@ -2,10 +2,10 @@ import {mountMineReset} from './admin-reset.js?v=289';
 import {initFullscreen} from './fullscreen.js?v=286';
 import {RACES,equippedPick} from './pick-catalog.js?v=285';
 import {shopMarkup} from './pick-shop.js?v=288';
-import {makePickEffects} from './pick-effects.js?v=291';
-import {renderIntegratedMiner} from './integrated-miner.js?v=291';
+import {makePickEffects} from './pick-effects.js?v=292';
+import {renderIntegratedMiner} from './integrated-miner.js?v=292';
 import {makeIdleNotice,setText} from './idle-state.js?v=280';
-import {makeMinerMotion} from './motion.js?v=285';
+import {makeMinerMotion} from './motion.js?v=292';
 import {mountScratchCard} from './scratch-card.js?v=278';
 import {lotteryMarkup,refreshLotteryNumbers,campaignAdminMarkup} from './lottery-ui.js?v=288';
 const pickAppearance=equippedPick;
@@ -104,7 +104,7 @@ async function sync(){
 async function action(actionName,extra={}){
  if(busy||pending||!state)return;busy=true;
  const body={action:actionName,requestId:crypto.randomUUID(),campaignId:campaign?.id,...extra};storePending(body);paint();
- if(actionName==='strike'){lastManual=Date.now();swing(q('[data-player]'));}
+ if(actionName==='strike')lastManual=Date.now();
  try{
   const data=await request('mine',body);if(data.error==='MINE_FORBIDDEN'){accessDenied();return;}accept(data);if(data.state)storePending(null);
   if(!data.ok){if(data.error==='MINE_SESSION'){onlineToken=null;toast('채굴 연결이 종료됐어요. 도움말의 다시 연결을 눌러주세요.');}else toast(errors[data.error]||'작업을 처리하지 못했어요. 다시 시도해 주세요.');if(actionName.startsWith('lottery-'))showPanel('lottery');return;}
@@ -113,7 +113,8 @@ async function action(actionName,extra={}){
   if(actionName.startsWith('lottery-')){showPanel('lottery');return;}
   if(actionName==='collect'&&data.result?.visitUrl){dialog.close();location.assign(data.result.visitUrl);return;}
   if(actionName==='strike'){
-   if(data.result.hits===2){later(()=>swing(q('[data-player]')),650);floating('더블 타격!','double');}
+   swing(q('[data-player]'),data.result.hits);
+   if(data.result.hits===2)floating('더블 타격!','double');
    later(()=>effect(data.result.gained,true),360);
   }else if(actionName==='character'){dialog.close();panel='';toast(names[state.character]+'와 채굴을 시작합니다.');}
   else if(actionName==='upgrade'){toast('강화 완료!');showPanel(extra.target);}
