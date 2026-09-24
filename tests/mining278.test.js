@@ -25,17 +25,17 @@ test('old retries cannot repurchase after ledger eviction; reveal and claims sur
  await service.run(a,{action:'lottery-reveal',campaignId:id,ticketId:won.lottery.ticket.id,requestId:'reveal-first-001'});
  const request={action:'campaign-start',campaignId:id,requestId:'start-next-001',title:'다음',prize:'쿠폰',limit:3};
  const next=await service.admin(admin,request);assert.equal((await service.admin(admin,request)).campaign.id,next.campaign.id);
- const reset=await service.run(a);assert.equal(reset.state.gold,0);assert.equal(reset.state.pick,1);assert.equal(reset.state.worker,1);assert.equal(reset.state.storage,1);assert.equal(reset.state.character,'elf');assert.equal(reset.state.tool,'rust');assert.deepEqual(reset.state.paidPicks,['paid-one']);assert.equal(reset.lottery.history[0].id,won.lottery.ticket.id);assert.equal(reset.lottery.plays,0);
+ const reset=await service.run(a);assert.equal(reset.state.gold,180);assert.equal(reset.state.pick,5);assert.equal(reset.state.worker,1);assert.equal(reset.state.storage,1);assert.equal(reset.state.character,'elf');assert.equal(reset.state.tool,'trial');assert.deepEqual(reset.state.paidPicks,['paid-one']);assert.equal(reset.lottery.history[0].id,won.lottery.ticket.id);assert.equal(reset.lottery.plays,0);
  assert.equal((await service.admin(admin)).winners.length,1);
  await assert.rejects(()=>service.admin(admin,{...request,requestId:'start-stale-001'}),/CAMPAIGN_CHANGED/);
 });
-test('owned pick survives reset; client cannot grant a paid pick; never-seen legacy user resets after initial round',async()=>{
+test('owned pick survives reset; client cannot grant a paid pick; never-seen legacy user keeps progress after initial round',async()=>{
  const {service}=await setup(),first=await service.run(a);
  assert.equal((await service.run(a,{action:'tool',tool:'paid-one',requestId:'owned-pick-001'})).ok,true);
  assert.equal((await service.run(a,{action:'tool',tool:'paid-forged',paidPicks:['paid-forged'],requestId:'fake-pick-001'})).error,'MINE_TOOL');
  const body={action:'campaign-start',campaignId:first.campaign.id,requestId:'next-round-001',title:'다음',prize:'상품',limit:2};
  const results=await Promise.all([service.admin(admin,body),service.admin(admin,body)]);assert.equal(results[0].campaign.id,results[1].campaign.id);
- assert.equal((await service.run(a)).state.tool,'paid-one');assert.equal((await service.run(b)).state.gold,0);assert.equal((await service.admin(admin)).campaigns.length,2);
+ assert.equal((await service.run(a)).state.tool,'paid-one');assert.equal((await service.run(b)).state.gold,200);assert.equal((await service.admin(admin)).campaigns.length,2);
 });
 test('owners see only own claims and updated fulfillment; only admins modify valid campaign caps',async()=>{
  const {service}=await setup(),first=await service.run(a),id=first.campaign.id,won=await service.run(a,buy(id));
@@ -52,7 +52,7 @@ test('round reset invalidates legacy collection cycles and supplied old campaign
  await service.admin(admin,{action:'campaign-start',campaignId:id,requestId:'round-replay-001',title:'다음',prize:'상품',limit:3});
  const reset=await service.run(a);assert.ok(reset.state.cycle>first.state.cycle);
  const raw=JSON.parse(await command(['GET','jcsr2:mine:v1:user:a']));raw.ore=10;await command(['SET','jcsr2:mine:v1:user:a',JSON.stringify(raw)]);
- const stale=await service.run(a,{action:'collect',cycle:first.state.cycle,requestId:'old-collect-001'});assert.equal(stale.error,'MINE_CYCLE_CHANGED');assert.equal(stale.state.gold,0);assert.equal(stale.state.ore,10);
+ const stale=await service.run(a,{action:'collect',cycle:first.state.cycle,requestId:'old-collect-001'});assert.equal(stale.error,'MINE_CYCLE_CHANGED');assert.equal(stale.state.gold,200);assert.equal(stale.state.ore,10);
  const oldCharacter=await service.run(a,{action:'character',character:'strong',campaignId:id,requestId:'old-character-001'});assert.equal(oldCharacter.error,'MINE_CAMPAIGN_CHANGED');assert.equal(oldCharacter.state.character,'elf');
- const collect=await service.run(a,{action:'collect',cycle:reset.state.cycle,campaignId:reset.campaign.id,requestId:'new-collect-001'});assert.equal(collect.ok,true);assert.equal(collect.state.gold,10);
+ const collect=await service.run(a,{action:'collect',cycle:reset.state.cycle,campaignId:reset.campaign.id,requestId:'new-collect-001'});assert.equal(collect.ok,true);assert.equal(collect.state.gold,210);
 });

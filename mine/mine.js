@@ -1,12 +1,12 @@
 import {initFullscreen} from './fullscreen.js?v=286';
 import {RACES,equippedPick} from './pick-catalog.js?v=285';
-import {shopMarkup} from './pick-shop.js?v=287';
+import {shopMarkup} from './pick-shop.js?v=288';
 import {makePickEffects} from './pick-effects.js?v=285';
 import {renderIntegratedMiner} from './integrated-miner.js?v=285';
 import {makeIdleNotice,setText} from './idle-state.js?v=280';
 import {makeMinerMotion} from './motion.js?v=285';
 import {mountScratchCard} from './scratch-card.js?v=278';
-import {lotteryMarkup,refreshLotteryNumbers,campaignAdminMarkup} from './lottery-ui.js?v=278';
+import {lotteryMarkup,refreshLotteryNumbers,campaignAdminMarkup} from './lottery-ui.js?v=288';
 const pickAppearance=equippedPick;
 const root=document.getElementById('mine-game'),q=s=>root.querySelector(s),dialog=q('[data-dialog]');
 const names=RACES;
@@ -52,7 +52,7 @@ function accept(data){
  const previousTicket=lottery?.ticket?.id,previousRevealed=lottery?.ticket?.revealed;
  if(data.state){state=data.state;offset=Date.now()-state.serverNow;}
  if(data.ad)ad=data.ad;if(data.jackpot)jackpot=data.jackpot;if(data.campaign)campaign=data.campaign;if(data.lottery)lottery=data.lottery;
- if(previousRound&&state?.campaignId!==previousRound){onlineToken=null;needsEntry=true;toast('새 광고주 회차가 시작되어 골드와 일반 강화가 초기화됐습니다. 유료 장비와 경품 기록은 유지됩니다.',8000);if(panel==='lottery')showPanel('lottery');}
+ if(previousRound&&state?.campaignId!==previousRound){toast('새 광고주 회차가 시작됐습니다. 복권만 새로 시작하며 골드·광물·성장·장비는 유지됩니다.',8000);if(panel==='lottery')showPanel('lottery');}
  else if(panel==='lottery'&&(previousTicket!==lottery?.ticket?.id||previousRevealed!==lottery?.ticket?.revealed))showPanel('lottery');
  paint();
 }
@@ -129,7 +129,7 @@ function effect(gained,manual){if(gained>0)floating('+'+gained+' 금');else if(m
 function open(title,html){scratchCleanup?.();scratchCleanup=null;q('[data-dialog-title]').textContent=title;q('[data-dialog-body]').innerHTML=html;if(!dialog.open)dialog.showModal();}
 function login(){open('내 광산을 시작하세요',`<p class="dialog-copy">정참시 계정으로 광물과 강화 내역을 저장합니다.</p><a class="gold-action" href="/login?return=%2Fmine" style="display:block;text-align:center;text-decoration:none">로그인하고 입장하기</a><p class="dialog-copy">광산 골드는 기존 정참시 포인트와 별도로 모입니다.</p>`);}
 function showPanel(which){
- panel=which;if(which==='help'){open('광산 이용 방법',`<ul class="help-list"><li>공동 잭팟은 실패 1회당 1G씩 함께 적립합니다. 브론즈 100G · 실버 300G · 골드 1,000G 보상을 준비 중이며, 추첨과 지급은 아직 시작하지 않았습니다.</li><li>게임을 떠나면 인부가 기본 3초마다 채굴합니다. 게임을 켠 동안 인부는 쉽니다.</li><li>자동채굴하기를 누르면 플레이어가 1.5초마다 계속 타격합니다. 멈추기 버튼으로 중지할 수 있습니다. 다른 탭으로 이동하거나 창을 닫으면 인부 채굴로 바뀝니다.</li><li>기본 성공률은 3%. 성공하면 금 1개를 얻습니다. 성공률은 타격할 때마다 독립적으로 적용됩니다.</li><li>저장고가 가득 차야 회수할 수 있습니다. 회수 후 광고주 페이지로 이동하며, 뒤로가기로 돌아오면 됩니다.</li><li>채굴 강화는 성공률(3~20%), 인부 강화는 오프라인 속도를 높입니다. 최고 150레벨이며 곡괭이 상점의 장비는 채굴량과 타격 횟수를 높입니다. 저장고는 채굴 또는 인부가 필요한 단계에 도달하면 강화할 수 있습니다.</li><li>복권은 1회 20G, 당첨 확률은 5%입니다. 전체 당첨 한도에 도달하면 복권만 종료되고 채굴은 계속됩니다. 이전 경품은 복권 창의 당첨 내역에서 확인하세요.</li><li>새 광고주 회차를 시작하면 골드와 일반 강화는 초기화되며, 유료 장비 소유권과 경품 당첨 기록은 유지됩니다.</li><li>광산 골드는 정참시 포인트와 별도입니다. 황금 곡괭이는 이번 버전에서 무료 체험 장비입니다.</li></ul><button class="purple-action" data-reconnect>다시 연결</button>`);return;}
+ panel=which;if(which==='help'){open('광산 이용 방법',`<ul class="help-list"><li>공동 잭팟은 실패 1회당 1G씩 함께 적립합니다. 브론즈 100G · 실버 300G · 골드 1,000G 보상을 준비 중이며, 추첨과 지급은 아직 시작하지 않았습니다.</li><li>게임을 떠나면 인부가 기본 3초마다 채굴합니다. 게임을 켠 동안 인부는 쉽니다.</li><li>자동채굴하기를 누르면 플레이어가 1.5초마다 계속 타격합니다. 멈추기 버튼으로 중지할 수 있습니다. 다른 탭으로 이동하거나 창을 닫으면 인부 채굴로 바뀝니다.</li><li>기본 성공률은 3%. 성공하면 금 1개를 얻습니다. 성공률은 타격할 때마다 독립적으로 적용됩니다.</li><li>저장고가 가득 차야 회수할 수 있습니다. 회수 후 광고주 페이지로 이동하며, 뒤로가기로 돌아오면 됩니다.</li><li>채굴 강화는 성공률(3~20%), 인부 강화는 오프라인 속도를 높입니다. 최고 150레벨이며 곡괭이 상점의 장비는 채굴량과 타격 횟수를 높입니다. 저장고는 채굴 또는 인부가 필요한 단계에 도달하면 강화할 수 있습니다.</li><li>복권은 1회 20G, 당첨 확률은 5%입니다. 전체 당첨 한도에 도달하면 복권만 종료되고 채굴은 계속됩니다. 이전 경품은 복권 창의 당첨 내역에서 확인하세요.</li><li>새 광고주 회차에서는 복권 횟수와 경품 진행만 새로 시작합니다. 골드·광물·모든 강화·장비·캐릭터와 이전 당첨 기록은 유지됩니다.</li><li>광산 골드는 정참시 포인트와 별도입니다. 황금 곡괭이는 이번 버전에서 무료 체험 장비입니다.</li></ul><button class="purple-action" data-reconnect>다시 연결</button>`);return;}
  if(!state){login();return;}
  if(which==='lottery'){
   open('광고주 경품 복권',lotteryMarkup({campaign,lottery,state,busy:busy||!!pending}));
