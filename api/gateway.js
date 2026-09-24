@@ -1,3 +1,4 @@
+import {uploadMineAdImage} from '../lib/mining-ad-image.js';
 import {createMiningService} from '../lib/mining-service.js';
 import {miningRequest} from '../lib/mining-http.js';
 import {createAiPanelService} from '../lib/ai-panel-service.js';
@@ -467,8 +468,8 @@ export default async function handler(req,res){
     if(route==='polimable'||route.startsWith('polimable/')||route==='polimarble'||route.startsWith('polimarble/'))return json(res,410,{ok:false,error:'FEATURE_REMOVED'});
     if(route.startsWith('migration/'))return handleMigration(req,res,route);
     const command=rebuildRedisCommand();
-    if(['mine','mine/admin','mine/visit'].includes(route)){
-      const result=await miningRequest(req,{service:createMiningService({command}),user:await currentUser(req,command),url});
+    if(['mine','mine/admin','mine/visit','mine/image'].includes(route)){
+      const result=await miningRequest(req,{service:{...createMiningService({command}),upload:uploadMineAdImage},user:await currentUser(req,command),url});
       if(result.redirect){res.statusCode=303;res.setHeader('Location',result.redirect);res.setHeader('Cache-Control','no-store');res.setHeader('Referrer-Policy','no-referrer');res.end();return;}
       return json(res,result.status,result.data);
     }
