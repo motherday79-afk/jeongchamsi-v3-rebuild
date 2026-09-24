@@ -14,14 +14,14 @@ test('full storage permanently stops player auto until a new explicit start afte
  const s=newMine(0);s.ore=9;
  const token='full-test-001';
  applyMineAction(s,{action:'enter',token,sequence:1},0);
- applyMineAction(s,{action:'auto-start',token,sequence:2},0);
+ applyMineAction(s,{action:'auto-start',token,sequence:2},0,()=>0);
  advanceMine(s,1500,()=>0);
  assert.equal(s.ore,10);assert.equal(s.presence.running,false);
  assert.equal(publicMine(s,1500).mode,'ready');
  applyMineAction(s,{action:'collect',cycle:1},1500);
  applyMineAction(s,{action:'enter',token:'return-test-002',sequence:1},1500);
  advanceMine(s,6000,()=>0);assert.equal(s.ore,0);
- applyMineAction(s,{action:'auto-start',token:'return-test-002',sequence:2},6000);
+ applyMineAction(s,{action:'auto-start',token:'return-test-002',sequence:2},6000,()=>0);
  advanceMine(s,7500,()=>0);assert.equal(s.ore,1);
 });
 

@@ -28,8 +28,8 @@ test('collection requires full storage and expected cycle, pays once then resume
 });
 test('storage requires either pick or worker level and gold cannot be forged through action payload',()=>{
  const s=newMine(0);s.gold=100;assert.throws(()=>applyMineAction(s,{action:'upgrade',target:'storage'},0),/LOCKED/);
- s.worker=5;applyMineAction(s,{action:'upgrade',target:'storage'},0);assert.equal(s.storage,2);assert.equal(s.gold,80);
- applyMineAction(s,{action:'character',character:'elf',gold:999999},0);assert.equal(s.gold,80);
+ s.worker=5;applyMineAction(s,{action:'upgrade',target:'storage'},0);assert.equal(s.storage,2);assert.equal(s.gold,93);
+ applyMineAction(s,{action:'character',character:'elf',gold:999999},0);assert.equal(s.gold,93);
  assert.throws(()=>applyMineAction(s,{action:'character',character:'<script>'},0),/CHARACTER/);
 });
 test('trial pick grants at most one independent extra hit, including storage boundary',()=>{
@@ -46,5 +46,5 @@ test('negative time does not rewind state, and long offline interval stops at fu
 test('every paid worker upgrade improves speed and storage stops at its reachable cap',()=>{
  const s=newMine(0);s.gold=100000;s.worker=11;const before=mineStats(s).autoMs;
  applyMineAction(s,{action:'upgrade',target:'worker'},0);assert.ok(mineStats(s).autoMs<before);
- s.storage=5;s.pick=20;assert.throws(()=>applyMineAction(s,{action:'upgrade',target:'storage'},0),/MAX_LEVEL/);
+ s.storage=150;s.pick=150;assert.throws(()=>applyMineAction(s,{action:'upgrade',target:'storage'},0),/MAX_LEVEL/);
 });

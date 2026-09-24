@@ -1,0 +1,265 @@
+{
+  "manifest": {
+    "orc": {
+      "iron": {
+        "url": "/assets/mine/races-285/orc-iron.webp",
+        "frames": 8,
+        "bytes": 287322
+      },
+      "rust": {
+        "url": "/assets/mine/races-285/orc-rust.webp",
+        "frames": 8,
+        "bytes": 290606
+      },
+      "silver": {
+        "url": "/assets/mine/races-285/orc-silver.webp",
+        "frames": 8,
+        "bytes": 273758
+      },
+      "gold": {
+        "url": "/assets/mine/races-285/orc-gold.webp",
+        "frames": 8,
+        "bytes": 275094
+      },
+      "mystic": {
+        "url": "/assets/mine/races-285/orc-mystic.webp",
+        "frames": 8,
+        "bytes": 278174
+      },
+      "dimension": {
+        "url": "/assets/mine/races-285/orc-dimension.webp",
+        "frames": 8,
+        "bytes": 275896
+      },
+      "dark": {
+        "url": "/assets/mine/races-285/orc-dark.webp",
+        "frames": 8,
+        "bytes": 280788
+      },
+      "heaven": {
+        "url": "/assets/mine/races-285/orc-heaven.webp",
+        "frames": 8,
+        "bytes": 293202
+      },
+      "lightning": {
+        "url": "/assets/mine/races-285/orc-lightning.webp",
+        "frames": 8,
+        "bytes": 293446
+      },
+      "wind": {
+        "url": "/assets/mine/races-285/orc-wind.webp",
+        "frames": 8,
+        "bytes": 273190
+      }
+    },
+    "elf": {
+      "iron": {
+        "url": "/assets/mine/races-285/elf-iron.webp",
+        "frames": 8,
+        "bytes": 322846
+      },
+      "rust": {
+        "url": "/assets/mine/races-285/elf-rust.webp",
+        "frames": 8,
+        "bytes": 326244
+      },
+      "silver": {
+        "url": "/assets/mine/races-285/elf-silver.webp",
+        "frames": 8,
+        "bytes": 317296
+      },
+      "gold": {
+        "url": "/assets/mine/races-285/elf-gold.webp",
+        "frames": 8,
+        "bytes": 325564
+      },
+      "mystic": {
+        "url": "/assets/mine/races-285/elf-mystic.webp",
+        "frames": 8,
+        "bytes": 328494
+      },
+      "dimension": {
+        "url": "/assets/mine/races-285/elf-dimension.webp",
+        "frames": 8,
+        "bytes": 333558
+      },
+      "dark": {
+        "url": "/assets/mine/races-285/elf-dark.webp",
+        "frames": 8,
+        "bytes": 315008
+      },
+      "heaven": {
+        "url": "/assets/mine/races-285/elf-heaven.webp",
+        "frames": 8,
+        "bytes": 327898
+      },
+      "lightning": {
+        "url": "/assets/mine/races-285/elf-lightning.webp",
+        "frames": 8,
+        "bytes": 328414
+      },
+      "wind": {
+        "url": "/assets/mine/races-285/elf-wind.webp",
+        "frames": 8,
+        "bytes": 316894
+      }
+    },
+    "dwarf": {
+      "iron": {
+        "url": "/assets/mine/races-285/dwarf-iron.webp",
+        "frames": 8,
+        "bytes": 338136
+      },
+      "rust": {
+        "url": "/assets/mine/races-285/dwarf-rust.webp",
+        "frames": 8,
+        "bytes": 303540
+      },
+      "silver": {
+        "url": "/assets/mine/races-285/dwarf-silver.webp",
+        "frames": 8,
+        "bytes": 301230
+      },
+      "gold": {
+        "url": "/assets/mine/races-285/dwarf-gold.webp",
+        "frames": 8,
+        "bytes": 308692
+      },
+      "mystic": {
+        "url": "/assets/mine/races-285/dwarf-mystic.webp",
+        "frames": 8,
+        "bytes": 306190
+      },
+      "dimension": {
+        "url": "/assets/mine/races-285/dwarf-dimension.webp",
+        "frames": 8,
+        "bytes": 314438
+      },
+      "dark": {
+        "url": "/assets/mine/races-285/dwarf-dark.webp",
+        "frames": 8,
+        "bytes": 315016
+      },
+      "heaven": {
+        "url": "/assets/mine/races-285/dwarf-heaven.webp",
+        "frames": 8,
+        "bytes": 325314
+      },
+      "lightning": {
+        "url": "/assets/mine/races-285/dwarf-lightning.webp",
+        "frames": 8,
+        "bytes": 322482
+      },
+      "wind": {
+        "url": "/assets/mine/races-285/dwarf-wind.webp",
+        "frames": 8,
+        "bytes": 328194
+      }
+    },
+    "human": {
+      "iron": {
+        "url": "/assets/mine/races-285/human-iron.webp",
+        "frames": 8,
+        "bytes": 316172
+      },
+      "rust": {
+        "url": "/assets/mine/races-285/human-rust.webp",
+        "frames": 8,
+        "bytes": 307886
+      },
+      "silver": {
+        "url": "/assets/mine/races-285/human-silver.webp",
+        "frames": 8,
+        "bytes": 304076
+      },
+      "gold": {
+        "url": "/assets/mine/races-285/human-gold.webp",
+        "frames": 8,
+        "bytes": 316450
+      },
+      "mystic": {
+        "url": "/assets/mine/races-285/human-mystic.webp",
+        "frames": 8,
+        "bytes": 323634
+      },
+      "dimension": {
+        "url": "/assets/mine/races-285/human-dimension.webp",
+        "frames": 8,
+        "bytes": 308634
+      },
+      "dark": {
+        "url": "/assets/mine/races-285/human-dark.webp",
+        "frames": 8,
+        "bytes": 317612
+      },
+      "heaven": {
+        "url": "/assets/mine/races-285/human-heaven.webp",
+        "frames": 8,
+        "bytes": 344374
+      },
+      "lightning": {
+        "url": "/assets/mine/races-285/human-lightning.webp",
+        "frames": 8,
+        "bytes": 332692
+      },
+      "wind": {
+        "url": "/assets/mine/races-285/human-wind.webp",
+        "frames": 8,
+        "bytes": 318960
+      }
+    },
+    "goblin": {
+      "iron": {
+        "url": "/assets/mine/races-285/goblin-iron.webp",
+        "frames": 8,
+        "bytes": 301440
+      },
+      "rust": {
+        "url": "/assets/mine/races-285/goblin-rust.webp",
+        "frames": 8,
+        "bytes": 281930
+      },
+      "silver": {
+        "url": "/assets/mine/races-285/goblin-silver.webp",
+        "frames": 8,
+        "bytes": 282484
+      },
+      "gold": {
+        "url": "/assets/mine/races-285/goblin-gold.webp",
+        "frames": 8,
+        "bytes": 287422
+      },
+      "mystic": {
+        "url": "/assets/mine/races-285/goblin-mystic.webp",
+        "frames": 8,
+        "bytes": 290016
+      },
+      "dimension": {
+        "url": "/assets/mine/races-285/goblin-dimension.webp",
+        "frames": 8,
+        "bytes": 311070
+      },
+      "dark": {
+        "url": "/assets/mine/races-285/goblin-dark.webp",
+        "frames": 8,
+        "bytes": 294530
+      },
+      "heaven": {
+        "url": "/assets/mine/races-285/goblin-heaven.webp",
+        "frames": 8,
+        "bytes": 303562
+      },
+      "lightning": {
+        "url": "/assets/mine/races-285/goblin-lightning.webp",
+        "frames": 8,
+        "bytes": 300152
+      },
+      "wind": {
+        "url": "/assets/mine/races-285/goblin-wind.webp",
+        "frames": 8,
+        "bytes": 293426
+      }
+    }
+  },
+  "errors": []
+}

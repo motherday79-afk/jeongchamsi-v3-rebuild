@@ -29,3 +29,16 @@
  .mine-controls{display:flex;flex-direction:column;gap:12px;position:absolute;z-index:3;left:12px;right:12px;bottom:max(13px,env(safe-area-inset-bottom))}
  .mine-controls>.mine-console,.mine-controls>.mine-dock{position:static;inset:auto;transform:none;width:100%;margin:0;flex-shrink:0}
 }
+
+/* 285: five races, integrated tools and a separate effect canvas. */
+.pick-effects{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.character-grid{grid-template-columns:repeat(auto-fit,minmax(110px,1fr))}
+.pick-shop{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.pick-item{padding:12px;border:1px solid var(--pick-color);border-radius:14px;background:#201529}
+.pick-item img{display:block;width:100%;height:150px;object-fit:contain;border-radius:8px}
+.pick-item h3{font-size:15px;color:var(--pick-color);margin:10px 0}
+.pick-item p,.pick-item small{font-size:11px;line-height:1.6;color:#e0cde5}
+.pick-item .gold-action{font-size:12px;margin-top:10px}
+@media(max-width:800px){.mine-dock{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.mine-dock button{min-height:55px}.mine-dock button>span{height:17px;font-size:17px}.mine-dock b{font-size:10px}.player-actor{bottom:315px}.worker-actor{bottom:370px}.mine-ore.mine-seam{bottom:310px}}
+
+.player-actor .sprite:not([data-integrated-miner]){visibility:hidden}

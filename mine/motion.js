@@ -6,9 +6,10 @@ export const SWING_FRAMES=[
 export function makeMinerMotion({setFrame,impact,schedule=setTimeout,cancel=clearTimeout}){
  let ids=[],generation=0;
  function stop(){generation++;ids.forEach(cancel);ids=[];setFrame(0);}
- function play(reduced=false){
+ function play(reduced=false,hits=1){
   stop();const current=generation;
-  for(const step of reduced?[{at:760,frame:5},{at:880,frame:0}]:SWING_FRAMES){
+  const steps=reduced?[{at:745,frame:5},{at:1100,frame:0}]:hits===1?SWING_FRAMES:[...SWING_FRAMES.filter(s=>s.at<=875),...Array.from({length:hits-1},(_,i)=>[{at:930+i*170,frame:4},{at:990+i*170,frame:5},{at:1050+i*170,frame:6}]).flat(),{at:1280,frame:7},{at:1430,frame:0}];
+  for(const step of steps){
    ids.push(schedule(()=>{if(current!==generation)return;setFrame(step.frame);if(step.frame===5)impact();},step.at));
   }
  }

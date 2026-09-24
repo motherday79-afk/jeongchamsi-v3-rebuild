@@ -1,8 +1,7 @@
-import {pickAppearance} from './pick-design.js?v=282';
+import {RACES,equippedPick} from './pick-catalog.js?v=285';
 export function minerSprite(state){
- const character=['strong','glamour','elf'].includes(state.character)?state.character:'strong';
- const tier=pickAppearance(state).tier;
- return {character,tier,key:`${character}-${tier}`,url:tier===0?`/assets/mine/${character}-motion-277.webp`:`/assets/mine/${character}-pick-${tier}-282.webp`};
+ const character=RACES[state.character]?state.character:'orc',tier=equippedPick(state).visual;
+ return {character,tier,key:`${character}-${tier}`,url:`/assets/mine/races-285/${character}-${tier}.webp`};
 }
 export function renderIntegratedMiner(el,state){
  const sprite=minerSprite(state);

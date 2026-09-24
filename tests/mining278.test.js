@@ -25,7 +25,7 @@ test('old retries cannot repurchase after ledger eviction; reveal and claims sur
  await service.run(a,{action:'lottery-reveal',campaignId:id,ticketId:won.lottery.ticket.id,requestId:'reveal-first-001'});
  const request={action:'campaign-start',campaignId:id,requestId:'start-next-001',title:'다음',prize:'쿠폰',limit:3};
  const next=await service.admin(admin,request);assert.equal((await service.admin(admin,request)).campaign.id,next.campaign.id);
- const reset=await service.run(a);assert.equal(reset.state.gold,0);assert.equal(reset.state.pick,1);assert.equal(reset.state.worker,1);assert.equal(reset.state.storage,1);assert.equal(reset.state.character,'elf');assert.equal(reset.state.tool,'basic');assert.deepEqual(reset.state.paidPicks,['paid-one']);assert.equal(reset.lottery.history[0].id,won.lottery.ticket.id);assert.equal(reset.lottery.plays,0);
+ const reset=await service.run(a);assert.equal(reset.state.gold,0);assert.equal(reset.state.pick,1);assert.equal(reset.state.worker,1);assert.equal(reset.state.storage,1);assert.equal(reset.state.character,'elf');assert.equal(reset.state.tool,'rust');assert.deepEqual(reset.state.paidPicks,['paid-one']);assert.equal(reset.lottery.history[0].id,won.lottery.ticket.id);assert.equal(reset.lottery.plays,0);
  assert.equal((await service.admin(admin)).winners.length,1);
  await assert.rejects(()=>service.admin(admin,{...request,requestId:'start-stale-001'}),/CAMPAIGN_CHANGED/);
 });
