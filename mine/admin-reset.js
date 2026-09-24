@@ -1,0 +1,15 @@
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+export async function mountMineReset({host,user,request,mutate,onReset}){
+ const box=document.createElement('details');box.className='admin-tools mine-reset';box.innerHTML='<summary>회원 광산 초기화</summary><p class="dialog-copy">초기화할 회원을 불러오는 중…</p>';host.append(box);
+ try{const data=await request('mine/admin',{action:'reset-members'});if(!data.ok)throw Error();if(!box.isConnected)return;
+ const users=data.users.sort((a,b)=>Number(b.id===user.id)-Number(a.id===user.id));
+ box.innerHTML=`<summary>회원 광산 초기화</summary><p class="panel-error">선택한 회원 한 명의 골드·광물은 0, 채굴·인부·저장고는 Lv.1로 돌아갑니다. 일반·유료 곡괭이 보유 및 장착, 캐릭터 선택도 시작 상태로 초기화됩니다. 복권·당첨·지급 기록과 공동 잭팟은 유지됩니다.</p><label>회원 검색<input data-reset-search placeholder="닉네임 또는 아이디"></label><select data-reset-target aria-label="초기화할 회원"><option value="">회원을 선택하세요</option>${users.map(u=>`<option value="${esc(u.id)}">${esc(u.nickname||u.id)} (${esc(u.id)})${u.id===user.id?' · 내 계정':''}</option>`).join('')}</select><div data-reset-preview></div>`;
+ const select=box.querySelector('[data-reset-target]'),preview=box.querySelector('[data-reset-preview]');let generation=0;
+ box.querySelector('[data-reset-search]').addEventListener('input',e=>{const term=e.target.value.toLowerCase();for(const o of select.options)o.hidden=!!o.value&&!o.textContent.toLowerCase().includes(term);});
+ select.addEventListener('change',async()=>{const seq=++generation,id=select.value;preview.textContent='';if(!id)return;preview.textContent='현재 광산을 불러오는 중…';try{const d=await request('mine/admin',{action:'reset-preview',targetId:id});if(seq!==generation)return;if(!d.ok)throw Error();
+ preview.innerHTML=`<p class="dialog-copy"><b>${esc(d.target.nickname)} (${esc(id)})</b><br>골드 ${Number(d.state.gold).toLocaleString()} G · 광물 ${Number(d.state.ore)}<br>채굴 Lv.${Number(d.state.pick)} · 인부 Lv.${Number(d.state.worker)} · 저장고 Lv.${Number(d.state.storage)}</p><label>확인을 위해 회원 아이디를 입력하세요<input data-reset-confirm autocomplete="off" placeholder="${esc(id)}"></label><button class="gold-action reset-danger" data-reset-execute disabled>이 회원의 광산을 초기화</button><p data-reset-message role="status"></p>`;
+ const input=preview.querySelector('[data-reset-confirm]'),button=preview.querySelector('[data-reset-execute]'),message=preview.querySelector('[data-reset-message]');input.addEventListener('input',()=>button.disabled=input.value!==id);
+ button.addEventListener('click',async()=>{if(input.value!==id)return;button.disabled=true;select.disabled=true;input.disabled=true;message.textContent='초기화 처리 중…';try{await mutate({action:'reset-member',targetId:id,confirmTarget:input.value,expectedVersion:d.state.resetVersion});message.textContent='선택한 회원의 광산을 초기화했습니다.';await onReset(id);}catch(e){message.textContent=e.message||'처리 결과를 확인하지 못했습니다. 창을 다시 열어 확인하세요.';}finally{select.disabled=false;}});
+ }catch{if(seq===generation)preview.textContent='회원 광산을 불러오지 못했습니다. 다시 선택해 주세요.';}});
+ }catch{box.innerHTML='<summary>회원 광산 초기화</summary><p class="panel-error">회원 목록을 불러오지 못했습니다. 관리 창을 다시 열어주세요.</p>';}
+}

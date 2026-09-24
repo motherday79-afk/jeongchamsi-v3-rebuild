@@ -53,3 +53,8 @@
 @media(max-width:800px){.mine-header{gap:8px}.mine-header>.fullscreen-button{width:40px;height:39px}.fullscreen-button small{font-size:8px}.sponsor-sign:before,.sponsor-sign:after{width:4px}}
 @media(max-width:420px){.mine-header{padding-left:10px;padding-right:10px;gap:6px}.mine-title{padding-left:7px}.mine-title h1{font-size:16px}.mine-title small{font-size:7px;letter-spacing:0}.gold-wallet{padding:7px}.gold-wallet strong{font-size:19px}.home-link{gap:3px}.mine-header>.icon-button{width:30px}.mine-header>.fullscreen-button{width:38px}}
 @media(max-height:650px) and (max-width:800px){.sponsor-sign{--sponsor-top:87px}}
+
+/* 289: allow weapon trails and impact waves outside the character frame. */
+.player-body>.pick-effects{inset:auto;left:-48.14815%;top:-36.61972%;width:196.2963%;height:173.23944%;max-width:none;pointer-events:none}
+.mine-reset select,.mine-reset input{width:100%;padding:10px;background:#21152b;color:#fff0d4;border:1px solid #a581af;border-radius:8px;margin:7px 0}
+.mine-reset .reset-danger{background:#703346;border:1px solid #ea9b9b;color:#fff3eb}

@@ -1,7 +1,8 @@
+import {mountMineReset} from './admin-reset.js?v=289';
 import {initFullscreen} from './fullscreen.js?v=286';
 import {RACES,equippedPick} from './pick-catalog.js?v=285';
 import {shopMarkup} from './pick-shop.js?v=288';
-import {makePickEffects} from './pick-effects.js?v=285';
+import {makePickEffects} from './pick-effects.js?v=289';
 import {renderIntegratedMiner} from './integrated-miner.js?v=285';
 import {makeIdleNotice,setText} from './idle-state.js?v=280';
 import {makeMinerMotion} from './motion.js?v=285';
@@ -12,7 +13,7 @@ const root=document.getElementById('mine-game'),q=s=>root.querySelector(s),dialo
 const names=RACES;
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>Number(n||0).toLocaleString('ko-KR');
-const errors={MINE_PICK_LOCKED:'채굴 레벨을 먼저 올려주세요.',MINE_TOOL:'보유한 곡괭이를 선택해 주세요.',MINE_MAX_LEVEL:'최고 레벨입니다.',MINE_GOLD_AMOUNT:'1~1,000,000 G 사이의 정수로 입력해 주세요.',LOGIN_REQUIRED:'로그인 후 광산에 입장해 주세요.',MINE_COOLDOWN:'다음 타격을 준비하고 있어요.',MINE_NOT_FULL:'저장고가 가득 차면 회수할 수 있어요.',MINE_CYCLE_CHANGED:'이미 회수한 광물입니다. 현재 저장고를 확인해 주세요.',MINE_GOLD_REQUIRED:'광산 골드가 부족해요.',MINE_STORAGE_LOCKED:'채굴이나 인부를 먼저 강화해 주세요.',MINE_BUSY:'다른 화면에서 작업 중입니다. 잠시 후 다시 시도해 주세요.',MINE_AD_URL:'광고주 주소를 https://로 시작하는 전체 주소로 입력해 주세요.',MINE_AD_NAME:'광고주 이름을 입력해 주세요.',FORBIDDEN:'관리자만 사용할 수 있어요.',MINE_FULL:'저장고가 가득 찼어요. 광물을 회수해 주세요.',STORAGE_CAPACITY:'저장소 용량이 부족합니다. 관리자에게 알려 주세요.'};
+const errors={MINE_RESET_TARGET:'초기화할 회원을 찾을 수 없습니다.',MINE_RESET_CONFIRM:'초기화할 회원 아이디를 정확히 입력해 주세요.',MINE_RESET_CHANGED:'이미 초기화된 회원입니다. 관리 창을 다시 열어주세요.',MINE_PICK_LOCKED:'채굴 레벨을 먼저 올려주세요.',MINE_TOOL:'보유한 곡괭이를 선택해 주세요.',MINE_MAX_LEVEL:'최고 레벨입니다.',MINE_GOLD_AMOUNT:'1~1,000,000 G 사이의 정수로 입력해 주세요.',LOGIN_REQUIRED:'로그인 후 광산에 입장해 주세요.',MINE_COOLDOWN:'다음 타격을 준비하고 있어요.',MINE_NOT_FULL:'저장고가 가득 차면 회수할 수 있어요.',MINE_CYCLE_CHANGED:'이미 회수한 광물입니다. 현재 저장고를 확인해 주세요.',MINE_GOLD_REQUIRED:'광산 골드가 부족해요.',MINE_STORAGE_LOCKED:'채굴이나 인부를 먼저 강화해 주세요.',MINE_BUSY:'다른 화면에서 작업 중입니다. 잠시 후 다시 시도해 주세요.',MINE_AD_URL:'광고주 주소를 https://로 시작하는 전체 주소로 입력해 주세요.',MINE_AD_NAME:'광고주 이름을 입력해 주세요.',FORBIDDEN:'관리자만 사용할 수 있어요.',MINE_FULL:'저장고가 가득 찼어요. 광물을 회수해 주세요.',STORAGE_CAPACITY:'저장소 용량이 부족합니다. 관리자에게 알려 주세요.'};
 let state=null,user=null,ad=null,busy=false,pending=null,offset=0,lastManual=0,lastAuto=0,panel='',toastTimer,disposed=false,adminData=null;
 const timers=new Set(),later=(fn,ms)=>{const id=setTimeout(()=>{timers.delete(id);if(!disposed)fn();},ms);timers.add(id);return id;};
 const serverNow=()=>Date.now()-offset;
@@ -48,9 +49,10 @@ function storePending(value){pending=value;try{if(value)sessionStorage.setItem(s
 function toast(message,ms=4500){clearTimeout(toastTimer);q('[data-toast]').textContent=message;toastTimer=setTimeout(()=>q('[data-toast]').textContent='',ms);}
 async function request(path,body){const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),16000);try{const response=await fetch('/api/v3/'+path,{credentials:'same-origin',cache:'no-store',signal:controller.signal,...(body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{})});return await response.json();}finally{clearTimeout(timer);}}
 function accept(data){
- const previousRound=state?.campaignId;
+ const previousRound=state?.campaignId,previousReset=state?.resetVersion;
  const previousTicket=lottery?.ticket?.id,previousRevealed=lottery?.ticket?.revealed;
  if(data.state){state=data.state;offset=Date.now()-state.serverNow;}
+ if(previousReset!==undefined&&state?.resetVersion!==previousReset){onlineToken=null;needsEntry=true;lastVisualSwing=0;storePending(null);minerMotion.stop();pickEffects.clear();toast('관리자가 광산을 시작 상태로 초기화했습니다.',7000);}
  if(data.ad)ad=data.ad;if(data.jackpot)jackpot=data.jackpot;if(data.campaign)campaign=data.campaign;if(data.lottery)lottery=data.lottery;
  if(previousRound&&state?.campaignId!==previousRound){toast('새 광고주 회차가 시작됐습니다. 복권만 새로 시작하며 골드·광물·성장·장비는 유지됩니다.',8000);if(panel==='lottery')showPanel('lottery');}
  else if(panel==='lottery'&&(previousTicket!==lottery?.ticket?.id||previousRevealed!==lottery?.ticket?.revealed))showPanel('lottery');
@@ -60,7 +62,7 @@ function paint(){
  if(!state)return;
  const s=state,st=s.stats,full=s.ore>=st.capacity;
  if(jackpot){const el=q('[data-jackpot-count]'),value=fmt(jackpot.failedCycles)+' G';if(el.textContent!==value){setText(el,value);if(!matchMedia('(prefers-reduced-motion: reduce)').matches)el.animate([{filter:'brightness(1.8)',transform:'scale(1.04)'},{filter:'brightness(1)',transform:'scale(1)'}],{duration:500});}}
- if(!running()){minerMotion.stop();pickEffects.clear();}
+ if(!running()){minerMotion.stop();pickEffects.end();}
  root.classList.toggle('is-full',full);q('[data-gold]').innerHTML=`${fmt(s.gold)} <small>G</small>`;
  q('[data-player]').dataset.character=s.character;q('[data-player]').setAttribute('aria-label',names[s.character]);q('[data-player-actor]').classList.toggle('trial',s.tool==='trial');
  q('[data-character-name]').textContent=names[s.character];
@@ -153,6 +155,7 @@ async function adminPanel(){
  try{await recoverAdminMutation();const data=await request('mine/admin');if(!data.ok)throw new Error(data.error);adminData=data;if(panel!=='admin')return;const a=data.ad;
  open('광고·골드 관리',`<div class="admin-tools"><b>내 계정에 테스트 골드 지급</b><p class="dialog-copy">현재 ${fmt(state.gold)} G · 관리자 본인의 광산 골드만 추가됩니다.</p><label>지급할 골드 <input type="number" data-grant-amount min="1" max="1000000" step="1" value="10000"></label><button class="gold-action" data-grant-gold>골드 지급</button></div><h3>광고주 이미지·링크</h3><form class="admin-form" data-ad-form><label>광고 이미지 · JPG/PNG/WebP, 최대 1MB<input type="file" accept="image/jpeg,image/png,image/webp" data-ad-file></label><input type="hidden" name="imageUrl" value="${esc(a.imageUrl||'')}"><img class="ad-preview" data-ad-preview src="${esc(a.imageUrl||'')}" ${a.imageUrl?'':'hidden'} alt="광고 미리보기"><button type="button" data-ad-image-remove>이미지 지우기</button><p class="dialog-copy">권장 800×450px · 잘리지 않게 전체 표시합니다. 저장하면 적용됩니다.</p><label>광고주 이름<input type="text" name="name" maxlength="40" required value="${esc(a.name)}"></label><label>광산 간판 문구<input type="text" name="message" maxlength="90" value="${esc(a.message)}"></label><label>방문할 주소<input type="url" name="url" placeholder="https://" value="${esc(a.url)}"></label><label><input type="checkbox" name="enabled" ${a.enabled?'checked':''}> 실제 광고 연결</label><p class="dialog-copy">연결을 끄면 내부 테스트 페이지로 이동합니다.</p><button type="submit" class="gold-action">광고 설정 저장</button><p class="panel-error" data-ad-error role="status"></p></form><h3>최근 30일 광고 이동</h3><p class="dialog-copy">이동 수 ${fmt(data.rows.reduce((n,r)=>n+r.visits,0))}회 · 회원 수는 날짜별 중복 제외<br>테스트 회수는 집계에서 제외합니다.</p><table class="admin-table"><thead><tr><th>날짜</th><th>이동 수</th><th>참여 회원</th></tr></thead><tbody>${data.rows.filter((r,i)=>i<7||r.visits).map(r=>`<tr><td>${esc(r.day)}</td><td>${fmt(r.visits)}</td><td>${fmt(r.users)}</td></tr>`).join('')}</tbody></table><div class="admin-tools"><b>관리자 플레이 확인</b><p class="dialog-copy">현재 저장고를 채워 회수·광고 이동·강화를 바로 확인합니다. 광산 골드에만 반영됩니다.</p><button class="purple-action" data-test-fill>테스트 저장고 채우기</button></div>`);
   q('[data-dialog-body]').insertAdjacentHTML('beforeend',campaignAdminMarkup(data));
+  void mountMineReset({host:q('[data-dialog-body]'),user,request,mutate:saveCampaign,onReset:async id=>{if(id===user.id)await sync();}});
  }catch{if(panel==='admin')open('광고·골드 관리','<p class="panel-error">설정을 불러오지 못했습니다. 닫은 뒤 다시 열어주세요.</p>');}
 }
 const adminPendingKey=()=>`jcs.mine.admin.pending.${user?.id||''}`;
@@ -239,7 +242,7 @@ const ticker=setInterval(()=>{
  const notice=idleNotice({now:Date.now(),visible:!document.hidden,running:!!running(),full:state.ore>=state.stats.capacity,ready:!!onlineToken});
  setText(q('[data-idle-notice]'),notice);q('[data-idle-notice]').hidden=!notice;
  if(document.hidden)return;cooldown();
- if(!running()){minerMotion.stop();pickEffects.clear();}
+ if(!running()){minerMotion.stop();pickEffects.end();}
  if(needsEntry&&!busy&&!pending){void enterGame();return;}
  if(pendingReveal&&!busy&&!pending){const reveal=pendingReveal;pendingReveal=null;void action('lottery-reveal',reveal);return;}
  if(running()){const next=state.swings?.find(x=>x.at>lastVisualSwing&&x.at-serverNow()<=745&&x.at>=serverNow());if(next){lastVisualSwing=next.at;lastManual=Date.now();swing(q('[data-player]'),next.hits);}}
