@@ -70,3 +70,12 @@
 .player-body:before{content:'';position:absolute;left:15%;top:89.9%;width:56%;height:3.5%;border-radius:50%;background:radial-gradient(ellipse,#160a0cc9 0%,#160a0c65 40%,transparent 72%);pointer-events:none;z-index:-1}
 .mine-stage>.mine-seam{z-index:0}.mine-stage>.player-actor{z-index:2}.mine-stage>.worker-actor{z-index:1}
 @media(max-width:800px){.mine-game{min-height:760px}}
+
+/* 300: align the PC sponsor frame with the dock's actual right edge. */
+@media(min-width:801px){.sponsor-sign{left:auto;right:var(--dock-right-edge,24px);transform:none}}
+/* On the folded phone, the image itself remains the clickable advertisement. */
+@media(max-width:600px){
+ .sponsor-sign:has(.sponsor-image:not([hidden])){padding:4px;border-width:2px}
+ .sponsor-sign:has(.sponsor-image:not([hidden]))>:is(.ad-tag,strong,p,small){display:none}
+ .sponsor-sign .sponsor-image{margin:0;border-radius:4px;width:100%;height:auto;max-height:none;object-fit:contain}
+}

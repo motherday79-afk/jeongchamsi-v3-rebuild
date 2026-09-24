@@ -1,4 +1,4 @@
-import {initStageLayout} from './stage-layout.js?v=299';
+import {initStageLayout} from './stage-layout.js?v=300';
 import {mountMineReset} from './admin-reset.js?v=289';
 import {initFullscreen} from './fullscreen.js?v=286';
 import {RACES,equippedPick} from './pick-catalog.js?v=285';
@@ -84,7 +84,7 @@ function paint(){
  q('[data-collect-copy]').textContent=full?(ad?.enabled?'광고주 방문하고 회수':'테스트 페이지 방문 · +'+s.ore+' G'):'저장고를 채워주세요';
  q('[data-ad-tag]').textContent=ad?.enabled?'광고':'광산 소식';q('[data-ad-name]').textContent=ad?.name||'정참시 광산';q('[data-ad-copy]').textContent=ad?.message||'나만의 광산을 키워보세요';
  const adImage=q('[data-ad-image]');adImage.hidden=!ad?.imageUrl;if(ad?.imageUrl&&adImage.getAttribute('src')!==ad.imageUrl)adImage.src=ad.imageUrl;
- const sign=q('[data-sponsor-link]');if(ad?.enabled&&/^https:\/\//.test(ad.url||'')){sign.href=ad.url;sign.removeAttribute('aria-disabled');q('[data-ad-visit]').textContent='광고주 사이트 방문 ↗';}else{sign.removeAttribute('href');sign.setAttribute('aria-disabled','true');q('[data-ad-visit]').textContent='광고 준비 중';}
+ const sign=q('[data-sponsor-link]');sign.setAttribute('aria-label',(ad?.name||'광산 소식')+(ad?.enabled?' · 광고주 사이트 방문':''));if(ad?.enabled&&/^https:\/\//.test(ad.url||'')){sign.href=ad.url;sign.removeAttribute('aria-disabled');q('[data-ad-visit]').textContent='광고주 사이트 방문 ↗';}else{sign.removeAttribute('href');sign.setAttribute('aria-disabled','true');q('[data-ad-visit]').textContent='광고 준비 중';}
  q('[data-lottery-left]').textContent=campaign?(campaign.status==='closed'?'회차 종료':fmt(campaign.remaining)+'개 남음'):'20G';
  if(panel==='lottery')refreshLotteryNumbers(root,{campaign,lottery,state,busy:busy||!!pending});
  cooldown();
