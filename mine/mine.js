@@ -8,7 +8,7 @@ const root=document.getElementById('mine-game'),q=s=>root.querySelector(s),dialo
 const names={strong:'건장한 광부',glamour:'하이힐 광부',elf:'미니미 엘프'};
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>Number(n||0).toLocaleString('ko-KR');
-const errors={LOGIN_REQUIRED:'로그인 후 광산에 입장해 주세요.',MINE_COOLDOWN:'다음 타격을 준비하고 있어요.',MINE_NOT_FULL:'저장고가 가득 차면 회수할 수 있어요.',MINE_CYCLE_CHANGED:'이미 회수한 광물입니다. 현재 저장고를 확인해 주세요.',MINE_GOLD_REQUIRED:'광산 골드가 부족해요.',MINE_STORAGE_LOCKED:'곡괭이나 인부를 먼저 강화해 주세요.',MINE_BUSY:'다른 화면에서 작업 중입니다. 잠시 후 다시 시도해 주세요.',MINE_AD_URL:'광고주 주소를 https://로 시작하는 전체 주소로 입력해 주세요.',MINE_AD_NAME:'광고주 이름을 입력해 주세요.',FORBIDDEN:'관리자만 사용할 수 있어요.',MINE_FULL:'저장고가 가득 찼어요. 광물을 회수해 주세요.',STORAGE_CAPACITY:'저장소 용량이 부족합니다. 관리자에게 알려 주세요.'};
+const errors={MINE_GOLD_AMOUNT:'1~1,000,000 G 사이의 정수로 입력해 주세요.',LOGIN_REQUIRED:'로그인 후 광산에 입장해 주세요.',MINE_COOLDOWN:'다음 타격을 준비하고 있어요.',MINE_NOT_FULL:'저장고가 가득 차면 회수할 수 있어요.',MINE_CYCLE_CHANGED:'이미 회수한 광물입니다. 현재 저장고를 확인해 주세요.',MINE_GOLD_REQUIRED:'광산 골드가 부족해요.',MINE_STORAGE_LOCKED:'곡괭이나 인부를 먼저 강화해 주세요.',MINE_BUSY:'다른 화면에서 작업 중입니다. 잠시 후 다시 시도해 주세요.',MINE_AD_URL:'광고주 주소를 https://로 시작하는 전체 주소로 입력해 주세요.',MINE_AD_NAME:'광고주 이름을 입력해 주세요.',FORBIDDEN:'관리자만 사용할 수 있어요.',MINE_FULL:'저장고가 가득 찼어요. 광물을 회수해 주세요.',STORAGE_CAPACITY:'저장소 용량이 부족합니다. 관리자에게 알려 주세요.'};
 let state=null,user=null,ad=null,busy=false,pending=null,offset=0,lastManual=0,lastAuto=0,panel='',toastTimer,disposed=false,adminData=null;
 const timers=new Set(),later=(fn,ms)=>{const id=setTimeout(()=>{timers.delete(id);if(!disposed)fn();},ms);timers.add(id);return id;};
 const serverNow=()=>Date.now()-offset;
@@ -108,6 +108,7 @@ async function action(actionName,extra={}){
   }else if(actionName==='character'){dialog.close();panel='';toast(names[state.character]+'와 채굴을 시작합니다.');}
   else if(actionName==='upgrade'){toast('강화 완료!');showPanel(extra.target);}
   else if(actionName==='tool'){toast(extra.tool==='trial'?'황금 곡괭이를 체험합니다. 결제는 없습니다.':pickAppearance(state).name+'를 장착했어요.');showPanel('pick');}
+  else if(actionName==='admin-gold'){toast(fmt(data.result.grantedGold)+' G를 지급했습니다.');await adminPanel();}
   else if(actionName==='test-fill'){dialog.close();panel='';toast('테스트용 저장고를 채웠어요. 이 회수는 광고 통계에서 제외됩니다.');}
  }catch{toast('저장 결과를 확인 중입니다. 연결되면 같은 요청을 이어갑니다.',7000);}
  finally{busy=false;paint();}
@@ -130,7 +131,7 @@ function showPanel(which){
   return;
  }
  if(which==='jackpot'){
-  showPanel('help');return;
+  open('공동 잭팟',`<div class="pick-showcase"><strong>${fmt(jackpot?.failedCycles||0)} G</strong></div><p class="dialog-copy">모든 회원의 채굴 실패 1회마다 1G씩 함께 쌓입니다.</p><p class="dialog-copy">브론즈 100G · 실버 300G · 골드 1,000G<br>현재 적립만 진행 중이며, 당첨 추첨·지급은 준비 중입니다.</p>`);return;
  }
  if(which==='characters'){open('함께할 광부를 골라주세요',`<p class="dialog-copy">캐릭터는 외형 선택입니다. 채굴 능력은 장비와 강화로 결정됩니다.</p><div class="character-grid">${Object.entries(names).map(([id,name])=>`<button class="character-choice" data-character="${id}" aria-pressed="${state.character===id}"><img src="/assets/mine/${id}-portrait.webp" alt="${name}"><b>${name}</b><small>${id==='strong'?'묵직한 한 방':id==='glamour'?'당당한 발걸음':'작지만 큰 한 방'}</small></button>`).join('')}</div>`);return;}
  if(which==='admin'){void adminPanel();return;}
@@ -141,16 +142,16 @@ function showPanel(which){
  open(title,`<div class="upgrade-card"><h3>Lv.${level} ${max?'· 최고 단계':'→ Lv.'+(level+1)}</h3><div class="upgrade-line"><span>${which==='pick'?'채굴 성공률':which==='worker'?'자동 타격 간격':'저장고 용량'}</span><strong>${current}${max?'':' → '+next}</strong></div><div class="upgrade-line"><span>보유 골드</span><strong>${fmt(s.gold)} G</strong></div>${locked?`<p class="panel-error">곡괭이 또는 인부 Lv.${st.storageRequirement}부터 열립니다.</p>`:''}<button class="gold-action" data-upgrade="${which}" ${max||locked||s.gold<cost?'disabled':''}>${max?'최고 단계입니다':locked?'성장 조건을 먼저 채워주세요':s.gold<cost?`${fmt(cost-s.gold)} G 더 필요해요`:`${fmt(cost)} G · 강화하기`}</button></div>${which==='pick'?`<h3>장비 선택</h3><div class="tool-choice"><button data-tool="basic" aria-pressed="${s.tool==='basic'}">기본 곡괭이</button><button data-tool="trial" aria-pressed="${s.tool==='trial'}">황금 곡괭이 · 무료 체험</button></div><p class="dialog-copy">황금 곡괭이: 성공률 +12%p · 25% 확률로 추가 타격 1회.<br>추가 타격도 별도로 채굴 성공 여부를 계산합니다.</p>`:''}`);
  if(which==='pick'){
   const appearance=pickAppearance(s);
-  q('[data-dialog-body]').insertAdjacentHTML('afterbegin',`<div class="pick-showcase"><img src="${appearance.image}" alt="${appearance.name}"><div><b>${appearance.name}</b><small>Lv.1 철 · Lv.2 은빛<br>Lv.7 황금 · Lv.14 자수정<br>타격 중 곡괭이 장식도 함께 바뀝니다.</small></div></div>`);
+  q('[data-dialog-body]').insertAdjacentHTML('afterbegin',`<div class="pick-showcase"><img src="${appearance.image}" alt="${appearance.name}"><div><b>${appearance.name}</b><small>Lv.1 철 · Lv.2 은빛<br>Lv.7 황금 · Lv.14 자수정<br>캐릭터가 들고 있는 곡괭이도 함께 바뀝니다.</small></div></div>`);
   if(s.paidPicks?.length)q('[data-dialog-body]').insertAdjacentHTML('beforeend',`<h3>보유 유료 장비 · 회차가 바뀌어도 유지</h3><div class="tool-choice">${s.paidPicks.map((id,i)=>`<button data-tool="${esc(id)}" aria-pressed="${s.tool===id}">보유 장비 ${i+1}</button>`).join('')}</div>`);
  }
 }
 async function adminPanel(){
- if(user?.role!=='admin')return;open('광고 관리','<p class="dialog-copy">광고 설정을 불러오는 중…</p>');
+ if(user?.role!=='admin')return;open('광고·골드 관리','<p class="dialog-copy">광고 설정을 불러오는 중…</p>');
  try{await recoverAdminMutation();const data=await request('mine/admin');if(!data.ok)throw new Error(data.error);adminData=data;if(panel!=='admin')return;const a=data.ad;
- open('광고 관리',`<form class="admin-form" data-ad-form><label>광고 이미지 · JPG/PNG/WebP, 최대 1MB<input type="file" accept="image/jpeg,image/png,image/webp" data-ad-file></label><input type="hidden" name="imageUrl" value="${esc(a.imageUrl||'')}"><img class="ad-preview" data-ad-preview src="${esc(a.imageUrl||'')}" ${a.imageUrl?'':'hidden'} alt="광고 미리보기"><button type="button" data-ad-image-remove>이미지 지우기</button><p class="dialog-copy">권장 800×450px · 잘리지 않게 전체 표시합니다. 저장하면 적용됩니다.</p><label>광고주 이름<input type="text" name="name" maxlength="40" required value="${esc(a.name)}"></label><label>광산 간판 문구<input type="text" name="message" maxlength="90" value="${esc(a.message)}"></label><label>방문할 주소<input type="url" name="url" placeholder="https://" value="${esc(a.url)}"></label><label><input type="checkbox" name="enabled" ${a.enabled?'checked':''}> 실제 광고 연결</label><p class="dialog-copy">연결을 끄면 내부 테스트 페이지로 이동합니다.</p><button type="submit" class="gold-action">광고 설정 저장</button><p class="panel-error" data-ad-error role="status"></p></form><h3>최근 30일 광고 이동</h3><p class="dialog-copy">이동 수 ${fmt(data.rows.reduce((n,r)=>n+r.visits,0))}회 · 회원 수는 날짜별 중복 제외<br>테스트 회수는 집계에서 제외합니다.</p><table class="admin-table"><thead><tr><th>날짜</th><th>이동 수</th><th>참여 회원</th></tr></thead><tbody>${data.rows.filter((r,i)=>i<7||r.visits).map(r=>`<tr><td>${esc(r.day)}</td><td>${fmt(r.visits)}</td><td>${fmt(r.users)}</td></tr>`).join('')}</tbody></table><div class="admin-tools"><b>관리자 플레이 확인</b><p class="dialog-copy">현재 저장고를 채워 회수·광고 이동·강화를 바로 확인합니다. 광산 골드에만 반영됩니다.</p><button class="purple-action" data-test-fill>테스트 저장고 채우기</button></div>`);
+ open('광고·골드 관리',`<div class="admin-tools"><b>내 계정에 테스트 골드 지급</b><p class="dialog-copy">현재 ${fmt(state.gold)} G · 관리자 본인의 광산 골드만 추가됩니다.</p><label>지급할 골드 <input type="number" data-grant-amount min="1" max="1000000" step="1" value="10000"></label><button class="gold-action" data-grant-gold>골드 지급</button></div><h3>광고주 이미지·링크</h3><form class="admin-form" data-ad-form><label>광고 이미지 · JPG/PNG/WebP, 최대 1MB<input type="file" accept="image/jpeg,image/png,image/webp" data-ad-file></label><input type="hidden" name="imageUrl" value="${esc(a.imageUrl||'')}"><img class="ad-preview" data-ad-preview src="${esc(a.imageUrl||'')}" ${a.imageUrl?'':'hidden'} alt="광고 미리보기"><button type="button" data-ad-image-remove>이미지 지우기</button><p class="dialog-copy">권장 800×450px · 잘리지 않게 전체 표시합니다. 저장하면 적용됩니다.</p><label>광고주 이름<input type="text" name="name" maxlength="40" required value="${esc(a.name)}"></label><label>광산 간판 문구<input type="text" name="message" maxlength="90" value="${esc(a.message)}"></label><label>방문할 주소<input type="url" name="url" placeholder="https://" value="${esc(a.url)}"></label><label><input type="checkbox" name="enabled" ${a.enabled?'checked':''}> 실제 광고 연결</label><p class="dialog-copy">연결을 끄면 내부 테스트 페이지로 이동합니다.</p><button type="submit" class="gold-action">광고 설정 저장</button><p class="panel-error" data-ad-error role="status"></p></form><h3>최근 30일 광고 이동</h3><p class="dialog-copy">이동 수 ${fmt(data.rows.reduce((n,r)=>n+r.visits,0))}회 · 회원 수는 날짜별 중복 제외<br>테스트 회수는 집계에서 제외합니다.</p><table class="admin-table"><thead><tr><th>날짜</th><th>이동 수</th><th>참여 회원</th></tr></thead><tbody>${data.rows.filter((r,i)=>i<7||r.visits).map(r=>`<tr><td>${esc(r.day)}</td><td>${fmt(r.visits)}</td><td>${fmt(r.users)}</td></tr>`).join('')}</tbody></table><div class="admin-tools"><b>관리자 플레이 확인</b><p class="dialog-copy">현재 저장고를 채워 회수·광고 이동·강화를 바로 확인합니다. 광산 골드에만 반영됩니다.</p><button class="purple-action" data-test-fill>테스트 저장고 채우기</button></div>`);
   q('[data-dialog-body]').insertAdjacentHTML('beforeend',campaignAdminMarkup(data));
- }catch{if(panel==='admin')open('광고 관리','<p class="panel-error">설정을 불러오지 못했습니다. 닫은 뒤 다시 열어주세요.</p>');}
+ }catch{if(panel==='admin')open('광고·골드 관리','<p class="panel-error">설정을 불러오지 못했습니다. 닫은 뒤 다시 열어주세요.</p>');}
 }
 const adminPendingKey=()=>`jcs.mine.admin.pending.${user?.id||''}`;
 function getAdminPending(){try{return JSON.parse(sessionStorage.getItem(adminPendingKey())||'null');}catch{return null;}}
@@ -202,6 +203,7 @@ root.addEventListener('click',event=>{
  else if(b.hasAttribute('data-collect'))void action('collect',{cycle:state.cycle});
  else if(b.dataset.upgrade)void action('upgrade',{target:b.dataset.upgrade});
  else if(b.dataset.tool)void action('tool',{tool:b.dataset.tool});
+ else if(b.hasAttribute('data-grant-gold')){const amount=Number(q('[data-grant-amount]').value);if(!Number.isSafeInteger(amount)||amount<1||amount>1000000){toast('1~1,000,000 사이의 정수로 입력해 주세요.');return;}void action('admin-gold',{amount});}
  else if(b.hasAttribute('data-test-fill'))void action('test-fill');
  else if(b.hasAttribute('data-lottery-buy'))void action('lottery-buy',{campaignId:campaign.id,expectedPlays:lottery.plays});
  else if(b.dataset.fulfillTicket)void updateFulfillment(b);
