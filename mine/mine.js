@@ -1,3 +1,4 @@
+import {initFullscreen} from './fullscreen.js?v=286';
 import {RACES,equippedPick} from './pick-catalog.js?v=285';
 import {shopMarkup} from './pick-shop.js?v=285';
 import {makePickEffects} from './pick-effects.js?v=285';
@@ -248,6 +249,7 @@ const syncTimer=setInterval(()=>{if(!document.hidden&&pending)void sync();},4000
 document.addEventListener('visibilitychange',()=>{if(document.hidden)leaveGame();else void sync().then(enterGame);});
 window.addEventListener('pageshow',e=>{if(e.persisted){disposed=false;void sync().then(enterGame);}});
 window.addEventListener('pagehide',()=>{leaveGame();disposed=true;});
+initFullscreen({button:q('[data-fullscreen]'),notify:toast});
 void boot();
 
 root.addEventListener('change',async event=>{

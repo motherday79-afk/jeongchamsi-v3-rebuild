@@ -42,3 +42,14 @@
 @media(max-width:800px){.mine-dock{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.mine-dock button{min-height:55px}.mine-dock button>span{height:17px;font-size:17px}.mine-dock b{font-size:10px}.player-actor{bottom:315px}.worker-actor{bottom:370px}.mine-ore.mine-seam{bottom:310px}}
 
 .player-actor .sprite:not([data-integrated-miner]){visibility:hidden}
+
+/* 286: ceiling-mounted sponsor board and fullscreen controls. */
+.sponsor-sign{--sponsor-top:100px;top:var(--sponsor-top)}
+.sponsor-sign:before,.sponsor-sign:after{top:calc(-1 * var(--sponsor-top));height:var(--sponsor-top);width:6px;background:repeating-linear-gradient(0deg,#5f482e 0 3px,#d7b77c 3px 6px,#927047 6px 9px);border-left:1px solid #efd29a77;border-right:1px solid #23150b;box-shadow:2px 0 3px #0008;pointer-events:none}
+.sponsor-mount{position:absolute;top:calc(8px - var(--sponsor-top));left:17px;right:17px;height:15px;border:2px solid #39241b;border-radius:4px;background:radial-gradient(circle at 12px 50%,#e3c384 0 3px,transparent 4px),radial-gradient(circle at calc(100% - 12px) 50%,#e3c384 0 3px,transparent 4px),linear-gradient(#8d6646,#3e291e);box-shadow:0 4px 5px #0009;pointer-events:none}
+.fullscreen-button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:58px;height:48px;line-height:1}
+.fullscreen-button small{font-size:9px;white-space:nowrap}
+@media(min-width:801px){.sponsor-sign{--sponsor-top:125px;width:clamp(300px,23vw,440px);padding:22px 26px 19px}.sponsor-sign strong{font-size:clamp(23px,1.6vw,31px)}.sponsor-sign p{font-size:13px;line-height:1.5;margin-top:9px}.sponsor-sign>small{font-size:12px;margin-top:12px}.sponsor-sign .ad-tag{font-size:11px}.sponsor-image{max-height:24dvh}}
+@media(max-width:800px){.mine-header{gap:8px}.mine-header>.fullscreen-button{width:40px;height:39px}.fullscreen-button small{font-size:8px}.sponsor-sign:before,.sponsor-sign:after{width:4px}}
+@media(max-width:420px){.mine-header{padding-left:10px;padding-right:10px;gap:6px}.mine-title{padding-left:7px}.mine-title h1{font-size:16px}.mine-title small{font-size:7px;letter-spacing:0}.gold-wallet{padding:7px}.gold-wallet strong{font-size:19px}.home-link{gap:3px}.mine-header>.icon-button{width:30px}.mine-header>.fullscreen-button{width:38px}}
+@media(max-height:650px) and (max-width:800px){.sponsor-sign{--sponsor-top:87px}}
