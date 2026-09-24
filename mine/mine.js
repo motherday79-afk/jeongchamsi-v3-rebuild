@@ -1,10 +1,9 @@
-import {renderCharacter,poseCharacter} from './character-rig.js?v=281';
-import {wardrobeMarkup,wardrobeDraft,refreshWardrobe} from './wardrobe-ui.js?v=281';
+import {renderIntegratedMiner} from './integrated-miner.js?v=282';
 import {makeIdleNotice,setText} from './idle-state.js?v=280';
 import {makeMinerMotion} from './motion.js?v=280';
 import {mountScratchCard} from './scratch-card.js?v=278';
 import {lotteryMarkup,refreshLotteryNumbers,campaignAdminMarkup} from './lottery-ui.js?v=278';
-import {pickAppearance} from './pick-design.js?v=281';
+import {pickAppearance} from './pick-design.js?v=282';
 const root=document.getElementById('mine-game'),q=s=>root.querySelector(s),dialog=q('[data-dialog]');
 const names={strong:'건장한 광부',glamour:'하이힐 광부',elf:'미니미 엘프'};
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -20,11 +19,9 @@ let pendingReveal=null;
 const idleNotice=makeIdleNotice();
 const foregroundBusy=()=>busy&&pending?.action!=='heartbeat';
 const foregroundPending=()=>pending&&pending.action!=='heartbeat';
-Object.assign(errors,{MINE_COSTUME:'의상 선택을 확인해 주세요.',MINE_COSTUME_BASE:'성인 기본형이 준비되지 않아 상·하의를 해제할 수 없습니다.',MINE_CAMPAIGN_CHANGED:'새 회차가 시작됐습니다. 변경된 정보를 확인해 주세요.',MINE_LOTTERY_CLOSED:'준비된 경품이 모두 당첨되어 이번 복권은 종료됐습니다.',MINE_LOTTERY_PENDING:'이미 구매한 복권을 먼저 긁어주세요.',MINE_LOTTERY_CHANGED:'복권 기록이 갱신됐습니다. 현재 복권을 확인해 주세요.',MINE_TICKET:'복권 기록을 다시 확인해 주세요.',MINE_CAMPAIGN_INPUT:'경품 이름과 당첨 한도를 확인해 주세요.',MINE_CAMPAIGN_PRIZE_LOCKED:'진행 중인 경품은 바꿀 수 없습니다. 새 회차를 시작해 주세요.'});
+Object.assign(errors,{MINE_CAMPAIGN_CHANGED:'새 회차가 시작됐습니다. 변경된 정보를 확인해 주세요.',MINE_LOTTERY_CLOSED:'준비된 경품이 모두 당첨되어 이번 복권은 종료됐습니다.',MINE_LOTTERY_PENDING:'이미 구매한 복권을 먼저 긁어주세요.',MINE_LOTTERY_CHANGED:'복권 기록이 갱신됐습니다. 현재 복권을 확인해 주세요.',MINE_TICKET:'복권 기록을 다시 확인해 주세요.',MINE_CAMPAIGN_INPUT:'경품 이름과 당첨 한도를 확인해 주세요.',MINE_CAMPAIGN_PRIZE_LOCKED:'진행 중인 경품은 바꿀 수 없습니다. 새 회차를 시작해 주세요.'});
 const running=()=>onlineToken&&state?.onlineToken===onlineToken&&state.mode==='player'&&serverNow()<state.onlineUntil&&state.ore<state.stats.capacity;
-const minerMotion=makeMinerMotion({setFrame:n=>{if(currentFrame===n)return;currentFrame=n;poseCharacter(q('[data-player]'),n);},impact:particles});
-let pendingCostume=null;
-const previewMotion=makeMinerMotion({setFrame:n=>poseCharacter(q('[data-wardrobe-preview]'),n),impact:()=>{}});
+const minerMotion=makeMinerMotion({setFrame:n=>{if(currentFrame===n)return;currentFrame=n;q('[data-player]').style.backgroundPosition=(n/7*100)+'% 0';},impact:particles});
 function presenceExtra(){return {token:onlineToken,sequence:++sequence};}
 async function enterGame(){
  if(document.hidden||disposed||!state)return;
@@ -62,7 +59,7 @@ function paint(){
  q('[data-player]').dataset.character=s.character;q('[data-player]').setAttribute('aria-label',names[s.character]);q('[data-player-actor]').classList.toggle('trial',s.tool==='trial');
  q('[data-character-name]').textContent=names[s.character];q('[data-tool-name]').textContent=s.tool==='trial'?'황금 곡괭이 · 체험':'기본 곡괭이';
  q('[data-tool-name]').textContent=(s.tool==='trial'?'체험 · ':'')+pickAppearance(s).name;
- renderCharacter(q('[data-player]'),s,currentFrame);
+ renderIntegratedMiner(q('[data-player]'),s);
  for(const sel of ['[data-worker-level]','[data-dock-worker]'])q(sel).textContent='Lv.'+s.worker;
  for(const sel of ['[data-storage-level]','[data-dock-storage]'])q(sel).textContent='Lv.'+s.storage;
  q('[data-pick-level]').textContent='Lv.'+s.pick;
@@ -89,7 +86,6 @@ async function sync(){
  try{const retry=pending,data=await request('mine',retry||undefined);if(data.error==='MINE_FORBIDDEN'){accessDenied();return;}accept(data);if(retry&&data.state)storePending(null);
   if(!data.ok){if(data.error==='LOGIN_REQUIRED'){user=null;login();}else toast(errors[data.error]||'광산을 불러오지 못했어요. 다시 연결해 주세요.');}
   else if(retry?.action==='collect'&&data.result?.visitUrl){location.assign(data.result.visitUrl);return;}
-  else if(retry?.action==='costume'){dialog.close();panel='';toast('의상을 저장했어요.');}
   else if(retry?.action?.startsWith('lottery-'))showPanel('lottery');
   else if(data.result?.autoGained)effect(data.result.autoGained,false);
  }catch{toast('연결이 잠시 끊겼어요. 채굴 기록을 다시 확인하고 있습니다.',6000);}
@@ -101,7 +97,7 @@ async function action(actionName,extra={}){
  if(actionName==='strike'){lastManual=Date.now();swing(q('[data-player]'));}
  try{
   const data=await request('mine',body);if(data.error==='MINE_FORBIDDEN'){accessDenied();return;}accept(data);if(data.state)storePending(null);
-  if(!data.ok){if(data.error==='MINE_SESSION'){onlineToken=null;toast('채굴 연결이 종료됐어요. 도움말의 다시 연결을 눌러주세요.');}else toast(errors[data.error]||'작업을 처리하지 못했어요. 다시 시도해 주세요.');if(actionName==='costume'){const f=q('[data-wardrobe-form]');if(f){f.querySelector('[type=submit]').disabled=false;f.querySelector('[data-wardrobe-status]').textContent=errors[data.error]||'저장하지 못했습니다. 다시 시도해 주세요.';}}if(actionName.startsWith('lottery-'))showPanel('lottery');return;}
+  if(!data.ok){if(data.error==='MINE_SESSION'){onlineToken=null;toast('채굴 연결이 종료됐어요. 도움말의 다시 연결을 눌러주세요.');}else toast(errors[data.error]||'작업을 처리하지 못했어요. 다시 시도해 주세요.');if(actionName.startsWith('lottery-'))showPanel('lottery');return;}
   if(data.result?.autoGained)effect(data.result.autoGained,false);
   if(actionName==='auto-start')lastManual=Date.now();
   if(actionName.startsWith('lottery-')){showPanel('lottery');return;}
@@ -110,7 +106,6 @@ async function action(actionName,extra={}){
    if(data.result.hits===2){later(()=>swing(q('[data-player]')),650);floating('더블 타격!','double');}
    later(()=>effect(data.result.gained,true),360);
   }else if(actionName==='character'){dialog.close();panel='';toast(names[state.character]+'와 채굴을 시작합니다.');}
-  else if(actionName==='costume'){dialog.close();panel='';toast('의상을 저장했어요. 채굴 화면에도 적용됐습니다.');}
   else if(actionName==='upgrade'){toast('강화 완료!');showPanel(extra.target);}
   else if(actionName==='tool'){toast(extra.tool==='trial'?'황금 곡괭이를 체험합니다. 결제는 없습니다.':pickAppearance(state).name+'를 장착했어요.');showPanel('pick');}
   else if(actionName==='test-fill'){dialog.close();panel='';toast('테스트용 저장고를 채웠어요. 이 회수는 광고 통계에서 제외됩니다.');}
@@ -124,7 +119,7 @@ function swing(el){
 function particles(){const mount=q('[data-effects]'),rock=q('[data-ore-rock]');rock.classList.remove('ore-hit');void rock.offsetWidth;rock.classList.add('ore-hit');for(let i=0;i<7;i++){const el=document.createElement('i');el.className='spark';el.style.setProperty('--dx',(Math.random()*110-70)+'px');el.style.setProperty('--dy',(-Math.random()*95-10)+'px');mount.append(el);later(()=>el.remove(),750);}}
 function floating(text,kind=''){const el=document.createElement('span');el.className='ore-gain '+kind;el.textContent=text;q('[data-effects]').append(el);later(()=>el.remove(),1500);}
 function effect(gained,manual){if(gained>0)floating('+'+gained+' 금');else if(manual)floating('다시 도전!','miss');}
-function open(title,html){previewMotion.stop();scratchCleanup?.();scratchCleanup=null;q('[data-dialog-title]').textContent=title;q('[data-dialog-body]').innerHTML=html;if(!dialog.open)dialog.showModal();}
+function open(title,html){scratchCleanup?.();scratchCleanup=null;q('[data-dialog-title]').textContent=title;q('[data-dialog-body]').innerHTML=html;if(!dialog.open)dialog.showModal();}
 function login(){open('내 광산을 시작하세요',`<p class="dialog-copy">정참시 계정으로 광물과 강화 내역을 저장합니다.</p><a class="gold-action" href="/login?return=%2Fmine" style="display:block;text-align:center;text-decoration:none">로그인하고 입장하기</a><p class="dialog-copy">광산 골드는 기존 정참시 포인트와 별도로 모입니다.</p>`);}
 function showPanel(which){
  panel=which;if(which==='help'){open('광산 이용 방법',`<ul class="help-list"><li>공동 잭팟은 실패 1회당 1G씩 함께 적립합니다. 브론즈 100G · 실버 300G · 골드 1,000G 보상을 준비 중이며, 추첨과 지급은 아직 시작하지 않았습니다.</li><li>게임을 떠나면 인부가 기본 3초마다 채굴합니다. 게임을 켠 동안 인부는 쉽니다.</li><li>자동채굴하기를 누르면 플레이어가 1.5초마다 계속 타격합니다. 멈추기 버튼으로 중지할 수 있습니다. 다른 탭으로 이동하거나 창을 닫으면 인부 채굴로 바뀝니다.</li><li>기본 성공률은 3%. 성공하면 금 1개를 얻습니다. 성공률은 타격할 때마다 독립적으로 적용됩니다.</li><li>저장고가 가득 차야 회수할 수 있습니다. 회수 후 광고주 페이지로 이동하며, 뒤로가기로 돌아오면 됩니다.</li><li>곡괭이는 성공률, 인부는 자동 타격 속도를 높입니다. 저장고는 곡괭이 또는 인부가 필요한 단계에 도달하면 강화할 수 있습니다.</li><li>복권은 1회 20G, 당첨 확률은 5%입니다. 전체 당첨 한도에 도달하면 복권만 종료되고 채굴은 계속됩니다. 이전 경품은 복권 창의 당첨 내역에서 확인하세요.</li><li>새 광고주 회차를 시작하면 골드와 일반 강화는 초기화되며, 유료 장비 소유권과 경품 당첨 기록은 유지됩니다.</li><li>광산 골드는 정참시 포인트와 별도입니다. 황금 곡괭이는 이번 버전에서 무료 체험 장비입니다.</li></ul><button class="purple-action" data-reconnect>다시 연결</button>`);return;}
@@ -137,8 +132,7 @@ function showPanel(which){
  if(which==='jackpot'){
   showPanel('help');return;
  }
- if(which==='wardrobe'){open('나의 옷장',wardrobeMarkup(state));refreshWardrobe(q('[data-wardrobe-form]'),state);return;}
- if(which==='characters'){open('함께할 광부를 골라주세요',`<p class="dialog-copy">캐릭터는 외형 선택입니다. 채굴 능력은 장비와 강화로 결정됩니다.</p><div class="character-grid">${Object.entries(names).map(([id,name])=>`<button class="character-choice" data-character="${id}" aria-pressed="${state.character===id}"><img src="/assets/mine/${id}-portrait.webp" alt="${name}"><b>${name}</b><small>${id==='strong'?'묵직한 한 방':id==='glamour'?'당당한 발걸음':'작지만 큰 한 방'}</small></button>`).join('')}</div><button class="purple-action rig-preview-button" data-panel="wardrobe">선택한 광부의 옷장 열기</button>`);return;}
+ if(which==='characters'){open('함께할 광부를 골라주세요',`<p class="dialog-copy">캐릭터는 외형 선택입니다. 채굴 능력은 장비와 강화로 결정됩니다.</p><div class="character-grid">${Object.entries(names).map(([id,name])=>`<button class="character-choice" data-character="${id}" aria-pressed="${state.character===id}"><img src="/assets/mine/${id}-portrait.webp" alt="${name}"><b>${name}</b><small>${id==='strong'?'묵직한 한 방':id==='glamour'?'당당한 발걸음':'작지만 큰 한 방'}</small></button>`).join('')}</div>`);return;}
  if(which==='admin'){void adminPanel();return;}
  if(!['pick','worker','storage'].includes(which))return;
  const s=state,st=s.stats,title={pick:'곡괭이 강화',worker:'인부 강화',storage:'저장고 확장'}[which],level=s[which],cost=st.costs[which],locked=which==='storage'&&Math.max(s.pick,s.worker)<st.storageRequirement,max=level>=(st.maxLevels?.[which]||st.maxLevel);
@@ -202,7 +196,6 @@ root.addEventListener('click',event=>{
  const b=event.target.closest('button');if(!b||b.disabled)return;
  if(b.hasAttribute('data-ad-image-remove')){const f=b.closest('form');f.elements.imageUrl.value='';f.querySelector('[data-ad-preview]').hidden=true;}
  else if(b.hasAttribute('data-close')){dialog.close();panel='';}
- else if(b.hasAttribute('data-wardrobe-motion'))previewMotion.play(matchMedia('(prefers-reduced-motion: reduce)').matches);
  else if(b.dataset.panel)showPanel(b.dataset.panel);
  else if(b.dataset.character)void action('character',{character:b.dataset.character});
  else if(b.hasAttribute('data-strike'))void action(running()?'auto-stop':'auto-start',presenceExtra());
@@ -217,7 +210,7 @@ root.addEventListener('click',event=>{
 });
 root.addEventListener('submit',async event=>{if(!event.target.matches('[data-ad-form]'))return;event.preventDefault();const f=event.target,button=f.querySelector('button[type=submit]');button.disabled=true;const fd=new FormData(f);try{const data=await request('mine/admin',{name:fd.get('name'),message:fd.get('message'),url:fd.get('url'),imageUrl:fd.get('imageUrl'),enabled:fd.has('enabled')});if(!data.ok)throw new Error(errors[data.error]||'저장하지 못했습니다.');ad=data.ad;paint();f.querySelector('[data-ad-error]').textContent='저장했습니다.';}catch(e){f.querySelector('[data-ad-error]').textContent=e.message||'연결 상태를 확인해 주세요.';}finally{button.disabled=false;}});
 dialog.addEventListener('cancel',()=>panel='');
-dialog.addEventListener('close',()=>{previewMotion.stop();scratchCleanup?.();scratchCleanup=null;panel='';});
+dialog.addEventListener('close',()=>{scratchCleanup?.();scratchCleanup=null;panel='';});
 async function boot(){
  let session;
  try{session=await request('user/session');if(!session.authenticated||session.user?.role!=='admin'){accessDenied();return;}}catch{accessDenied();return;}
@@ -243,7 +236,6 @@ const ticker=setInterval(()=>{
  if(document.hidden)return;cooldown();
  if(!running())minerMotion.stop();
  if(needsEntry&&!busy&&!pending){void enterGame();return;}
- if(pendingCostume&&!busy&&!pending){const costume=pendingCostume;pendingCostume=null;void action('costume',costume);return;}
  if(pendingReveal&&!busy&&!pending){const reveal=pendingReveal;pendingReveal=null;void action('lottery-reveal',reveal);return;}
  if(running()&&state.ore<state.stats.capacity&&Date.now()-lastManual>=1500){lastManual=Date.now();swing(q('[data-player]'));}
  if(user&&!busy&&!pending&&onlineToken&&Date.now()-lastHeartbeat>=4000){lastHeartbeat=Date.now();void action('heartbeat',presenceExtra());}
@@ -264,10 +256,4 @@ root.addEventListener('change',async event=>{
  f.elements.imageUrl.value=data.url;const preview=f.querySelector('[data-ad-preview]');preview.src=data.url;preview.hidden=false;message.textContent='이미지 준비 완료. 광고 설정 저장을 눌러 적용하세요.';
  }catch{message.textContent='이미지를 올리지 못했습니다. 이미지 저장소 연결 또는 파일을 확인한 뒤 다시 선택해 주세요.';}
  finally{button.disabled=false;input.disabled=false;input.value='';}
-});
-
-root.addEventListener('change',event=>{const form=event.target.closest('[data-wardrobe-form]');if(form){previewMotion.stop();refreshWardrobe(form,state);}});
-root.addEventListener('submit',event=>{
- const form=event.target;if(!form.matches('[data-wardrobe-form]'))return;event.preventDefault();
- const draft=wardrobeDraft(form,state);pendingCostume={character:state.character,costume:draft.costumes[state.character]};form.querySelector('[type=submit]').disabled=true;form.querySelector('[data-wardrobe-status]').textContent='의상을 저장하고 있어요…';
 });
