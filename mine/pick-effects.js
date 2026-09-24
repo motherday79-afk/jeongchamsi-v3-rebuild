@@ -1,4 +1,5 @@
-import {loadDarkEffects,darkAura,darkSlash,darkImpact} from './dark-effects.js?v=295';
+import {loadPaintedEffects,paintedAura,paintedSlash,paintedImpact,hasPaintedEffects} from './painted-effects.js?v=296';
+import {loadDarkEffects,darkAura,darkSlash,darkImpact} from './dark-effects.js?v=296';
 import {drawWeaponAura,drawWeaponMote} from './weapon-aura.js?v=293';
 import {WEAPON_ANCHORS} from './weapon-anchors.js?v=290';
 import {equippedPick} from './pick-catalog.js?v=285';
@@ -17,7 +18,7 @@ export function makePickEffects(canvas,{backCanvas,getState,reduced=()=>false}={
  function ready(){texture=effectTexture(pick?.visual);wake();}
  function sync(s=getState(),loadedKey){if(!s||document.hidden)return;const p=equippedPick(s),next=(s.character||'orc')+'-'+p.visual;if(loadedKey&&loadedKey!==next){clear();return;}
   if(key!==next){clear();key=next;pick=p;phase=0;texture=effectTexture(p.visual,ready);}else pick=p;
-  paused=false;if(p.visual==='dark')loadDarkEffects(wake);wake();
+  paused=false;if(p.visual==='dark')loadDarkEffects(wake);else loadPaintedEffects(p.visual,wake);wake();
  }
  function begin(){sync();active=true;phase=0;wake();}
  function frame(n){
@@ -26,13 +27,13 @@ export function makePickEffects(canvas,{backCanvas,getState,reduced=()=>false}={
    let start=Math.atan2(before.head[1]-cy,before.head[0]-cx),finish=Math.atan2(a.head[1]-cy,a.head[0]-cx);
    while(finish<start)finish+=TAU;
    if(finish-start>Math.PI*1.3)start=finish-Math.PI*.85;
-   slashes.push({cx,cy,start,finish,r:a.length+12,life:pick.visual==='dark'?.19:.15,max:pick.visual==='dark'?.19:.15});slashes=slashes.slice(-3);
+   slashes.push({cx,cy,start,finish,r:a.length+12,life:.19,max:.19});slashes=slashes.slice(-3);
   }wake();
  }
  function end(){if(!active)return;active=false;phase=0;wake();}
- function impact(){if(!pick||paused)return;const a=anchor(),power=ranks[pick.visual]||0,quiet=reduced(),x=a.head[0],y=a.head[1]+(pick.visual==='heaven'?28:18),life=quiet?.2:pick.visual==='dark'?.72:.55;
+ function impact(){if(!pick||paused)return;const a=anchor(),power=ranks[pick.visual]||0,quiet=reduced(),x=a.head[0],y=a.head[1]+(pick.visual==='heaven'?28:18),life=quiet?.2:.72;
   bursts.push({x,y,life,max:life,seed:Math.random()*10,angle:a.angle});bursts=bursts.slice(-4);
-  for(let i=0;i<(pick.visual==='dark'?0:quiet?4:12+power*4);i++){const angle=Math.random()*TAU,speed=70+Math.random()*(65+power*8),time=.25+Math.random()*.25;particles.push({x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed-80,life:time,max:time,size:2+Math.random()*(power+2),spin:Math.random()*TAU});}particles=particles.slice(-160);wake();
+  for(let i=0;i<(pick.visual==='dark'||hasPaintedEffects(pick.visual)?0:quiet?4:12+power*4);i++){const angle=Math.random()*TAU,speed=70+Math.random()*(65+power*8),time=.25+Math.random()*.25;particles.push({x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed-80,life:time,max:time,size:2+Math.random()*(power+2),spin:Math.random()*TAU});}particles=particles.slice(-160);wake();
  }
  function glow(c,x,y,r,color,opacity){c.save();c.globalAlpha=opacity;const g=c.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,'#fff9ed');g.addColorStop(.2,color);g.addColorStop(1,color+'00');c.fillStyle=g;c.beginPath();c.arc(x,y,r,0,TAU);c.fill();c.restore();}
  function star(c,x,y,size,opacity=1){c.save();c.translate(x,y);c.globalAlpha=opacity;c.fillStyle=pick.visual==='gold'?'#ffe095':'#e6f6ff';c.beginPath();c.moveTo(0,-size);c.quadraticCurveTo(2,-2,size*.7,0);c.quadraticCurveTo(2,2,0,size);c.quadraticCurveTo(-2,2,-size*.7,0);c.quadraticCurveTo(-2,-2,0,-size);c.fill();c.restore();}
@@ -41,6 +42,7 @@ export function makePickEffects(canvas,{backCanvas,getState,reduced=()=>false}={
  function weaponAura(now,quiet){const a=anchor(),id=pick.visual,power=ranks[id]||0;if(power<2)return;
   const charged=active&&phase>=2&&phase<=4;
   if(id==='dark'&&darkAura(ctx,back,a,now,charged,quiet))return;
+  if(id!=='dark'&&paintedAura(ctx,back,a,id,now,charged,quiet))return;
   if(power>=4){drawWeaponAura(ctx,back,a,id,now,charged,quiet,texture,drawTexturePart);return;}
   ctx.save();ctx.globalCompositeOperation='lighter';glow(ctx,...a.head,18,pick.color,charged?.65:.32);
   for(let i=0;i<3;i++){const t=quiet?i/3:(now/3600+i/3)%1,point=shaftPoint(a,t,quiet?8:Math.sin(now/800+i*2.1)*15);star(ctx,...point,3+Math.sin(t*Math.PI)*3,.35+Math.sin(t*Math.PI)*.5);}
@@ -48,6 +50,7 @@ export function makePickEffects(canvas,{backCanvas,getState,reduced=()=>false}={
  }
  function impactArt(b){const id=pick.visual,power=ranks[id]||0,t=1-b.life/b.max,alpha=Math.max(0,1-t),quiet=reduced();
   if(id==='dark'&&darkImpact(ctx,back,b,quiet))return;
+  if(id!=='dark'&&paintedImpact(ctx,back,b,id,quiet))return;
   ctx.save();ctx.globalCompositeOperation='lighter';if(id!=='dark')glow(ctx,b.x,b.y,quiet?35:40+power*5+t*30,pick.color,alpha*(power<2?.3:.72));ctx.globalAlpha=alpha;
   if(!quiet&&texture){
    back.save();back.translate(b.x,b.y);back.globalCompositeOperation='source-over';back.globalAlpha=alpha*(id==='dark'?.85:.5);back.rotate(b.angle+Math.sin(t*3)*.2);const s=(.3+t*.2);back.scale(s,s);back.drawImage(texture,-256,-200,512,512);back.restore();
@@ -60,6 +63,7 @@ export function makePickEffects(canvas,{backCanvas,getState,reduced=()=>false}={
  }
  function swingArt(b){
   if(pick.visual==='dark'&&darkSlash(back,b,reduced()))return;
+  if(pick.visual!=='dark'&&paintedSlash(back,b,pick.visual,reduced()))return;
   const t=1-b.life/b.max,c=back,id=pick.visual,r=b.r;
   c.save();c.translate(b.cx,b.cy);c.globalCompositeOperation=id==='dark'?'source-over':'lighter';
   c.globalAlpha=Math.sin(Math.PI*t)*.8;

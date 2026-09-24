@@ -22,18 +22,18 @@ export function darkAura(front,back,a,now,charge,quiet){
  if(!sheet)return false;const t=quiet?0:now/1000,L=a.length,pulse=.7+.3*Math.sin(t*3)**2,f=quiet?1:(t*6)%4;
  back.save();back.translate(...a.head);back.rotate(a.angle);back.globalCompositeOperation='source-over';
  // Flame base grips the handle, bright tongues rise through and above the blade.
- const width=charge?162:205,height=L+145;
- sequence(back,0,f,-width/2,-95,width,height,.98,true);
- back.save();back.translate(0,-4);back.rotate(Math.PI/2);sequence(back,0,(f+1.5)%4,-77,-112,154,206,.85,true);back.restore();
+ const width=(charge?162:205)*1.28,height=L+185;
+ sequence(back,0,f,-width/2,-125,width,height,.98,true);
+ back.save();back.translate(0,-4);back.rotate(Math.PI/2);sequence(back,0,(f+1.5)%4,-98,-143,196,264,.85,true);back.restore();
  redGlow(back,0,0,charge?96:70,(charge?.64:.32)*pulse);back.restore();
  front.save();front.translate(...a.head);front.rotate(a.angle);
  // A faint emissive pass follows the same painted flame, leaving the tool readable.
- front.globalCompositeOperation='lighter';sequence(front,0,f,-width/2,-95,width,height,charge?.28:.12,true);
+ front.globalCompositeOperation='lighter';sequence(front,0,f,-width/2,-125,width,height,charge?.28:.12,true);
  redGlow(front,0,0,charge?39:26,(charge?.62:.27)*pulse);
  if(!quiet)for(let i=0;i<10;i++){const v=(t*.42+i/10)%1,x=Math.sin(i*7+t*1.5)*(20+v*26),y=L*.85-v*(L+110);front.globalAlpha=(1-v)*.7;front.fillStyle=i%3?'#d72145':'#ff9aad';front.fillRect(x,y,1.7,3.2);}
  front.restore();return true;
 }
-export function darkSlash(c,b,quiet){if(!sheet||quiet)return false;const t=1-b.life/b.max,angle=b.start+(b.finish-b.start)*Math.min(1,t*1.6),size=b.r*2.35;
+export function darkSlash(c,b,quiet){if(!sheet||quiet)return false;const t=1-b.life/b.max,angle=b.start+(b.finish-b.start)*Math.min(1,t*1.6),size=b.r*2.85;
  c.save();c.translate(b.cx,b.cy);c.rotate(angle-.45);c.globalCompositeOperation='source-over';sequence(c,1,t*3,-size/2,-size/2,size,size,Math.sin(Math.PI*Math.min(.99,t))*.96);c.restore();return true;}
 export function darkImpact(front,back,b,quiet){if(!sheet)return false;const t=1-b.life/b.max,fade=Math.min(1,t*12)*Math.min(1,(1-t)*3),w=quiet?160:300+55*Math.sin(t*Math.PI),h=w*.85;
  back.save();back.globalCompositeOperation='source-over';sequence(back,2,t*3,b.x-w/2,b.y-h*.76,w,h,fade);back.restore();
