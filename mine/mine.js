@@ -1,3 +1,4 @@
+import {initStageLayout} from './stage-layout.js?v=298';
 import {mountMineReset} from './admin-reset.js?v=289';
 import {initFullscreen} from './fullscreen.js?v=286';
 import {RACES,equippedPick} from './pick-catalog.js?v=285';
@@ -256,6 +257,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)leaveGame()
 window.addEventListener('pageshow',e=>{if(e.persisted){disposed=false;void sync().then(enterGame);}});
 window.addEventListener('pagehide',()=>{leaveGame();disposed=true;});
 initFullscreen({button:q('[data-fullscreen]'),notify:toast});
+initStageLayout(root);
 void boot();
 
 root.addEventListener('change',async event=>{

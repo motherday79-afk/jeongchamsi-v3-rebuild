@@ -64,3 +64,9 @@
 .player-body>.sprite{position:relative;z-index:1}
 .player-body>.pick-effects{z-index:2}
 .player-body>.pick-effects-back{z-index:0}
+
+/* 298: soles sit on the shared floor; badges do not alter the actor height. */
+.player-actor>.actor-badge{position:absolute;top:calc(91.40845% + 12px);left:44%;transform:translateX(-50%);z-index:3}
+.player-body:before{content:'';position:absolute;left:15%;top:89.9%;width:56%;height:3.5%;border-radius:50%;background:radial-gradient(ellipse,#160a0cc9 0%,#160a0c65 40%,transparent 72%);pointer-events:none;z-index:-1}
+.mine-stage>.mine-seam{z-index:0}.mine-stage>.player-actor{z-index:2}.mine-stage>.worker-actor{z-index:1}
+@media(max-width:800px){.mine-game{min-height:760px}}
