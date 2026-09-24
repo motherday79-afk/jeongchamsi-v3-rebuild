@@ -4,8 +4,10 @@ export function stageGeometry(width,height,consoleTop,sceneTop=120){
  const narrow=width<=800;
  const floor=Math.min(height*.79,consoleTop-(narrow?42:38));
  const size=Math.max(100,Math.min(narrow?width*.70:width*.34,height*.48,550,(floor-sceneTop)/.92));
- const left=narrow?width*.13:Math.min(width*.30,width*.53-size*.65);
- return {floor,size,left,top:floor-size*649/540,oreLeft:left+size*.61,oreWidth:size*2.10,oreBottom:height-floor-12};
+ const baseLeft=narrow?width*.13:Math.min(width*.30,width*.53-size*.65);
+ // Move the miner into striking range without also moving the ore seam.
+ const left=baseLeft+size*.14;
+ return {floor,size,left,top:floor-size*649/540,oreLeft:baseLeft+size*.61,oreWidth:size*2.10,oreBottom:height-floor-12};
 }
 export function initStageLayout(root){
  const player=root.querySelector('[data-player-actor]'),ore=root.querySelector('[data-ore-rock]'),
