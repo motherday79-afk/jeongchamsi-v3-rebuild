@@ -5,10 +5,10 @@
  <meta name="theme-color" content="#231627"><meta name="robots" content="noindex">
  <title>나의 광산 · 정참시</title>
  <link rel="preload" as="image" href="/assets/mine/cave.webp">
- <link rel="stylesheet" href="/mine/mine.css?v=283"><link rel="stylesheet" href="/mine/scratch-card.css?v=283">
+ <link rel="stylesheet" href="/mine/mine.css?v=284"><link rel="stylesheet" href="/mine/scratch-card.css?v=284">
 </head>
 <body>
- <main class="mine-game" id="mine-game" style="visibility:hidden" data-version="283">
+ <main class="mine-game" id="mine-game" style="visibility:hidden" data-version="284">
   <div class="mine-scenery" aria-hidden="true"></div><div class="mine-shade" aria-hidden="true"></div>
   <header class="mine-header">
    <a class="home-link" href="/" aria-label="정참시 메인으로 돌아가기">‹ <span>정참시</span></a>
@@ -24,6 +24,7 @@
    <div class="player-actor" data-player-actor><div class="player-body"><div class="sprite" data-player role="img" aria-label="플레이어 광부"></div></div><span class="actor-badge"><b data-character-name>건장한 광부</b><span data-tool-name>기본 곡괭이</span></span></div>
    <div class="strike-effects" data-effects aria-hidden="true"></div>
   </div>
+  <div class="mine-controls">
   <section class="mine-console" aria-label="채굴과 회수">
    <div class="mining-status"><span class="status-dot"></span><strong data-status>광산 연결 중…</strong><span data-chance>성공률 3%</span></div>
    <div class="storage-title"><span>채굴 저장고 <small data-storage-level>Lv.1</small></span><strong data-storage>0 / 10</strong></div>
@@ -31,7 +32,6 @@
    <div class="storage-foot"><span data-auto-speed>자동 3초마다 1회</span><span data-storage-note>가득 차면 회수할 수 있어요</span></div>
    <p class="idle-notice" data-idle-notice hidden role="status"></p><div class="mine-actions"><button class="strike-button" data-strike disabled><span class="pick-symbol" aria-hidden="true">⛏</span><span><b>자동채굴하기</b><small data-cooldown>1.5초마다 한 번</small></span><i data-cooldown-fill></i></button><button class="collect-button" data-collect disabled><b>광물 회수하기</b><small data-collect-copy>저장고를 채워주세요</small></button></div>
   </section>
-  <div class="mine-toast" role="status" aria-live="polite" data-toast></div>
   <nav class="mine-dock" aria-label="광산 메뉴">
    <button class="lottery-dock-button" data-panel="lottery"><span aria-hidden="true">🎟</span><b>복권 긁기</b><small data-lottery-left>20G</small></button>
    <button data-panel="pick"><span aria-hidden="true">⛏</span><b>곡괭이</b><small data-pick-level>Lv.1</small></button>
@@ -40,9 +40,11 @@
    <button data-panel="characters"><span aria-hidden="true">♙</span><b>캐릭터</b><small>변경</small></button>
    <button data-panel="admin" data-admin hidden><span aria-hidden="true">⚙</span><b>관리</b><small>광고·골드</small></button>
   </nav>
+  </div>
+  <div class="mine-toast" role="status" aria-live="polite" data-toast></div>
   <dialog class="mine-dialog" data-dialog><div class="dialog-head"><h2 data-dialog-title></h2><button class="icon-button" data-close aria-label="닫기">×</button></div><div data-dialog-body></div></dialog>
   <noscript><div class="mine-noscript">게임을 실행하려면 브라우저의 JavaScript를 켜주세요. <a href="/">정참시 돌아가기</a></div></noscript>
  </main>
- <script type="module" src="/mine/mine.js?v=283"></script>
+ <script type="module" src="/mine/mine.js?v=284"></script>
 </body>
 </html>
