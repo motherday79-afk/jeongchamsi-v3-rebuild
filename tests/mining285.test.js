@@ -16,7 +16,7 @@ test('150-level progression anchors and every upgrade grows',()=>{
 test('purchases validate unlock, charge once and reject unowned equip',async()=>{
  const command=memoryMineStore(),s={...newMine(0),pick:150,gold:10000000};
  await command(['SET','jcsr2:mine:v1:user:shop285',JSON.stringify(s)]);
- const service=createMiningService({command,now:()=>0}),user={id:'shop285',role:'admin'};
+ const service=createMiningService({command,now:()=>0}),user={id:'shop285',role:'member'};
  const body={action:'buy-pick',tool:'lightning',requestId:'buy-lightning285'};
  const [a,b]=await Promise.all([service.run(user,body),service.run(user,body)]);
  assert.equal(a.state.gold,10000000-PICKS.find(p=>p.id==='lightning').price);assert.equal(a.state.gold,b.state.gold);

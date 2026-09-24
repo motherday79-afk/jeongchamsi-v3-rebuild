@@ -1,6 +1,6 @@
 import {initFullscreen} from './fullscreen.js?v=286';
 import {RACES,equippedPick} from './pick-catalog.js?v=285';
-import {shopMarkup} from './pick-shop.js?v=285';
+import {shopMarkup} from './pick-shop.js?v=287';
 import {makePickEffects} from './pick-effects.js?v=285';
 import {renderIntegratedMiner} from './integrated-miner.js?v=285';
 import {makeIdleNotice,setText} from './idle-state.js?v=280';
