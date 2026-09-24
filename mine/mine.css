@@ -58,3 +58,9 @@
 .player-body>.pick-effects{inset:auto;left:-48.14815%;top:-36.61972%;width:196.2963%;height:173.23944%;max-width:none;pointer-events:none}
 .mine-reset select,.mine-reset input{width:100%;padding:10px;background:#21152b;color:#fff0d4;border:1px solid #a581af;border-radius:8px;margin:7px 0}
 .mine-reset .reset-danger{background:#703346;border:1px solid #ea9b9b;color:#fff3eb}
+
+/* 290: texture aura behind the miner, glints and impact details in front. */
+.player-body{isolation:isolate}
+.player-body>.sprite{position:relative;z-index:1}
+.player-body>.pick-effects{z-index:2}
+.player-body>.pick-effects-back{z-index:0}

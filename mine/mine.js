@@ -2,8 +2,8 @@ import {mountMineReset} from './admin-reset.js?v=289';
 import {initFullscreen} from './fullscreen.js?v=286';
 import {RACES,equippedPick} from './pick-catalog.js?v=285';
 import {shopMarkup} from './pick-shop.js?v=288';
-import {makePickEffects} from './pick-effects.js?v=289';
-import {renderIntegratedMiner} from './integrated-miner.js?v=285';
+import {makePickEffects} from './pick-effects.js?v=290';
+import {renderIntegratedMiner} from './integrated-miner.js?v=290';
 import {makeIdleNotice,setText} from './idle-state.js?v=280';
 import {makeMinerMotion} from './motion.js?v=285';
 import {mountScratchCard} from './scratch-card.js?v=278';
@@ -27,7 +27,7 @@ const foregroundPending=()=>pending&&pending.action!=='heartbeat';
 Object.assign(errors,{MINE_CAMPAIGN_CHANGED:'새 회차가 시작됐습니다. 변경된 정보를 확인해 주세요.',MINE_LOTTERY_CLOSED:'준비된 경품이 모두 당첨되어 이번 복권은 종료됐습니다.',MINE_LOTTERY_PENDING:'이미 구매한 복권을 먼저 긁어주세요.',MINE_LOTTERY_CHANGED:'복권 기록이 갱신됐습니다. 현재 복권을 확인해 주세요.',MINE_TICKET:'복권 기록을 다시 확인해 주세요.',MINE_CAMPAIGN_INPUT:'경품 이름과 당첨 한도를 확인해 주세요.',MINE_CAMPAIGN_PRIZE_LOCKED:'진행 중인 경품은 바꿀 수 없습니다. 새 회차를 시작해 주세요.'});
 const running=()=>onlineToken&&state?.onlineToken===onlineToken&&state.mode==='player'&&serverNow()<state.onlineUntil&&state.ore<state.stats.capacity;
 let lastVisualSwing=0;
-const pickEffects=makePickEffects(q('[data-pick-effects]'),{getState:()=>state,reduced:()=>matchMedia('(prefers-reduced-motion: reduce)').matches});
+const pickEffects=makePickEffects(q('[data-pick-effects]'),{backCanvas:q('[data-pick-effects-back]'),getState:()=>state,reduced:()=>matchMedia('(prefers-reduced-motion: reduce)').matches});
 const minerMotion=makeMinerMotion({setFrame:n=>{if(currentFrame===n)return;currentFrame=n;q('[data-player]').style.backgroundPosition=(n/7*100)+'% 0';pickEffects.frame(n);if(n===0)pickEffects.end();},impact:()=>{particles();pickEffects.impact();}});
 function presenceExtra(){return {token:onlineToken,sequence:++sequence};}
 async function enterGame(){
@@ -49,10 +49,11 @@ function storePending(value){pending=value;try{if(value)sessionStorage.setItem(s
 function toast(message,ms=4500){clearTimeout(toastTimer);q('[data-toast]').textContent=message;toastTimer=setTimeout(()=>q('[data-toast]').textContent='',ms);}
 async function request(path,body){const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),16000);try{const response=await fetch('/api/v3/'+path,{credentials:'same-origin',cache:'no-store',signal:controller.signal,...(body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{})});return await response.json();}finally{clearTimeout(timer);}}
 function accept(data){
- const previousRound=state?.campaignId,previousReset=state?.resetVersion;
+ const previousRound=state?.campaignId,previousReset=state?.resetVersion,previousEquipment=state?state.character+':'+state.tool:null;
  const previousTicket=lottery?.ticket?.id,previousRevealed=lottery?.ticket?.revealed;
  if(data.state){state=data.state;offset=Date.now()-state.serverNow;}
  if(previousReset!==undefined&&state?.resetVersion!==previousReset){onlineToken=null;needsEntry=true;lastVisualSwing=0;storePending(null);minerMotion.stop();pickEffects.clear();toast('관리자가 광산을 시작 상태로 초기화했습니다.',7000);}
+ if(previousEquipment&&state&&previousEquipment!==state.character+':'+state.tool){minerMotion.stop();pickEffects.clear();lastVisualSwing=0;}
  if(data.ad)ad=data.ad;if(data.jackpot)jackpot=data.jackpot;if(data.campaign)campaign=data.campaign;if(data.lottery)lottery=data.lottery;
  if(previousRound&&state?.campaignId!==previousRound){toast('새 광고주 회차가 시작됐습니다. 복권만 새로 시작하며 골드·광물·성장·장비는 유지됩니다.',8000);if(panel==='lottery')showPanel('lottery');}
  else if(panel==='lottery'&&(previousTicket!==lottery?.ticket?.id||previousRevealed!==lottery?.ticket?.revealed))showPanel('lottery');
@@ -67,7 +68,8 @@ function paint(){
  q('[data-player]').dataset.character=s.character;q('[data-player]').setAttribute('aria-label',names[s.character]);q('[data-player-actor]').classList.toggle('trial',s.tool==='trial');
  q('[data-character-name]').textContent=names[s.character];
  q('[data-tool-name]').textContent=(s.tool==='trial'?'체험 · ':'')+pickAppearance(s).name;
- renderIntegratedMiner(q('[data-player]'),s);
+ renderIntegratedMiner(q('[data-player]'),s,{onLoad:sprite=>pickEffects.sync(state,sprite.key)});
+ pickEffects.sync(s,q('[data-player]').dataset.integratedMiner||'loading');
  for(const sel of ['[data-worker-level]','[data-dock-worker]'])q(sel).textContent='Lv.'+s.worker;
  for(const sel of ['[data-storage-level]','[data-dock-storage]'])q(sel).textContent='Lv.'+s.storage;
  q('[data-pick-level]').textContent='Lv.'+s.pick;
