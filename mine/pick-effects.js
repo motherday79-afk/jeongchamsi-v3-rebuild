@@ -6,11 +6,11 @@ const ranks={rust:0,iron:1,silver:2,gold:3,mystic:4,dimension:5,dark:6,heaven:7,
 export function makePickEffects(canvas,{backCanvas,getState,reduced=()=>false}={}){
  const ctx=canvas.getContext('2d'),back=(backCanvas||canvas).getContext('2d');
  for(const c of new Set([canvas,backCanvas].filter(Boolean))){c.width=W+PAD*2;c.height=H+PAD*2;}
- let pick=null,key='',phase=0,active=false,paused=true,raf=0,last=0,lastPaint=0,bursts=[],particles=[],trail=[],texture=null;
+ let pick=null,key='',phase=0,active=false,paused=true,raf=0,last=0,lastPaint=0,bursts=[],particles=[],texture=null;
  const fallback={head:[400,435],handle:[205,440],angle:Math.PI/2,length:195};
  const anchor=()=>WEAPON_ANCHORS[key]?.[phase]||fallback;
  function erase(){ctx.clearRect(0,0,canvas.width,canvas.height);if(back!==ctx)back.clearRect(0,0,backCanvas.width,backCanvas.height);}
- function clear(){cancelAnimationFrame(raf);raf=0;paused=true;active=false;phase=0;bursts=[];particles=[];trail=[];erase();}
+ function clear(){cancelAnimationFrame(raf);raf=0;paused=true;active=false;phase=0;bursts=[];particles=[];erase();}
  function wake(){if(!paused&&!document.hidden&&!raf){last=performance.now();raf=requestAnimationFrame(draw);}}
  function ready(){texture=effectTexture(pick?.visual);wake();}
  function sync(s=getState(),loadedKey){if(!s||document.hidden)return;const p=equippedPick(s),next=(s.character||'orc')+'-'+p.visual;if(loadedKey&&loadedKey!==next){clear();return;}
@@ -18,7 +18,7 @@ export function makePickEffects(canvas,{backCanvas,getState,reduced=()=>false}={
   paused=false;wake();
  }
  function begin(){sync();active=true;phase=0;wake();}
- function frame(n){phase=n;if(active&&n>0&&n<7&&!reduced()){const a=anchor();trail.push({x:a.head[0],y:a.head[1],life:.48});trail=trail.slice(-8);}wake();}
+ function frame(n){phase=n;wake();}
  function end(){if(!active)return;active=false;phase=0;wake();}
  function impact(){if(!pick||paused)return;const a=anchor(),power=ranks[pick.visual]||0,quiet=reduced(),x=a.head[0],y=a.head[1]+(pick.visual==='heaven'?28:18),life=quiet?.32:1.15;
   bursts.push({x,y,life,max:life,seed:Math.random()*10,angle:a.angle});bursts=bursts.slice(-4);
@@ -55,10 +55,9 @@ export function makePickEffects(canvas,{backCanvas,getState,reduced=()=>false}={
  }
  function draw(now){raf=0;if(paused||document.hidden){erase();return;}if(now-lastPaint<32){raf=requestAnimationFrame(draw);return;}lastPaint=now;const dt=Math.min(.08,(now-last)/1000);last=now;erase();if(!pick)return;
   ctx.save();ctx.translate(PAD,PAD);if(back!==ctx){back.save();back.translate(PAD,PAD);}weaponAura(now,reduced());
-  trail=trail.filter(p=>(p.life-=dt)>0);if(trail.length>1&&!reduced()){ctx.save();ctx.globalCompositeOperation='lighter';ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle=pick.color;ctx.globalAlpha=.45;ctx.lineWidth=(ranks[pick.visual]||0)<2?3:12;ctx.beginPath();trail.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke();ctx.strokeStyle='#fffbed';ctx.lineWidth=2;ctx.globalAlpha=.5;ctx.stroke();ctx.restore();}
   for(const b of bursts){b.life-=dt;if(b.life>0)impactArt(b);}bursts=bursts.filter(b=>b.life>0);
   ctx.save();ctx.globalCompositeOperation='lighter';for(const p of particles){p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=150*dt;ctx.globalAlpha=Math.max(0,p.life/p.max);ctx.fillStyle=pick.visual==='dimension'?`hsl(${p.spin*60} 85% 80%)`:pick.color;if(pick.visual==='heaven'&&texture){drawTexturePart(ctx,texture,'heaven',p.x,p.y,p.size+12,p.spin+p.life);continue;}star(ctx,p.x,p.y,p.size,ctx.globalAlpha);}ctx.restore();particles=particles.filter(p=>p.life>0);
-  if(back!==ctx)back.restore();ctx.restore();if(active||bursts.length||particles.length||trail.length||((ranks[pick.visual]||0)>=2&&!reduced()))raf=requestAnimationFrame(draw);
+  if(back!==ctx)back.restore();ctx.restore();if(active||bursts.length||particles.length||((ranks[pick.visual]||0)>=2&&!reduced()))raf=requestAnimationFrame(draw);
  }
  return {sync,begin,frame,impact,end,clear};
 }

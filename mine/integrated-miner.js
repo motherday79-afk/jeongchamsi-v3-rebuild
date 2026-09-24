@@ -1,7 +1,8 @@
 import {RACES,equippedPick} from './pick-catalog.js?v=285';
 export function minerSprite(state){
  const character=RACES[state.character]?state.character:'orc',tier=equippedPick(state).visual;
- return {character,tier,key:`${character}-${tier}`,url:`/assets/mine/races-285/${character}-${tier}.webp`};
+ const folder=['mystic','dimension','dark','heaven','lightning','wind'].includes(tier)?'costumes-291':'races-285';
+ return {character,tier,key:`${character}-${tier}`,url:`/assets/mine/${folder}/${character}-${tier}.webp`};
 }
 export function renderIntegratedMiner(el,state,{onLoad}={}){
  const sprite=minerSprite(state);
