@@ -1,4 +1,4 @@
-import {initStageLayout} from './stage-layout.js?v=300';
+import {initStageLayout} from './stage-layout.js?v=301';
 import {mountMineReset} from './admin-reset.js?v=289';
 import {initFullscreen} from './fullscreen.js?v=286';
 import {RACES,equippedPick} from './pick-catalog.js?v=285';
