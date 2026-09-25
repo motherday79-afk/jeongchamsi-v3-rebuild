@@ -1,4 +1,4 @@
-const views=new Set(['world','raid','help','lottery','jackpot','characters','shop','admin','pick','worker','storage']);
+const views=new Set(['world','quests','raid','help','lottery','jackpot','characters','shop','admin','pick','worker','storage']);
 // Each overlay is a real same-document history entry. Repainting is not navigation.
 export function createMineNavigation({win=window,render,getScroll=()=>0}){
  const read=state=>{const n=state?.jcsMineNavigation;return n&&Array.isArray(n.trail)&&n.trail.every(v=>views.has(v))?n:{trail:[],scroll:0};};
