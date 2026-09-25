@@ -1,4 +1,4 @@
-import {raidMarkup,animateRaid} from './raid-ui.js?v=305';
+import {raidMarkup,animateRaid} from './raid-ui.js?v=306';
 let raid=null;
 import {initStageLayout} from './stage-layout.js?v=301';
 import {mountMineReset} from './admin-reset.js?v=289';
