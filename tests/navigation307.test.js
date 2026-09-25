@@ -27,3 +27,8 @@ test('quest journal participates in map navigation and preserves journal on back
  const b=browser(),nav=createMineNavigation({win:b.win,render:()=>{}});
  nav.go('world');nav.go('quests');nav.go('raid');nav.back();assert.equal(nav.current(),'quests');nav.back();assert.equal(nav.current(),'world');nav.back();assert.equal(b.index(),1);
 });
+
+test('forest returns to its quest journal with history and scroll intact',()=>{
+ const b=browser(),seen=[];let scroll=0;const nav=createMineNavigation({win:b.win,render:(view,y)=>seen.push([view,y]),getScroll:()=>scroll});
+ nav.go('world');nav.go('quests');scroll=270;nav.go('forest');nav.back();assert.deepEqual(seen.at(-1),['quests',270]);nav.back();assert.equal(nav.current(),'world');
+});

@@ -36,3 +36,7 @@ test('map and quest share music; repeated scene updates never overlap loops',asy
  audio.setEnabled(true);await audio.setScene('mine');assert.equal(sources.filter(s=>s.loop).length,3);
  audio.stopAll();assert.equal(sources.at(-1).stopped,true);
 });
+
+test('exclusive rhythm music suppression is released idempotently',async()=>{
+ const {audio}=setup();await audio.unlock();await audio.setScene('world');const release=audio.holdMusic();assert.equal(typeof release,'function');audio.setEnabled(false);audio.setEnabled(true);await audio.setScene('world');release();release();await audio.setScene('raid');
+});

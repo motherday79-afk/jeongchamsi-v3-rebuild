@@ -57,6 +57,7 @@ export function createMineAudio({storage,createContext=()=>new (window.AudioCont
   const onToggle=()=>{stop();sync();};listeners.add(onToggle);void load(name).then(sync);
   return ()=>{if(disposed)return;disposed=true;stop();cinemas=Math.max(0,cinemas-1);if(music)ramp(music.gain,cinemas ? 0 : .85,.9);listeners.delete(onToggle);for(const [event,fn] of Object.entries(events))video.removeEventListener(event,fn);};
  }
- return {unlock,load,play,track,stopAll,setEnabled,setScene,resumeMusic:syncMusic,get enabled(){return enabled;},subscribe(fn){listeners.add(fn);return ()=>listeners.delete(fn);}};
+ function holdMusic(){cinemas++;if(music)ramp(music.gain,0,.1);let released=false;return ()=>{if(released)return;released=true;cinemas=Math.max(0,cinemas-1);if(music)ramp(music.gain,cinemas?0:.85,.5);};}
+ return {holdMusic,unlock,load,play,track,stopAll,setEnabled,setScene,resumeMusic:syncMusic,get enabled(){return enabled;},subscribe(fn){listeners.add(fn);return ()=>listeners.delete(fn);}};
 }
 export const soundButton=()=>'<button type="button" class="mine-sound-toggle" data-sound aria-label="음향 끄기" aria-pressed="true"><span aria-hidden="true">♫</span><small>소리 켜짐</small></button>';

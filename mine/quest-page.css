@@ -46,3 +46,11 @@
 .quest-screen .quest-go:active{transform:translateY(2px);filter:brightness(.92)}
 .quest-screen .quest-page-note{color:#2e2017;background:#efdbafdf;border:1px solid #79563170;padding:14px 12px;border-radius:6px;font-size:13px;font-weight:600;line-height:1.9;text-shadow:none}
 @media(max-width:600px){.quest-screen .quest-scroll-page{padding-left:24px;padding-right:24px}.quest-entry-heading{flex-wrap:wrap}.quest-seal{width:27px;height:27px;font-size:17px}.quest-screen .quest-entry-heading h4.quest-name-art{height:65px}.quest-screen .quest-entry-heading h4.quest-name-auto,.quest-screen .quest-entry-heading h4.quest-name-collect{height:auto}.quest-screen .quest-entry>p,.quest-screen .quest-entry dl{font-size:13px}.quest-screen .quest-page-note{font-size:12px}.quest-status{flex:none}}
+/* 322: typography-only quest names. Destination buttons remain illustrated. */
+.quest-screen .quest-entry-heading h4.quest-name-art{background-image:url('/assets/mine/forest-322/quest-names.png');background-size:100% 500%;background-position:center 0%;height:auto;aspect-ratio:10/3;filter:none;mix-blend-mode:multiply}
+.quest-screen .quest-entry-heading h4.quest-name-raid{background-position:center 25%}
+.quest-screen .quest-entry-heading h4.quest-name-auto{background-position:center 50%}
+.quest-screen .quest-entry-heading h4.quest-name-collect{background-position:center 75%}
+.quest-screen .quest-entry-heading h4.quest-name-forest{background-position:center 100%}
+.quest-screen .quest-go-forest{background-image:url('/assets/mine/world-mine-sign-308.webp');background-size:100% 100%;background-position:center;display:grid;place-items:center}
+.quest-forest-go-label{color:#fff0b5;text-shadow:0 2px 2px #211309,0 0 5px #000;font-weight:800;font-size:clamp(14px,4vw,20px)}
