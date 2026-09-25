@@ -3,7 +3,7 @@ export const worldMapMarkup=()=>`<section class="mine-world" data-world hidden a
  <header class="world-header"><button data-world-home aria-label="광산으로 돌아가기">‹ <span>광산으로</span></button><h2><img class="world-title-art" src="/assets/mine/world-title-310.webp" alt="월드맵"></h2></header>
  <div class="world-landmarks"><button class="world-place world-mine" data-world-home aria-label="나의 광산으로 돌아가기"><span class="world-place-name">나의 광산</span></button>
  <button class="world-place world-raid" data-panel="raid" aria-label="후회없는 약탈 입장"><span class="world-place-name">후회없는 약탈</span><span class="world-badge" data-world-badge>1회 도전</span></button></div>
- <button class="world-valley" data-panel="valley">망자의 계곡<small data-valley-badge>운송 성공 1회</small></button>
+ <button class="world-valley" data-panel="valley" aria-label="망자의 계곡 입장"><img src="/assets/mine/valley-316/title.png" alt="망자의 계곡"><small data-valley-badge>운송 성공 1회</small></button>
  <button class="world-quest" data-panel="quests" aria-label="오늘의 퀘스트 자세히 보기"><span class="world-quest-label">오늘의 퀘스트</span><strong data-world-progress>0/4</strong></button>
  </section>`;
 export function updateWorldMap(root,raid,quests){

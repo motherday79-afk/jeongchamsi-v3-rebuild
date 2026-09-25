@@ -1,13 +1,17 @@
+import {drawValleyTerrain} from './valley-terrain.js?v=316';
 import {valleyAttacks,valleyResult,VALLEY_DURATION} from './valley-rules.js?v=315';
-export const valleyMarkup=()=>`<section class="valley-game"><canvas aria-label="망자의 계곡 운송 경로"></canvas><div class="valley-hud"><b>망자의 계곡</b><span data-valley-time>01:30</span><span data-valley-health aria-label="수레 내구도">◆ ◆ ◆</span></div><div class="valley-notice" role="status"></div><div class="valley-cover"><small>VALLEY OF THE DEAD</small><h3>망자의 계곡</h3><p>금화를 지켜 계곡을 건너세요.</p><p>90초 운송 · 수레 내구도 3칸<br>처음 60초는 방향 예고, 마지막 30초는 손을 보고 회피<br>왼쪽 손 → 오른쪽으로 / 오른쪽 손 → 왼쪽으로</p><button data-valley-start>운송 시작</button><p>보유 골드 차감·보상 지급 없음 · 성공하면 일일퀘스트 완료</p></div><div class="valley-controls"><button data-lane="0" aria-label="왼쪽으로 회피">◀ 왼쪽</button><button data-lane="1" aria-label="오른쪽으로 회피">오른쪽 ▶</button></div></section>`;
+export const valleyMarkup=()=>`<section class="valley-game"><canvas aria-label="망자의 계곡 운송 경로"></canvas><div class="valley-hud"><b>망자의 계곡</b><span data-valley-time>01:30</span><span data-valley-health aria-label="수레 내구도">◆ ◆ ◆</span></div><div class="valley-notice" role="status"></div><div class="valley-cover"><small>VALLEY OF THE DEAD</small><h3 class="valley-title-art"><img src="/assets/mine/valley-316/title.png" alt="망자의 계곡"></h3><p>금화를 지켜 계곡을 건너세요.</p><p>90초 운송 · 수레 내구도 3칸<br>처음 60초는 방향 예고, 마지막 30초는 손을 보고 회피<br>왼쪽 손 → 오른쪽으로 / 오른쪽 손 → 왼쪽으로</p><button data-valley-start>운송 시작</button><p>보유 골드 차감·보상 지급 없음 · 성공하면 일일퀘스트 완료</p></div><div class="valley-controls"><button data-lane="0" aria-label="왼쪽으로 회피">◀ 왼쪽</button><button data-lane="1" aria-label="오른쪽으로 회피">오른쪽 ▶</button></div></section>`;
 export function mountValley(host,{request,accept,audio}){
  const el=host.querySelector('.valley-game'),canvas=el.querySelector('canvas'),ctx=canvas.getContext('2d'),cover=el.querySelector('.valley-cover'),notice=el.querySelector('.valley-notice');
  const sprite=new Image();sprite.src='/assets/mine/valley-315/sprites.png';
  const tiles=[];
  const prepareSprites=()=>{for(let i=0;i<4;i++){const tile=document.createElement('canvas');tile.width=sprite.width/2;tile.height=sprite.height/2;const c=tile.getContext('2d');c.drawImage(sprite,(i%2)*tile.width,Math.floor(i/2)*tile.height,tile.width,tile.height,0,0,tile.width,tile.height);c.globalCompositeOperation='destination-in';c.translate(tile.width/2,tile.height/2);c.scale(tile.width/2,tile.height/2);const fog=c.createRadialGradient(0,0,.65,0,0,1.2);fog.addColorStop(0,'#fff');fog.addColorStop(1,'#fff0');c.fillStyle=fog;c.fillRect(-1,-1,2,2);tiles.push(tile);}};
  sprite.onload=prepareSprites;
+ const cargo=new Image();cargo.src='/assets/mine/valley-316/cargo.png';const cargoTiles=[];
+ cargo.onload=()=>{for(let i=0;i<4;i++){const tile=document.createElement('canvas');tile.width=cargo.width/2;tile.height=cargo.height/2;const c=tile.getContext('2d');c.drawImage(cargo,(i%2)*tile.width,Math.floor(i/2)*tile.height,tile.width,tile.height,0,0,tile.width,tile.height);c.globalCompositeOperation='destination-in';c.translate(tile.width/2,tile.height/2);c.scale(tile.width/2,tile.height/2);const fog=c.createRadialGradient(0,0,.6,0,0,1.15);fog.addColorStop(0,'#fff');fog.addColorStop(1,'#fff0');c.fillStyle=fog;c.fillRect(-1,-1,2,2);cargoTiles.push(tile);}};
  const bg=new Image();bg.src='/assets/mine/world-portrait-307.webp';
  let disposed=false,run=null,attacks=[],moves=[],lane=0,visualLane=0,time=0,last=0,raf=0,active=false,paused=false,health=3,flash=0,lastHit=-1,lastStep=-1,busy=false,finishBody=null;
+ let finishAt=0,coins=[];
  const setNotice=text=>{if(notice.textContent!==text)notice.textContent=text;};
  const resize=()=>{const box=el.getBoundingClientRect(),dpr=Math.min(2,devicePixelRatio||1);canvas.width=Math.round(box.width*dpr);canvas.height=Math.round(box.height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);};
  const ro=new ResizeObserver(resize);ro.observe(el);
@@ -29,7 +33,7 @@ export function mountValley(host,{request,accept,audio}){
   if(b.hasAttribute('data-valley-save')){busy=true;await finish();busy=false;return;}
   if(!b.hasAttribute('data-valley-start'))return;
   busy=true;b.disabled=true;
-  try{await sprite.decode();await audio.unlock();const d=await request('mine',{action:'valley-start',requestId:crypto.randomUUID()});if(disposed)return;if(!d.ok)throw Error();accept(d);run=d.result.valley;attacks=valleyAttacks(run.seed);moves=[];lane=visualLane=0;time=0;health=3;lastHit=lastStep=-1;finishBody=null;paused=document.hidden;active=true;last=performance.now();cover.hidden=true;if(paused)visibility();}
+  try{await Promise.all([sprite.decode(),cargo.decode()]);await audio.unlock();const d=await request('mine',{action:'valley-start',requestId:crypto.randomUUID()});if(disposed)return;if(!d.ok)throw Error();accept(d);run=d.result.valley;attacks=valleyAttacks(run.seed);moves=[];lane=visualLane=0;time=0;health=3;lastHit=lastStep=-1;finishBody=null;finishAt=0;coins=[];paused=document.hidden;active=true;last=performance.now();cover.hidden=true;if(paused)visibility();}
   catch{if(!disposed){b.disabled=false;setNotice('연결 상태를 확인하고 다시 시작해주세요.');}}
   finally{busy=false;}
  }
@@ -37,18 +41,13 @@ export function mountValley(host,{request,accept,audio}){
  function poly(points,fill){ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fillStyle=fill;ctx.fill();}
  function draw(now){
   if(disposed)return;raf=requestAnimationFrame(draw);const dt=Math.min(50,Math.max(0,now-last));last=now;
-  if(active&&!paused){time=Math.min(VALLEY_DURATION,time+dt);const r=valleyResult(run.seed,moves,time);if(r.health<health){health=r.health;flash=now;audio.play('pick-dark-strike');}if(!health||time>=VALLEY_DURATION){time=r.endedAt;moves=moves.filter(m=>m[0]<=time);void finish();}}
+  if(active&&!paused){time=Math.min(VALLEY_DURATION,time+dt);const r=valleyResult(run.seed,moves,time);if(r.health<health){health=r.health;flash=now;audio.play('pick-dark-strike');audio.play('collect');coins=Array.from({length:health?24:42},(_,i)=>({born:now,vx:(Math.random()-.5)*.9,vy:-.2-Math.random()*.5,spin:Math.random()*6,size:3+Math.random()*3}));}if(!health||time>=VALLEY_DURATION){time=r.endedAt;moves=moves.filter(m=>m[0]<=time);if(!health){active=false;finishAt=now+1500;setNotice('수레가 부서지고 금화가 쏟아집니다…');}else void finish();}}
+  if(finishAt&&now>=finishAt){finishAt=0;void finish();}
   visualLane+=(lane-visualLane)*Math.min(1,dt/110);
   const w=el.clientWidth,h=el.clientHeight;ctx.clearRect(0,0,w,h);
   if(bg.complete&&bg.naturalWidth){const scale=Math.max(w/bg.width,h/bg.height);ctx.drawImage(bg,(w-bg.width*scale)/2,(h-bg.height*scale)/2,bg.width*scale,bg.height*scale);}
-  ctx.fillStyle='#061320b8';ctx.fillRect(0,0,w,h);
-  const horizon=h*.19,depth=h*.73,roadWidth=Math.min(w*.88,h*.9);
-  const center=z=>w*.5+Math.sin(z*5+time/9000)*roadWidth*.13*z;
-  const left=[],right=[];
-  for(let i=0;i<=40;i++){const z=i/40,y=horizon+depth*z;left.push([center(z)-roadWidth*(.07+.44*z),y]);right.push([center(z)+roadWidth*(.07+.44*z),y]);}
-  poly([...left,...right.reverse()],'#192a30');
-  ctx.strokeStyle='#92a99788';ctx.lineWidth=3;for(const edge of [left,right]){ctx.beginPath();edge.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.stroke();}
-  for(let i=0;i<22;i++){const z=((i/22+time/6500)%1),y=horizon+depth*z;ctx.strokeStyle=`rgba(181,183,148,${z*.25})`;ctx.lineWidth=1+z*2;ctx.beginPath();ctx.moveTo(center(z)-roadWidth*z*.4,y);ctx.lineTo(center(z)+roadWidth*z*.4,y+4*z);ctx.stroke();}
+  ctx.fillStyle='#11191e85';ctx.fillRect(0,0,w,h);
+  const {horizon,depth,roadWidth,center}=drawValleyTerrain(ctx,{w,h,time});
   // Fog drifts across the ravine rather than hiding the collision area.
   for(let i=0;i<5;i++){const y=horizon+i*h*.13;const g=ctx.createRadialGradient(w*.5+Math.sin(now/4000+i)*w*.3,y,0,w*.5,y,w*.6);g.addColorStop(0,'#8cdcc316');g.addColorStop(1,'#8cdcc300');ctx.fillStyle=g;ctx.fillRect(0,y-h*.1,w,h*.2);}
   const playerZ=.78,py=horizon+depth*playerZ,px=center(playerZ)+(visualLane-.5)*roadWidth*.46;
@@ -64,8 +63,10 @@ export function mountValley(host,{request,accept,audio}){
   if(active)setNotice(paused?'일시정지':warning||(time>=60000?'방향 예고 없음 · 손을 보고 피하세요':'방향을 확인하고 반대쪽으로 피하세요'));
   const size=Math.min(w*.48,h*.38),bounce=active&&!paused?Math.sin(time/90)*3:0;
   ctx.save();if(now-flash<230)ctx.globalAlpha=.55;ctx.fillStyle='#0008';ctx.beginPath();ctx.ellipse(px,py+size*.09,size*.35,12,0,0,Math.PI*2);ctx.fill();
-  if(tiles[0]){const frame=active&&!paused?Math.floor(time/240)%2:0;ctx.translate(px,py-size*.28+bounce);ctx.rotate((lane-visualLane)*.09);if(frame===1)ctx.scale(-1,1);ctx.drawImage(tiles[frame],-size/2,-size*.4,size,size*.8);}
+  if(cargoTiles.length===4){const hitAge=now-flash,recoil=hitAge>=0&&hitAge<1000?Math.sin(hitAge/45)*.2*Math.exp(-hitAge/380):0;ctx.translate(px+recoil*size*.12,py-size*.28+bounce);ctx.rotate((lane-visualLane)*.09+recoil);ctx.drawImage(cargoTiles[3-health],-size/2,-size*.4,size,size*.8);}
   ctx.restore();
+  coins=coins.filter(coin=>now-coin.born<1400);
+  for(const coin of coins){const age=(now-coin.born)/1000,x=px-size*.12+coin.vx*size*age,y=py-size*.25+coin.vy*size*age+size*.65*age*age;ctx.save();ctx.globalAlpha=Math.min(1,(1.4-age)*2);ctx.translate(x,y);ctx.rotate(coin.spin+age*8);ctx.fillStyle='#9a570d';ctx.beginPath();ctx.ellipse(1,2,coin.size,coin.size*.6,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffdf67';ctx.beginPath();ctx.ellipse(0,0,coin.size,coin.size*.6,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#fff2ad';ctx.lineWidth=1;ctx.stroke();ctx.restore();}
   const remaining=Math.ceil((VALLEY_DURATION-time)/1000);el.querySelector('[data-valley-time]').textContent=`${String(Math.floor(remaining/60)).padStart(2,'0')}:${String(remaining%60).padStart(2,'0')}`;
   el.querySelector('[data-valley-health]').textContent='◆ '.repeat(health)+'◇ '.repeat(3-health);
   ctx.fillStyle='#1c171bcc';ctx.fillRect(w*.12,h*.13,w*.76,5);ctx.fillStyle='#dfb96b';ctx.fillRect(w*.12,h*.13,w*.76*time/VALLEY_DURATION,5);
