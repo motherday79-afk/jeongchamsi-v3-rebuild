@@ -24,3 +24,5 @@
 .tower-hud>b:before{content:'♜';margin-right:7px;color:#d3b08a}.tower-hud>span:before{content:'◷';margin-right:7px;color:#eac688}.tower-hud>strong:before{content:'◆';margin-right:7px;color:#ffd76b}
 @media(max-width:600px){.tower-scene{--tool-size:190px}.tower-controls button.tower-art-button{width:230px}}
 @media(max-height:600px) and (min-width:601px){.tower-scene{--tool-size:150px;--ore-height:100px}.tower-controls button.tower-art-button{width:200px}.tower-result-art{width:270px}}
+
+.tower-reset{margin:8px auto 0;padding:8px 18px;border:1px solid #ac8650;border-radius:6px;background:linear-gradient(#483149,#211526);color:#f7dca5;cursor:pointer}.tower-reset:hover,.tower-reset:focus-visible{filter:brightness(1.25)}

@@ -1,11 +1,11 @@
-import {towerMarkup,mountTower} from './tower.js?v=327';
+import {towerMarkup,mountTower} from './tower.js?v=328';
 import {eyeMarkup,mountEye} from './eye.js?v=325';
 import {forestMarkup,mountForest} from './forest.js?v=323';
 import {setGameHeader} from './game-header.js?v=326';
 import {valleyMarkup,mountValley} from './valley.js?v=323';
 import {createMineAudio,soundButton,musicScene,pickSoundName} from './audio.js?v=326';
 import {createMineNavigation} from './navigation.js?v=326';
-import {worldMapMarkup,updateWorldMap,questMarkup} from './world-map.js?v=326';
+import {worldMapMarkup,updateWorldMap,questMarkup} from './world-map.js?v=328';
 import {raidMarkup,animateRaid} from './raid-ui.js?v=314';
 let raid=null,quests=null,tower=null;
 import {initStageLayout} from './stage-layout.js?v=301';
