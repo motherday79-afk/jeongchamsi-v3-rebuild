@@ -1,3 +1,5 @@
+import {createMineNavigation} from './navigation.js?v=307';
+import {worldMapMarkup,updateWorldMap} from './world-map.js?v=307';
 import {raidMarkup,animateRaid} from './raid-ui.js?v=306';
 let raid=null;
 import {initStageLayout} from './stage-layout.js?v=301';
@@ -13,6 +15,8 @@ import {mountScratchCard} from './scratch-card.js?v=278';
 import {lotteryMarkup,refreshLotteryNumbers,campaignAdminMarkup} from './lottery-ui.js?v=288';
 const pickAppearance=equippedPick;
 const root=document.getElementById('mine-game'),q=s=>root.querySelector(s),dialog=q('[data-dialog]');
+root.insertAdjacentHTML('beforeend',worldMapMarkup());
+const navigation=createMineNavigation({render:renderNavigation,getScroll:()=>dialog.open?dialog.scrollTop:0});
 const names=RACES;
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>Number(n||0).toLocaleString('ko-KR');
@@ -65,6 +69,7 @@ function accept(data){
 function paint(){
  if(!state)return;
  const s=state,st=s.stats,full=s.ore>=st.capacity;
+ updateWorldMap(root,raid);
  if(raid)q('[data-raid-status]').textContent=(raid.complete?'퀘스트 완료':'일일퀘스트')+' · '+raid.remaining+'회';
  if(jackpot){const el=q('[data-jackpot-count]'),value=fmt(jackpot.failedCycles)+' G';if(el.textContent!==value){setText(el,value);if(!matchMedia('(prefers-reduced-motion: reduce)').matches)el.animate([{filter:'brightness(1.8)',transform:'scale(1.04)'},{filter:'brightness(1)',transform:'scale(1)'}],{duration:500});}}
  if(!running()){minerMotion.stop();pickEffects.end();}
@@ -98,10 +103,10 @@ function cooldown(){if(!state)return;const active=running();q('[data-strike]').d
 async function sync(){
  if(busy||!user||disposed)return;busy=true;paint();
  try{const retry=pending,data=await request('mine',retry||undefined);if(data.error==='MINE_FORBIDDEN'){accessDenied();return;}accept(data);if(retry&&data.state)storePending(null);
-  if(!data.ok){if(data.error==='LOGIN_REQUIRED'){user=null;login();}else toast(errors[data.error]||'광산을 불러오지 못했어요. 다시 연결해 주세요.');if(retry?.action==='raid-play'&&data.state)showPanel('raid');}
+  if(!data.ok){if(data.error==='LOGIN_REQUIRED'){user=null;login();}else toast(errors[data.error]||'광산을 불러오지 못했어요. 다시 연결해 주세요.');if(retry?.action==='raid-play'&&data.state&&panel==='raid')showPanel('raid');}
   else if(retry?.action==='collect'&&data.result?.visitUrl){location.assign(data.result.visitUrl);return;}
   else if(retry?.action==='raid-play'&&data.result?.raid)showRaidResult(data.result.raid);
-  else if(retry?.action?.startsWith('lottery-'))showPanel('lottery');
+  else if(retry?.action?.startsWith('lottery-')&&panel==='lottery')showPanel('lottery');
   else if(data.result?.autoGained)effect(data.result.autoGained,false);
  }catch{toast('연결이 잠시 끊겼어요. 채굴 기록을 다시 확인하고 있습니다.',6000);}
  finally{busy=false;paint();}
@@ -112,21 +117,21 @@ async function action(actionName,extra={}){
  if(actionName==='strike')lastManual=Date.now();
  try{
   const data=await request('mine',body);if(data.error==='MINE_FORBIDDEN'){accessDenied();return;}accept(data);if(data.state)storePending(null);
-  if(!data.ok){if(data.error==='MINE_SESSION'){onlineToken=null;toast('채굴 연결이 종료됐어요. 도움말의 다시 연결을 눌러주세요.');}else toast(errors[data.error]||'작업을 처리하지 못했어요. 다시 시도해 주세요.');if(actionName.startsWith('lottery-'))showPanel('lottery');if(actionName==='raid-play')showPanel('raid');return;}
+  if(!data.ok){if(data.error==='MINE_SESSION'){onlineToken=null;toast('채굴 연결이 종료됐어요. 도움말의 다시 연결을 눌러주세요.');}else toast(errors[data.error]||'작업을 처리하지 못했어요. 다시 시도해 주세요.');if(actionName.startsWith('lottery-')&&panel==='lottery')showPanel('lottery');if(actionName==='raid-play'&&panel==='raid')showPanel('raid');return;}
   if(data.result?.autoGained)effect(data.result.autoGained,false);
   if(actionName==='raid-play'){showRaidResult(data.result.raid);return;}
   if(actionName==='auto-start')lastManual=Date.now();
-  if(actionName.startsWith('lottery-')){showPanel('lottery');return;}
+  if(actionName.startsWith('lottery-')){if(panel==='lottery')showPanel('lottery');return;}
   if(actionName==='collect'&&data.result?.visitUrl){dialog.close();location.assign(data.result.visitUrl);return;}
   if(actionName==='strike'){
    swing(q('[data-player]'),data.result.hits);
    if(data.result.hits===2)floating('더블 타격!','double');
    later(()=>effect(data.result.gained,true),360);
-  }else if(actionName==='character'){dialog.close();panel='';toast(names[state.character]+'와 채굴을 시작합니다.');}
-  else if(actionName==='upgrade'){toast('강화 완료!');showPanel(extra.target);}
-  else if(actionName==='tool'||actionName==='buy-pick'){toast(pickAppearance(state).name+'를 장착했어요.');showPanel('shop');}
-  else if(actionName==='admin-gold'){toast(fmt(data.result.grantedGold)+' G를 지급했습니다.');await adminPanel();}
-  else if(actionName==='test-fill'){dialog.close();panel='';toast('테스트용 저장고를 채웠어요. 이 회수는 광고 통계에서 제외됩니다.');}
+  }else if(actionName==='character'){if(panel==='characters')closePanel();toast(names[state.character]+'와 채굴을 시작합니다.');}
+  else if(actionName==='upgrade'){toast('강화 완료!');if(panel===extra.target)showPanel(extra.target);}
+  else if(actionName==='tool'||actionName==='buy-pick'){toast(pickAppearance(state).name+'를 장착했어요.');if(panel==='shop')showPanel('shop');}
+  else if(actionName==='admin-gold'){toast(fmt(data.result.grantedGold)+' G를 지급했습니다.');if(panel==='admin')await adminPanel();}
+  else if(actionName==='test-fill'){if(panel==='admin')closePanel();toast('테스트용 저장고를 채웠어요. 이 회수는 광고 통계에서 제외됩니다.');}
  }catch{toast('저장 결과를 확인 중입니다. 연결되면 같은 요청을 이어갑니다.',7000);}
  finally{busy=false;paint();}
 }
@@ -139,10 +144,25 @@ function floating(text,kind=''){const el=document.createElement('span');el.class
 function effect(gained,manual){if(gained>0)floating('+'+gained+' 금');else if(manual)floating('다시 도전!','miss');}
 function open(title,html){scratchCleanup?.();scratchCleanup=null;q('[data-dialog-title]').textContent=title;q('[data-dialog-body]').innerHTML=html;if(!dialog.open)dialog.showModal();}
 function showRaidResult(result){
+ if(panel!=='raid'){toast('약탈 결과가 저장되었습니다. 일일퀘스트에서 확인하세요.');return;}
  showPanel('raid');scratchCleanup=animateRaid(q('[data-dialog-body]'),result,{onNext:()=>showPanel('raid')});
 }
 function login(){open('내 광산을 시작하세요',`<p class="dialog-copy">정참시 계정으로 광물과 강화 내역을 저장합니다.</p><a class="gold-action" href="/login?return=%2Fmine" style="display:block;text-align:center;text-decoration:none">로그인하고 입장하기</a><p class="dialog-copy">광산 골드는 기존 정참시 포인트와 별도로 모입니다.</p>`);}
-function showPanel(which){
+function closePanel(){if(navigation.current())navigation.back();else{scratchCleanup?.();scratchCleanup=null;dialog.close();panel='';}}
+function showPanel(which){navigation.go(which);}
+function renderNavigation(which,scroll=0){
+ scratchCleanup?.();scratchCleanup=null;
+ panel=which;
+ if(!which||which==='world'){
+  dialog.close();q('[data-world]').hidden=which!=='world';
+  if(which==='world'){updateWorldMap(root,raid);q('[data-world-home]').focus({preventScroll:true});}
+  return;
+ }
+ q('[data-world]').hidden=which!=='raid';
+ renderPanel(which);
+ requestAnimationFrame(()=>{if(panel===which)dialog.scrollTop=scroll;});
+}
+function renderPanel(which){
  panel=which;if(which==='help'){open('광산 이용 방법',`<ul class="help-list"><li>후회없는 약탈은 하루 최대 3회입니다. 성공 카드 1장(+10%), 실패 카드 2장(−10%) 중 선택하며, 보유 골드 기준으로 즉시 정산합니다. 한국 시간 자정에 횟수가 초기화되고 1회 참여하면 일일퀘스트가 완료됩니다. 별도 퀘스트 보상은 아직 없습니다.</li><li>공동 잭팟은 실패 1회당 1G씩 함께 적립합니다. 브론즈 100G · 실버 300G · 골드 1,000G 보상을 준비 중이며, 추첨과 지급은 아직 시작하지 않았습니다.</li><li>게임을 떠나면 인부가 기본 3초마다 채굴합니다. 게임을 켠 동안 인부는 쉽니다.</li><li>자동채굴하기를 누르면 플레이어가 1.5초마다 계속 타격합니다. 멈추기 버튼으로 중지할 수 있습니다. 다른 탭으로 이동하거나 창을 닫으면 인부 채굴로 바뀝니다.</li><li>기본 성공률은 3%. 성공하면 금 1개를 얻습니다. 성공률은 타격할 때마다 독립적으로 적용됩니다.</li><li>저장고가 가득 차야 회수할 수 있습니다. 회수 후 광고주 페이지로 이동하며, 뒤로가기로 돌아오면 됩니다.</li><li>채굴 강화는 성공률(3~20%), 인부 강화는 오프라인 속도를 높입니다. 최고 150레벨이며 곡괭이 상점의 장비는 채굴량과 타격 횟수를 높입니다. 저장고는 채굴 또는 인부가 필요한 단계에 도달하면 강화할 수 있습니다.</li><li>복권은 1회 20G, 당첨 확률은 5%입니다. 전체 당첨 한도에 도달하면 복권만 종료되고 채굴은 계속됩니다. 이전 경품은 복권 창의 당첨 내역에서 확인하세요.</li><li>새 광고주 회차에서는 복권 횟수와 경품 진행만 새로 시작합니다. 골드·광물·모든 강화·장비·캐릭터와 이전 당첨 기록은 유지됩니다.</li><li>광산 골드는 정참시 포인트와 별도입니다. 황금 곡괭이는 이번 버전에서 무료 체험 장비입니다.</li></ul><button class="purple-action" data-reconnect>다시 연결</button>`);return;}
  if(!state){login();return;}
  if(which==='raid'){open('후회없는 약탈',raidMarkup({raid:raid||{used:0,remaining:3,complete:false},gold:state.gold,locked:!!pending}));return;}
@@ -164,7 +184,7 @@ function showPanel(which){
  open(title,`<div class="upgrade-card"><h3>Lv.${level} ${max?'· 최고 단계':'→ Lv.'+(level+1)}</h3><div class="upgrade-line"><span>${which==='pick'?'채굴 성공률':which==='worker'?'오프라인 타격 간격':'저장고 용량'}</span><strong>${current}${max?'':' → '+next}</strong></div><div class="upgrade-line"><span>보유 골드</span><strong>${fmt(s.gold)} G</strong></div>${locked?`<p class="panel-error">채굴 또는 인부 Lv.${st.storageRequirement}부터 열립니다.</p>`:''}<button class="gold-action" data-upgrade="${which}" ${max||locked||s.gold<cost?'disabled':''}>${max?'최고 단계입니다':locked?'성장 조건을 먼저 채워주세요':s.gold<cost?`${fmt(cost-s.gold)} G 더 필요해요`:`${fmt(cost)} G · 강화하기`}</button></div><p class="dialog-copy">최고 150레벨${which==='pick'?' · 최고 성공률 20%':''}</p>`);
 }
 async function adminPanel(){
- if(user?.role!=='admin')return;open('광고·골드 관리','<p class="dialog-copy">광고 설정을 불러오는 중…</p>');
+ if(user?.role!=='admin'||panel!=='admin')return;open('광고·골드 관리','<p class="dialog-copy">광고 설정을 불러오는 중…</p>');
  try{await recoverAdminMutation();const data=await request('mine/admin');if(!data.ok)throw new Error(data.error);adminData=data;if(panel!=='admin')return;const a=data.ad;
  open('광고·골드 관리',`<div class="admin-tools"><b>내 계정에 테스트 골드 지급</b><p class="dialog-copy">현재 ${fmt(state.gold)} G · 관리자 본인의 광산 골드만 추가됩니다.</p><label>지급할 골드 <input type="number" data-grant-amount min="1" max="1000000" step="1" value="10000"></label><button class="gold-action" data-grant-gold>골드 지급</button></div><h3>광고주 이미지·링크</h3><form class="admin-form" data-ad-form><label>광고 이미지 · JPG/PNG/WebP, 최대 1MB<input type="file" accept="image/jpeg,image/png,image/webp" data-ad-file></label><input type="hidden" name="imageUrl" value="${esc(a.imageUrl||'')}"><img class="ad-preview" data-ad-preview src="${esc(a.imageUrl||'')}" ${a.imageUrl?'':'hidden'} alt="광고 미리보기"><button type="button" data-ad-image-remove>이미지 지우기</button><p class="dialog-copy">권장 800×450px · 잘리지 않게 전체 표시합니다. 저장하면 적용됩니다.</p><label>광고주 이름<input type="text" name="name" maxlength="40" required value="${esc(a.name)}"></label><label>광산 간판 문구<input type="text" name="message" maxlength="90" value="${esc(a.message)}"></label><label>방문할 주소<input type="url" name="url" placeholder="https://" value="${esc(a.url)}"></label><label><input type="checkbox" name="enabled" ${a.enabled?'checked':''}> 실제 광고 연결</label><p class="dialog-copy">연결을 끄면 내부 테스트 페이지로 이동합니다.</p><button type="submit" class="gold-action">광고 설정 저장</button><p class="panel-error" data-ad-error role="status"></p></form><h3>최근 30일 광고 이동</h3><p class="dialog-copy">이동 수 ${fmt(data.rows.reduce((n,r)=>n+r.visits,0))}회 · 회원 수는 날짜별 중복 제외<br>테스트 회수는 집계에서 제외합니다.</p><table class="admin-table"><thead><tr><th>날짜</th><th>이동 수</th><th>참여 회원</th></tr></thead><tbody>${data.rows.filter((r,i)=>i<7||r.visits).map(r=>`<tr><td>${esc(r.day)}</td><td>${fmt(r.visits)}</td><td>${fmt(r.users)}</td></tr>`).join('')}</tbody></table><div class="admin-tools"><b>관리자 플레이 확인</b><p class="dialog-copy">현재 저장고를 채워 회수·광고 이동·강화를 바로 확인합니다. 광산 골드에만 반영됩니다.</p><button class="purple-action" data-test-fill>테스트 저장고 채우기</button></div>`);
   q('[data-dialog-body]').insertAdjacentHTML('beforeend',campaignAdminMarkup(data));
@@ -190,7 +210,7 @@ async function saveCampaign(body){
 }
 async function updateFulfillment(button){
  button.disabled=true;
- try{await saveCampaign({action:'campaign-fulfill',campaignId:adminData.campaign.id,ticketId:button.dataset.fulfillTicket,fulfilled:true});toast('경품 전달 완료로 표시했습니다.');await adminPanel();}
+ try{await saveCampaign({action:'campaign-fulfill',campaignId:adminData.campaign.id,ticketId:button.dataset.fulfillTicket,fulfilled:true});toast('경품 전달 완료로 표시했습니다.');if(panel==='admin')await adminPanel();}
  catch(e){toast(e.message||'전달 상태를 저장하지 못했습니다.');button.disabled=false;}
 }
 async function loadWinners(campaignId){
@@ -215,7 +235,8 @@ root.addEventListener('click',event=>{
  const b=event.target.closest('button');if(!b||b.disabled)return;
  if(b.hasAttribute('data-raid-card')){if(busy||pending){toast('연결 처리 중입니다. 잠시 후 선택해 주세요.');return;}q('[data-dialog-body]').querySelectorAll('[data-raid-card]').forEach(c=>c.disabled=true);void action('raid-play',{card:Number(b.dataset.raidCard),day:raid.day,expectedPlays:raid.used});}
  else if(b.hasAttribute('data-ad-image-remove')){const f=b.closest('form');f.elements.imageUrl.value='';f.querySelector('[data-ad-preview]').hidden=true;}
- else if(b.hasAttribute('data-close')){dialog.close();panel='';}
+ else if(b.hasAttribute('data-close'))closePanel();
+ else if(b.hasAttribute('data-world-home'))navigation.home();
  else if(b.dataset.panel)showPanel(b.dataset.panel);
  else if(b.dataset.character)void action('character',{character:b.dataset.character});
  else if(b.hasAttribute('data-strike'))void action(running()?'auto-stop':'auto-start',presenceExtra());
@@ -228,11 +249,11 @@ root.addEventListener('click',event=>{
  else if(b.hasAttribute('data-lottery-buy'))void action('lottery-buy',{campaignId:campaign.id,expectedPlays:lottery.plays});
  else if(b.dataset.fulfillTicket)void updateFulfillment(b);
  else if(b.dataset.winnerRound)void loadWinners(b.dataset.winnerRound);
- else if(b.hasAttribute('data-reconnect')){dialog.close();void sync().then(enterGame);}
+ else if(b.hasAttribute('data-reconnect')){closePanel();void sync().then(enterGame);}
 });
 root.addEventListener('submit',async event=>{if(!event.target.matches('[data-ad-form]'))return;event.preventDefault();const f=event.target,button=f.querySelector('button[type=submit]');button.disabled=true;const fd=new FormData(f);try{const data=await request('mine/admin',{name:fd.get('name'),message:fd.get('message'),url:fd.get('url'),imageUrl:fd.get('imageUrl'),enabled:fd.has('enabled')});if(!data.ok)throw new Error(errors[data.error]||'저장하지 못했습니다.');ad=data.ad;paint();f.querySelector('[data-ad-error]').textContent='저장했습니다.';}catch(e){f.querySelector('[data-ad-error]').textContent=e.message||'연결 상태를 확인해 주세요.';}finally{button.disabled=false;}});
-dialog.addEventListener('cancel',()=>panel='');
-dialog.addEventListener('close',()=>{scratchCleanup?.();scratchCleanup=null;panel='';});
+dialog.addEventListener('cancel',event=>{event.preventDefault();closePanel();});
+dialog.addEventListener('close',()=>{if(!dialog.open){scratchCleanup?.();scratchCleanup=null;}});
 async function boot(){
  let session;
  try{session=await request('user/session');if(!session.authenticated||session.user?.role!=='admin'){accessDenied();return;}}catch{accessDenied();return;}
@@ -243,7 +264,7 @@ async function boot(){
  try{
   user=session.user;q('[data-admin]').hidden=user.role!=='admin';
   try{const saved=JSON.parse(sessionStorage.getItem(storageKey())||'null');if(saved?.requestId)pending=saved;}catch{}
-  await sync();await enterGame();if(state&&!state.chosen&&!pending)showPanel('characters');
+  await sync();if(state)navigation.restore();await enterGame();if(state&&!state.chosen&&!pending&&!navigation.current())showPanel('characters');
  }catch{open('광산 연결','<p class="dialog-copy">연결을 확인하지 못했습니다. 잠시 후 다시 입장해 주세요.</p><a href="/mine" class="gold-action" style="display:block;text-align:center">다시 입장하기</a>');}
 }
 function accessDenied(){

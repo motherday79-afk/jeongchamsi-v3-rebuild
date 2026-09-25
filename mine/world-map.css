@@ -1,0 +1,17 @@
+.mine-world{position:fixed;inset:0;z-index:12;overflow:hidden;background:#151424;color:#ffdf9d;isolation:isolate}
+.world-terrain{position:absolute;inset:0;z-index:-1;background:#151424 url('/assets/mine/world-portrait-307.webp') center/100% 100% no-repeat}
+.world-header{position:absolute;inset:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;padding-top:max(10px,env(safe-area-inset-top));background:linear-gradient(#221a31f5,#25182cc9);border-bottom:1px solid #a18a585e;box-shadow:0 7px 30px #05030c55}
+.world-header h2{font-size:clamp(21px,4vw,32px);margin:0;font-family:Georgia,'Malgun Gothic',serif;letter-spacing:.15em;text-shadow:0 2px 3px #000}
+.world-header button{border:0;background:none;color:#f5dbaa;font-size:32px;min-width:44px;min-height:44px;display:flex;align-items:center;gap:6px}.world-header button span{font-size:12px}
+.world-landmarks{position:absolute;inset:0;pointer-events:none}
+.world-place{position:absolute;pointer-events:auto;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:68px;width:clamp(150px,40vw,285px);padding:12px 18px;background:linear-gradient(135deg,#3e264bf0,#211326f5);border:2px solid #c7a569;border-radius:9px 22px;box-shadow:0 0 0 3px #2e2025,0 0 0 4px #806444,0 12px 25px #0008,inset 0 0 18px #eac77917;text-shadow:0 2px 4px #000;transition:filter .2s}
+.world-place:hover{filter:brightness(1.2)}.world-place:before{content:'◆';position:absolute;top:-12px;color:#ead18a;font-size:17px;text-shadow:0 0 12px #fcb25b}
+.world-place-name{font-family:Georgia,'Malgun Gothic',serif;font-size:clamp(19px,4.7vw,29px);font-weight:700;color:#ffe4a5;white-space:nowrap}
+.world-place small{font-size:12px;color:#e5d2b0;margin-top:6px}
+.world-mine{left:27%;top:68%}.world-raid{left:73%;top:31%}
+.world-badge{position:absolute;right:-8px;bottom:-25px;background:linear-gradient(#7d2033,#451a2f);border:1px solid #dbb266;padding:5px 12px;font-size:11px;border-radius:2px 2px 12px 12px}
+.quest-complete .world-badge{background:linear-gradient(#295c46,#193727)}
+.world-quest{position:absolute;bottom:max(18px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(88%,510px);display:flex;align-items:center;justify-content:center;gap:15px;padding:16px 10px;background:linear-gradient(130deg,#39243bef,#211726f5);border:2px solid #b9a06c;border-radius:18px 5px;box-shadow:0 0 0 3px #201926,0 5px 24px #0008;text-align:center}
+.world-compass{font-size:44px;color:#d5b776}.world-quest strong{font-size:clamp(16px,3.8vw,22px);color:#ffdfaa}.world-quest p{font-size:12px;color:#d8c2a1;margin:8px 0 0}.quest-complete .world-quest strong{color:#bde8c0}
+@media(min-aspect-ratio:1/1){.world-terrain{background-image:url('/assets/mine/world-landscape-307.webp')}.world-mine{left:25%;top:73%}.world-raid{left:79%;top:44%}.world-place{width:clamp(175px,23vw,310px)}.world-quest{bottom:max(14px,env(safe-area-inset-bottom));padding:12px}.world-header{padding-left:25px;padding-right:25px}}
+@media(max-height:500px){.world-header{padding-top:3px;padding-bottom:3px}.world-header h2{font-size:21px}.world-quest{left:51%;width:34%;bottom:8px;padding:8px}.world-compass{display:none}.world-quest strong{font-size:14px}.world-quest p{font-size:10px;margin:4px 0 0}.world-place{min-height:54px;padding:8px}.world-place-name{font-size:19px}}
