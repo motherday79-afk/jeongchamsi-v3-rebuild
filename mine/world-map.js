@@ -3,22 +3,25 @@ export const worldMapMarkup=()=>`<section class="mine-world" data-world hidden a
  <header class="world-header"><button data-world-home aria-label="광산으로 돌아가기">‹ <span>광산으로</span></button><h2><img class="world-title-art" src="/assets/mine/world-title-310.webp" alt="월드맵"></h2></header>
  <div class="world-landmarks"><button class="world-place world-mine" data-world-home aria-label="나의 광산으로 돌아가기"><span class="world-place-name">나의 광산</span></button>
  <button class="world-place world-raid" data-panel="raid" aria-label="후회없는 약탈 입장"><span class="world-place-name">후회없는 약탈</span><span class="world-badge" data-world-badge>1회 도전</span></button></div>
- <button class="world-quest" data-panel="quests" aria-label="오늘의 퀘스트 자세히 보기"><span class="world-quest-label">오늘의 퀘스트</span><strong data-world-progress>0/3</strong></button>
+ <button class="world-valley" data-panel="valley">망자의 계곡<small data-valley-badge>운송 성공 1회</small></button>
+ <button class="world-quest" data-panel="quests" aria-label="오늘의 퀘스트 자세히 보기"><span class="world-quest-label">오늘의 퀘스트</span><strong data-world-progress>0/4</strong></button>
  </section>`;
 export function updateWorldMap(root,raid,quests){
  const complete=!!raid?.complete;
+ root.querySelector('[data-valley-badge]').textContent=quests?.valley?'오늘 운송 완료':'운송 성공 1회';
  root.querySelector('[data-world-badge]').textContent=complete?'완료':'1회 도전';
- root.querySelector('[data-world-progress]').textContent=`${quests?.completed??Number(complete)}/3`;
- root.querySelector('[data-world]').classList.toggle('quest-complete',quests?.completed===3);
+ root.querySelector('[data-world-progress]').textContent=`${quests?.completed??Number(complete)}/4`;
+ root.querySelector('[data-world]').classList.toggle('quest-complete',quests?.completed===4);
 }
 export function questMarkup(raid,quests){
  const used=raid?.used||0,autoStart=quests?.autoStart||0,collect=quests?.collect||0,completed=quests?.completed??Number(!!raid?.complete);
  const entries=[
+  {name:'망자의 계곡',count:Number(!!quests?.valley),goal:1,description:'수레 내구도 3칸으로 90초 운송을 완수하세요. 별도 보상은 지급되지 않습니다.',action:'data-panel="valley"',button:'계곡으로 가기'},
   {name:'후회없는 약탈',count:Math.min(1,used),goal:1,description:'승패와 관계없이 카드 1장을 선택해 도전하세요.',action:'data-panel="raid"',button:'약탈하러 가기'},
   {name:'자동채굴하기',count:autoStart,goal:1,description:'광산에서 자동채굴하기를 눌러 채굴을 시작하세요.',action:'data-world-home',button:'광산으로 가기'},
   {name:'광물 회수하기',count:collect,goal:5,description:'저장고가 가득 차면 광물을 회수하세요. 하루 5회 회수하면 완료됩니다.',action:'data-world-home',button:'광산으로 가기'}
  ];
- return `<section class="quest-scroll-page"><header class="quest-page-title"><small>오늘의 모험 기록</small><h3>오늘의 퀘스트</h3><p>${completed} / 3 완료</p></header>
- ${entries.map((q,i)=>{const done=q.count>=q.goal;return `<article class="quest-entry ${done?'quest-entry-done':''}"><div class="quest-entry-heading"><span class="quest-seal" aria-hidden="true">${done?'✓':['Ⅰ','Ⅱ','Ⅲ'][i]}</span><div><small>${done?'완료한 퀘스트':'진행할 퀘스트'}</small><h4>${q.name}</h4></div><b class="quest-status">${q.count} / ${q.goal}</b></div><p>${q.description}</p><dl><div><dt>오늘 한 일</dt><dd>${q.count}회 완료</dd></div><div><dt>앞으로 할 일</dt><dd>${done?'이 퀘스트를 완료했습니다':`${q.goal-q.count}회 더 진행하세요`}</dd></div></dl><button class="quest-go" ${q.action}>${q.button} ›</button></article>`;}).join('')}
+ return `<section class="quest-scroll-page"><header class="quest-page-title"><small>오늘의 모험 기록</small><h3>오늘의 퀘스트</h3><p>${completed} / 4 완료</p></header>
+ ${entries.map((q,i)=>{const done=q.count>=q.goal;return `<article class="quest-entry ${done?'quest-entry-done':''}"><div class="quest-entry-heading"><span class="quest-seal" aria-hidden="true">${done?'✓':['Ⅰ','Ⅱ','Ⅲ','Ⅳ'][i]}</span><div><small>${done?'완료한 퀘스트':'진행할 퀘스트'}</small><h4>${q.name}</h4></div><b class="quest-status">${q.count} / ${q.goal}</b></div><p>${q.description}</p><dl><div><dt>오늘 한 일</dt><dd>${q.count}회 완료</dd></div><div><dt>앞으로 할 일</dt><dd>${done?'이 퀘스트를 완료했습니다':`${q.goal-q.count}회 더 진행하세요`}</dd></div></dl><button class="quest-go" ${q.action}>${q.button} ›</button></article>`;}).join('')}
  <footer class="quest-page-note">매일 오전 0시, 새로운 하루의 퀘스트가 시작됩니다.<br>한국 시간 기준 · 참여는 자유입니다.</footer></section>`;
 }
