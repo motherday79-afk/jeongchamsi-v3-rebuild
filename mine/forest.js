@@ -1,13 +1,14 @@
+import {drawForestLeaf,leafIcon} from './forest-leaf.js?v=323';
 import {FOREST_MODES,FOREST_DURATION,createJudgment} from './forest-rules.js?v=322';
 import {FOREST_SONG} from './forest-song.js?v=322';
-const KEYS=['KeyD','KeyF','Space','KeyJ','KeyK'],COLORS=['#69eec6','#71caff','#edce78','#e6a8fc','#ffa7a0'];
+const KEYS=['KeyA','KeyS','KeyD','KeyF','KeyG'],COLORS=['#76da91','#83d2cf','#eec666','#bfade9','#eea179'];
 export function forestMarkup(){return `<section class="forest-game" aria-label="노래하는 숲 리듬게임">
  <div class="forest-motes" aria-hidden="true"></div><div class="forest-hud"><span>정확도 <b data-f-accuracy>0%</b></span><span><b data-f-time>03:45</b></span><button data-f-pause disabled aria-label="일시정지">Ⅱ</button></div>
  <div class="forest-board"><canvas aria-label="위에서 내려오는 음표를 판정선에 맞춰 누르세요"></canvas><div class="forest-judgment" data-f-judge aria-live="off"></div><div class="forest-combo" data-f-combo></div></div>
- <div class="forest-keys">${KEYS.map((k,i)=>`<button data-f-key="${i}" aria-label="${i+1}번 음표 ${k.replace('Key','')}" style="--key-color:${COLORS[i]}"><span aria-hidden="true">${['♧','◇','✦','♬','❖'][i]}</span><small>${k.replace('Key','')}</small></button>`).join('')}</div>
+ <div class="forest-keys">${KEYS.map((k,i)=>`<button data-f-key="${i}" aria-label="${i+1}번 음표 ${k.replace('Key','')}" style="--key-color:${COLORS[i]}"><span aria-hidden="true">${leafIcon(i)}</span><small>${k.replace('Key','')}</small></button>`).join('')}</div>
  <div class="forest-cover" data-f-cover><img class="forest-title" src="/assets/mine/forest-322/title.png" alt="노래하는 숲"><p class="forest-eyebrow">THE SINGING FOREST</p><h3>${FOREST_SONG.title}</h3><p>떨어지는 음표를 빛나는 선에 맞춰 연주하세요.</p>
  <div class="forest-modes" role="group" aria-label="난이도">${Object.entries(FOREST_MODES).map(([id,m])=>`<button data-f-mode="${id}" aria-pressed="${id==='easy'}"><b>${m.label}</b><small>${id==='easy'?'기본 박자':id==='normal'?'동시 입력':'연타 · 길게 누르기'}</small></button>`).join('')}</div>
- <p class="forest-help">PC D · F · SPACE · J · K / 모바일 5버튼<br>정확도 70% 이상 클리어 · 일일퀘스트 1회</p>
+ <p class="forest-help">PC A · S · D · F · G / 모바일 5버튼<br>정확도 70% 이상 클리어 · 일일퀘스트 1회</p>
  <label class="forest-sync">박자 보정 <output data-f-offset>0ms</output><input data-f-cal type="range" min="-200" max="200" step="10" value="0"><small>늦게 눌렀다고 느껴지면 + 방향으로 조절하세요.</small></label>
  <button class="forest-primary" data-f-start>연주 시작 <span>♪</span></button><p data-f-status role="status"></p></div>
  <div class="forest-pause-cover" data-f-paused hidden><h3>잠시 쉬어갑니다</h3><p>준비되면 이어서 연주하세요.</p><button class="forest-primary" data-f-resume>계속 연주</button></div>
@@ -50,7 +51,7 @@ export function mountForest(host,{request,accept,audio}){
   ctx.fillStyle='#f9e5a2';ctx.shadowColor='#f3e5a2';ctx.shadowBlur=18;ctx.fillRect(0,line,w,3);ctx.shadowBlur=0;
   if(judgment){if(active&&!paused&&t>=0)judgment.advance(t-offset);for(const n of judgment.notes){if(n.grade)continue;const y=line-(n.at-(t-offset))/travel*line;if(y< -20||y>h+20&&!n.hold)continue;const x=(n.lane+.5)*lw,half=lw*.34;
     if(n.hold){const end=line-(n.at+n.hold-(t-offset))/travel*line;ctx.fillStyle=COLORS[n.lane]+'77';ctx.fillRect(x-half*.45,Math.max(0,end),half*.9,Math.min(line,y)-Math.max(0,end));}
-    ctx.save();ctx.translate(x,n.head?line:y);ctx.fillStyle=COLORS[n.lane];ctx.shadowColor=COLORS[n.lane];ctx.shadowBlur=15;ctx.beginPath();ctx.moveTo(-half,0);ctx.lineTo(0,-10);ctx.lineTo(half,0);ctx.lineTo(0,10);ctx.closePath();ctx.fill();ctx.strokeStyle='#fff9';ctx.stroke();ctx.restore();
+    drawForestLeaf(ctx,x,n.head?line:y,Math.min(half*1.9,80),COLORS[n.lane],n.lane);
    }const r=judgment.stats();q('[data-f-accuracy]').textContent=(Math.max(0,r.perfect+r.good*.7-r.extra*.25)/Math.max(1,r.perfect+r.good+r.miss)*100).toFixed(1)+'%';q('[data-f-combo]').textContent=r.combo>=3?r.combo+' COMBO':'';}
   const remaining=Math.ceil((FOREST_DURATION-Math.max(0,t))/1000);q('[data-f-time]').textContent=String(Math.floor(remaining/60)).padStart(2,'0')+':'+String(remaining%60).padStart(2,'0');
   if(active&&!paused&&t<base){q('[data-f-judge]').textContent=String(Math.ceil((base-t)/1000));noticeAt=now;}else if(now-noticeAt>500)q('[data-f-judge]').textContent='';

@@ -1,5 +1,5 @@
 import {prepareValleySprites,valleyPose} from './valley-sprites.js?v=320';
-import {valleyAttacks,valleyCoins,valleyResult,VALLEY_DURATION,VALLEY_GUIDED} from './valley-rules.js?v=320';
+import {valleyAttacks,valleyCoins,valleyResult,VALLEY_DURATION,VALLEY_GUIDED} from './valley-rules.js?v=323';
 export const valleyMarkup=()=>`<section class="valley-game"><canvas aria-label="망자의 계곡 운송 경로"></canvas><div class="valley-hud"><span data-valley-coins>금화 0 / 0</span><span data-valley-time>01:00</span><span data-valley-health aria-label="수레 내구도">◆ ◆ ◆</span></div><div class="valley-notice" role="status"></div><div class="valley-cover"><small>VALLEY OF THE DEAD</small><h3 class="valley-title-art"><img src="/assets/mine/valley-316/title.png" alt="망자의 계곡"></h3><p>금화를 지켜 계곡을 건너세요.</p><p>60초 운송 · 수레 내구도 3칸<br>처음 20초만 짧게 예고 · 이후 40초는 즉시 회피<br>길의 금화를 모으되 손에 붙잡히지 마세요</p><button data-valley-start>운송 시작</button><p>보유 골드 차감·보상 지급 없음 · 성공하면 일일퀘스트 완료</p></div><div class="valley-controls"><button data-lane="0" aria-label="왼쪽으로 회피">◀ 왼쪽</button><button data-lane="1" aria-label="오른쪽으로 회피">오른쪽 ▶</button></div></section>`;
 export function mountValley(host,{request,accept,audio}){
  const el=host.querySelector('.valley-game'),canvas=el.querySelector('canvas'),ctx=canvas.getContext('2d'),cover=el.querySelector('.valley-cover'),notice=el.querySelector('.valley-notice');

@@ -10,13 +10,10 @@ export function valleyAttacks(seed){
 export function valleyCoins(seed){
  const attacks=valleyAttacks(seed),coins=[];let x=(seed^0x9e3779b9)>>>0;
  const random=()=>{x=(Math.imul(x,1664525)+1013904223)>>>0;return x/4294967296;};
- // Coin trails have their own rhythm. Never require collecting in a grabbing lane.
- for(let start=1000;start<58000;start+=Math.round(2100+random()*500)){
-  const preferred=random()<.5?0:1,count=3+Math.floor(random()*3);
-  for(let j=0;j<count;j++){
-   const at=start+j*170,near=attacks.find(a=>Math.abs(a.hit-at)<320);
-   coins.push({id:coins.length,at,lane:near?1-near.lane:preferred});
-  }
+ // Each coin independently chooses a lane; preserve a safe dodge window.
+ for(let at=1000;at<59000;at+=Math.round(440+random()*260)){
+  const preferred=random()<.5?0:1,near=attacks.find(a=>Math.abs(a.hit-at)<320);
+  coins.push({id:coins.length,at,lane:near?1-near.lane:preferred});
  }
  return coins;
 }

@@ -20,3 +20,6 @@
 @media(max-width:600px){.forest-cover,.forest-result{padding:15px}.forest-title{width:min(78vw,350px);max-height:125px}.forest-modes{margin:10px 0}.forest-sync{margin:8px 0 14px}.forest-screen .forest-game p{font-size:12px}.forest-board{top:60px;bottom:94px;width:96%}.forest-keys{width:96%;gap:3px;height:74px}.forest-keys span{font-size:28px}.forest-primary{padding:12px 24px}.forest-screen .dialog-head{padding:4px 12px}.forest-result-score{font-size:62px}}
 @media(max-height:600px){.forest-cover,.forest-result{justify-content:flex-start}.forest-title{max-height:80px}.forest-modes{margin:8px 0}.forest-cover h3{margin:6px}.forest-keys{height:59px}.forest-board{bottom:79px;top:47px}.forest-keys span{font-size:23px}.forest-hud{top:4px}}
 @media(prefers-reduced-motion:reduce){.forest-motes{animation:none}}
+/* 323: foliage matches the five falling leaf colours. */
+.forest-keys span svg{display:block;width:54px;height:35px;max-width:90%;margin:auto;filter:drop-shadow(0 0 5px var(--key-color))}.forest-keys span{height:37px}
+@media(max-height:600px){.forest-keys span svg{height:27px}.forest-keys span{height:28px}}
