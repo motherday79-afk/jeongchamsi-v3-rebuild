@@ -1,5 +1,5 @@
 // One gain bus for every sound. Device media volume remains controlled by the OS.
-const ASSETS='/assets/mine/media-312/';
+const ASSETS='/assets/mine/media-313/';
 const NAMES=['tap','strike','gain','upgrade','full','collect','scratch','loss','success','failure','equip','swing','map-open','bgm-mine','bgm-world','bgm-raid'];
 export const musicScene=panel=>panel==='raid'?'raid':['world','quests'].includes(panel)?'world':'mine';
 export function createMineAudio({storage,createContext=()=>new (window.AudioContext||window.webkitAudioContext)(),fetcher=(...args)=>fetch(...args),hidden=()=>document.hidden}={}){
@@ -16,7 +16,7 @@ export function createMineAudio({storage,createContext=()=>new (window.AudioCont
   if(!buffer||epoch!==musicEpoch||scene!==desiredScene||!enabled||hidden()||ctx?.state!=='running'||music?.name===scene)return;
   try{
    const source=ctx.createBufferSource(),gain=ctx.createGain();source.buffer=buffer;source.loop=true;gain.gain.value=0;source.connect(gain);gain.connect(bus);
-   const previous=music,entry={name:scene,source,gain};music=entry;musicSources.add(entry);source.onended=()=>musicSources.delete(entry);source.start();ramp(gain,cinemas ? .035 : .24);
+   const previous=music,entry={name:scene,source,gain};music=entry;musicSources.add(entry);source.onended=()=>musicSources.delete(entry);source.start();ramp(gain,cinemas ? .12 : .85);
    if(previous){ramp(previous.gain,0);previous.source.stop(ctx.currentTime+.7);}
   }catch{music=null;}
  }
@@ -29,7 +29,9 @@ export function createMineAudio({storage,createContext=()=>new (window.AudioCont
   return loading.get(name);
  }
  async function unlock(){
-  try{if(!ctx){ctx=createContext();bus=ctx.createGain();bus.gain.value=.65;bus.connect(ctx.destination);}await ctx.resume();unlocked=ctx.state==='running';if(unlocked){for(const name of NAMES.filter(n=>!n.startsWith('bgm-')))void load(name);await syncMusic();}}catch{unlocked=false;}
+  try{if(!ctx){ctx=createContext();bus=ctx.createGain();bus.gain.value=1;
+   const limiter=ctx.createDynamicsCompressor?.();
+   if(limiter){limiter.threshold.value=-3;limiter.knee.value=3;limiter.ratio.value=12;limiter.attack.value=.003;limiter.release.value=.15;bus.connect(limiter);limiter.connect(ctx.destination);}else bus.connect(ctx.destination);}await ctx.resume();unlocked=ctx.state==='running';if(unlocked){for(const name of NAMES.filter(n=>!n.startsWith('bgm-')))void load(name);await syncMusic();}}catch{unlocked=false;}
  }
  function play(name,{offset=0}={}){
   if(!enabled||!unlocked||hidden()||ctx?.state!=='running')return ()=>{};
@@ -42,7 +44,7 @@ export function createMineAudio({storage,createContext=()=>new (window.AudioCont
   }catch{return ()=>{};}
  }
  function track(video,name){
-  cinemas++;if(music)ramp(music.gain,.035,.2);
+  cinemas++;if(music)ramp(music.gain,.12,.2);
   let release=null,disposed=false,buffering=false;
   const stop=()=>{release?.();release=null;};
   const sync=()=>{if(disposed||buffering||video.paused||video.ended||hidden()||!enabled){stop();return;}if(!release&&buffers.has(name)&&unlocked&&ctx.state==='running')release=play(name,{offset:video.currentTime});};
@@ -50,7 +52,7 @@ export function createMineAudio({storage,createContext=()=>new (window.AudioCont
   const events={playing,timeupdate:sync,pause:stop,waiting:wait,seeking:seek,seeked:playing,ended:stop};
   for(const [event,fn] of Object.entries(events))video.addEventListener(event,fn);
   const onToggle=()=>{stop();sync();};listeners.add(onToggle);void load(name).then(sync);
-  return ()=>{if(disposed)return;disposed=true;stop();cinemas=Math.max(0,cinemas-1);if(music)ramp(music.gain,cinemas ? .035 : .24,.9);listeners.delete(onToggle);for(const [event,fn] of Object.entries(events))video.removeEventListener(event,fn);};
+  return ()=>{if(disposed)return;disposed=true;stop();cinemas=Math.max(0,cinemas-1);if(music)ramp(music.gain,cinemas ? .12 : .85,.9);listeners.delete(onToggle);for(const [event,fn] of Object.entries(events))video.removeEventListener(event,fn);};
  }
  return {unlock,load,play,track,stopAll,setEnabled,setScene,resumeMusic:syncMusic,get enabled(){return enabled;},subscribe(fn){listeners.add(fn);return ()=>listeners.delete(fn);}};
 }

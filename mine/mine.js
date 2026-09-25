@@ -1,8 +1,8 @@
-import {createMineAudio,soundButton,musicScene} from './audio.js?v=312';
+import {createMineAudio,soundButton,musicScene} from './audio.js?v=313';
 import {createMineNavigation} from './navigation.js?v=309';
-import {worldMapMarkup,updateWorldMap,questMarkup} from './world-map.js?v=310';
-import {raidMarkup,animateRaid} from './raid-ui.js?v=312';
-let raid=null;
+import {worldMapMarkup,updateWorldMap,questMarkup} from './world-map.js?v=313';
+import {raidMarkup,animateRaid} from './raid-ui.js?v=313';
+let raid=null,quests=null;
 import {initStageLayout} from './stage-layout.js?v=301';
 import {mountMineReset} from './admin-reset.js?v=289';
 import {initFullscreen} from './fullscreen.js?v=286';
@@ -72,7 +72,8 @@ function accept(data){
  if(data.state){state=data.state;offset=Date.now()-state.serverNow;}
  if(previousReset!==undefined&&state?.resetVersion!==previousReset){onlineToken=null;needsEntry=true;lastVisualSwing=0;storePending(null);minerMotion.stop();pickEffects.clear();toast('관리자가 광산을 시작 상태로 초기화했습니다.',7000);}
  if(previousEquipment&&state&&previousEquipment!==state.character+':'+state.tool){minerMotion.stop();pickEffects.clear();lastVisualSwing=0;}
- const questChanged=raid?.used!==data.raid?.used||raid?.day!==data.raid?.day;
+ const questChanged=raid?.used!==data.raid?.used||raid?.day!==data.raid?.day||JSON.stringify(quests)!==JSON.stringify(data.quests);
+ if(data.quests)quests=data.quests;
  if(data.raid)raid=data.raid;if(panel==='quests'&&questChanged)showPanel('quests');if(data.ad)ad=data.ad;if(data.jackpot)jackpot=data.jackpot;if(data.campaign)campaign=data.campaign;if(data.lottery)lottery=data.lottery;
  if(previousRound&&state?.campaignId!==previousRound){toast('새 광고주 회차가 시작됐습니다. 복권만 새로 시작하며 골드·광물·성장·장비는 유지됩니다.',8000);if(panel==='lottery')showPanel('lottery');}
  else if(panel==='lottery'&&(previousTicket!==lottery?.ticket?.id||previousRevealed!==lottery?.ticket?.revealed))showPanel('lottery');
@@ -82,7 +83,7 @@ function accept(data){
 function paint(){
  if(!state)return;
  const s=state,st=s.stats,full=s.ore>=st.capacity;
- updateWorldMap(root,raid);
+ updateWorldMap(root,raid,quests);
  if(raid)q('[data-raid-status]').textContent=(raid.complete?'퀘스트 완료':'일일퀘스트')+' · '+raid.remaining+'회';
  if(jackpot){const el=q('[data-jackpot-count]'),value=fmt(jackpot.failedCycles)+' G';if(el.textContent!==value){setText(el,value);if(!matchMedia('(prefers-reduced-motion: reduce)').matches)el.animate([{filter:'brightness(1.8)',transform:'scale(1.04)'},{filter:'brightness(1)',transform:'scale(1)'}],{duration:500});}}
  if(!running()){minerMotion.stop();pickEffects.end();}
@@ -171,7 +172,7 @@ function renderNavigation(which,scroll=0){
  panel=which;
  if(!which||which==='world'){
   dialog.classList.remove('raid-screen','quest-screen');dialog.close();q('[data-world]').hidden=which!=='world';
-  if(which==='world'){updateWorldMap(root,raid);q('[data-world-home]').focus({preventScroll:true});}
+  if(which==='world'){updateWorldMap(root,raid,quests);q('[data-world-home]').focus({preventScroll:true});}
   return;
  }
  q('[data-world]').hidden=!['raid','quests'].includes(which);
@@ -181,7 +182,7 @@ function renderNavigation(which,scroll=0){
 function renderPanel(which){
  panel=which;if(which==='help'){open('광산 이용 방법',`<ul class="help-list"><li>후회없는 약탈은 하루 최대 3회입니다. 성공 카드 1장(+10%), 실패 카드 2장(−10%) 중 선택하며, 보유 골드 기준으로 즉시 정산합니다. 한국 시간 자정에 횟수가 초기화되고 1회 참여하면 일일퀘스트가 완료됩니다. 별도 퀘스트 보상은 아직 없습니다.</li><li>공동 잭팟은 실패 1회당 1G씩 함께 적립합니다. 브론즈 100G · 실버 300G · 골드 1,000G 보상을 준비 중이며, 추첨과 지급은 아직 시작하지 않았습니다.</li><li>게임을 떠나면 인부가 기본 3초마다 채굴합니다. 게임을 켠 동안 인부는 쉽니다.</li><li>자동채굴하기를 누르면 플레이어가 1.5초마다 계속 타격합니다. 멈추기 버튼으로 중지할 수 있습니다. 다른 탭으로 이동하거나 창을 닫으면 인부 채굴로 바뀝니다.</li><li>기본 성공률은 3%. 성공하면 금 1개를 얻습니다. 성공률은 타격할 때마다 독립적으로 적용됩니다.</li><li>저장고가 가득 차야 회수할 수 있습니다. 회수 후 광고주 페이지로 이동하며, 뒤로가기로 돌아오면 됩니다.</li><li>채굴 강화는 성공률(3~20%), 인부 강화는 오프라인 속도를 높입니다. 최고 150레벨이며 곡괭이 상점의 장비는 채굴량과 타격 횟수를 높입니다. 저장고는 채굴 또는 인부가 필요한 단계에 도달하면 강화할 수 있습니다.</li><li>복권은 1회 20G, 당첨 확률은 5%입니다. 전체 당첨 한도에 도달하면 복권만 종료되고 채굴은 계속됩니다. 이전 경품은 복권 창의 당첨 내역에서 확인하세요.</li><li>새 광고주 회차에서는 복권 횟수와 경품 진행만 새로 시작합니다. 골드·광물·모든 강화·장비·캐릭터와 이전 당첨 기록은 유지됩니다.</li><li>광산 골드는 정참시 포인트와 별도입니다. 황금 곡괭이는 이번 버전에서 무료 체험 장비입니다.</li></ul><button class="purple-action" data-reconnect>다시 연결</button>`);return;}
  if(!state){login();return;}
- if(which==='quests'){open('오늘의 퀘스트',questMarkup(raid));return;}
+ if(which==='quests'){open('오늘의 퀘스트',questMarkup(raid,quests));return;}
  if(which==='raid'){open('후회없는 약탈',raidMarkup({raid:raid||{used:0,remaining:3,complete:false},gold:state.gold,locked:!!pending,admin:user?.role==='admin'}));return;}
  if(which==='lottery'){
   open('광고주 경품 복권',lotteryMarkup({campaign,lottery,state,busy:busy||!!pending}));
