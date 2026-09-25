@@ -1,3 +1,4 @@
+import {setGameHeader} from './game-header.js?v=319';
 import {valleyMarkup,mountValley} from './valley.js?v=318';
 import {createMineAudio,soundButton,musicScene,pickSoundName} from './audio.js?v=314';
 import {createMineNavigation} from './navigation.js?v=315';
@@ -159,7 +160,7 @@ function swing(el,hits=1){
 function particles(){const rock=q('[data-ore-rock]');rock.classList.remove('ore-hit');void rock.offsetWidth;rock.classList.add('ore-hit');}
 function floating(text,kind=''){const el=document.createElement('span');el.className='ore-gain '+kind;el.textContent=text;q('[data-effects]').append(el);later(()=>el.remove(),1500);}
 function effect(gained,manual){if(gained>0){floating('+'+gained+' 금');if(!panel)audio.play('gain');}else if(manual)floating('다시 도전!','miss');}
-function open(title,html){dialog.classList.toggle('valley-screen',panel==='valley');dialog.classList.toggle('raid-screen',panel==='raid');dialog.classList.toggle('quest-screen',panel==='quests');scratchCleanup?.();scratchCleanup=null;q('[data-dialog-title]').textContent=title;q('[data-dialog-body]').innerHTML=html;if(!dialog.open)dialog.showModal();}
+function open(title,html){dialog.classList.toggle('valley-screen',panel==='valley');dialog.classList.toggle('raid-screen',panel==='raid');dialog.classList.toggle('quest-screen',panel==='quests');scratchCleanup?.();scratchCleanup=null;setGameHeader(q('[data-dialog-title]'),panel,title);q('[data-dialog-body]').innerHTML=html;if(!dialog.open)dialog.showModal();}
 function showRaidResult(result){
  if(panel!=='raid'){toast('약탈 결과가 저장되었습니다. 일일퀘스트에서 확인하세요.');return;}
  showPanel('raid');scratchCleanup=animateRaid(q('[data-dialog-body]'),result,{onNext:()=>showPanel('raid'),audio});
