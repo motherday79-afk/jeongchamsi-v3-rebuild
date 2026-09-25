@@ -7,7 +7,19 @@ export function valleyAttacks(seed){
  while(at<59000){attacks.push({at,lane:random()<.5?0:1,hit:at+VALLEY_REACTION});at+=Math.round(at<VALLEY_GUIDED?1700+random()*450:900+random()*300);}
  return attacks;
 }
-export const valleyCoins=seed=>valleyAttacks(seed).filter((_,i)=>i%2===0).map((a,i)=>({id:i,at:a.hit-220,lane:a.lane}));
+export function valleyCoins(seed){
+ const attacks=valleyAttacks(seed),coins=[];let x=(seed^0x9e3779b9)>>>0;
+ const random=()=>{x=(Math.imul(x,1664525)+1013904223)>>>0;return x/4294967296;};
+ // Coin trails have their own rhythm. Never require collecting in a grabbing lane.
+ for(let start=1000;start<58000;start+=Math.round(2100+random()*500)){
+  const preferred=random()<.5?0:1,count=3+Math.floor(random()*3);
+  for(let j=0;j<count;j++){
+   const at=start+j*170,near=attacks.find(a=>Math.abs(a.hit-at)<320);
+   coins.push({id:coins.length,at,lane:near?1-near.lane:preferred});
+  }
+ }
+ return coins;
+}
 export function valleyResult(seed,moves,until=VALLEY_DURATION){
  let health=3,lane=0,index=0,lastHit=-Infinity,endedAt=VALLEY_DURATION;
  for(const attack of valleyAttacks(seed)){

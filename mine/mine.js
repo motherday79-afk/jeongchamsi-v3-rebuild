@@ -1,5 +1,5 @@
 import {setGameHeader} from './game-header.js?v=319';
-import {valleyMarkup,mountValley} from './valley.js?v=318';
+import {valleyMarkup,mountValley} from './valley.js?v=320';
 import {createMineAudio,soundButton,musicScene,pickSoundName} from './audio.js?v=314';
 import {createMineNavigation} from './navigation.js?v=315';
 import {worldMapMarkup,updateWorldMap,questMarkup} from './world-map.js?v=317';

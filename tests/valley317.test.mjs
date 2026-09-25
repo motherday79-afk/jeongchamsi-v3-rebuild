@@ -8,11 +8,11 @@ test('60-second pattern speeds up after 20 seconds, coins can all be obtained wi
   const attacks=valleyAttacks(seed),coins=valleyCoins(seed),moves=[];let lane=0;
   const move=(at,next)=>{if(next!==lane){moves.push([at,next]);lane=next;}};
   for(let i=0;i<attacks.length;i++){
-   const a=attacks[i],coin=coins.find(c=>c.at===a.hit-220);
-   assert.equal(a.hit-a.at,350);
+   const a=attacks[i];assert.equal(a.hit-a.at,350);
    if(i>0){const gap=a.at-attacks[i-1].at;assert.ok(gap>=(attacks[i-1].at<20000?1700:900));assert.ok(gap<=(attacks[i-1].at<20000?2150:1200));}
-   if(coin){move(coin.at-160,coin.lane);move(coin.at+10,1-coin.lane);}else move(a.hit-180,1-a.lane);
   }
+  const events=[...coins,...attacks.map(a=>({at:a.hit,lane:1-a.lane}))].sort((a,b)=>a.at-b.at);
+  for(const e of events)move(e.at,e.lane);
   for(let i=1;i<moves.length;i++)assert.ok(moves[i][0]-moves[i-1][0]>=120);
   const result=valleyResult(seed,moves);assert.equal(result.health,3);assert.equal(result.allCoins,true);assert.equal(result.collected,coins.length);
   assert.equal(valleyResult(seed,moves,59999).won,false);
