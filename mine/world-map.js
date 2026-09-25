@@ -4,6 +4,7 @@ export const worldMapMarkup=()=>`<section class="mine-world" data-world hidden a
  <div class="world-landmarks"><button class="world-place world-mine" data-world-home aria-label="나의 광산으로 돌아가기"><span class="world-place-name">나의 광산</span></button>
  <button class="world-place world-raid" data-panel="raid" aria-label="후회없는 약탈 입장"><span class="world-place-name">후회없는 약탈</span><span class="world-badge" data-world-badge>1회 도전</span></button></div>
  <button class="world-valley" data-panel="valley" aria-label="망자의 계곡 입장"><img src="/assets/mine/valley-316/title.png" alt="망자의 계곡"><small data-valley-badge>운송 성공 1회</small></button>
+ <button class="world-tower" data-panel="tower" aria-label="오만의 탑 입장"><img src="/assets/mine/tower-326/title.png" alt="오만의 탑"><small>끝없는 층에 도전</small></button>
  <button class="world-eye" data-panel="eye" aria-label="깨어있는 눈 입장"><img src="/assets/mine/eye-324/title.png" alt="깨어있는 눈"><small data-eye-badge>보물 2개 찾기</small></button>
  <button class="world-forest" data-panel="forest" aria-label="노래하는 숲 입장"><img src="/assets/mine/forest-322/title.png" alt="노래하는 숲"><small data-forest-badge>한 곡 클리어</small></button>
  <button class="world-quest" data-panel="quests" aria-label="오늘의 퀘스트 자세히 보기"><span class="world-quest-label">오늘의 퀘스트</span><strong data-world-progress>0/6</strong></button>

@@ -1,5 +1,6 @@
 // Add every new full-screen minigame to this registry with its illustrated title.
 export const GAME_TITLES={
+ tower:'/assets/mine/tower-326/title.png',
  eye:'/assets/mine/eye-324/title.png',
  forest:'/assets/mine/forest-322/title.png',
  raid:'/assets/mine/world-raid-title-309.webp',
