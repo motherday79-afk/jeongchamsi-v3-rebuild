@@ -1,9 +1,15 @@
+const material=new Image();material.src='/assets/mine/valley-317/materials.png';
 // World-anchored dirt and bridge sections move toward the camera with the cart.
 const random=n=>{const x=Math.sin(n*127.1+311.7)*43758.5453;return x-Math.floor(x);};
 const mod=(n,d)=>(n%d+d)%d;
 const bridgeAt=row=>{const section=mod(row,210);return section>=62&&section<133;};
 function polygon(ctx,points,color){ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fillStyle=color;ctx.fill();}
 function line(ctx,points,color,width){ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.strokeStyle=color;ctx.lineWidth=width;ctx.stroke();}
+function textured(ctx,points,bridge,row){
+ if(!material.complete||!material.naturalWidth)return;
+ const half=material.width/2,slice=bridge?material.height/8:24,sy=mod(row*(bridge?slice:24),material.height-slice),xs=points.map(p=>p[0]),ys=points.map(p=>p[1]),left=Math.min(...xs),top=Math.min(...ys),width=Math.max(...xs)-left,height=Math.max(...ys)-top;
+ ctx.save();ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.clip();ctx.drawImage(material,bridge?half:0,sy,half,slice,left,top,width,height+1);ctx.restore();
+}
 export function drawValleyTerrain(ctx,{w,h,time}){
  const horizon=h*.19,depth=h*.73,roadWidth=Math.min(w*.88,h*.9);
  const center=z=>w*.5+Math.sin(z*5+time/9000)*roadWidth*.13*z;
@@ -22,22 +28,12 @@ export function drawValleyTerrain(ctx,{w,h,time}){
    polygon(ctx,[[r0,y0],[r1,y1],[r1,y1+10*scale],[r0,y0+10*scale]],'#302317');
    const shade=Math.floor(random(row)*19);
    polygon(ctx,[[l0,y0],[r0,y0],[r1,y1],[l1,y1]],`rgb(${99+shade},${72+shade},${44+shade})`);
-   line(ctx,[[l0,y0+1],[r0,y0+1]],'#baa07866',Math.max(.6,scale*1.5));
-   line(ctx,[[l1,y1],[r1,y1]],'#17120dd9',Math.max(1,scale*3));
-   // Grain, splits and iron nails follow each individual plank.
-   for(let g=0;g<3;g++){const yy=y0+(y1-y0)*(g+.4)/3;line(ctx,[[l0+(r0-l0)*.05,yy],[center(z1),yy+scale],[r0-(r0-l0)*.04,yy]],g%2?'#b797623b':'#2a1c1355',Math.max(.5,scale));}
-   if(random(row+3)>.6){const x=l1+(r1-l1)*random(row+8);line(ctx,[[x,y0],[x+12*scale,y1]],'#22170c',scale);}
-   for(const side of [-1,1]){ctx.fillStyle='#1a1513';ctx.beginPath();ctx.ellipse(edge(z1,side)-side*8*scale,y0+(y1-y0)*.5,Math.max(.7,scale*2),Math.max(.5,scale),0,0,Math.PI*2);ctx.fill();}
+   textured(ctx,[[l0,y0],[r0,y0],[r1,y1],[l1,y1]],true,row);
   }else{
    polygon(ctx,[[l0-14*scale,y0],[r0+14*scale,y0],[r1+18*scale,y1+6*scale],[l1-18*scale,y1+6*scale]],'#332e22');
    polygon(ctx,[[l0,y0],[r0,y0],[r1,y1],[l1,y1]],dirt[Math.floor(random(row)*dirt.length)]);
-   // Four cart-wheel ruts: irregular dark grooves with a dusty raised rim.
-   for(const offset of [-.31,-.18,.18,.31]){
-    const x0=center(z0)+(r0-l0)*offset,x1=center(z1)+(r1-l1)*offset;
-    line(ctx,[[x0,y0],[x1+(random(row+offset)-.5)*3*scale,y1]],'#3a30234f',Math.max(1,scale*7));
-    line(ctx,[[x0+4*scale,y0],[x1+4*scale,y1]],'#b3996740',Math.max(.5,scale*1.4));
-   }
-   for(let k=0;k<8;k++){
+   textured(ctx,[[l0,y0],[r0,y0],[r1,y1],[l1,y1]],false,row);
+   for(let k=0;k<3;k++){
     const n=row*13+k,x=l1+(r1-l1)*random(n+2),yy=y0+(y1-y0)*random(n+5),size=(1+random(n+9)*4)*scale;
     ctx.fillStyle='#251f1b55';ctx.beginPath();ctx.ellipse(x+size*.3,yy+size*.5,size*1.5,size*.55,0,0,Math.PI*2);ctx.fill();
     polygon(ctx,[[x-size,yy],[x-size*.5,yy-size*.5],[x+size*.7,yy-size*.35],[x+size,yy+size*.2],[x,yy+size*.45]],k%3?'#938674':'#b2a28a');
@@ -49,8 +45,7 @@ export function drawValleyTerrain(ctx,{w,h,time}){
     if(i%2===0){for(let g=0;g<3;g++)line(ctx,[[x+g*3*scale,y1],[x+(g*5-4)*scale,y1-(8+g*3)*scale]],'#67704a',Math.max(.6,scale));}
    }
   }
-  // Depth haze unifies earthy materials with the distant landscape.
-  if(z1<.5)polygon(ctx,[[l0,y0],[r0,y0],[r1,y1],[l1,y1]],`rgba(52,67,67,${(.5-z1)*.45})`);
+
  }
  // Ropes sag between wooden posts, never a luminous road outline.
  for(let i=0;i<rows;i++){

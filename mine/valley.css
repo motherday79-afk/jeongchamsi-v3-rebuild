@@ -7,3 +7,7 @@
 .valley-cover{background:radial-gradient(ellipse,#161d22ce,#070b12ed)}
 @media(max-aspect-ratio:1/1){.world-valley{width:215px;min-height:0;left:65%;top:68%}}
 @media(max-height:500px){.world-valley{width:220px;min-height:0}.valley-title-art{width:320px;max-height:100px}.valley-title-art img{max-height:100px}}
+.world-valley{transition:filter .18s ease}.world-valley:hover,.world-valley:focus-visible{filter:brightness(1.2) drop-shadow(0 7px 12px #bba56388)}.world-valley:focus-visible{outline:2px solid #e0c384;outline-offset:4px}
+.valley-hud [data-valley-coins]{color:#ffe097;font-variant-numeric:tabular-nums}
+@media(max-width:600px){.valley-hud{left:4%;right:4%;font-size:13px;gap:7px}.valley-hud [data-valley-health]{font-size:15px}}
+@media(prefers-reduced-motion:reduce){.world-valley{transition:none}}

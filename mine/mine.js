@@ -1,7 +1,7 @@
-import {valleyMarkup,mountValley} from './valley.js?v=316';
+import {valleyMarkup,mountValley} from './valley.js?v=317';
 import {createMineAudio,soundButton,musicScene,pickSoundName} from './audio.js?v=314';
 import {createMineNavigation} from './navigation.js?v=315';
-import {worldMapMarkup,updateWorldMap,questMarkup} from './world-map.js?v=316';
+import {worldMapMarkup,updateWorldMap,questMarkup} from './world-map.js?v=317';
 import {raidMarkup,animateRaid} from './raid-ui.js?v=314';
 let raid=null,quests=null;
 import {initStageLayout} from './stage-layout.js?v=301';
