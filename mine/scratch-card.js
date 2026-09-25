@@ -1,9 +1,9 @@
 // Pointer-operated foil. The server supplies the already-paid ticket result;
 // erasing the foil never draws a new outcome or spends currency.
-export function mountScratchCard(host,{onReveal=()=>{},revealed=false}={}){
+export function mountScratchCard(host,{onReveal=()=>{},onScratch=()=>{},revealed=false}={}){
  const surface=host.querySelector('.scratch-surface')||host,canvas=host.querySelector('canvas'),ctx=canvas.getContext('2d'),button=host.querySelector('[data-scratch-reveal]');
  let done=revealed,down=false,previous=null,points=[],visited=new Set();
- const columns=24,rows=14;
+ const columns=24,rows=14;let lastSound=0;
  function erase(x,y){
   const radius=canvas.getBoundingClientRect().width*.066;
   ctx.globalCompositeOperation='destination-out';ctx.lineCap='round';ctx.lineJoin='round';ctx.lineWidth=radius*2;
@@ -27,6 +27,7 @@ export function mountScratchCard(host,{onReveal=()=>{},revealed=false}={}){
  }
  function reveal(){if(done)return;done=true;down=false;surface.classList.add('is-revealed');canvas.style.pointerEvents='none';button.hidden=true;onReveal();}
  function record(event){
+  const now=Date.now();if(now-lastSound>130){lastSound=now;onScratch();}
   const r=canvas.getBoundingClientRect(),x=Math.max(0,Math.min(r.width,event.clientX-r.left)),y=Math.max(0,Math.min(r.height,event.clientY-r.top));
   const from=previous||{x,y},distance=Math.hypot(x-from.x,y-from.y),steps=Math.max(1,Math.ceil(distance/6)),radius=r.width*.066;
   for(let n=0;n<=steps;n++){

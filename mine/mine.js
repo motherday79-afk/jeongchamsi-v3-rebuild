@@ -1,6 +1,7 @@
+import {createMineAudio,soundButton} from './audio.js?v=311';
 import {createMineNavigation} from './navigation.js?v=309';
 import {worldMapMarkup,updateWorldMap,questMarkup} from './world-map.js?v=310';
-import {raidMarkup,animateRaid} from './raid-ui.js?v=308';
+import {raidMarkup,animateRaid} from './raid-ui.js?v=311';
 let raid=null;
 import {initStageLayout} from './stage-layout.js?v=301';
 import {mountMineReset} from './admin-reset.js?v=289';
@@ -11,12 +12,20 @@ import {makePickEffects} from './pick-effects.js?v=296';
 import {renderIntegratedMiner} from './integrated-miner.js?v=296';
 import {makeIdleNotice,setText} from './idle-state.js?v=280';
 import {makeMinerMotion} from './motion.js?v=296';
-import {mountScratchCard} from './scratch-card.js?v=278';
+import {mountScratchCard} from './scratch-card.js?v=311';
 import {lotteryMarkup,refreshLotteryNumbers,campaignAdminMarkup} from './lottery-ui.js?v=288';
 const pickAppearance=equippedPick;
 const root=document.getElementById('mine-game'),q=s=>root.querySelector(s),dialog=q('[data-dialog]');
 root.insertAdjacentHTML('beforeend',worldMapMarkup());
 const navigation=createMineNavigation({render:renderNavigation,getScroll:()=>dialog.open?(q('[data-dialog-body]').scrollTop||dialog.scrollTop):0});
+const audio=createMineAudio();
+q('.mine-header').insertAdjacentHTML('beforeend',soundButton());
+q('.dialog-head').insertAdjacentHTML('beforeend',soundButton());
+q('[data-world]').insertAdjacentHTML('beforeend',soundButton());
+function paintSound(){for(const b of root.querySelectorAll('[data-sound]')){b.setAttribute('aria-pressed',String(audio.enabled));b.setAttribute('aria-label',audio.enabled?'음향 끄기':'음향 켜기');b.querySelector('small').textContent=audio.enabled?'소리 켜짐':'소리 꺼짐';b.querySelector('span').textContent=audio.enabled?'♫':'♪';}}
+audio.subscribe(paintSound);paintSound();
+root.addEventListener('pointerdown',()=>void audio.unlock(),{capture:true});
+root.addEventListener('keydown',()=>void audio.unlock(),{capture:true});
 const names=RACES;
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>Number(n||0).toLocaleString('ko-KR');
@@ -35,7 +44,7 @@ Object.assign(errors,{MINE_CAMPAIGN_CHANGED:'새 회차가 시작됐습니다. �
 const running=()=>onlineToken&&state?.onlineToken===onlineToken&&state.mode==='player'&&serverNow()<state.onlineUntil&&state.ore<state.stats.capacity;
 let lastVisualSwing=0;
 const pickEffects=makePickEffects(q('[data-pick-effects]'),{backCanvas:q('[data-pick-effects-back]'),getState:()=>state,reduced:()=>matchMedia('(prefers-reduced-motion: reduce)').matches});
-const minerMotion=makeMinerMotion({setFrame:n=>{if(currentFrame===n)return;currentFrame=n;q('[data-player]').style.backgroundPosition=(n/7*100)+'% 0';pickEffects.frame(n);if(n===0)pickEffects.end();},impact:()=>{particles();pickEffects.impact();}});
+const minerMotion=makeMinerMotion({setFrame:n=>{if(currentFrame===n)return;currentFrame=n;q('[data-player]').style.backgroundPosition=(n/7*100)+'% 0';pickEffects.frame(n);if(n===0)pickEffects.end();},impact:()=>{particles();pickEffects.impact();if(!panel)audio.play('strike');}});
 function presenceExtra(){return {token:onlineToken,sequence:++sequence};}
 async function enterGame(){
  if(document.hidden||disposed||!state)return;
@@ -44,6 +53,7 @@ async function enterGame(){
  await action('enter',presenceExtra());
 }
 function leaveGame(){
+ audio.stopAll();
  needsEntry=false;if(!onlineToken)return;
  const body=JSON.stringify({action:'leave',requestId:crypto.randomUUID(),campaignId:campaign?.id,...presenceExtra()});onlineToken=null;
  const sent=navigator.sendBeacon?.('/api/v3/mine',new Blob([body],{type:'application/json'}));
@@ -56,6 +66,7 @@ function storePending(value){pending=value;try{if(value)sessionStorage.setItem(s
 function toast(message,ms=4500){clearTimeout(toastTimer);q('[data-toast]').textContent=message;toastTimer=setTimeout(()=>q('[data-toast]').textContent='',ms);}
 async function request(path,body){const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),16000);try{const response=await fetch('/api/v3/'+path,{credentials:'same-origin',cache:'no-store',signal:controller.signal,...(body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{})});return await response.json();}finally{clearTimeout(timer);}}
 function accept(data){
+ const wasFull=state?state.ore>=state.stats.capacity:null;
  const previousRound=state?.campaignId,previousReset=state?.resetVersion,previousEquipment=state?state.character+':'+state.tool:null;
  const previousTicket=lottery?.ticket?.id,previousRevealed=lottery?.ticket?.revealed;
  if(data.state){state=data.state;offset=Date.now()-state.serverNow;}
@@ -65,6 +76,7 @@ function accept(data){
  if(data.raid)raid=data.raid;if(panel==='quests'&&questChanged)showPanel('quests');if(data.ad)ad=data.ad;if(data.jackpot)jackpot=data.jackpot;if(data.campaign)campaign=data.campaign;if(data.lottery)lottery=data.lottery;
  if(previousRound&&state?.campaignId!==previousRound){toast('새 광고주 회차가 시작됐습니다. 복권만 새로 시작하며 골드·광물·성장·장비는 유지됩니다.',8000);if(panel==='lottery')showPanel('lottery');}
  else if(panel==='lottery'&&(previousTicket!==lottery?.ticket?.id||previousRevealed!==lottery?.ticket?.revealed))showPanel('lottery');
+ if(wasFull===false&&state?.ore>=state?.stats.capacity&&!panel)audio.play('full');
  paint();
 }
 function paint(){
@@ -131,8 +143,8 @@ async function action(actionName,extra={}){
    if(data.result.hits===2)floating('더블 타격!','double');
    later(()=>effect(data.result.gained,true),360);
   }else if(actionName==='character'){if(panel==='characters')closePanel();toast(names[state.character]+'와 채굴을 시작합니다.');}
-  else if(actionName==='upgrade'){toast('강화 완료!');if(panel===extra.target)showPanel(extra.target);}
-  else if(actionName==='tool'||actionName==='buy-pick'){toast(pickAppearance(state).name+'를 장착했어요.');if(panel==='shop')showPanel('shop');}
+  else if(actionName==='upgrade'){audio.play('upgrade');toast('강화 완료!');if(panel===extra.target)showPanel(extra.target);}
+  else if(actionName==='tool'||actionName==='buy-pick'){audio.play('upgrade');toast(pickAppearance(state).name+'를 장착했어요.');if(panel==='shop')showPanel('shop');}
   else if(actionName==='admin-gold'){toast(fmt(data.result.grantedGold)+' G를 지급했습니다.');if(panel==='admin')await adminPanel();}
   else if(actionName==='test-fill'){if(panel==='admin')closePanel();toast('테스트용 저장고를 채웠어요. 이 회수는 광고 통계에서 제외됩니다.');}
  }catch{toast('저장 결과를 확인 중입니다. 연결되면 같은 요청을 이어갑니다.',7000);}
@@ -144,11 +156,11 @@ function swing(el,hits=1){
 }
 function particles(){const rock=q('[data-ore-rock]');rock.classList.remove('ore-hit');void rock.offsetWidth;rock.classList.add('ore-hit');}
 function floating(text,kind=''){const el=document.createElement('span');el.className='ore-gain '+kind;el.textContent=text;q('[data-effects]').append(el);later(()=>el.remove(),1500);}
-function effect(gained,manual){if(gained>0)floating('+'+gained+' 금');else if(manual)floating('다시 도전!','miss');}
+function effect(gained,manual){if(gained>0){floating('+'+gained+' 금');if(!panel)audio.play('gain');}else if(manual)floating('다시 도전!','miss');}
 function open(title,html){dialog.classList.toggle('raid-screen',panel==='raid');dialog.classList.toggle('quest-screen',panel==='quests');scratchCleanup?.();scratchCleanup=null;q('[data-dialog-title]').textContent=title;q('[data-dialog-body]').innerHTML=html;if(!dialog.open)dialog.showModal();}
 function showRaidResult(result){
  if(panel!=='raid'){toast('약탈 결과가 저장되었습니다. 일일퀘스트에서 확인하세요.');return;}
- showPanel('raid');scratchCleanup=animateRaid(q('[data-dialog-body]'),result,{onNext:()=>showPanel('raid')});
+ showPanel('raid');scratchCleanup=animateRaid(q('[data-dialog-body]'),result,{onNext:()=>showPanel('raid'),audio});
 }
 function login(){open('내 광산을 시작하세요',`<p class="dialog-copy">정참시 계정으로 광물과 강화 내역을 저장합니다.</p><a class="gold-action" href="/login?return=%2Fmine" style="display:block;text-align:center;text-decoration:none">로그인하고 입장하기</a><p class="dialog-copy">광산 골드는 기존 정참시 포인트와 별도로 모입니다.</p>`);}
 function closePanel(){if(navigation.current())navigation.back();else{scratchCleanup?.();scratchCleanup=null;dialog.close();panel='';}}
@@ -172,7 +184,7 @@ function renderPanel(which){
  if(which==='raid'){open('후회없는 약탈',raidMarkup({raid:raid||{used:0,remaining:3,complete:false},gold:state.gold,locked:!!pending,admin:user?.role==='admin'}));return;}
  if(which==='lottery'){
   open('광고주 경품 복권',lotteryMarkup({campaign,lottery,state,busy:busy||!!pending}));
-  if(lottery?.ticket&&!lottery.ticket.revealed){const ticket=lottery.ticket;scratchCleanup=mountScratchCard(q('[data-scratch-ticket]'),{onReveal:()=>{pendingReveal={campaignId:ticket.campaignId,ticketId:ticket.id};q('.scratch-outcome')?.removeAttribute('aria-hidden');}});}
+  if(lottery?.ticket&&!lottery.ticket.revealed){const ticket=lottery.ticket;scratchCleanup=mountScratchCard(q('[data-scratch-ticket]'),{onScratch:()=>audio.play('scratch'),onReveal:()=>{audio.play(ticket.won?'upgrade':'loss');pendingReveal={campaignId:ticket.campaignId,ticketId:ticket.id};q('.scratch-outcome')?.removeAttribute('aria-hidden');}});}
   return;
  }
  if(which==='jackpot'){
@@ -237,6 +249,8 @@ root.addEventListener('submit',async event=>{
 });
 root.addEventListener('click',event=>{
  const b=event.target.closest('button');if(!b||b.disabled)return;
+ if(b.hasAttribute('data-sound')){audio.setEnabled(!audio.enabled);if(audio.enabled)void audio.unlock().then(()=>audio.play('tap'));return;}
+ audio.play(b.hasAttribute('data-collect')?'collect':'tap');
  if(b.hasAttribute('data-raid-card')){if(busy||pending){toast('연결 처리 중입니다. 잠시 후 선택해 주세요.');return;}q('[data-dialog-body]').querySelectorAll('[data-raid-card]').forEach(c=>c.disabled=true);void action('raid-play',{card:Number(b.dataset.raidCard),day:raid.day,revision:raid.revision,expectedPlays:raid.used});}
  else if(b.hasAttribute('data-raid-reset')){if(busy||pending){toast('처리 중입니다. 잠시 후 다시 눌러주세요.');return;}void action('raid-reset',{day:raid.day,revision:raid.revision});}
  else if(b.hasAttribute('data-ad-image-remove')){const f=b.closest('form');f.elements.imageUrl.value='';f.querySelector('[data-ad-preview]').hidden=true;}
