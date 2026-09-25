@@ -1,7 +1,7 @@
-import {createMineAudio,soundButton} from './audio.js?v=311';
+import {createMineAudio,soundButton,musicScene} from './audio.js?v=312';
 import {createMineNavigation} from './navigation.js?v=309';
 import {worldMapMarkup,updateWorldMap,questMarkup} from './world-map.js?v=310';
-import {raidMarkup,animateRaid} from './raid-ui.js?v=311';
+import {raidMarkup,animateRaid} from './raid-ui.js?v=312';
 let raid=null;
 import {initStageLayout} from './stage-layout.js?v=301';
 import {mountMineReset} from './admin-reset.js?v=289';
@@ -24,8 +24,8 @@ q('.dialog-head').insertAdjacentHTML('beforeend',soundButton());
 q('[data-world]').insertAdjacentHTML('beforeend',soundButton());
 function paintSound(){for(const b of root.querySelectorAll('[data-sound]')){b.setAttribute('aria-pressed',String(audio.enabled));b.setAttribute('aria-label',audio.enabled?'음향 끄기':'음향 켜기');b.querySelector('small').textContent=audio.enabled?'소리 켜짐':'소리 꺼짐';b.querySelector('span').textContent=audio.enabled?'♫':'♪';}}
 audio.subscribe(paintSound);paintSound();
-root.addEventListener('pointerdown',()=>void audio.unlock(),{capture:true});
-root.addEventListener('keydown',()=>void audio.unlock(),{capture:true});
+root.addEventListener('pointerdown',()=>{if(!disposed)void audio.unlock();},{capture:true});
+root.addEventListener('keydown',()=>{if(!disposed)void audio.unlock();},{capture:true});
 const names=RACES;
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>Number(n||0).toLocaleString('ko-KR');
@@ -44,7 +44,7 @@ Object.assign(errors,{MINE_CAMPAIGN_CHANGED:'새 회차가 시작됐습니다. �
 const running=()=>onlineToken&&state?.onlineToken===onlineToken&&state.mode==='player'&&serverNow()<state.onlineUntil&&state.ore<state.stats.capacity;
 let lastVisualSwing=0;
 const pickEffects=makePickEffects(q('[data-pick-effects]'),{backCanvas:q('[data-pick-effects-back]'),getState:()=>state,reduced:()=>matchMedia('(prefers-reduced-motion: reduce)').matches});
-const minerMotion=makeMinerMotion({setFrame:n=>{if(currentFrame===n)return;currentFrame=n;q('[data-player]').style.backgroundPosition=(n/7*100)+'% 0';pickEffects.frame(n);if(n===0)pickEffects.end();},impact:()=>{particles();pickEffects.impact();if(!panel)audio.play('strike');}});
+const minerMotion=makeMinerMotion({setFrame:n=>{if(currentFrame===n)return;currentFrame=n;q('[data-player]').style.backgroundPosition=(n/7*100)+'% 0';pickEffects.frame(n);if(n===4&&!panel)audio.play('swing');if(n===0)pickEffects.end();},impact:()=>{particles();pickEffects.impact();if(!panel)audio.play('strike');}});
 function presenceExtra(){return {token:onlineToken,sequence:++sequence};}
 async function enterGame(){
  if(document.hidden||disposed||!state)return;
@@ -144,7 +144,7 @@ async function action(actionName,extra={}){
    later(()=>effect(data.result.gained,true),360);
   }else if(actionName==='character'){if(panel==='characters')closePanel();toast(names[state.character]+'와 채굴을 시작합니다.');}
   else if(actionName==='upgrade'){audio.play('upgrade');toast('강화 완료!');if(panel===extra.target)showPanel(extra.target);}
-  else if(actionName==='tool'||actionName==='buy-pick'){audio.play('upgrade');toast(pickAppearance(state).name+'를 장착했어요.');if(panel==='shop')showPanel('shop');}
+  else if(actionName==='tool'||actionName==='buy-pick'){audio.play('equip');toast(pickAppearance(state).name+'를 장착했어요.');if(panel==='shop')showPanel('shop');}
   else if(actionName==='admin-gold'){toast(fmt(data.result.grantedGold)+' G를 지급했습니다.');if(panel==='admin')await adminPanel();}
   else if(actionName==='test-fill'){if(panel==='admin')closePanel();toast('테스트용 저장고를 채웠어요. 이 회수는 광고 통계에서 제외됩니다.');}
  }catch{toast('저장 결과를 확인 중입니다. 연결되면 같은 요청을 이어갑니다.',7000);}
@@ -166,6 +166,7 @@ function login(){open('내 광산을 시작하세요',`<p class="dialog-copy">�
 function closePanel(){if(navigation.current())navigation.back();else{scratchCleanup?.();scratchCleanup=null;dialog.close();panel='';}}
 function showPanel(which){navigation.go(which);}
 function renderNavigation(which,scroll=0){
+ void audio.setScene(musicScene(which));
  scratchCleanup?.();scratchCleanup=null;
  panel=which;
  if(!which||which==='world'){
@@ -250,7 +251,7 @@ root.addEventListener('submit',async event=>{
 root.addEventListener('click',event=>{
  const b=event.target.closest('button');if(!b||b.disabled)return;
  if(b.hasAttribute('data-sound')){audio.setEnabled(!audio.enabled);if(audio.enabled)void audio.unlock().then(()=>audio.play('tap'));return;}
- audio.play(b.hasAttribute('data-collect')?'collect':'tap');
+ audio.play(b.hasAttribute('data-collect')?'collect':b.dataset.panel==='world'||b.hasAttribute('data-world-home')?'map-open':'tap');
  if(b.hasAttribute('data-raid-card')){if(busy||pending){toast('연결 처리 중입니다. 잠시 후 선택해 주세요.');return;}q('[data-dialog-body]').querySelectorAll('[data-raid-card]').forEach(c=>c.disabled=true);void action('raid-play',{card:Number(b.dataset.raidCard),day:raid.day,revision:raid.revision,expectedPlays:raid.used});}
  else if(b.hasAttribute('data-raid-reset')){if(busy||pending){toast('처리 중입니다. 잠시 후 다시 눌러주세요.');return;}void action('raid-reset',{day:raid.day,revision:raid.revision});}
  else if(b.hasAttribute('data-ad-image-remove')){const f=b.closest('form');f.elements.imageUrl.value='';f.querySelector('[data-ad-preview]').hidden=true;}
@@ -281,13 +282,13 @@ async function boot(){
   document.title='광고 이동 체험 · 정참시';document.body.innerHTML='<main class="test-ad-page"><section class="test-ad-card"><small>광고 이동 체험</small><h1>광물 회수를 마쳤어요</h1><p>실제 광고주 주소가 아직 연결되지 않아<br>이 안내 페이지로 이동했습니다.</p><p>브라우저의 뒤로가기를 누르면<br>진행 중인 광산으로 돌아갑니다.</p><button class="gold-action" id="back-to-mine">광산으로 돌아가기</button></section></main>';document.getElementById('back-to-mine').onclick=()=>{if(history.length>1)history.back();else location.replace('/mine');};return;
  }
  try{
-  user=session.user;q('[data-admin]').hidden=user.role!=='admin';
+  user=session.user;void audio.setScene(musicScene(navigation.current()));q('[data-admin]').hidden=user.role!=='admin';
   try{const saved=JSON.parse(sessionStorage.getItem(storageKey())||'null');if(saved?.requestId)pending=saved;}catch{}
   await sync();if(state)navigation.restore();await enterGame();if(state&&!state.chosen&&!pending&&!navigation.current())showPanel('characters');
  }catch{open('광산 연결','<p class="dialog-copy">연결을 확인하지 못했습니다. 잠시 후 다시 입장해 주세요.</p><a href="/mine" class="gold-action" style="display:block;text-align:center">다시 입장하기</a>');}
 }
 function accessDenied(){
- disposed=true;user=null;state=null;onlineToken=null;scratchCleanup?.();minerMotion.stop();
+ audio.stopAll();disposed=true;user=null;state=null;onlineToken=null;scratchCleanup?.();minerMotion.stop();
  root.style.visibility='visible';root.className='test-ad-page';
  root.innerHTML='<section class="test-ad-card"><h1>권한이 없습니다.</h1><p>관리자에게 권한을 요청해 주세요.</p><a class="gold-action" href="/">정참시 메인으로 돌아가기</a></section>';
 }
@@ -303,8 +304,8 @@ const ticker=setInterval(()=>{
  if(user&&!busy&&!pending&&onlineToken&&Date.now()-lastHeartbeat>=4000){lastHeartbeat=Date.now();void action('heartbeat',presenceExtra());}
 },100);
 const syncTimer=setInterval(()=>{if(!document.hidden&&pending)void sync();},4000);
-document.addEventListener('visibilitychange',()=>{if(document.hidden)leaveGame();else void sync().then(enterGame);});
-window.addEventListener('pageshow',e=>{if(e.persisted){disposed=false;void sync().then(enterGame);}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)leaveGame();else{void audio.resumeMusic();void sync().then(enterGame);}});
+window.addEventListener('pageshow',e=>{if(e.persisted){disposed=false;void audio.resumeMusic();void sync().then(enterGame);}});
 window.addEventListener('pagehide',()=>{leaveGame();disposed=true;});
 initFullscreen({button:q('[data-fullscreen]'),notify:toast});
 initStageLayout(root);
