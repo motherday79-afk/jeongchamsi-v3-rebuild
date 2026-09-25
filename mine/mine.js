@@ -1,4 +1,4 @@
-import {towerMarkup,mountTower} from './tower.js?v=326';
+import {towerMarkup,mountTower} from './tower.js?v=327';
 import {eyeMarkup,mountEye} from './eye.js?v=325';
 import {forestMarkup,mountForest} from './forest.js?v=323';
 import {setGameHeader} from './game-header.js?v=326';

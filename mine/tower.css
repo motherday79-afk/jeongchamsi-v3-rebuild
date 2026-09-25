@@ -9,3 +9,18 @@
 @media(max-height:600px) and (min-width:601px){.tower-game{min-height:390px}.tower-scene{min-height:200px}.tower-rig{width:150px;height:150px;left:calc(50% - 75px);bottom:65px}.tower-ore{height:100px}.tower-controls{margin:5px auto;padding:5px 15px}.tower-controls .tower-help{display:none}.tower-hud{margin-top:4px;padding:5px 15px}.world-tower{width:170px}}
 
 .tower-tool{width:100%;height:100%;background:url(/assets/mine/tower-326/tools.png) 0 0/500% 200% no-repeat;transform:rotate(95deg);filter:drop-shadow(0 0 10px var(--tower-color))}
+/* 327: clockwise 90-degree tool, rotating about its invisible handle grip. */
+.tower-scene{--tool-size:220px;--ore-height:160px}
+.tower-rig{width:var(--tool-size);height:var(--tool-size);left:calc(50% - var(--tool-size)*.70);bottom:calc(var(--ore-height)*.85 - var(--tool-size)*.11);transform-origin:15% 50%}
+.tower-tool{background-image:url('/assets/mine/world-327/tools.png');transform:rotate(90deg)}
+.tower-ore{height:var(--ore-height)}
+.tower-controls{position:relative;background:radial-gradient(ellipse at top,#372441e8,#130d20e8);border:1px solid #d0a15b;box-shadow:inset 0 0 0 3px #181023,inset 0 0 0 4px #9f7b3b66,0 8px 20px #0009}
+.tower-controls button.tower-art-button,.tower-result-art{background:transparent url('/assets/mine/world-327/actions.png') center 0/100% 500% no-repeat;border:0;border-radius:0;box-shadow:none;padding:0;min-height:0;height:auto;aspect-ratio:10/3;width:270px;max-width:85%;margin:0 auto;filter:drop-shadow(0 3px 6px #000a)}
+.tower-controls button.tower-art-button[data-art="1"]{background-position:center 25%}.tower-controls button.tower-art-button[data-art="2"]{background-position:center 50%}
+.tower-result-art{position:absolute;bottom:calc(100% + 12px);left:50%;transform:translateX(-50%);width:380px;max-width:90vw;pointer-events:none}
+.tower-result-art[data-art="3"]{background-position:center 75%}.tower-result-art[data-art="4"]{background-position:center 100%}
+.tower-controls [data-t-message]:not(.tower-error),.tower-controls .tower-help{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.tower-hud{border:2px solid #b58b4a;border-radius:12px 3px;box-shadow:inset 0 0 0 2px #25152b,inset 0 0 0 3px #d2b06d66,0 4px 15px #0008}
+.tower-hud>b:before{content:'♜';margin-right:7px;color:#d3b08a}.tower-hud>span:before{content:'◷';margin-right:7px;color:#eac688}.tower-hud>strong:before{content:'◆';margin-right:7px;color:#ffd76b}
+@media(max-width:600px){.tower-scene{--tool-size:190px}.tower-controls button.tower-art-button{width:230px}}
+@media(max-height:600px) and (min-width:601px){.tower-scene{--tool-size:150px;--ore-height:100px}.tower-controls button.tower-art-button{width:200px}.tower-result-art{width:270px}}

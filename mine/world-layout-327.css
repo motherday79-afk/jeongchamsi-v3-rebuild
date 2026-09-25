@@ -1,0 +1,23 @@
+/* Landmarks and labels share the same percentage coordinate system. */
+.mine-world .world-terrain{background-image:url('/assets/mine/world-327/landscape.png');background-size:100% 100%;background-position:center}
+.mine-world .world-tower{left:50%;top:43%;width:clamp(245px,34vw,490px);max-width:none;z-index:3}
+.mine-world .world-forest{left:18%;top:41%;width:clamp(150px,21vw,290px);max-width:none}
+.mine-world .world-eye{left:81%;top:36%;width:clamp(150px,21vw,290px);max-width:none}
+.mine-world .world-mine{left:18%;top:68%;width:clamp(160px,23vw,310px)}
+.mine-world .world-raid{left:82%;top:67%;width:clamp(160px,23vw,310px)}
+.mine-world .world-valley{left:50%;top:81%;width:clamp(160px,23vw,300px);min-height:0}
+.mine-world .world-quest{bottom:max(8px,env(safe-area-inset-bottom));width:clamp(230px,26vw,350px)}
+.mine-world .world-tower small{display:none}.mine-world .world-tower{filter:drop-shadow(0 5px 10px #000) drop-shadow(0 0 12px #b894fc55)}
+.mine-world .world-tower:hover,.mine-world .world-tower:focus-visible{filter:brightness(1.2) drop-shadow(0 0 18px #dbb4ff99)}
+@media(max-aspect-ratio:1/1){
+ .mine-world .world-terrain{background-image:url('/assets/mine/world-327/portrait.png')}
+ .mine-world .world-tower{left:50%;top:32%;width:68vw;max-width:460px}
+ .mine-world .world-forest{left:23%;top:49%;width:43vw}
+ .mine-world .world-eye{left:77%;top:49%;width:43vw}
+ .mine-world .world-mine{left:23%;top:68%;width:44vw}
+ .mine-world .world-raid{left:77%;top:68%;width:44vw}
+ .mine-world .world-valley{left:50%;top:86%;width:49vw}
+ .mine-world .world-quest{width:62vw;max-width:350px;bottom:max(7px,env(safe-area-inset-bottom))}
+ .mine-world .world-title-art{width:170px;max-height:60px}
+}
+@media(max-height:500px) and (min-aspect-ratio:1/1){.mine-world .world-tower{width:280px}.mine-world .world-forest,.mine-world .world-eye{width:170px}.mine-world .world-mine,.mine-world .world-raid,.mine-world .world-valley{width:180px}.mine-world .world-quest{width:230px}}
