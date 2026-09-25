@@ -11,3 +11,16 @@
 .valley-hud [data-valley-coins]{color:#ffe097;font-variant-numeric:tabular-nums}
 @media(max-width:600px){.valley-hud{left:4%;right:4%;font-size:13px;gap:7px}.valley-hud [data-valley-health]{font-size:15px}}
 @media(prefers-reduced-motion:reduce){.world-valley{transition:none}}
+/* Shared illustrated title and carved game buttons. */
+.valley-screen .dialog-head h2{width:180px;height:56px;margin:0;font-size:0;background:url('/assets/mine/valley-316/title.png') center/contain no-repeat;flex:none}
+.valley-game [data-valley-start],.valley-controls button{background-color:transparent;background-image:url('/assets/mine/valley-318/buttons.png');background-repeat:no-repeat;background-size:100% 300%;border:0;border-radius:0;box-shadow:none;text-shadow:none;font-size:0;padding:0;aspect-ratio:3/1;height:auto;min-height:0;filter:drop-shadow(0 4px 6px #0009);transition:filter .15s,transform .12s}
+.valley-game [data-valley-start]{width:min(75vw,330px);background-position:center top;flex:none}
+.valley-controls button[data-lane="0"]{background-position:center center}.valley-controls button[data-lane="1"]{background-position:center bottom}
+.valley-controls button{width:42%;max-width:290px;min-width:125px;touch-action:manipulation}
+.valley-game [data-valley-start]:hover,.valley-controls button:hover{filter:brightness(1.2) drop-shadow(0 4px 8px #cfa46155)}
+.valley-game [data-valley-start]:active,.valley-controls button:active{transform:translateY(2px);filter:brightness(.9)}
+.valley-game [data-valley-start]:focus-visible,.valley-controls button:focus-visible{outline:2px solid #edce92;outline-offset:3px}
+.valley-game [data-valley-start]:disabled{filter:grayscale(.5);opacity:.6}
+.valley-cover h3:not(.valley-title-art){font-family:Georgia,'Noto Serif KR',serif;letter-spacing:.03em}
+@media(max-height:500px){.valley-screen .dialog-head h2{width:130px;height:36px}.valley-game [data-valley-start]{width:225px}.valley-controls button{max-width:205px}}
+@media(prefers-reduced-motion:reduce){.valley-game [data-valley-start],.valley-controls button{transition:none}}

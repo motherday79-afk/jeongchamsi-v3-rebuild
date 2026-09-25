@@ -1,4 +1,4 @@
-import {valleyMarkup,mountValley} from './valley.js?v=317';
+import {valleyMarkup,mountValley} from './valley.js?v=318';
 import {createMineAudio,soundButton,musicScene,pickSoundName} from './audio.js?v=314';
 import {createMineNavigation} from './navigation.js?v=315';
 import {worldMapMarkup,updateWorldMap,questMarkup} from './world-map.js?v=317';
