@@ -65,3 +65,8 @@
 .quest-screen .quest-entry-heading h4.quest-name-forest{background-position:center 50%}
 .quest-screen .quest-entry-heading h4.quest-name-tower{background-position:center 100%}
 .quest-screen .quest-go-tower{background:transparent url('/assets/mine/world-mine-sign-308.webp') center/100% 100% no-repeat;display:grid;place-items:center}
+
+/* 329: destination labels are part of the illustrated button artwork. */
+.quest-screen .quest-go-eye,.quest-screen .quest-go-forest,.quest-screen .quest-go-tower{display:block;background-image:url('/assets/mine/quest-329/destinations.png');background-size:100% 300%;background-position:center 0%;aspect-ratio:4.5/1;min-height:0}
+.quest-screen .quest-go-forest{background-position:center 50%}
+.quest-screen .quest-go-tower{background-position:center 100%}
