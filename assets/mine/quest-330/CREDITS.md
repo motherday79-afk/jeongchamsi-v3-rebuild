@@ -1,0 +1,1 @@
+AI-generated two-row Korean title atlas, 2026-09-26. Style reference: assets/mine/forest-322/quest-names.png. Rows: 깨어있는 눈 / 오만의 탑. Bright gold faces, bold outlines and white multiply background matched to original quest titles.

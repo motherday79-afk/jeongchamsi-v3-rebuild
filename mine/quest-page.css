@@ -60,9 +60,8 @@
 .quest-screen .quest-entry-heading h4.quest-name-eye{background-image:url('/assets/mine/eye-324/name.png');background-size:contain;background-position:center;mix-blend-mode:multiply}
 .quest-screen .quest-go-eye{background:transparent url('/assets/mine/world-mine-sign-308.webp') center/100% 100% no-repeat;display:grid;place-items:center}
 
-/* 328: matched parchment wordmarks, no signboard behind quest names. */
-.quest-screen .quest-entry-heading h4.quest-name-eye,.quest-screen .quest-entry-heading h4.quest-name-forest,.quest-screen .quest-entry-heading h4.quest-name-tower{background-image:url('/assets/mine/quest-328/names.png');background-size:100% 300%;aspect-ratio:4.5/1;height:auto;mix-blend-mode:normal;background-position:center 0%}
-.quest-screen .quest-entry-heading h4.quest-name-forest{background-position:center 50%}
+/* 330: match the original bright gold, outlined parchment names. */
+.quest-screen .quest-entry-heading h4.quest-name-eye,.quest-screen .quest-entry-heading h4.quest-name-tower{background-image:url('/assets/mine/quest-330/names.png');background-size:100% 200%;background-position:center 0%;aspect-ratio:10/3;height:auto;mix-blend-mode:multiply;filter:none}
 .quest-screen .quest-entry-heading h4.quest-name-tower{background-position:center 100%}
 .quest-screen .quest-go-tower{background:transparent url('/assets/mine/world-mine-sign-308.webp') center/100% 100% no-repeat;display:grid;place-items:center}
 
