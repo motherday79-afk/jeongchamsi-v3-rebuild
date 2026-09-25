@@ -24,3 +24,25 @@
 .world-quest-label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .world-quest strong[data-world-progress]{position:absolute;left:81%;top:45%;transform:translate(-50%,-50%);font-family:Georgia,serif;font-size:clamp(17px,2vw,24px);font-weight:bold;white-space:nowrap;color:#ffe1a0;text-shadow:0 2px 2px #3d210f,0 0 6px #000}
 @media(max-height:500px){.world-title-art{width:155px;max-height:55px}.world-quest{width:270px;min-height:0;height:auto;padding:0}.world-quest strong[data-world-progress]{font-size:18px}}
+
+/* 321: illustrated quest headings and destinations; legible parchment copy. */
+.quest-accessible{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.quest-screen .quest-scroll-page{font-family:Arial,'Malgun Gothic',sans-serif;color:#291b12;text-shadow:none}
+.quest-screen .quest-page-title small{display:inline-block;color:#382417;background:#efdbafa8;border-radius:4px;padding:5px 12px;font-weight:700;letter-spacing:.12em}
+.quest-screen .quest-heading-art{position:relative;width:min(100%,380px);height:auto;aspect-ratio:1200/326;margin:8px auto 20px;background:url('/assets/mine/quest-title-310.webp') center/contain no-repeat;font-size:0}
+.quest-heading-art>b{position:absolute;left:81%;top:45%;transform:translate(-50%,-50%);font:700 clamp(16px,3vw,24px) Georgia,serif;color:#ffe1a0;text-shadow:0 2px 3px #24140b;white-space:nowrap}
+.quest-name-wrap{flex:1;min-width:0}
+.quest-screen .quest-entry-heading small{color:#48301c;font:700 12px Arial,'Malgun Gothic',sans-serif}
+.quest-screen .quest-entry-heading h4.quest-name-art{width:min(100%,300px);height:80px;margin:0;background-position:center;background-size:contain;background-repeat:no-repeat;font-size:0;filter:drop-shadow(0 3px 3px #34200f50)}
+.quest-name-valley{background-image:url('/assets/mine/valley-316/title.png')}
+.quest-name-raid{background-image:url('/assets/mine/world-raid-title-309.webp')}
+.quest-screen .quest-entry-heading h4.quest-name-auto,.quest-screen .quest-entry-heading h4.quest-name-collect{background-image:url('/assets/mine/quest-321/signs.png');background-size:100% 500%;aspect-ratio:10/3;height:auto;background-position:center 0%}
+.quest-screen .quest-entry-heading h4.quest-name-collect{background-position:center 25%}
+.quest-screen .quest-entry>p,.quest-screen .quest-entry dl{color:#302014;font-size:14px;line-height:1.8}
+.quest-screen .quest-entry{padding:18px 12px;background:#efdbaf70;border-radius:8px}
+.quest-screen .quest-go{width:min(100%,300px);aspect-ratio:10/3;height:auto;min-height:55px;margin:12px auto 0;padding:0;border:0;border-radius:0;box-shadow:none;background:transparent url('/assets/mine/quest-321/signs.png') center 100%/100% 500% no-repeat;filter:drop-shadow(0 3px 3px #29190960);transition:filter .15s,transform .15s}
+.quest-screen .quest-go-valley{background-position:center 50%}.quest-screen .quest-go-raid{background-position:center 75%}
+.quest-screen .quest-go:hover,.quest-screen .quest-go:focus-visible{filter:brightness(1.18) drop-shadow(0 3px 5px #51330d80)}
+.quest-screen .quest-go:active{transform:translateY(2px);filter:brightness(.92)}
+.quest-screen .quest-page-note{color:#2e2017;background:#efdbafdf;border:1px solid #79563170;padding:14px 12px;border-radius:6px;font-size:13px;font-weight:600;line-height:1.9;text-shadow:none}
+@media(max-width:600px){.quest-screen .quest-scroll-page{padding-left:24px;padding-right:24px}.quest-entry-heading{flex-wrap:wrap}.quest-seal{width:27px;height:27px;font-size:17px}.quest-screen .quest-entry-heading h4.quest-name-art{height:65px}.quest-screen .quest-entry-heading h4.quest-name-auto,.quest-screen .quest-entry-heading h4.quest-name-collect{height:auto}.quest-screen .quest-entry>p,.quest-screen .quest-entry dl{font-size:13px}.quest-screen .quest-page-note{font-size:12px}.quest-status{flex:none}}

@@ -16,12 +16,12 @@ export function updateWorldMap(root,raid,quests){
 export function questMarkup(raid,quests){
  const used=raid?.used||0,autoStart=quests?.autoStart||0,collect=quests?.collect||0,completed=quests?.completed??Number(!!raid?.complete);
  const entries=[
-  {name:'망자의 계곡',count:Number(!!quests?.valley),goal:1,description:'수레 내구도 3칸으로 60초 운송을 완수하세요. 별도 보상은 지급되지 않습니다.',action:'data-panel="valley"',button:'계곡으로 가기'},
-  {name:'후회없는 약탈',count:Math.min(1,used),goal:1,description:'승패와 관계없이 카드 1장을 선택해 도전하세요.',action:'data-panel="raid"',button:'약탈하러 가기'},
-  {name:'자동채굴하기',count:autoStart,goal:1,description:'광산에서 자동채굴하기를 눌러 채굴을 시작하세요.',action:'data-world-home',button:'광산으로 가기'},
-  {name:'광물 회수하기',count:collect,goal:5,description:'저장고가 가득 차면 광물을 회수하세요. 하루 5회 회수하면 완료됩니다.',action:'data-world-home',button:'광산으로 가기'}
+  {art:'valley',name:'망자의 계곡',count:Number(!!quests?.valley),goal:1,description:'수레 내구도 3칸으로 60초 운송을 완수하세요. 별도 보상은 지급되지 않습니다.',action:'data-panel="valley"',button:'계곡으로 가기'},
+  {art:'raid',name:'후회없는 약탈',count:Math.min(1,used),goal:1,description:'승패와 관계없이 카드 1장을 선택해 도전하세요.',action:'data-panel="raid"',button:'약탈하러 가기'},
+  {art:'auto',name:'자동채굴하기',count:autoStart,goal:1,description:'광산에서 자동채굴하기를 눌러 채굴을 시작하세요.',action:'data-world-home',button:'광산으로 가기'},
+  {art:'collect',name:'광물 회수하기',count:collect,goal:5,description:'저장고가 가득 차면 광물을 회수하세요. 하루 5회 회수하면 완료됩니다.',action:'data-world-home',button:'광산으로 가기'}
  ];
- return `<section class="quest-scroll-page"><header class="quest-page-title"><small>오늘의 모험 기록</small><h3>오늘의 퀘스트</h3><p>${completed} / 4 완료</p></header>
- ${entries.map((q,i)=>{const done=q.count>=q.goal;return `<article class="quest-entry ${done?'quest-entry-done':''}"><div class="quest-entry-heading"><span class="quest-seal" aria-hidden="true">${done?'✓':['Ⅰ','Ⅱ','Ⅲ','Ⅳ'][i]}</span><div><small>${done?'완료한 퀘스트':'진행할 퀘스트'}</small><h4>${q.name}</h4></div><b class="quest-status">${q.count} / ${q.goal}</b></div><p>${q.description}</p><dl><div><dt>오늘 한 일</dt><dd>${q.count}회 완료</dd></div><div><dt>앞으로 할 일</dt><dd>${done?'이 퀘스트를 완료했습니다':`${q.goal-q.count}회 더 진행하세요`}</dd></div></dl><button class="quest-go" ${q.action}>${q.button} ›</button></article>`;}).join('')}
+ return `<section class="quest-scroll-page"><header class="quest-page-title"><small>오늘의 모험 기록</small><h3 class="quest-heading-art"><span class="quest-accessible">오늘의 퀘스트</span><b>${completed}/4</b></h3></header>
+ ${entries.map((q,i)=>{const done=q.count>=q.goal;return `<article class="quest-entry ${done?'quest-entry-done':''}"><div class="quest-entry-heading"><span class="quest-seal" aria-hidden="true">${done?'✓':['Ⅰ','Ⅱ','Ⅲ','Ⅳ'][i]}</span><div class="quest-name-wrap"><small>${done?'완료한 퀘스트':'진행할 퀘스트'}</small><h4 class="quest-name-art quest-name-${q.art}"><span class="quest-accessible">${q.name}</span></h4></div><b class="quest-status">${q.count} / ${q.goal}</b></div><p>${q.description}</p><dl><div><dt>오늘 한 일</dt><dd>${q.count}회 완료</dd></div><div><dt>앞으로 할 일</dt><dd>${done?'이 퀘스트를 완료했습니다':`${q.goal-q.count}회 더 진행하세요`}</dd></div></dl><button class="quest-go quest-go-${q.art}" ${q.action} aria-label="${q.button}"><span class="quest-accessible">${q.button}</span></button></article>`;}).join('')}
  <footer class="quest-page-note">매일 오전 0시, 새로운 하루의 퀘스트가 시작됩니다.<br>한국 시간 기준 · 참여는 자유입니다.</footer></section>`;
 }
