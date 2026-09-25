@@ -1,7 +1,7 @@
-import {createMineAudio,soundButton,musicScene} from './audio.js?v=313';
+import {createMineAudio,soundButton,musicScene,pickSoundName} from './audio.js?v=314';
 import {createMineNavigation} from './navigation.js?v=309';
 import {worldMapMarkup,updateWorldMap,questMarkup} from './world-map.js?v=313';
-import {raidMarkup,animateRaid} from './raid-ui.js?v=313';
+import {raidMarkup,animateRaid} from './raid-ui.js?v=314';
 let raid=null,quests=null;
 import {initStageLayout} from './stage-layout.js?v=301';
 import {mountMineReset} from './admin-reset.js?v=289';
@@ -44,7 +44,7 @@ Object.assign(errors,{MINE_CAMPAIGN_CHANGED:'새 회차가 시작됐습니다. �
 const running=()=>onlineToken&&state?.onlineToken===onlineToken&&state.mode==='player'&&serverNow()<state.onlineUntil&&state.ore<state.stats.capacity;
 let lastVisualSwing=0;
 const pickEffects=makePickEffects(q('[data-pick-effects]'),{backCanvas:q('[data-pick-effects-back]'),getState:()=>state,reduced:()=>matchMedia('(prefers-reduced-motion: reduce)').matches});
-const minerMotion=makeMinerMotion({setFrame:n=>{if(currentFrame===n)return;currentFrame=n;q('[data-player]').style.backgroundPosition=(n/7*100)+'% 0';pickEffects.frame(n);if(n===4&&!panel)audio.play('swing');if(n===0)pickEffects.end();},impact:()=>{particles();pickEffects.impact();if(!panel)audio.play('strike');}});
+const minerMotion=makeMinerMotion({setFrame:n=>{if(currentFrame===n)return;currentFrame=n;q('[data-player]').style.backgroundPosition=(n/7*100)+'% 0';pickEffects.frame(n);if(n===4&&!panel)audio.play(pickSoundName(pickAppearance(state||{}).visual,'swing'));if(n===0)pickEffects.end();},impact:()=>{particles();pickEffects.impact();if(!panel)audio.play(pickSoundName(pickAppearance(state||{}).visual,'strike'));}});
 function presenceExtra(){return {token:onlineToken,sequence:++sequence};}
 async function enterGame(){
  if(document.hidden||disposed||!state)return;

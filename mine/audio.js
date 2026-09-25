@@ -1,6 +1,9 @@
 // One gain bus for every sound. Device media volume remains controlled by the OS.
 const ASSETS='/assets/mine/media-313/';
-const NAMES=['tap','strike','gain','upgrade','full','collect','scratch','loss','success','failure','equip','swing','map-open','bgm-mine','bgm-world','bgm-raid'];
+const PICK_IDS=['rust','iron','silver','gold','mystic','dimension','dark','heaven','lightning','wind'];
+export const pickSoundName=(visual,phase)=>`pick-${PICK_IDS.includes(visual)?visual:'rust'}-${phase==='swing'?'swing':'strike'}`;
+const PICK_SOUNDS=PICK_IDS.flatMap(id=>['swing','strike'].map(phase=>pickSoundName(id,phase)));
+const NAMES=['tap','strike','gain','upgrade','full','collect','scratch','loss','success','failure','equip','swing','map-open','bgm-mine','bgm-world','bgm-raid',...PICK_SOUNDS];
 export const musicScene=panel=>panel==='raid'?'raid':['world','quests'].includes(panel)?'world':'mine';
 export function createMineAudio({storage,createContext=()=>new (window.AudioContext||window.webkitAudioContext)(),fetcher=(...args)=>fetch(...args),hidden=()=>document.hidden}={}){
  let enabled=true,ctx=null,bus=null,unlocked=false;
@@ -16,7 +19,7 @@ export function createMineAudio({storage,createContext=()=>new (window.AudioCont
   if(!buffer||epoch!==musicEpoch||scene!==desiredScene||!enabled||hidden()||ctx?.state!=='running'||music?.name===scene)return;
   try{
    const source=ctx.createBufferSource(),gain=ctx.createGain();source.buffer=buffer;source.loop=true;gain.gain.value=0;source.connect(gain);gain.connect(bus);
-   const previous=music,entry={name:scene,source,gain};music=entry;musicSources.add(entry);source.onended=()=>musicSources.delete(entry);source.start();ramp(gain,cinemas ? .12 : .85);
+   const previous=music,entry={name:scene,source,gain};music=entry;musicSources.add(entry);source.onended=()=>musicSources.delete(entry);source.start();ramp(gain,cinemas ? 0 : .85);
    if(previous){ramp(previous.gain,0);previous.source.stop(ctx.currentTime+.7);}
   }catch{music=null;}
  }
@@ -25,7 +28,7 @@ export function createMineAudio({storage,createContext=()=>new (window.AudioCont
  async function load(name){
   if(!ctx||!NAMES.includes(name))return null;
   if(buffers.has(name))return buffers.get(name);
-  if(!loading.has(name))loading.set(name,(async()=>{try{const r=await fetcher(ASSETS+name+'.m4a');if(!r.ok)return null;const b=await ctx.decodeAudioData(await r.arrayBuffer());buffers.set(name,b);return b;}catch{return null;}finally{loading.delete(name);}})());
+  if(!loading.has(name))loading.set(name,(async()=>{try{const r=await fetcher((PICK_SOUNDS.includes(name)||['success','failure'].includes(name)?'/assets/mine/media-314/':ASSETS)+name+'.m4a');if(!r.ok)return null;const b=await ctx.decodeAudioData(await r.arrayBuffer());buffers.set(name,b);return b;}catch{return null;}finally{loading.delete(name);}})());
   return loading.get(name);
  }
  async function unlock(){
@@ -44,7 +47,7 @@ export function createMineAudio({storage,createContext=()=>new (window.AudioCont
   }catch{return ()=>{};}
  }
  function track(video,name){
-  cinemas++;if(music)ramp(music.gain,.12,.2);
+  cinemas++;if(music)ramp(music.gain,0,.12);
   let release=null,disposed=false,buffering=false;
   const stop=()=>{release?.();release=null;};
   const sync=()=>{if(disposed||buffering||video.paused||video.ended||hidden()||!enabled){stop();return;}if(!release&&buffers.has(name)&&unlocked&&ctx.state==='running')release=play(name,{offset:video.currentTime});};
@@ -52,7 +55,7 @@ export function createMineAudio({storage,createContext=()=>new (window.AudioCont
   const events={playing,timeupdate:sync,pause:stop,waiting:wait,seeking:seek,seeked:playing,ended:stop};
   for(const [event,fn] of Object.entries(events))video.addEventListener(event,fn);
   const onToggle=()=>{stop();sync();};listeners.add(onToggle);void load(name).then(sync);
-  return ()=>{if(disposed)return;disposed=true;stop();cinemas=Math.max(0,cinemas-1);if(music)ramp(music.gain,cinemas ? .12 : .85,.9);listeners.delete(onToggle);for(const [event,fn] of Object.entries(events))video.removeEventListener(event,fn);};
+  return ()=>{if(disposed)return;disposed=true;stop();cinemas=Math.max(0,cinemas-1);if(music)ramp(music.gain,cinemas ? 0 : .85,.9);listeners.delete(onToggle);for(const [event,fn] of Object.entries(events))video.removeEventListener(event,fn);};
  }
  return {unlock,load,play,track,stopAll,setEnabled,setScene,resumeMusic:syncMusic,get enabled(){return enabled;},subscribe(fn){listeners.add(fn);return ()=>listeners.delete(fn);}};
 }
