@@ -1,3 +1,5 @@
+import {raidMarkup,animateRaid} from './raid-ui.js?v=305';
+let raid=null;
 import {initStageLayout} from './stage-layout.js?v=301';
 import {mountMineReset} from './admin-reset.js?v=289';
 import {initFullscreen} from './fullscreen.js?v=286';
@@ -14,7 +16,7 @@ const root=document.getElementById('mine-game'),q=s=>root.querySelector(s),dialo
 const names=RACES;
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>Number(n||0).toLocaleString('ko-KR');
-const errors={MINE_RESET_TARGET:'초기화할 회원을 찾을 수 없습니다.',MINE_RESET_CONFIRM:'초기화할 회원 아이디를 정확히 입력해 주세요.',MINE_RESET_CHANGED:'이미 초기화된 회원입니다. 관리 창을 다시 열어주세요.',MINE_PICK_LOCKED:'채굴 레벨을 먼저 올려주세요.',MINE_TOOL:'보유한 곡괭이를 선택해 주세요.',MINE_MAX_LEVEL:'최고 레벨입니다.',MINE_GOLD_AMOUNT:'1~1,000,000 G 사이의 정수로 입력해 주세요.',LOGIN_REQUIRED:'로그인 후 광산에 입장해 주세요.',MINE_COOLDOWN:'다음 타격을 준비하고 있어요.',MINE_NOT_FULL:'저장고가 가득 차면 회수할 수 있어요.',MINE_CYCLE_CHANGED:'이미 회수한 광물입니다. 현재 저장고를 확인해 주세요.',MINE_GOLD_REQUIRED:'광산 골드가 부족해요.',MINE_STORAGE_LOCKED:'채굴이나 인부를 먼저 강화해 주세요.',MINE_BUSY:'다른 화면에서 작업 중입니다. 잠시 후 다시 시도해 주세요.',MINE_AD_URL:'광고주 주소를 https://로 시작하는 전체 주소로 입력해 주세요.',MINE_AD_NAME:'광고주 이름을 입력해 주세요.',FORBIDDEN:'관리자만 사용할 수 있어요.',MINE_FULL:'저장고가 가득 찼어요. 광물을 회수해 주세요.',STORAGE_CAPACITY:'저장소 용량이 부족합니다. 관리자에게 알려 주세요.'};
+const errors={MINE_RAID_DAY:'날짜가 바뀌었습니다. 약탈 창을 다시 열어주세요.',MINE_RAID_CARD:'카드를 다시 선택해 주세요.',MINE_RAID_LIMIT:'오늘의 도전 3회를 모두 사용했습니다.',MINE_RAID_CHANGED:'다른 화면에서 도전했습니다. 갱신된 결과를 확인해 주세요.',MINE_RAID_GOLD:'최소 10 G가 필요합니다.',MINE_RESET_TARGET:'초기화할 회원을 찾을 수 없습니다.',MINE_RESET_CONFIRM:'초기화할 회원 아이디를 정확히 입력해 주세요.',MINE_RESET_CHANGED:'이미 초기화된 회원입니다. 관리 창을 다시 열어주세요.',MINE_PICK_LOCKED:'채굴 레벨을 먼저 올려주세요.',MINE_TOOL:'보유한 곡괭이를 선택해 주세요.',MINE_MAX_LEVEL:'최고 레벨입니다.',MINE_GOLD_AMOUNT:'1~1,000,000 G 사이의 정수로 입력해 주세요.',LOGIN_REQUIRED:'로그인 후 광산에 입장해 주세요.',MINE_COOLDOWN:'다음 타격을 준비하고 있어요.',MINE_NOT_FULL:'저장고가 가득 차면 회수할 수 있어요.',MINE_CYCLE_CHANGED:'이미 회수한 광물입니다. 현재 저장고를 확인해 주세요.',MINE_GOLD_REQUIRED:'광산 골드가 부족해요.',MINE_STORAGE_LOCKED:'채굴이나 인부를 먼저 강화해 주세요.',MINE_BUSY:'다른 화면에서 작업 중입니다. 잠시 후 다시 시도해 주세요.',MINE_AD_URL:'광고주 주소를 https://로 시작하는 전체 주소로 입력해 주세요.',MINE_AD_NAME:'광고주 이름을 입력해 주세요.',FORBIDDEN:'관리자만 사용할 수 있어요.',MINE_FULL:'저장고가 가득 찼어요. 광물을 회수해 주세요.',STORAGE_CAPACITY:'저장소 용량이 부족합니다. 관리자에게 알려 주세요.'};
 let state=null,user=null,ad=null,busy=false,pending=null,offset=0,lastManual=0,lastAuto=0,panel='',toastTimer,disposed=false,adminData=null;
 const timers=new Set(),later=(fn,ms)=>{const id=setTimeout(()=>{timers.delete(id);if(!disposed)fn();},ms);timers.add(id);return id;};
 const serverNow=()=>Date.now()-offset;
@@ -55,7 +57,7 @@ function accept(data){
  if(data.state){state=data.state;offset=Date.now()-state.serverNow;}
  if(previousReset!==undefined&&state?.resetVersion!==previousReset){onlineToken=null;needsEntry=true;lastVisualSwing=0;storePending(null);minerMotion.stop();pickEffects.clear();toast('관리자가 광산을 시작 상태로 초기화했습니다.',7000);}
  if(previousEquipment&&state&&previousEquipment!==state.character+':'+state.tool){minerMotion.stop();pickEffects.clear();lastVisualSwing=0;}
- if(data.ad)ad=data.ad;if(data.jackpot)jackpot=data.jackpot;if(data.campaign)campaign=data.campaign;if(data.lottery)lottery=data.lottery;
+ if(data.raid)raid=data.raid;if(data.ad)ad=data.ad;if(data.jackpot)jackpot=data.jackpot;if(data.campaign)campaign=data.campaign;if(data.lottery)lottery=data.lottery;
  if(previousRound&&state?.campaignId!==previousRound){toast('새 광고주 회차가 시작됐습니다. 복권만 새로 시작하며 골드·광물·성장·장비는 유지됩니다.',8000);if(panel==='lottery')showPanel('lottery');}
  else if(panel==='lottery'&&(previousTicket!==lottery?.ticket?.id||previousRevealed!==lottery?.ticket?.revealed))showPanel('lottery');
  paint();
@@ -63,6 +65,7 @@ function accept(data){
 function paint(){
  if(!state)return;
  const s=state,st=s.stats,full=s.ore>=st.capacity;
+ if(raid)q('[data-raid-status]').textContent=(raid.complete?'퀘스트 완료':'일일퀘스트')+' · '+raid.remaining+'회';
  if(jackpot){const el=q('[data-jackpot-count]'),value=fmt(jackpot.failedCycles)+' G';if(el.textContent!==value){setText(el,value);if(!matchMedia('(prefers-reduced-motion: reduce)').matches)el.animate([{filter:'brightness(1.8)',transform:'scale(1.04)'},{filter:'brightness(1)',transform:'scale(1)'}],{duration:500});}}
  if(!running()){minerMotion.stop();pickEffects.end();}
  root.classList.toggle('is-full',full);q('[data-gold]').innerHTML=`${fmt(s.gold)} <small>G</small>`;
@@ -95,8 +98,9 @@ function cooldown(){if(!state)return;const active=running();q('[data-strike]').d
 async function sync(){
  if(busy||!user||disposed)return;busy=true;paint();
  try{const retry=pending,data=await request('mine',retry||undefined);if(data.error==='MINE_FORBIDDEN'){accessDenied();return;}accept(data);if(retry&&data.state)storePending(null);
-  if(!data.ok){if(data.error==='LOGIN_REQUIRED'){user=null;login();}else toast(errors[data.error]||'광산을 불러오지 못했어요. 다시 연결해 주세요.');}
+  if(!data.ok){if(data.error==='LOGIN_REQUIRED'){user=null;login();}else toast(errors[data.error]||'광산을 불러오지 못했어요. 다시 연결해 주세요.');if(retry?.action==='raid-play'&&data.state)showPanel('raid');}
   else if(retry?.action==='collect'&&data.result?.visitUrl){location.assign(data.result.visitUrl);return;}
+  else if(retry?.action==='raid-play'&&data.result?.raid)showRaidResult(data.result.raid);
   else if(retry?.action?.startsWith('lottery-'))showPanel('lottery');
   else if(data.result?.autoGained)effect(data.result.autoGained,false);
  }catch{toast('연결이 잠시 끊겼어요. 채굴 기록을 다시 확인하고 있습니다.',6000);}
@@ -108,8 +112,9 @@ async function action(actionName,extra={}){
  if(actionName==='strike')lastManual=Date.now();
  try{
   const data=await request('mine',body);if(data.error==='MINE_FORBIDDEN'){accessDenied();return;}accept(data);if(data.state)storePending(null);
-  if(!data.ok){if(data.error==='MINE_SESSION'){onlineToken=null;toast('채굴 연결이 종료됐어요. 도움말의 다시 연결을 눌러주세요.');}else toast(errors[data.error]||'작업을 처리하지 못했어요. 다시 시도해 주세요.');if(actionName.startsWith('lottery-'))showPanel('lottery');return;}
+  if(!data.ok){if(data.error==='MINE_SESSION'){onlineToken=null;toast('채굴 연결이 종료됐어요. 도움말의 다시 연결을 눌러주세요.');}else toast(errors[data.error]||'작업을 처리하지 못했어요. 다시 시도해 주세요.');if(actionName.startsWith('lottery-'))showPanel('lottery');if(actionName==='raid-play')showPanel('raid');return;}
   if(data.result?.autoGained)effect(data.result.autoGained,false);
+  if(actionName==='raid-play'){showRaidResult(data.result.raid);return;}
   if(actionName==='auto-start')lastManual=Date.now();
   if(actionName.startsWith('lottery-')){showPanel('lottery');return;}
   if(actionName==='collect'&&data.result?.visitUrl){dialog.close();location.assign(data.result.visitUrl);return;}
@@ -133,10 +138,14 @@ function particles(){const rock=q('[data-ore-rock]');rock.classList.remove('ore-
 function floating(text,kind=''){const el=document.createElement('span');el.className='ore-gain '+kind;el.textContent=text;q('[data-effects]').append(el);later(()=>el.remove(),1500);}
 function effect(gained,manual){if(gained>0)floating('+'+gained+' 금');else if(manual)floating('다시 도전!','miss');}
 function open(title,html){scratchCleanup?.();scratchCleanup=null;q('[data-dialog-title]').textContent=title;q('[data-dialog-body]').innerHTML=html;if(!dialog.open)dialog.showModal();}
+function showRaidResult(result){
+ showPanel('raid');scratchCleanup=animateRaid(q('[data-dialog-body]'),result,{onNext:()=>showPanel('raid')});
+}
 function login(){open('내 광산을 시작하세요',`<p class="dialog-copy">정참시 계정으로 광물과 강화 내역을 저장합니다.</p><a class="gold-action" href="/login?return=%2Fmine" style="display:block;text-align:center;text-decoration:none">로그인하고 입장하기</a><p class="dialog-copy">광산 골드는 기존 정참시 포인트와 별도로 모입니다.</p>`);}
 function showPanel(which){
- panel=which;if(which==='help'){open('광산 이용 방법',`<ul class="help-list"><li>공동 잭팟은 실패 1회당 1G씩 함께 적립합니다. 브론즈 100G · 실버 300G · 골드 1,000G 보상을 준비 중이며, 추첨과 지급은 아직 시작하지 않았습니다.</li><li>게임을 떠나면 인부가 기본 3초마다 채굴합니다. 게임을 켠 동안 인부는 쉽니다.</li><li>자동채굴하기를 누르면 플레이어가 1.5초마다 계속 타격합니다. 멈추기 버튼으로 중지할 수 있습니다. 다른 탭으로 이동하거나 창을 닫으면 인부 채굴로 바뀝니다.</li><li>기본 성공률은 3%. 성공하면 금 1개를 얻습니다. 성공률은 타격할 때마다 독립적으로 적용됩니다.</li><li>저장고가 가득 차야 회수할 수 있습니다. 회수 후 광고주 페이지로 이동하며, 뒤로가기로 돌아오면 됩니다.</li><li>채굴 강화는 성공률(3~20%), 인부 강화는 오프라인 속도를 높입니다. 최고 150레벨이며 곡괭이 상점의 장비는 채굴량과 타격 횟수를 높입니다. 저장고는 채굴 또는 인부가 필요한 단계에 도달하면 강화할 수 있습니다.</li><li>복권은 1회 20G, 당첨 확률은 5%입니다. 전체 당첨 한도에 도달하면 복권만 종료되고 채굴은 계속됩니다. 이전 경품은 복권 창의 당첨 내역에서 확인하세요.</li><li>새 광고주 회차에서는 복권 횟수와 경품 진행만 새로 시작합니다. 골드·광물·모든 강화·장비·캐릭터와 이전 당첨 기록은 유지됩니다.</li><li>광산 골드는 정참시 포인트와 별도입니다. 황금 곡괭이는 이번 버전에서 무료 체험 장비입니다.</li></ul><button class="purple-action" data-reconnect>다시 연결</button>`);return;}
+ panel=which;if(which==='help'){open('광산 이용 방법',`<ul class="help-list"><li>후회없는 약탈은 하루 최대 3회입니다. 성공 카드 1장(+10%), 실패 카드 2장(−10%) 중 선택하며, 보유 골드 기준으로 즉시 정산합니다. 한국 시간 자정에 횟수가 초기화되고 1회 참여하면 일일퀘스트가 완료됩니다. 별도 퀘스트 보상은 아직 없습니다.</li><li>공동 잭팟은 실패 1회당 1G씩 함께 적립합니다. 브론즈 100G · 실버 300G · 골드 1,000G 보상을 준비 중이며, 추첨과 지급은 아직 시작하지 않았습니다.</li><li>게임을 떠나면 인부가 기본 3초마다 채굴합니다. 게임을 켠 동안 인부는 쉽니다.</li><li>자동채굴하기를 누르면 플레이어가 1.5초마다 계속 타격합니다. 멈추기 버튼으로 중지할 수 있습니다. 다른 탭으로 이동하거나 창을 닫으면 인부 채굴로 바뀝니다.</li><li>기본 성공률은 3%. 성공하면 금 1개를 얻습니다. 성공률은 타격할 때마다 독립적으로 적용됩니다.</li><li>저장고가 가득 차야 회수할 수 있습니다. 회수 후 광고주 페이지로 이동하며, 뒤로가기로 돌아오면 됩니다.</li><li>채굴 강화는 성공률(3~20%), 인부 강화는 오프라인 속도를 높입니다. 최고 150레벨이며 곡괭이 상점의 장비는 채굴량과 타격 횟수를 높입니다. 저장고는 채굴 또는 인부가 필요한 단계에 도달하면 강화할 수 있습니다.</li><li>복권은 1회 20G, 당첨 확률은 5%입니다. 전체 당첨 한도에 도달하면 복권만 종료되고 채굴은 계속됩니다. 이전 경품은 복권 창의 당첨 내역에서 확인하세요.</li><li>새 광고주 회차에서는 복권 횟수와 경품 진행만 새로 시작합니다. 골드·광물·모든 강화·장비·캐릭터와 이전 당첨 기록은 유지됩니다.</li><li>광산 골드는 정참시 포인트와 별도입니다. 황금 곡괭이는 이번 버전에서 무료 체험 장비입니다.</li></ul><button class="purple-action" data-reconnect>다시 연결</button>`);return;}
  if(!state){login();return;}
+ if(which==='raid'){open('후회없는 약탈',raidMarkup({raid:raid||{used:0,remaining:3,complete:false},gold:state.gold,locked:!!pending}));return;}
  if(which==='lottery'){
   open('광고주 경품 복권',lotteryMarkup({campaign,lottery,state,busy:busy||!!pending}));
   if(lottery?.ticket&&!lottery.ticket.revealed){const ticket=lottery.ticket;scratchCleanup=mountScratchCard(q('[data-scratch-ticket]'),{onReveal:()=>{pendingReveal={campaignId:ticket.campaignId,ticketId:ticket.id};q('.scratch-outcome')?.removeAttribute('aria-hidden');}});}
@@ -204,7 +213,8 @@ root.addEventListener('submit',async event=>{
 });
 root.addEventListener('click',event=>{
  const b=event.target.closest('button');if(!b||b.disabled)return;
- if(b.hasAttribute('data-ad-image-remove')){const f=b.closest('form');f.elements.imageUrl.value='';f.querySelector('[data-ad-preview]').hidden=true;}
+ if(b.hasAttribute('data-raid-card')){if(busy||pending){toast('연결 처리 중입니다. 잠시 후 선택해 주세요.');return;}q('[data-dialog-body]').querySelectorAll('[data-raid-card]').forEach(c=>c.disabled=true);void action('raid-play',{card:Number(b.dataset.raidCard),day:raid.day,expectedPlays:raid.used});}
+ else if(b.hasAttribute('data-ad-image-remove')){const f=b.closest('form');f.elements.imageUrl.value='';f.querySelector('[data-ad-preview]').hidden=true;}
  else if(b.hasAttribute('data-close')){dialog.close();panel='';}
  else if(b.dataset.panel)showPanel(b.dataset.panel);
  else if(b.dataset.character)void action('character',{character:b.dataset.character});
