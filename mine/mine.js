@@ -1,5 +1,5 @@
 import {createMineNavigation} from './navigation.js?v=309';
-import {worldMapMarkup,updateWorldMap,questMarkup} from './world-map.js?v=309';
+import {worldMapMarkup,updateWorldMap,questMarkup} from './world-map.js?v=310';
 import {raidMarkup,animateRaid} from './raid-ui.js?v=308';
 let raid=null;
 import {initStageLayout} from './stage-layout.js?v=301';
