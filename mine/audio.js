@@ -4,7 +4,7 @@ const PICK_IDS=['rust','iron','silver','gold','mystic','dimension','dark','heave
 export const pickSoundName=(visual,phase)=>`pick-${PICK_IDS.includes(visual)?visual:'rust'}-${phase==='swing'?'swing':'strike'}`;
 const PICK_SOUNDS=PICK_IDS.flatMap(id=>['swing','strike'].map(phase=>pickSoundName(id,phase)));
 const NAMES=['tap','strike','gain','upgrade','full','collect','scratch','loss','success','failure','equip','swing','map-open','bgm-mine','bgm-world','bgm-raid',...PICK_SOUNDS];
-export const musicScene=panel=>panel==='raid'?'raid':['world','quests'].includes(panel)?'world':'mine';
+export const musicScene=panel=>['raid','eye'].includes(panel)?'raid':['world','quests'].includes(panel)?'world':'mine';
 export function createMineAudio({storage,createContext=()=>new (window.AudioContext||window.webkitAudioContext)(),fetcher=(...args)=>fetch(...args),hidden=()=>document.hidden}={}){
  let enabled=true,ctx=null,bus=null,unlocked=false;
  try{storage=storage||localStorage;enabled=storage.getItem('jcs.mine.sound')!=='off';}catch{}

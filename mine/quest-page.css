@@ -54,3 +54,8 @@
 .quest-screen .quest-entry-heading h4.quest-name-forest{background-position:center 100%}
 .quest-screen .quest-go-forest{background-image:url('/assets/mine/world-mine-sign-308.webp');background-size:100% 100%;background-position:center;display:grid;place-items:center}
 .quest-forest-go-label{color:#fff0b5;text-shadow:0 2px 2px #211309,0 0 5px #000;font-weight:800;font-size:clamp(14px,4vw,20px)}
+
+/* 324: halve only quest name illustrations; keep destinations unchanged. */
+.quest-screen .quest-entry-heading h4.quest-name-art{width:min(50%,150px)}
+.quest-screen .quest-entry-heading h4.quest-name-eye{background-image:url('/assets/mine/eye-324/name.png');background-size:contain;background-position:center;mix-blend-mode:multiply}
+.quest-screen .quest-go-eye{background:transparent url('/assets/mine/world-mine-sign-308.webp') center/100% 100% no-repeat;display:grid;place-items:center}

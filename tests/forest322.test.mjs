@@ -27,6 +27,6 @@ test('server rejects spoofed/early/invalid sessions and persists once with no go
  const service=createMiningService({command:memoryMineStore(),now:()=>now,rng:()=>.5}),user={id:'forest322',role:'admin'};
  const start=await service.run(user,{action:'forest-start',requestId:'forest-start-322',difficulty:'normal'});assert.equal(start.ok,true);now+=FOREST_DURATION+4000;
  const finish={action:'forest-finish',requestId:'forest-finish-322',runId:start.result.forest.id,events:perfect('normal')};
- const end=await service.run(user,finish);assert.equal(end.quests.forest,true);assert.equal(end.quests.total,5);assert.equal((await service.run(user,finish)).quests.completed,1);
+ const end=await service.run(user,finish);assert.equal(end.quests.forest,true);assert.equal(end.quests.total,6);assert.equal((await service.run(user,finish)).quests.completed,1);
  now+=3600000;assert.equal((await service.run(user)).quests.forest,false);
 });
