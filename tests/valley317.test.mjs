@@ -8,7 +8,7 @@ test('60-second pattern speeds up after 20 seconds, coins can all be obtained wi
   const attacks=valleyAttacks(seed),coins=valleyCoins(seed),moves=[];let lane=0;
   const move=(at,next)=>{if(next!==lane){moves.push([at,next]);lane=next;}};
   for(let i=0;i<attacks.length;i++){
-   const a=attacks[i];assert.equal(a.hit-a.at,350);
+   const a=attacks[i];assert.equal(a.hit-a.at,450);
    if(i>0){const gap=a.at-attacks[i-1].at;assert.ok(gap>=(attacks[i-1].at<20000?1700:900));assert.ok(gap<=(attacks[i-1].at<20000?2150:1200));}
   }
   const events=[...coins,...attacks.map(a=>({at:a.hit,lane:1-a.lane}))].sort((a,b)=>a.at-b.at);

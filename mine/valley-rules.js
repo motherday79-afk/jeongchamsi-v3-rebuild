@@ -1,6 +1,6 @@
 export const VALLEY_DURATION=60000;
 export const VALLEY_GUIDED=20000;
-export const VALLEY_REACTION=350;
+export const VALLEY_REACTION=450;
 export function valleyAttacks(seed){
  let x=seed>>>0;const random=()=>{x=(Math.imul(x,1664525)+1013904223)>>>0;return x/4294967296;};
  const attacks=[];let at=2400;

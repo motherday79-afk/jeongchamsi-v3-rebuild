@@ -1,0 +1,19 @@
+/* Entry lore is readable prose; existing illustrated titles and controls stay intact. */
+.mine-dialog .game-story{width:min(100%,650px);margin:18px auto;padding:18px 22px;background:linear-gradient(110deg,#090d16e8,#172125df);border-block:1px solid #c5a26777;text-align:left;box-sizing:border-box;flex-shrink:0}
+.mine-dialog .game-story p{color:#f1e8d6;font:400 clamp(13px,1.2vw,16px)/1.85 Arial,'Malgun Gothic',sans-serif;margin:0 0 13px;word-break:keep-all;overflow-wrap:anywhere;text-shadow:0 1px 3px #000}
+.mine-dialog .game-story .game-story-rule{color:#ffdf91;font-size:13px;font-weight:700;border-top:1px solid #d1b47744;padding-top:13px;margin-bottom:0}
+.forest-cover,.valley-cover{justify-content:safe center}
+.forest-cover>*,.valley-cover>*{flex-shrink:0}
+.eye-game.story-entry{height:auto;min-height:100%;justify-content:center;overflow:auto}
+.eye-game.story-entry .eye-board,.eye-game.story-entry .eye-stats,.eye-game.story-entry [data-eye-help]{display:none}
+.eye-game:not(.story-entry)>.game-story,.tower-game:not(.story-entry) .game-story{display:none}
+.tower-game.story-entry{height:auto;min-height:100%;overflow:auto;justify-content:center}
+.tower-game.story-entry .tower-scene,.tower-game.story-entry .tower-track,.tower-game.story-entry .tower-help{display:none}
+.tower-game.story-entry .tower-hud{flex-shrink:0}
+.tower-game.story-entry .tower-controls{margin:20px auto;max-width:720px}
+.tower-game.story-entry .game-story{background:none;border:0;padding:5px 0;box-shadow:none}
+.valley-game:has(.valley-cover:not([hidden])){touch-action:pan-y}
+.valley-cover{overflow-y:auto}
+.mine-dialog .game-story[hidden]{display:none}
+.raid-screen .raid-intro .game-story p{display:block}
+@media(max-width:600px){.mine-dialog .game-story{padding:14px 16px;margin:12px auto}.mine-dialog .game-story p{line-height:1.8}.mine-dialog .game-story .game-story-rule{font-size:12px}}

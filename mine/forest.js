@@ -1,3 +1,4 @@
+import {gameStory} from './game-story.js?v=335';
 import {drawForestLeaf,leafIcon} from './forest-leaf.js?v=323';
 import {FOREST_MODES,FOREST_DURATION,createJudgment} from './forest-rules.js?v=322';
 import {FOREST_SONG} from './forest-song.js?v=322';
@@ -6,7 +7,7 @@ export function forestMarkup(){return `<section class="forest-game" aria-label="
  <div class="forest-motes" aria-hidden="true"></div><div class="forest-hud"><span>정확도 <b data-f-accuracy>0%</b></span><span><b data-f-time>03:45</b></span><button data-f-pause disabled aria-label="일시정지">Ⅱ</button></div>
  <div class="forest-board"><canvas aria-label="위에서 내려오는 음표를 판정선에 맞춰 누르세요"></canvas><div class="forest-judgment" data-f-judge aria-live="off"></div><div class="forest-combo" data-f-combo></div></div>
  <div class="forest-keys">${KEYS.map((k,i)=>`<button data-f-key="${i}" aria-label="${i+1}번 음표 ${k.replace('Key','')}" style="--key-color:${COLORS[i]}"><span aria-hidden="true">${leafIcon(i)}</span><small>${k.replace('Key','')}</small></button>`).join('')}</div>
- <div class="forest-cover" data-f-cover><img class="forest-title" src="/assets/mine/forest-322/title.png" alt="노래하는 숲"><p class="forest-eyebrow">THE SINGING FOREST</p><h3>${FOREST_SONG.title}</h3><p>떨어지는 음표를 빛나는 선에 맞춰 연주하세요.</p>
+ <div class="forest-cover" data-f-cover><img class="forest-title" src="/assets/mine/forest-322/title.png" alt="노래하는 숲"><p class="forest-eyebrow">THE SINGING FOREST</p><h3>${FOREST_SONG.title}</h3>${gameStory('forest')}
  <div class="forest-modes" role="group" aria-label="난이도">${Object.entries(FOREST_MODES).map(([id,m])=>`<button data-f-mode="${id}" aria-pressed="${id==='easy'}"><b>${m.label}</b><small>${id==='easy'?'기본 박자':id==='normal'?'동시 입력':'연타 · 길게 누르기'}</small></button>`).join('')}</div>
  <p class="forest-help">PC A · S · D · F · G / 모바일 5버튼<br>정확도 70% 이상 클리어 · 일일퀘스트 1회</p>
  <label class="forest-sync">박자 보정 <output data-f-offset>0ms</output><input data-f-cal type="range" min="-200" max="200" step="10" value="0"><small>늦게 눌렀다고 느껴지면 + 방향으로 조절하세요.</small></label>
