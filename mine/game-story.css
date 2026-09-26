@@ -17,3 +17,15 @@
 .mine-dialog .game-story[hidden]{display:none}
 .raid-screen .raid-intro .game-story p{display:block}
 @media(max-width:600px){.mine-dialog .game-story{padding:14px 16px;margin:12px auto}.mine-dialog .game-story p{line-height:1.8}.mine-dialog .game-story .game-story-rule{font-size:12px}}
+/* 336: each world's document palette, with restrained glow on emphasis only. */
+.forest-game .game-story{--story-ink:#e2f0d6;--story-accent:#e5edac;--story-rule:#bfeaca;--story-edge:#819e63;--story-dark:#0c2018;--story-light:#1a3022;--story-glow:#b4d77b26}
+.eye-game .game-story{--story-ink:#e8e2ce;--story-accent:#f4d794;--story-rule:#bbdfd2;--story-edge:#a58a53;--story-dark:#10201e;--story-light:#26302a;--story-glow:#e3bf6826}
+.valley-game .game-story{--story-ink:#dae6e9;--story-accent:#bce7e3;--story-rule:#e7d6ac;--story-edge:#6a9396;--story-dark:#0d1921;--story-light:#1c2b32;--story-glow:#77cdd426}
+.raid-game .game-story{--story-ink:#f0dfd2;--story-accent:#ffd0b2;--story-rule:#f4d498;--story-edge:#ab755c;--story-dark:#241318;--story-light:#362021;--story-glow:#ee935326}
+.tower-game .game-story{--story-ink:#e7e0ee;--story-accent:#f3d897;--story-rule:#dac7f4;--story-edge:#a28a61;--story-dark:#171121;--story-light:#292037;--story-glow:#e0b86926}
+.mine-dialog .game-story{position:relative;background:linear-gradient(120deg,var(--story-dark),var(--story-light));border:1px solid var(--story-edge);border-radius:3px 14px;box-shadow:inset 0 0 0 4px #0002,inset 0 0 28px #0003,0 5px 18px #0003}
+.mine-dialog .game-story p{color:var(--story-ink);text-shadow:0 1px 2px #0009}
+.mine-dialog .game-story p:nth-child(2){color:var(--story-accent);text-shadow:0 1px 2px #000b,0 0 12px var(--story-glow)}
+.mine-dialog .game-story .game-story-rule{color:var(--story-rule);border-color:var(--story-edge);text-shadow:0 1px 2px #000a}
+.tower-game.story-entry .game-story{background:linear-gradient(120deg,var(--story-dark),var(--story-light));border:1px solid var(--story-edge);padding:18px 20px;box-shadow:inset 0 0 24px #0003}
+@media(prefers-contrast:more){.mine-dialog .game-story p{color:#fff;text-shadow:none}.mine-dialog .game-story .game-story-rule{color:#fff1c0}}
