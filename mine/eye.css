@@ -12,3 +12,7 @@
 .world-eye{position:absolute;left:53%;top:27%;transform:translate(-50%,-50%);width:clamp(150px,22vw,280px);padding:0;border:0;background:none;cursor:pointer;filter:drop-shadow(0 5px 7px #000);transition:filter .2s;z-index:2}.world-eye img{width:100%;display:block}.world-eye small{color:#ffe9b3;text-shadow:0 2px 4px #000;background:#081714c9;border:1px solid #9e824b;border-radius:4px;padding:3px 8px}.world-eye:hover,.world-eye:focus-visible{filter:brightness(1.2) drop-shadow(0 5px 9px #000)}
 @media(max-width:600px){.eye-game{padding:5px 8px 12px}.eye-top>img{width:180px;height:60px}.eye-top p{font-size:12px;min-height:28px}.eye-stats{font-size:12px;padding:7px 10px}.eye-board{min-height:320px;margin:8px auto}.eye-card,.eye-card>span{border-radius:5px}.world-eye{left:68%;top:20%;width:40vw;max-width:240px}.eye-controls p{font-size:10px}}
 @media(max-height:600px) and (min-width:601px){.eye-top>img{display:none}.eye-top p{font-size:12px}.eye-board{min-height:200px;max-width:700px}.eye-controls p{display:none}.eye-controls>button{min-height:35px;padding:7px 25px}.world-eye{width:170px}}
+
+/* 332: illustrated treasure face; back and neutral cards retain their identity. */
+.treasure .eye-face{background:#17352d url('/assets/mine/eye-332/treasure.png') center/100% 100% no-repeat;box-shadow:inset 0 0 0 1px #f9d780,0 0 16px #f6c34f88}
+.treasure .eye-face b{visibility:hidden}

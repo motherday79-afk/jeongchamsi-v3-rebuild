@@ -288,7 +288,7 @@ dialog.addEventListener('cancel',event=>{event.preventDefault();closePanel();});
 dialog.addEventListener('close',()=>{if(!dialog.open){scratchCleanup?.();scratchCleanup=null;}});
 async function boot(){
  let session;
- try{session=await request('user/session');if(!session.authenticated||session.user?.role!=='admin'){accessDenied();return;}}catch{accessDenied();return;}
+ try{session=await request('user/session');if(!session.authenticated||!session.user?.id||(session.user.status&&session.user.status!=='active')){accessDenied();return;}}catch{accessDenied();return;}
  root.style.visibility='visible';
  if(location.pathname.replace(/\/$/,'')==='/mine/ad'){
   document.title='광고 이동 체험 · 정참시';document.body.innerHTML='<main class="test-ad-page"><section class="test-ad-card"><small>광고 이동 체험</small><h1>광물 회수를 마쳤어요</h1><p>실제 광고주 주소가 아직 연결되지 않아<br>이 안내 페이지로 이동했습니다.</p><p>브라우저의 뒤로가기를 누르면<br>진행 중인 광산으로 돌아갑니다.</p><button class="gold-action" id="back-to-mine">광산으로 돌아가기</button></section></main>';document.getElementById('back-to-mine').onclick=()=>{if(history.length>1)history.back();else location.replace('/mine');};return;
