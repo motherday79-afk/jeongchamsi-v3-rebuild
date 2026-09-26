@@ -91,7 +91,7 @@ test('authentication and preview guards run before storage or background work',a
 test('server handoff uses only first-party endpoint, no redirects, bounded retries',async()=>{
   const calls=[];
   await continueNowRank({runId:'run',step:2},{secret:'test',fetchImpl:async(url,init)=>{calls.push({url,init});return {ok:true,status:202,json:async()=>({ok:true})};}});
-  assert.equal(calls[0].url,'https://jeongchamsi.com/api/now-rank-cron');assert.equal(calls[0].init.redirect,'error');
+  assert.equal(calls[0].url,'https://jeongchamsi-v3-rebuild.vercel.app/api/now-rank-cron');assert.equal(calls[0].init.redirect,'error');
   assert.equal(calls[0].init.headers.authorization,'Bearer test');
   let tries=0;await assert.rejects(continueNowRank({runId:'run',step:2},{secret:'test',fetchImpl:async()=>{tries++;throw Error('offline');},sleep:async()=>{}}),/CONTINUATION_FAILED/);assert.equal(tries,3);
 });
