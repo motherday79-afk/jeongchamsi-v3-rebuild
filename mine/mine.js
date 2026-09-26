@@ -1,11 +1,12 @@
+import {ruinsMarkup,mountRuins} from './ruins.js?v=337';
 import {towerMarkup,mountTower} from './tower.js?v=335';
 import {eyeMarkup,mountEye} from './eye.js?v=335';
 import {forestMarkup,mountForest} from './forest.js?v=335';
-import {setGameHeader} from './game-header.js?v=326';
+import {setGameHeader} from './game-header.js?v=337';
 import {valleyMarkup,mountValley} from './valley.js?v=335';
-import {createMineAudio,soundButton,musicScene,pickSoundName} from './audio.js?v=334';
-import {createMineNavigation} from './navigation.js?v=326';
-import {worldMapMarkup,updateWorldMap,questMarkup} from './world-map.js?v=334';
+import {createMineAudio,soundButton,musicScene,pickSoundName} from './audio.js?v=337';
+import {createMineNavigation} from './navigation.js?v=337';
+import {worldMapMarkup,updateWorldMap,questMarkup} from './world-map.js?v=337';
 import {raidMarkup,animateRaid} from './raid-ui.js?v=335';
 let raid=null,quests=null,tower=null;
 import {initStageLayout} from './stage-layout.js?v=301';
@@ -164,7 +165,7 @@ function swing(el,hits=1){
 function particles(){const rock=q('[data-ore-rock]');rock.classList.remove('ore-hit');void rock.offsetWidth;rock.classList.add('ore-hit');}
 function floating(text,kind=''){const el=document.createElement('span');el.className='ore-gain '+kind;el.textContent=text;q('[data-effects]').append(el);later(()=>el.remove(),1500);}
 function effect(gained,manual){if(gained>0){floating('+'+gained+' 금');if(!panel)audio.play('gain');}else if(manual)floating('다시 도전!','miss');}
-function open(title,html){dialog.classList.toggle('tower-screen',panel==='tower');dialog.classList.toggle('eye-screen',panel==='eye');dialog.classList.toggle('forest-screen',panel==='forest');dialog.classList.toggle('valley-screen',panel==='valley');dialog.classList.toggle('raid-screen',panel==='raid');dialog.classList.toggle('quest-screen',panel==='quests');scratchCleanup?.();scratchCleanup=null;setGameHeader(q('[data-dialog-title]'),panel,title);q('[data-dialog-body]').innerHTML=html;if(!dialog.open)dialog.showModal();}
+function open(title,html){dialog.classList.toggle('ruins-screen',panel==='ruins');dialog.classList.toggle('tower-screen',panel==='tower');dialog.classList.toggle('eye-screen',panel==='eye');dialog.classList.toggle('forest-screen',panel==='forest');dialog.classList.toggle('valley-screen',panel==='valley');dialog.classList.toggle('raid-screen',panel==='raid');dialog.classList.toggle('quest-screen',panel==='quests');scratchCleanup?.();scratchCleanup=null;setGameHeader(q('[data-dialog-title]'),panel,title);q('[data-dialog-body]').innerHTML=html;if(!dialog.open)dialog.showModal();}
 function showRaidResult(result){
  if(panel!=='raid'){toast('약탈 결과가 저장되었습니다. 일일퀘스트에서 확인하세요.');return;}
  showPanel('raid');scratchCleanup=animateRaid(q('[data-dialog-body]'),result,{onNext:()=>showPanel('raid'),audio});
@@ -177,7 +178,7 @@ function renderNavigation(which,scroll=0){
  scratchCleanup?.();scratchCleanup=null;
  panel=which;
  if(!which||which==='world'){
-  dialog.classList.remove('tower-screen','eye-screen','raid-screen','quest-screen','valley-screen','forest-screen');dialog.close();q('[data-world]').hidden=which!=='world';
+  dialog.classList.remove('ruins-screen','tower-screen','eye-screen','raid-screen','quest-screen','valley-screen','forest-screen');dialog.close();q('[data-world]').hidden=which!=='world';
   if(which==='world'){updateWorldMap(root,raid,quests);q('[data-world-home]').focus({preventScroll:true});}
   return;
  }
@@ -188,6 +189,7 @@ function renderNavigation(which,scroll=0){
 function renderPanel(which){
  panel=which;if(which==='help'){open('광산 이용 방법',`<ul class="help-list"><li>후회없는 약탈은 하루 최대 3회입니다. 성공 카드 1장(+10%), 실패 카드 2장(−10%) 중 선택하며, 보유 골드 기준으로 즉시 정산합니다. 한국 시간 자정에 횟수가 초기화되고 1회 참여하면 일일퀘스트가 완료됩니다. 별도 퀘스트 보상은 아직 없습니다.</li><li>공동 잭팟은 실패 1회당 1G씩 함께 적립합니다. 브론즈 100G · 실버 300G · 골드 1,000G 보상을 준비 중이며, 추첨과 지급은 아직 시작하지 않았습니다.</li><li>게임을 떠나면 인부가 기본 3초마다 채굴합니다. 게임을 켠 동안 인부는 쉽니다.</li><li>자동채굴하기를 누르면 플레이어가 1.5초마다 계속 타격합니다. 멈추기 버튼으로 중지할 수 있습니다. 다른 탭으로 이동하거나 창을 닫으면 인부 채굴로 바뀝니다.</li><li>기본 성공률은 3%. 성공하면 금 1개를 얻습니다. 성공률은 타격할 때마다 독립적으로 적용됩니다.</li><li>저장고가 가득 차야 회수할 수 있습니다. 회수 후 광고주 페이지로 이동하며, 뒤로가기로 돌아오면 됩니다.</li><li>채굴 강화는 성공률(3~20%), 인부 강화는 오프라인 속도를 높입니다. 최고 150레벨이며 곡괭이 상점의 장비는 채굴량과 타격 횟수를 높입니다. 저장고는 채굴 또는 인부가 필요한 단계에 도달하면 강화할 수 있습니다.</li><li>복권은 1회 20G, 당첨 확률은 5%입니다. 전체 당첨 한도에 도달하면 복권만 종료되고 채굴은 계속됩니다. 이전 경품은 복권 창의 당첨 내역에서 확인하세요.</li><li>새 광고주 회차에서는 복권 횟수와 경품 진행만 새로 시작합니다. 골드·광물·모든 강화·장비·캐릭터와 이전 당첨 기록은 유지됩니다.</li><li>광산 골드는 정참시 포인트와 별도입니다. 황금 곡괭이는 이번 버전에서 무료 체험 장비입니다.</li></ul><button class="purple-action" data-reconnect>다시 연결</button>`);return;}
  if(!state){login();return;}
+ if(which==='ruins'){open('오래된 폐허',ruinsMarkup());scratchCleanup=mountRuins(q('[data-dialog-body]'),{request,accept,audio});return;}
  if(which==='tower'){open('오만의 탑',towerMarkup());scratchCleanup=mountTower(q('[data-dialog-body]'),{request,accept,audio,state,tower});return;}
  if(which==='eye'){open('깨어있는 눈',eyeMarkup());scratchCleanup=mountEye(q('[data-dialog-body]'),{request,accept,audio});return;}
  if(which==='forest'){open('노래하는 숲',forestMarkup());scratchCleanup=mountForest(q('[data-dialog-body]'),{request,accept,audio});return;}
