@@ -1,4 +1,5 @@
 import {uploadMineAdImage} from '../lib/mining-ad-image.js';
+import {withRankingMutation} from '../lib/now-rank-schedule.js';
 import {createMiningService} from '../lib/mining-service.js';
 import {miningRequest} from '../lib/mining-http.js';
 import {createAiPanelService} from '../lib/ai-panel-service.js';
@@ -168,7 +169,7 @@ export async function handlePoliticians(req,res,command,url,intelligence){
     if(leftRanked&&rightRanked&&leftRank!==rightRank)return leftRank-rightRank;
     return Number(left.slot||0)-Number(right.slot||0)||String(left.id).localeCompare(String(right.id));
   }),items=sorted.slice(offset,offset+limit).map(item=>({...item,photo:photos[item.id]||null,now:rankById[item.id]||null}));
-  return json(res,200,{ok:true,type,counts:POLITICIAN_COUNTS,total:all.length,offset,limit,hasMore:offset+items.length<all.length,items});
+  return json(res,200,{ok:true,type,updatedAt:published?.generatedAt||null,counts:POLITICIAN_COUNTS,total:all.length,offset,limit,hasMore:offset+items.length<all.length,items});
 }
 
 const badgeErrorStatus=error=>error==='BADGE_SHOWCASE_FULL'||error==='BADGE_IS_REPRESENTATIVE'?409:error==='BADGE_LOCKED'?403:400;
@@ -328,7 +329,7 @@ export async function handleAction(req,res,command){
   return json(res,400,{ok:false,error:'UNKNOWN_ACTION'});
 }
 
-export async function dispatchAdminIntelligence(route,method,service,input={}){
+export async function dispatchAdminIntelligence(route,method,service,input={},command=null){
   const actions={
     'admin/intelligence/status':{method:'GET',run:()=>service.status()},
     'admin/intelligence/ranking-weights':{method:'PATCH',run:()=>service.saveRankingWeights(input)},
@@ -358,9 +359,14 @@ export async function dispatchAdminIntelligence(route,method,service,input={}){
   const action=actions[route];
   if(!action)return {status:404,body:{ok:false,error:'NOT_FOUND'}};
   if(method!==action.method)return {status:405,body:{ok:false,error:'METHOD_NOT_ALLOWED'}};
-  try{return {status:200,body:{ok:true,...await action.run()}};}
+  try{
+    const fullMutation=method!=='GET'&&/^admin\/intelligence\/(collect\/|publish\/|draft$|approve$|ranking-weights$)/.test(route);
+    const result=command&&fullMutation?await withRankingMutation(command,action.run):await action.run();
+    return {status:200,body:{ok:true,...result}};
+  }
   catch(error){
     const code=String(error?.code||error?.message||'INTELLIGENCE_OPERATION_FAILED');
+    if(['RANKING_BUSY','SCHEDULED_REFRESH_RUNNING'].includes(code))return {status:409,body:{ok:false,error:code,message:'자동 순위 갱신이 진행 중입니다. 완료 후 다시 시도해 주세요.'}};
     const status=['PERSON_REFRESH_MEMBER_OWNED','PERSON_REFRESH_BUSY','PUBLICATION_BUSY','PUBLIC_SNAPSHOT_REQUIRED','PERSON_SOURCE_INCOMPLETE','PERSON_REFRESH_CHANGED','PERSON_PROFILE_CHANGED','PERSON_PUBLICATION_CHANGED_RETRY','COLLECTION_NOT_READY','COLLECTION_VALIDATION_REQUIRED','DRAFT_APPROVAL_REQUIRED','NAVER_CREDENTIALS_MISSING','YOUTUBE_CREDENTIALS_MISSING','YOUTUBE_SEARCH_QUOTA_REACHED','PERSON_REFRESH_APPROVAL_REQUIRED','PERSON_REFRESH_BASE_CHANGED'].includes(code)?409:['REFRESH_POLICY_INVALID','COLLECTION_PROFILE_INVALID','RANKING_WEIGHTS_INVALID','DRAFT_NOT_FOUND','DRAFT_NOT_EDITABLE','DRAFT_VALIDATION_FAILED','YOUTUBE_CHANNEL_REFERENCE_INVALID','YOUTUBE_DISCOVERY_NOT_STARTED','PERSON_REFRESH_NOT_READY'].includes(code)?400:['POLITICIAN_PROFILE_MISSING','YOUTUBE_CHANNEL_NOT_FOUND'].includes(code)?404:500;
     if(status===500)console.error('[admin-intelligence]',{route,code,message:String(error?.message||''),cause:String(error?.cause?.code||error?.cause?.message||'')});
     return {status,body:{ok:false,error:code,...(status===500?{stage:error.stage|| (route.includes('/publish/')?'게시 처리':''),diagnostic:error.diagnostic||''}:{})}};
@@ -391,7 +397,7 @@ async function handleAdmin(req,res,route,command){
     }catch(error){return json(res,400,{ok:false,error:error.message||'PARTICIPATION_SAVE_FAILED'});}
   }
   if(route.startsWith('admin/intelligence/')){
-    const input={...(req.method==='GET'?{personId:new URL(req.url,'https://local.test').searchParams.get('personId')}:bodyOf(req)),reviewedBy:user.id,editorId:user.id},result=await dispatchAdminIntelligence(route,req.method,createIntelligenceService({command}),input),auditedActions={'admin/intelligence/ranking-weights':'RANKING_WEIGHTS_UPDATE','admin/intelligence/collect/start':'COLLECTION_START','admin/intelligence/collect/retry-failures':'COLLECTION_RETRY','admin/intelligence/approve':'COLLECTION_APPROVE','admin/intelligence/publish/start':'PUBLICATION_START','admin/intelligence/youtube/discovery/start':'YOUTUBE_DISCOVERY_START','admin/intelligence/youtube/channel':'YOUTUBE_CHANNEL_UPDATE','admin/intelligence/youtube/channel/rediscover':'YOUTUBE_CHANNEL_REDISCOVER','admin/intelligence/person/refresh':'PERSON_REFRESH','admin/intelligence/person/approve':'PERSON_REFRESH_APPROVE','admin/intelligence/person/publish':'PERSON_REFRESH_PUBLISH'},action=auditedActions[route];
+    const input={...(req.method==='GET'?{personId:new URL(req.url,'https://local.test').searchParams.get('personId')}:bodyOf(req)),reviewedBy:user.id,editorId:user.id},result=await dispatchAdminIntelligence(route,req.method,createIntelligenceService({command}),input,command),auditedActions={'admin/intelligence/ranking-weights':'RANKING_WEIGHTS_UPDATE','admin/intelligence/collect/start':'COLLECTION_START','admin/intelligence/collect/retry-failures':'COLLECTION_RETRY','admin/intelligence/approve':'COLLECTION_APPROVE','admin/intelligence/publish/start':'PUBLICATION_START','admin/intelligence/youtube/discovery/start':'YOUTUBE_DISCOVERY_START','admin/intelligence/youtube/channel':'YOUTUBE_CHANNEL_UPDATE','admin/intelligence/youtube/channel/rediscover':'YOUTUBE_CHANNEL_REDISCOVER','admin/intelligence/person/refresh':'PERSON_REFRESH','admin/intelligence/person/approve':'PERSON_REFRESH_APPROVE','admin/intelligence/person/publish':'PERSON_REFRESH_PUBLISH'},action=auditedActions[route];
     if(result.status<300&&action)try{await adminPoliticians.log(user.id,action,input.personId||'',{method:req.method,...(action==='RANKING_WEIGHTS_UPDATE'?{news:input.news,search:input.search}:{} )});}catch(error){console.error('[admin-audit]',{action,code:String(error?.code||error?.message||'AUDIT_WRITE_FAILED')});}
     return json(res,result.status,result.body);
   }
