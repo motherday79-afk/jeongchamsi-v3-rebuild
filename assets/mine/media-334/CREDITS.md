@@ -1,0 +1,1 @@
+Original world composition from media-312/313, augmented with chord-matched bass pulses and low drums at 78 BPM. Original melody retained, mastered -16 LUFS / -2 dBTP target. No external audio. 2026-09-26.

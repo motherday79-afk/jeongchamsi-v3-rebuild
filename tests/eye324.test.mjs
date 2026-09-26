@@ -8,14 +8,15 @@ test('service persists success once, preserves shuffle identity and resets quest
  let now=Date.parse('2026-09-26T14:00:00Z');const service=createMiningService({command:memoryMineStore(),now:()=>now,rng:()=>.31});const user={id:'eye324',role:'admin'};
  const start=await service.run(user,{action:'eye-start',requestId:'eye-start-324'});assert.equal(start.ok,true);const r=start.result.eye,layout=Array.from({length:20},(_,i)=>i);
  for(const pairs of r.swaps){assert.equal(new Set(pairs.flat()).size,4);for(const [a,b] of pairs)[layout[a],layout[b]]=[layout[b],layout[a]];}
- assert.equal(new Set(layout).size,20);now+=10000;const body={action:'eye-choose',requestId:'eye-choose-324',runId:r.id,round:1,picks:r.targets.map(id=>layout.indexOf(id))};
+ assert.equal(new Set(layout).size,20);now+=10000;const body={action:'eye-choose',requestId:'eye-choose-324',runId:r.id,round:1,picks:r.targets.slice(0,2).map(id=>layout.indexOf(id))};
+ const mid=await service.run(user,body);assert.equal(mid.result.eye.won,false);const next=mid.result.eye,slots=Array.from({length:20},(_,i)=>i);for(const pairs of next.swaps)for(const [a,b] of pairs)[slots[a],slots[b]]=[slots[b],slots[a]];now+=10000;body.requestId='eye-final-334';body.round=next.round;body.picks=[slots.indexOf(next.targets[0]),slots.findIndex(id=>!next.targets.includes(id))];
  const end=await service.run(user,body);assert.equal(end.ok,true);assert.equal(end.result.eye.won,true);assert.equal(end.quests.total,7);assert.equal(end.quests.eye,true);assert.deepEqual((await service.run(user,body)).result.eye,end.result.eye);
  now+=3600000;assert.equal((await service.run(user)).quests.eye,false);
 });
 test('eye accumulates treasure over three rounds and records only success',()=>{
  const s={gold:100};let now=100000;let r=eyeAction(s,{action:'eye-start',requestId:'start1234'},now,12).eye;
  const choose=(hits)=>{now+=20000;const run=s.eyeRun;const yes=run.layout.map((id,i)=>run.targets.includes(id)?i:-1).filter(i=>i>=0);const no=run.layout.map((id,i)=>run.targets.includes(id)?-1:i).filter(i=>i>=0);return eyeAction(s,{action:'eye-choose',runId:r.id,round:r.round,picks:[...yes.slice(0,hits),...no.slice(0,2-hits)]},now,33).eye;};
- r=choose(0);assert.equal(r.found,0);r=choose(1);assert.equal(r.found,1);r=choose(1);assert.equal(r.won,true);assert.equal(publicQuests(s,now).eye,true);assert.equal(s.gold,100);
+ r=choose(0);assert.equal(r.found,0);r=choose(1);assert.equal(r.found,1);r=choose(2);assert.equal(r.won,true);assert.equal(publicQuests(s,now).eye,true);assert.equal(s.gold,100);
 });
 test('eye rejects early, duplicate and stale picks; three misses fail',()=>{
  const s={};let r=eyeAction(s,{action:'eye-start',requestId:'start1234'},0,7).eye;

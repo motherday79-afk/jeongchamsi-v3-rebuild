@@ -5,12 +5,12 @@ export const worldMapMarkup=()=>`<section class="mine-world" data-world hidden a
  <button class="world-place world-raid" data-panel="raid" aria-label="후회없는 약탈 입장"><span class="world-place-name">후회없는 약탈</span><span class="world-badge" data-world-badge>1회 도전</span></button></div>
  <button class="world-valley" data-panel="valley" aria-label="망자의 계곡 입장"><img src="/assets/mine/valley-316/title.png" alt="망자의 계곡"><small data-valley-badge>운송 성공 1회</small></button>
  <button class="world-tower" data-panel="tower" aria-label="오만의 탑 입장"><img src="/assets/mine/tower-326/title.png" alt="오만의 탑"><small>끝없는 층에 도전</small></button>
- <button class="world-eye" data-panel="eye" aria-label="깨어있는 눈 입장"><img src="/assets/mine/eye-324/title.png" alt="깨어있는 눈"><small data-eye-badge>보물 2개 찾기</small></button>
+ <button class="world-eye" data-panel="eye" aria-label="깨어있는 눈 입장"><img src="/assets/mine/eye-324/title.png" alt="깨어있는 눈"><small data-eye-badge>보물 3개 찾기</small></button>
  <button class="world-forest" data-panel="forest" aria-label="노래하는 숲 입장"><img src="/assets/mine/forest-322/title.png" alt="노래하는 숲"><small data-forest-badge>한 곡 클리어</small></button>
  <button class="world-quest" data-panel="quests" aria-label="오늘의 퀘스트 자세히 보기"><span class="world-quest-label">오늘의 퀘스트</span><strong data-world-progress>0/7</strong></button>
  </section>`;
 export function updateWorldMap(root,raid,quests){
- root.querySelector('[data-eye-badge]').textContent=quests?.eye?'오늘 탐색 완료':'보물 2개 찾기';
+ root.querySelector('[data-eye-badge]').textContent=quests?.eye?'오늘 탐색 완료':'보물 3개 찾기';
  const complete=!!raid?.complete;
  root.querySelector('[data-forest-badge]').textContent=quests?.forest?'오늘 연주 완료':'한 곡 클리어';
  root.querySelector('[data-valley-badge]').textContent=quests?.valley?'오늘 운송 완료':'운송 성공 1회';
@@ -22,7 +22,7 @@ export function questMarkup(raid,quests){
  const used=raid?.used||0,autoStart=quests?.autoStart||0,collect=quests?.collect||0,completed=quests?.completed??Number(!!raid?.complete);
  const entries=[
   {art:'tower',name:'오만의 탑',count:Number(!!quests?.tower),goal:1,description:'오늘 오만의 탑에서 한 개 층을 클리어하세요.',action:'data-panel="tower"',button:'탑으로 가기'},
-  {art:'eye',name:'깨어있는 눈',count:Number(!!quests?.eye),goal:1,description:'20장의 카드를 추적해 세 번의 시도 안에 보물 2개를 찾으세요.',action:'data-panel="eye"',button:'유적으로 가기'},
+  {art:'eye',name:'깨어있는 눈',count:Number(!!quests?.eye),goal:1,description:'20장의 카드를 추적해 세 번의 시도 안에 보물 3개를 찾으세요.',action:'data-panel="eye"',button:'유적으로 가기'},
   {art:'forest',name:'노래하는 숲',count:Number(!!quests?.forest),goal:1,description:'난이도와 관계없이 한 곡을 정확도 70% 이상으로 클리어하세요.',action:'data-panel="forest"',button:'숲으로 가기'},
   {art:'valley',name:'망자의 계곡',count:Number(!!quests?.valley),goal:1,description:'수레 내구도 3칸으로 60초 운송을 완수하세요. 별도 보상은 지급되지 않습니다.',action:'data-panel="valley"',button:'계곡으로 가기'},
   {art:'raid',name:'후회없는 약탈',count:Math.min(1,used),goal:1,description:'승패와 관계없이 카드 1장을 선택해 도전하세요.',action:'data-panel="raid"',button:'약탈하러 가기'},

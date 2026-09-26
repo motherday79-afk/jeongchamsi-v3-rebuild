@@ -28,7 +28,7 @@ export function createMineAudio({storage,createContext=()=>new (window.AudioCont
  async function load(name){
   if(!ctx||!NAMES.includes(name))return null;
   if(buffers.has(name))return buffers.get(name);
-  if(!loading.has(name))loading.set(name,(async()=>{try{const r=await fetcher((PICK_SOUNDS.includes(name)||['success','failure'].includes(name)?'/assets/mine/media-314/':ASSETS)+name+'.m4a');if(!r.ok)return null;const b=await ctx.decodeAudioData(await r.arrayBuffer());buffers.set(name,b);return b;}catch{return null;}finally{loading.delete(name);}})());
+  if(!loading.has(name))loading.set(name,(async()=>{try{const r=await fetcher((name==='bgm-world'?'/assets/mine/media-334/':PICK_SOUNDS.includes(name)||['success','failure'].includes(name)?'/assets/mine/media-314/':ASSETS)+name+'.m4a');if(!r.ok)return null;const b=await ctx.decodeAudioData(await r.arrayBuffer());buffers.set(name,b);return b;}catch{return null;}finally{loading.delete(name);}})());
   return loading.get(name);
  }
  async function unlock(){
