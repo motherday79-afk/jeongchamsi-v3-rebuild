@@ -16,3 +16,7 @@
 /* 332: illustrated treasure face; back and neutral cards retain their identity. */
 .treasure .eye-face{background:#17352d url('/assets/mine/eye-332/treasure.png') center/100% 100% no-repeat;box-shadow:inset 0 0 0 1px #f9d780,0 0 16px #f6c34f88}
 .treasure .eye-face b{visibility:hidden}
+
+/* 333: complete the front-face deck with a matching empty temple seal. */
+.eye-card:not(.treasure) .eye-face{background:#122d29 url('/assets/mine/eye-333/empty.png') center/100% 100% no-repeat;box-shadow:inset 0 0 0 1px #a98b59}
+.eye-face b{visibility:hidden}
