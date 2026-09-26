@@ -30,7 +30,7 @@ test('service persists completion once and resets quest at Korean midnight',asyn
  let r=await service.run(user,{action:'valley-start',requestId:'valley-start-315'});assert.equal(r.ok,true);
  const run=r.result.valley;now+=90000;
  const body={action:'valley-finish',requestId:'valley-finish-315',runId:run.id,moves:dodge(run.seed)};
- r=await service.run(user,body);assert.equal(r.ok,true);assert.equal(r.quests.valley,true);assert.equal(r.quests.total,8);
+ r=await service.run(user,body);assert.equal(r.ok,true);assert.equal(r.quests.valley,true);assert.equal(r.quests.total,7);
  r=await service.run(user,body);assert.equal(r.quests.completed,1);
  now+=3600000;r=await service.run(user);assert.equal(r.quests.valley,false);
 });

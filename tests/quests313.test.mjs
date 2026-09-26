@@ -16,7 +16,7 @@ test('daily mining quests count accepted actions once and reset at Korean midnig
   r=await service.run(user,body);assert.equal(r.quests.collect,i+1);
   r=await service.run(user,body);assert.equal(r.quests.collect,i+1);
  }
- assert.equal(r.quests.completed,2);assert.equal(r.quests.total,8);
+ assert.equal(r.quests.completed,2);assert.equal(r.quests.total,7);
  r=await run('raid-play',{day:r.raid.day,expectedPlays:0,card:0});assert.equal(r.quests.completed,3);
  now+=3600000;r=await service.run(user);assert.equal(r.quests.completed,0);assert.equal(r.quests.autoStart,0);assert.equal(r.quests.collect,0);
 });
