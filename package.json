@@ -8,6 +8,7 @@
   "dependencies": {
     "@vercel/blob": "^2.8.0",
     "@vercel/functions": "^3.9.9",
+    "@vercel/queue": "^0.7.0",
     "redis": "^5.8.2",
     "tyme4ts": "1.5.2"
   },

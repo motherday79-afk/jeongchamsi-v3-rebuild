@@ -23,8 +23,8 @@ import { createPoliticianService } from './core/politicians.js?v=0.0.31.147';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith, isTransientAnalysisRoute } from './core/navigation.js?v=0.0.31.177';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.148';
-import * as views from './views/stage1.js?v=0.0.31.340';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.340';
+import * as views from './views/stage1.js?v=0.0.31.341';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.341';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.177';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.178';
 import { renderPresidentPage } from './views/president.js?v=0.0.31.107';
@@ -156,6 +156,7 @@ async function runAdminIntelligence(kind,resume=false){
 }
 
 function resumeAdminIntelligence(){
+  if(document.querySelector('[data-now-rank-schedule][data-running="true"]'))return;
   const running=document.querySelector('[data-intelligence-job][data-job-status="RUNNING"]:not([data-job-blocked="true"])');
   if(running&&intelligenceAutoResumeGuard.claim(running.dataset.intelligenceJob))void runAdminIntelligence(running.dataset.intelligenceJob,true);
 }

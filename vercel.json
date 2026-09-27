@@ -11,6 +11,10 @@
     },
     "api/now-rank-cron.js": {
       "maxDuration": 60
+    },
+    "api/now-rank-worker.js": {
+      "maxDuration": 60,
+      "experimentalTriggers": [{"type":"queue/v2beta","topic":"now-rank-refresh"}]
     }
   },
   "crons": [
