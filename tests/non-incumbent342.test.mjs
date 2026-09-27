@@ -19,6 +19,7 @@ test('former minister Kim uses disambiguated collection terms',()=>{
  assert.ok(collectionProfileFor(person).newsRegions.includes('고용노동부'));
  assert.equal(collectionProfileFor(person,{collectionProfile:{mode:'name'}}).mode,'name');
  assert.equal(collectionProfileFor({id:'nonincumbent-005',name:'유승민'}).mode,'specified');
+ assert.ok(collectionProfileFor({id:'nonincumbent-009',name:'윤희숙'}).newsRegions.includes('국민의힘'));
 });
 test('twelve approved non-incumbents are available without reseeding existing office holders',async()=>{
  const rows=await readPoliticianType(command,'nonincumbent');
