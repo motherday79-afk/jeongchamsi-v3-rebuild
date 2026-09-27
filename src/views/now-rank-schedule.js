@@ -5,7 +5,7 @@ export function formatRankUpdatedAt(value){
 }
 export function renderRankUpdateNote(value){
   const stamp=formatRankUpdatedAt(value);
-  return `<p class="module-desc">매일 오후 3시 38분 갱신 예약 · 한국 시간 · 수집 완료 후 반영${stamp?`<br>마지막 업데이트: ${esc(stamp)}`:''}</p>`;
+  return `<p class="module-desc">매일 오후 3시 53분 갱신 예약 · 한국 시간 · 수집 완료 후 반영${stamp?`<br>마지막 업데이트: ${esc(stamp)}`:''}</p>`;
 }
 export function renderNowRankSchedule(schedule){
   if(!schedule)return '';

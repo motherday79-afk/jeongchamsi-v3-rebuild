@@ -20,7 +20,7 @@
   "crons": [
     {
       "path": "/api/now-rank-cron",
-      "schedule": "38 6 * * *"
+      "schedule": "53 6 * * *"
     },
     {
       "path": "/api/human-poll-cron",

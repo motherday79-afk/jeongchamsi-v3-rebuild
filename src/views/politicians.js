@@ -1,4 +1,4 @@
-import {renderRankUpdateNote} from './now-rank-schedule.js?v=341.1';
+import {renderRankUpdateNote} from './now-rank-schedule.js?v=341.2';
 import {renderAnalysisAccess,renderMemberRefreshAction,renderMemberRefreshMount} from './person-refresh.js?v=0.0.31.177';
 import {mediaLabel,MAJOR_OUTLET_NAMES,BROADCAST_OUTLET_NAMES} from '../ui/intelligence-narratives.js';
 export {mediaLabel};

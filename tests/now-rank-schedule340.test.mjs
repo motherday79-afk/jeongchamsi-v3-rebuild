@@ -34,10 +34,10 @@ function fixture({failures=0, fatal=false}={}) {
 }
 async function drain(f,ticket){let current=ticket;for(let i=0;current&&i<30;i++)current=await f.scheduler.step(current);return f.get(SCHEDULE_KEY);}
 
-test('15:38 in Korea is 06:38 UTC and human poll schedule is retained',()=>{
+test('15:53 in Korea is 06:53 UTC and human poll schedule is retained',()=>{
   assert.equal(kstDate(Date.parse('2026-09-26T15:00:00Z')),'2026-09-27');
   const cfg=JSON.parse(readFileSync(new URL('../vercel.json',import.meta.url)));
-  assert.ok(cfg.crons.some(x=>x.path==='/api/now-rank-cron'&&x.schedule==='38 6 * * *'));
+  assert.ok(cfg.crons.some(x=>x.path==='/api/now-rank-cron'&&x.schedule==='53 6 * * *'));
   assert.ok(cfg.crons.some(x=>x.path==='/api/human-poll-cron'&&x.schedule==='0 8 * * *'));
 });
 test('daily start and replayed steps are idempotent; completion publishes once',async()=>{
