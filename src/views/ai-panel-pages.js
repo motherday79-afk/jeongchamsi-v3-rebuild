@@ -6,9 +6,10 @@ const value=v=>v===undefined||v===null||v===''?'미제공':typeof v==='object'?J
 const pct=v=>typeof v==='number'&&Number.isFinite(v)?`${Number(v.toFixed(2))}%`:'미제공';
 const gap=(a,b)=>typeof a==='number'&&typeof b==='number'&&Number.isFinite(a)&&Number.isFinite(b)?`${a-b>0?'+':''}${Number((a-b).toFixed(2))}%P`:'미제공';
 const humanStatus=(b,key)=>b?.status?.[key]||((b?.[key]!==undefined&&b?.[key]!==null)?'verified':'unconfirmed');
-const humanMissing=(b,key)=>humanStatus(b,key)==='not_provided'?'미제공':'미확인';
+const humanMissing=(b,key)=>humanStatus(b,key)==='not_provided'?(b?.n<50&&b?.n>0&&['positive','negative','undecided'].includes(key)?'비공개 · 표본 50명 미만':'원문 미공표'):'원문 확인 필요';
 const humanPct=(b,key)=>typeof b?.[key]==='number'&&Number.isFinite(b[key])?pct(b[key]):humanMissing(b,key);
 const humanCount=b=>{const n=typeof b?.n==='number'?String(b.n):humanMissing(b,'n'),weighted=typeof b?.weightedN==='number'?String(b.weightedN):null;return weighted&&weighted!==n?`${n} (가중 ${weighted})`:n;};
+const regionMismatch=(key,group,groups)=>key==='region'&&((group==='강원·제주'&&('강원' in groups||'제주' in groups))||(['강원','제주'].includes(group)&&'강원·제주' in groups));
 const paramsOf=p=>p instanceof URLSearchParams?Object.fromEntries(p):p||{};
 const route=(path,params={})=>`${path}${Object.values(params).some(v=>v!==undefined&&v!==null&&v!=='')?'?'+new URLSearchParams(Object.entries(params).filter(([,v])=>v!==undefined&&v!==null&&v!=='')).toString():''}`;
 const link=(path,label,cls='')=>`<a class="${esc(cls)}" href="#${esc(path)}" data-layout-route="${esc(path)}">${esc(label)}</a>`;
@@ -55,13 +56,23 @@ function compare(r,mode){
   const rows=polls.map(p=>`<tr><th scope="row">${esc(p.institution)}</th>${['positive','negative','undecided'].map(k=>`<td>${p.comparable===true?gap(ai[k],p.results?.overall?.[k]):'비교 미확인'}</td>`).join('')}</tr>`).join('');
   const cross=[['gender','성별'],['age','연령'],['region','지역']].map(([key,label])=>{
     const groups=[...new Set([...Object.keys(aggregate[key]||{}),...polls.flatMap(p=>Object.keys(p.results?.[key]||{}))])];
-    return `<section class="ai-section"><h3>${label} 비교</h3>${groups.length?table(['구분','출처','N','긍정','부정','유보','긍정 GAP'],groups.map(group=>{const a=aggregate[key]?.[group]||{};return `<tr><th scope="row">${esc(group)}</th><td>JCS AI</td><td>${esc(value(a.n))}</td><td>${pct(a.positive)}</td><td>${pct(a.negative)}</td><td>${pct(a.undecided)}</td><td>—</td></tr>`+polls.map(p=>{const b=p.results?.[key]?.[group]||{};return `<tr><th scope="row">${esc(group)}</th><td>${esc(p.institution)}</td><td>${esc(humanCount(b))}</td><td>${humanPct(b,'positive')}</td><td>${humanPct(b,'negative')}</td><td>${humanPct(b,'undecided')}</td><td>${p.comparable===true?gap(a.positive,b.positive):'비교 미확인'}</td></tr>`;}).join('');}).join('')):'<p class="ai-muted">제공된 세부 자료가 없습니다.</p>'}</section>`;
+    return `<section class="ai-section"><h3>${label} 비교</h3>${groups.length?table(['구분','출처','N','긍정','부정','유보','긍정 GAP'],groups.map(group=>{
+      const a=aggregate[key]?.[group];
+      const aiRow=a?`<td>${esc(value(a.n))}</td><td>${pct(a.positive)}</td><td>${pct(a.negative)}</td><td>${pct(a.undecided)}</td><td>—</td>`:`<td colspan="5">${regionMismatch(key,group,aggregate[key]||{})?'지역 구분 상이':'해당 구분 없음'}</td>`;
+      return `<tr><th scope="row">${esc(group)}</th><td>JCS AI</td>${aiRow}</tr>`+polls.map(p=>{
+        const b=p.results?.[key]?.[group];
+        if(!b&&regionMismatch(key,group,p.results?.[key]||{}))return `<tr><th scope="row">${esc(group)}</th><td>${esc(p.institution)}</td><td colspan="5">지역 구분 상이 · 원문 기준으로 별도 표시</td></tr>`;
+        const difference=p.comparable!==true?'비교 미확인':typeof a?.positive==='number'&&typeof b?.positive==='number'?gap(a.positive,b.positive):'—';
+        return `<tr><th scope="row">${esc(group)}</th><td>${esc(p.institution)}</td><td>${esc(humanCount(b))}</td><td>${humanPct(b,'positive')}</td><td>${humanPct(b,'negative')}</td><td>${humanPct(b,'undecided')}</td><td>${difference}</td></tr>`;
+      }).join('');
+    }).join('')):'<p class="ai-muted">세부 통계표 확인이 필요합니다.</p>'}</section>`;
   }).join('');
   const five=ai.percent?`<section class="ai-section"><h3>AI 응답 5단계</h3>${table(['응답','N','비율'],Object.entries(choices).map(([k,l])=>`<tr><th scope="row">${l}</th><td>${esc(value(ai.counts?.[k]))}</td><td>${pct(ai.percent?.[k])}</td></tr>`).join(''))}</section>`:'';
-  return `<div class="ai-results">${cards}<article class="ai-result synthetic"><span class="ai-kicker">JCS AI</span><h3>${esc(mode)} PANEL</h3>${metrics(ai)}<small>AI ID INTELLIGENT AGENT N${esc(value(ai.n))}</small></article></div><section class="ai-section"><h3>HUMAN ↔ AI GAP <small>AI − HUMAN · %P</small></h3>${polls.length?table(['조사기관','긍정 GAP','부정 GAP','유보 GAP'],rows):'<p>인간 조사 자료가 없습니다.</p>'}<p class="ai-muted">기관별 조사는 독립적으로 비교합니다. 미확인·미제공 값은 계산하지 않습니다. 미확인은 이번 수집에서 원자료 값을 검증하지 못한 경우, 미제공은 원자료 자체가 수치를 제시하지 않은 경우입니다.</p></section>${five}${cross}${shift(r)}${polls.map(p=>`<details class="ai-section"><summary>${esc(p.institution)} 조사 정보</summary>${pollMeta(p)}</details>`).join('')}`;
+  return `<div class="ai-results">${cards}<article class="ai-result synthetic"><span class="ai-kicker">JCS AI</span><h3>${esc(mode)} PANEL</h3>${metrics(ai)}<small>AI ID INTELLIGENT AGENT N${esc(value(ai.n))}</small></article></div><section class="ai-section"><h3>HUMAN ↔ AI GAP <small>AI − HUMAN · %P</small></h3>${polls.length?table(['조사기관','긍정 GAP','부정 GAP','유보 GAP'],rows):'<p>인간 조사 자료가 없습니다.</p>'}<p class="ai-muted">기관별 조사는 독립적으로 비교합니다. 원문 확인이 필요한 값과 비공개 값은 계산하지 않습니다. 지역 구분이 다른 경우 합산·추정하지 않습니다. 광주·전라는 원표의 전남광주·전북 권역에 해당합니다. 원문 반올림 때문에 비율 합계가 100%와 다를 수 있습니다.</p></section>${five}${cross}${shift(r)}${polls.map(p=>`<details class="ai-section"><summary>${esc(p.institution)} 조사 정보</summary>${pollMeta(p)}</details>`).join('')}`;
 }
 const table=(headers,rows)=>`<div class="ai-table-wrap"><table><thead><tr>${headers.map(h=>`<th scope="col">${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`;
-const pollMeta=p=>metadata([['조사명',p.title],['조사기관',p.institution],['의뢰기관',p.commissioner],['조사 시작일',p.startDate],['조사 종료일',p.endDate],['발표일',p.publishedDate],['표본수',p.sampleSize],['조사방법',p.method],['응답률',typeof p.responseRate==='number'?pct(p.responseRate):p.responseRate],['표본오차',p.marginOfError],[p.provenance?.questionKind==='source-summary'?'조사 주제':'질문 원문',p.question],['비교 적합성',p.comparable===true?'확인됨':'비교 미확인'],['비교 검토 메모',p.comparisonNote]]);
+const sourceLink=(url,label)=>{try{const u=new URL(url);if(!['http:','https:'].includes(u.protocol))return '';return `<a href="${esc(u.href)}" target="_blank" rel="noopener noreferrer">${esc(label)} ↗</a>`;}catch{return '';}};
+const pollMeta=p=>metadata([['조사명',p.title],['조사기관',p.institution],['의뢰기관',p.commissioner],['조사 시작일',p.startDate],['조사 종료일',p.endDate],['발표일',p.publishedDate],['표본수',p.sampleSize],['조사방법',p.method],['응답률',typeof p.responseRate==='number'?pct(p.responseRate):p.responseRate],['표본오차',typeof p.marginOfError==='number'?`±${p.marginOfError}%P (95% 신뢰수준)`:p.marginOfError],[p.provenance?.questionKind==='source-summary'?'조사 주제':'질문 원문',p.question],['비교 적합성',p.comparable===true?'확인됨':'비교 미확인'],...(p.comparisonNote?[['비교 검토 메모',p.comparisonNote]]:[])])+`<p class="ai-muted">${sourceLink(p.sourceUrl,'조사 발표 원문')}${p.evidence?` · ${sourceLink(p.evidence.url,'원본 통계표')} · ${esc(p.evidence.pages)} · 확인 ${esc(p.evidence.checkedAt)}`:''}</p>${p.evidence?`<p class="ai-muted">${esc(p.evidence.note)}</p>`:''}`;
 function shift(r){
   if(!r.results?.EXPOSED||!r.results?.BLIND)return '';
   const a=overall(r,'EXPOSED'),b=overall(r,'BLIND'),blind=new Map(arr(r.results.BLIND.responses).map(x=>[x.id,x.choice]));
