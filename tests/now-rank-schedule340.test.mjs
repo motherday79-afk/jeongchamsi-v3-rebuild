@@ -34,10 +34,10 @@ function fixture({failures=0, fatal=false}={}) {
 }
 async function drain(f,ticket){let current=ticket;for(let i=0;current&&i<30;i++)current=await f.scheduler.step(current);return f.get(SCHEDULE_KEY);}
 
-test('noon in Korea is 03:00 UTC and human poll schedule is retained',()=>{
+test('15:38 in Korea is 06:38 UTC and human poll schedule is retained',()=>{
   assert.equal(kstDate(Date.parse('2026-09-26T15:00:00Z')),'2026-09-27');
   const cfg=JSON.parse(readFileSync(new URL('../vercel.json',import.meta.url)));
-  assert.ok(cfg.crons.some(x=>x.path==='/api/now-rank-cron'&&x.schedule==='0 3 * * *'));
+  assert.ok(cfg.crons.some(x=>x.path==='/api/now-rank-cron'&&x.schedule==='38 6 * * *'));
   assert.ok(cfg.crons.some(x=>x.path==='/api/human-poll-cron'&&x.schedule==='0 8 * * *'));
 });
 test('daily start and replayed steps are idempotent; completion publishes once',async()=>{
@@ -49,10 +49,10 @@ test('daily start and replayed steps are idempotent; completion publishes once',
   assert.equal(await f.scheduler.start(),null);
   assert.deepEqual(f.counts(),{collects:2,retries:0,publishes:1,starts:1});
 });
-test('failed collection is retried once and never published while incomplete',async()=>{
+test('failed collection is retried three times and never published while incomplete',async()=>{
   const f=fixture({failures:1});f.map.set(K.publicPointer,'previous');
   const record=await drain(f,await f.scheduler.start());
-  assert.equal(record.status,'FAILED');assert.equal(f.counts().retries,1);assert.equal(f.counts().publishes,0);
+  assert.equal(record.status,'FAILED');assert.equal(f.counts().retries,3);assert.equal(f.counts().publishes,0);
   assert.equal(f.map.get(K.publicPointer),'previous');
 });
 test('recovered source failure proceeds to publication',async()=>{
