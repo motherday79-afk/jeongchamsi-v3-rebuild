@@ -1,8 +1,8 @@
 .ai-home .ai-poll-carousel{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-.ai-home .ai-poll-carousel .ai-result{min-width:0}
+.ai-home .ai-poll-carousel .ai-result{min-width:0;padding:12px}
 .ai-home .ai-poll-carousel .ai-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
 .ai-home .ai-poll-carousel .ai-metrics div{min-width:0}
-.ai-home .ai-poll-carousel .ai-metrics dd{font-size:clamp(16px,1.4vw,20px)}
+.ai-home .ai-poll-carousel .ai-metrics dd{font-size:16px;white-space:nowrap;letter-spacing:-.4px}
 .ai-poll-controls{display:none}
 @media(max-width:900px){
  .ai-home .ai-poll-carousel{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;gap:12px;padding-bottom:8px;scrollbar-width:thin}
