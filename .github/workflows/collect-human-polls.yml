@@ -1,0 +1,23 @@
+name: Collect official HUMAN poll documents
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  collect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Collect and validate official documents
+        run: node scripts/collect-human-polls.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: official-human-polls
+          path: poll-output.json
+          retention-days: 7

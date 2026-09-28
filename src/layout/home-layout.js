@@ -1,5 +1,5 @@
 import {APPAREL_PRODUCTS,renderApparelCatalog,renderApparelProduct} from '../views/apparel-shop.js?v=0.0.31.297';
-import {renderAiPanelHome} from '../views/ai-panel-pages.js?v=0.0.31.345';
+import {renderAiPanelHome} from '../views/ai-panel-pages.js?v=0.0.31.346';
 import { cageComposeRoute, isCageClosed } from '../core/cage-entry.js?v=0.0.31.178';
 import { renderCageBanner } from '../ui/home-cage-banner.js?v=0.0.31.167';
 import { GENERATION_AGES, participationDisplay, demoLabel } from '../core/participation-model.js?v=0.0.31.79';

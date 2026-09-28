@@ -1,0 +1,9 @@
+.ai-home .ai-poll-carousel{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.ai-home .ai-poll-carousel .ai-result{min-width:0}
+.ai-poll-controls{display:none}
+@media(max-width:900px){
+ .ai-home .ai-poll-carousel{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;gap:12px;padding-bottom:8px;scrollbar-width:thin}
+ .ai-home .ai-poll-carousel>.ai-result{flex:0 0 88%;scroll-snap-align:start;scroll-snap-stop:always}
+ .ai-home .ai-poll-controls{display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:center;font-size:12px;color:var(--ai-muted)}
+ .ai-poll-controls button{min-width:44px;min-height:44px;border:1px solid var(--ai-border);border-radius:50%;background:var(--ai-soft);color:var(--ai-purple);font-size:22px;cursor:pointer}
+}

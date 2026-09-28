@@ -5,6 +5,6 @@ const human={items:[{institution:'한국갤럽',publishedDate:'2026-09-25',resul
 test('current HUMAN results render independently of older AI comparisons',()=>{
  const r={id:'old',status:'published',week:'old-week',modes:['EXPOSED'],aggregates:{EXPOSED:{}},humanPolls:[]};
  const html=renderAiPanelPublic({list:{items:[r]},human});
- assert.match(html,/기관별 최신/);assert.match(html,/2026-09-25/);assert.match(html,/41%/);assert.match(html,/확정된 AI 비교/);
+ assert.match(html,/기관별 최신/);assert.match(html,/2026-09-25/);assert.match(html,/41%/);assert.match(html,/해당 회차 비교 보기/);
  const home=renderAiPanelHome({item:r,human});assert.match(home,/2026-09-25/);assert.doesNotMatch(home,/data-layout-route="\/ai-panel\?id=old/);
 });
