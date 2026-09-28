@@ -16,8 +16,15 @@ jobs:
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Collect and validate official documents
         run: node scripts/collect-human-polls.mjs
+      - run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.63.0
+      - run: npx playwright install --with-deps chromium
+      - name: Probe normal NBS browser navigation
+        run: node scripts/probe-nbs-browser.mjs
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: official-human-polls
-          path: poll-output.json
+          path: |
+            poll-output.json
+            nbs-browser-output.json
           retention-days: 7
