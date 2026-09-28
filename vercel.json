@@ -1,4 +1,5 @@
 {
+  "regions": ["icn1"],
   "git": {"deploymentEnabled": {"codex/poll-data": false}},
   "functions": {
     "api/gateway.js": {
