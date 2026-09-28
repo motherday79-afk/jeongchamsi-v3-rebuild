@@ -21,6 +21,7 @@ import { castGenerationVote } from '../src/core/participation-model.js';
 import { APP_RELEASE } from '../src/core/release.js';
 import { createCommunityService, communityStats } from '../lib/community-service.js';
 import { cachedPublicKeywords } from '../lib/public-keyword-cache.js';
+import {readKeywordCorpus as readKeywordResults} from '../lib/keyword-corpus-cache.js';
 import { put } from '@vercel/blob';
 import { legacyRedisCommand, rebuildRedisCommand } from '../lib/redis-rest.js';
 import { collectLegacySnapshot, writeRebuildSnapshot, writePoliticianSeed, validatePoliticianSeed, TARGET_KEYS } from '../lib/migration-service.js';
@@ -140,10 +141,19 @@ export async function handlePoliticians(req,res,command,url,intelligence){
   }
   const photos=url.searchParams.has('keywords')?{}:await readPoliticianPhotos(command);
   if(ranking==='trending'||url.searchParams.has('keywords')){
-    const published=await intelligence.getPublicRankings({keywords:url.searchParams.has('keywords')});if(!published)return json(res,200,{ok:true,items:[],total:0,ready:false});
+    const published=await intelligence.getPublicRankings();if(!published)return json(res,200,{ok:true,items:[],total:0,ready:false});
     const snapshot=url.searchParams.get('snapshot');if(snapshot&&snapshot!==published.snapshot)return json(res,409,{ok:false,error:'RANKING_UPDATED'});
     const profiles=(await Promise.all(POLITICIAN_TYPES.map(type=>readPoliticianType(command,type)))).flat(),byId=new Map(profiles.map(person=>[person.id,person]));
-    if(url.searchParams.has('keywords')){let rules={};try{rules=JSON.parse(await command(['GET',KEYWORD_RULES_KEY])||'{}');}catch{}const items=cachedPublicKeywords(published.keywordArticles||[],rules,published.generatedAt,profiles.map(row=>row.name));return json(res,200,{ok:true,snapshot:published.snapshot,updatedAt:published.generatedAt,items:items.map(row=>({...row,people:row.people.map(id=>({id,name:byId.get(id)?.name||id}))}))});}
+    if(url.searchParams.has('keywords')){
+      let rules={};try{rules=JSON.parse(await command(['GET',KEYWORD_RULES_KEY])||'{}');}catch{}
+      const version=JSON.stringify([published.snapshot,published.generatedAt,rules,profiles.map(row=>[row.id,row.name])]);
+      const items=await readKeywordResults(command,version,async()=>{
+        const source=await intelligence.getPublicRankings({keywords:true});
+        if(source?.snapshot!==published.snapshot)throw new Error('RANKING_UPDATED');
+        return cachedPublicKeywords(source.keywordArticles||[],rules,source.generatedAt,profiles.map(row=>row.name));
+      });
+      return json(res,200,{ok:true,snapshot:published.snapshot,updatedAt:published.generatedAt,items:items.map(row=>({...row,people:row.people.map(id=>({id,name:byId.get(id)?.name||id}))}))});
+    }
     const rows=published.rising?.items||[],offset=Math.min(100,Math.max(0,Number(url.searchParams.get('offset'))||0)),items=rows.slice(offset,Math.min(100,offset+30)).map(row=>({...byId.get(row.id),...row,photo:photos[row.id]||null}));
     return json(res,200,{ok:true,items,total:Math.min(100,rows.length),offset,nextOffset:offset+items.length,ready:published.rising?.ready===true,snapshot:published.snapshot,previousAt:published.rising?.previousAt||'',updatedAt:published.generatedAt});
   }
