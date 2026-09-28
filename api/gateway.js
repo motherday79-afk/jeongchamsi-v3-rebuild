@@ -20,7 +20,7 @@ import { createRequestReadScope } from '../lib/request-read-scope.js';
 import { castGenerationVote } from '../src/core/participation-model.js';
 import { APP_RELEASE } from '../src/core/release.js';
 import { createCommunityService, communityStats } from '../lib/community-service.js';
-import { politicalKeywords } from '../lib/operational-ranking.js';
+import { cachedPublicKeywords } from '../lib/public-keyword-cache.js';
 import { put } from '@vercel/blob';
 import { legacyRedisCommand, rebuildRedisCommand } from '../lib/redis-rest.js';
 import { collectLegacySnapshot, writeRebuildSnapshot, writePoliticianSeed, validatePoliticianSeed, TARGET_KEYS } from '../lib/migration-service.js';
@@ -138,12 +138,12 @@ export async function handlePoliticians(req,res,command,url,intelligence){
     const projected={...projectIntelligence(fullReport,tier,scope),analysisAccess};
     return json(res,200,{ok:true,accessTier:tier,analysisAccess,item:{...item,photo:photos[id]||null},intelligence:projected});
   }
-  const photos=await readPoliticianPhotos(command);
+  const photos=url.searchParams.has('keywords')?{}:await readPoliticianPhotos(command);
   if(ranking==='trending'||url.searchParams.has('keywords')){
     const published=await intelligence.getPublicRankings({keywords:url.searchParams.has('keywords')});if(!published)return json(res,200,{ok:true,items:[],total:0,ready:false});
     const snapshot=url.searchParams.get('snapshot');if(snapshot&&snapshot!==published.snapshot)return json(res,409,{ok:false,error:'RANKING_UPDATED'});
     const profiles=(await Promise.all(POLITICIAN_TYPES.map(type=>readPoliticianType(command,type)))).flat(),byId=new Map(profiles.map(person=>[person.id,person]));
-    if(url.searchParams.has('keywords')){let rules={};try{rules=JSON.parse(await command(['GET',KEYWORD_RULES_KEY])||'{}');}catch{}const items=politicalKeywords(published.keywordArticles||[],rules,published.generatedAt,profiles.map(row=>row.name));return json(res,200,{ok:true,snapshot:published.snapshot,updatedAt:published.generatedAt,items:items.map(row=>({...row,people:row.people.map(id=>({id,name:byId.get(id)?.name||id}))}))});}
+    if(url.searchParams.has('keywords')){let rules={};try{rules=JSON.parse(await command(['GET',KEYWORD_RULES_KEY])||'{}');}catch{}const items=cachedPublicKeywords(published.keywordArticles||[],rules,published.generatedAt,profiles.map(row=>row.name));return json(res,200,{ok:true,snapshot:published.snapshot,updatedAt:published.generatedAt,items:items.map(row=>({...row,people:row.people.map(id=>({id,name:byId.get(id)?.name||id}))}))});}
     const rows=published.rising?.items||[],offset=Math.min(100,Math.max(0,Number(url.searchParams.get('offset'))||0)),items=rows.slice(offset,Math.min(100,offset+30)).map(row=>({...byId.get(row.id),...row,photo:photos[row.id]||null}));
     return json(res,200,{ok:true,items,total:Math.min(100,rows.length),offset,nextOffset:offset+items.length,ready:published.rising?.ready===true,snapshot:published.snapshot,previousAt:published.rising?.previousAt||'',updatedAt:published.generatedAt});
   }
