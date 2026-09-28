@@ -16,7 +16,7 @@ function storage(){
 const result=items=>({items,providers:[{id:'gallup',state:'success'}]});
 test('publication changes only when public survey content changes, not check timestamps',async()=>{
  const db=storage();let time=1000,item=poll;const service=createHumanPollService({command:db.command,now:()=>time,collect:async()=>result([{...item,fetchedAt:new Date(time).toISOString()}])});
- const first=await service.collect(admin);assert.ok(first.publication?.id);time=2000;
+ const first=await service.collect(admin);assert.ok(first.publication?.id);assert.deepEqual(first.notifications[0].providers,['gallup']);assert.equal(first.operationNotifications[0].kind,'failure');time=2000;
  assert.deepEqual((await service.collect(admin)).publication,first.publication);
  item={...poll,results:{overall:{positive:51,negative:39,undecided:10}}};time=3000;
  const revised=await service.collect(admin);assert.notEqual(revised.publication.id,first.publication.id);assert.equal(revised.publication.at,3000);assert.equal(revised.notifications.length,2);assert.equal(revised.notifications[0].id,'poll:'+first.publication.id);
