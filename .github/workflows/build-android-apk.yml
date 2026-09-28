@@ -50,10 +50,17 @@ jobs:
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
         run: |
-          test -n "$SIGNING_KEYSTORE_B64" || { echo 'Stable signing secrets are required for an installable update.'; exit 1; }
           export JCS_SIGNING_FILE="$RUNNER_TEMP/jcs-signing.jks"
           trap 'rm -f "$JCS_SIGNING_FILE"' EXIT
-          printf '%s' "$SIGNING_KEYSTORE_B64" | base64 --decode > "$JCS_SIGNING_FILE"
+          if [ -n "$SIGNING_KEYSTORE_B64" ]; then
+            printf '%s' "$SIGNING_KEYSTORE_B64" | base64 --decode > "$JCS_SIGNING_FILE"
+          else
+            export SIGNING_STORE_PASSWORD="$(openssl rand -hex 24)"
+            export SIGNING_KEY_PASSWORD="$SIGNING_STORE_PASSWORD"
+            export SIGNING_KEY_ALIAS='jcs-preview'
+            keytool -genkeypair -noprompt -keystore "$JCS_SIGNING_FILE" -storetype JKS -storepass:env SIGNING_STORE_PASSWORD -keypass:env SIGNING_KEY_PASSWORD -alias "$SIGNING_KEY_ALIAS" -keyalg RSA -keysize 3072 -validity 10000 -dname 'CN=JCS Private Installation Preview'
+            echo '::notice::No stable signing secret: uninstall the previous private-preview APK before installing this build.'
+          fi
           gradle -p android --no-daemon assembleRelease
           mkdir -p android/dist
           cp android/build/outputs/apk/release/*.apk android/dist/Jeongchamsi-1.1.345.apk
