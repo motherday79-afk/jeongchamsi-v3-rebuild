@@ -18,5 +18,11 @@ await client.connect();try{
   const normalize=(v,t)=>t==='set'?v.map(x=>x.toString('base64')).sort():t==='hash'?Array.from({length:v.length/2},(_,i)=>[v[i*2].toString('base64'),v[i*2+1].toString('base64')]).sort((a,b)=>a[0].localeCompare(b[0])):v;
   if(hash(normalize(actual,r.type))!==hash(normalize(value,r.type)))throw new Error('Verification mismatch '+JSON.stringify({type:r.type,expectedBuffer:Buffer.isBuffer(value),actualBuffer:Buffer.isBuffer(actual),expectedLength:value?.length,actualLength:actual?.length}));verified++;
  }
- await client.sendCommand(['SAVE']);console.log(JSON.stringify({restored,verified,expired,targetKeys:await client.dbSize()}));
+ let removed=0;
+ if(process.argv.includes('--reconcile')){
+  const expected=new Set(records.filter(r=>r.expires<0||r.expires>Date.now()).map(r=>r.key));let cursor='0';const extra=[];
+  do{const [next,keys]=await client.sendCommand(['SCAN',cursor,'COUNT','200'],{typeMapping:{[RESP_TYPES.BLOB_STRING]:Buffer}});cursor=String(next);for(const key of keys)if(!expected.has(key.toString('base64')))extra.push(key);}while(cursor!=='0');
+  for(const key of extra){await client.sendCommand(['DEL',key]);removed++;}
+ }
+ await client.sendCommand(['SAVE']);console.log(JSON.stringify({restored,verified,expired,removed,targetKeys:await client.dbSize()}));
 }finally{await client.quit();}
