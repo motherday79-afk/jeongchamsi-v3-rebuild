@@ -1,4 +1,6 @@
 import {uploadMineAdImage} from '../lib/mining-ad-image.js';
+import {pushService,enqueueCompletionPush} from '../lib/push-runtime.js';
+import {firebaseConfigured} from '../lib/push-fcm.js';
 import {withRankingMutation} from '../lib/now-rank-schedule.js';
 import {createMiningService} from '../lib/mining-service.js';
 import {miningRequest} from '../lib/mining-http.js';
@@ -204,7 +206,7 @@ async function handleUser(req,res,route,command,url){
   if(route==='user/login'&&req.method==='POST'){
     const body=bodyOf(req);const user=await authenticateUser(command,body.id,body.password);if(!user)return json(res,401,{ok:false,error:'INVALID_LOGIN'});setSession(res,user);return json(res,200,{ok:true,user});
   }
-  if(route==='user/logout'&&req.method==='POST'){clearSession(res);return json(res,200,{ok:true});}
+  if(route==='user/logout'&&req.method==='POST'){const user=await currentUser(req,command);if(user)await pushService(command).revoke(user.id);clearSession(res);return json(res,200,{ok:true});}
   if(route==='user/session'&&req.method==='GET'){const user=await referralProfile(command,await currentUser(req,command));return json(res,200,{authenticated:!!user,user:user||null});}
   if(route==='user/profile'&&req.method==='POST'){const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});return json(res,200,await updateProfile(command,user.id,bodyOf(req)));}
   if(route==='user/fortune'){
@@ -399,6 +401,7 @@ async function handleAdmin(req,res,route,command){
   if(route.startsWith('admin/intelligence/')){
     const input={...(req.method==='GET'?{personId:new URL(req.url,'https://local.test').searchParams.get('personId')}:bodyOf(req)),reviewedBy:user.id,editorId:user.id},result=await dispatchAdminIntelligence(route,req.method,createIntelligenceService({command}),input,command),auditedActions={'admin/intelligence/ranking-weights':'RANKING_WEIGHTS_UPDATE','admin/intelligence/collect/start':'COLLECTION_START','admin/intelligence/collect/retry-failures':'COLLECTION_RETRY','admin/intelligence/approve':'COLLECTION_APPROVE','admin/intelligence/publish/start':'PUBLICATION_START','admin/intelligence/youtube/discovery/start':'YOUTUBE_DISCOVERY_START','admin/intelligence/youtube/channel':'YOUTUBE_CHANNEL_UPDATE','admin/intelligence/youtube/channel/rediscover':'YOUTUBE_CHANNEL_REDISCOVER','admin/intelligence/person/refresh':'PERSON_REFRESH','admin/intelligence/person/approve':'PERSON_REFRESH_APPROVE','admin/intelligence/person/publish':'PERSON_REFRESH_PUBLISH'},action=auditedActions[route];
     if(result.status<300&&action)try{await adminPoliticians.log(user.id,action,input.personId||'',{method:req.method,...(action==='RANKING_WEIGHTS_UPDATE'?{news:input.news,search:input.search}:{} )});}catch(error){console.error('[admin-audit]',{action,code:String(error?.code||error?.message||'AUDIT_WRITE_FAILED')});}
+    if(result.status<300&&route.startsWith('admin/intelligence/publish/'))await enqueueCompletionPush();
     return json(res,result.status,result.body);
   }
   if(route==='admin/users'&&req.method==='GET'){
@@ -474,6 +477,15 @@ export default async function handler(req,res){
     if(route==='polimable'||route.startsWith('polimable/')||route==='polimarble'||route.startsWith('polimarble/'))return json(res,410,{ok:false,error:'FEATURE_REMOVED'});
     if(route.startsWith('migration/'))return handleMigration(req,res,route);
     const command=rebuildRedisCommand();
+    if(route==='push/device'){
+      const user=await currentUser(req,command);
+      if(!user||user.role!=='admin'||user.status!=='active')return json(res,403,{ok:false,error:'PUSH_FORBIDDEN'});
+      if(req.method==='GET')return json(res,200,{ok:true,configured:firebaseConfigured(),userId:user.id});
+      if(req.method!=='POST')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
+      if(req.headers.origin!==url.origin||req.headers['sec-fetch-site']==='cross-site')return json(res,403,{ok:false,error:'PUSH_ORIGIN_INVALID'});
+      const body=bodyOf(req);if(Buffer.byteLength(JSON.stringify(body))>8192)return json(res,413,{ok:false,error:'PUSH_INPUT_INVALID'});
+      try{return json(res,200,await pushService(command).register(user,body));}catch(error){return json(res,400,{ok:false,error:'PUSH_INPUT_INVALID'});}
+    }
     if(['mine','mine/admin','mine/visit','mine/image'].includes(route)){
       const result=await miningRequest(req,{service:{...createMiningService({command}),upload:uploadMineAdImage},user:await currentUser(req,command),url});
       if(result.redirect){res.statusCode=303;res.setHeader('Location',result.redirect);res.setHeader('Cache-Control','no-store');res.setHeader('Referrer-Policy','no-referrer');res.end();return;}
@@ -481,6 +493,7 @@ export default async function handler(req,res){
     }
     if(route==='ai-panel-human'){
       const result=await humanPollRequest(req,{service:createHumanPollService({command}),user:req.method==='POST'?await currentUser(req,command):null,url});
+      if(req.method==='POST'&&result.status===200)await enqueueCompletionPush();
       return json(res,result.status,result.data);
     }
     if(route==='ai-panel'){

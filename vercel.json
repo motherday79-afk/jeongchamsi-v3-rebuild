@@ -1,13 +1,19 @@
 {
   "functions": {
     "api/gateway.js": {
-      "maxDuration": 60
+      "maxDuration": 60,
+      "includeFiles": "node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs"
     },
     "api/share.js": {
       "maxDuration": 10
     },
     "api/human-poll-cron.js": {
-      "maxDuration": 60
+      "maxDuration": 60,
+      "includeFiles": "node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs"
+    },
+    "api/push-worker.js": {
+      "maxDuration": 60,
+      "experimentalTriggers": [{"type":"queue/v2beta","topic":"completion-push"}]
     },
     "api/now-rank-cron.js": {
       "maxDuration": 60
@@ -24,7 +30,7 @@
     },
     {
       "path": "/api/human-poll-cron",
-      "schedule": "0 8 * * *"
+      "schedule": "0 8 * * 1,4,5"
     }
   ],
   "rewrites": [

@@ -38,7 +38,7 @@ test('15:53 in Korea is 06:53 UTC and human poll schedule is retained',()=>{
   assert.equal(kstDate(Date.parse('2026-09-26T15:00:00Z')),'2026-09-27');
   const cfg=JSON.parse(readFileSync(new URL('../vercel.json',import.meta.url)));
   assert.ok(cfg.crons.some(x=>x.path==='/api/now-rank-cron'&&x.schedule==='53 6 * * *'));
-  assert.ok(cfg.crons.some(x=>x.path==='/api/human-poll-cron'&&x.schedule==='0 8 * * *'));
+  assert.ok(cfg.crons.some(x=>x.path==='/api/human-poll-cron'&&x.schedule==='0 8 * * 1,4,5'));
 });
 test('daily start and replayed steps are idempotent; completion publishes once',async()=>{
   const f=fixture(), a=await f.scheduler.start(), b=await f.scheduler.start();

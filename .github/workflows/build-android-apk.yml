@@ -14,8 +14,6 @@ jobs:
     steps:
       - name: Get Android source
         uses: actions/checkout@v4
-        with:
-          ref: android-minimal-webview
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
@@ -28,13 +26,38 @@ jobs:
         with:
           packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
 
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Verify native navigation and notification policy
+        run: |
+          cd android
+          python3 -m unittest discover -s tests -p 'test_*.py'
+          node tests/test_back_layer.cjs
+          node tests/test_startup_ready.cjs
+          mkdir -p verification/classes
+          javac -d verification/classes src/com/jeongchamsi/preview/{BackPolicy,StartupGate,DocumentFailure,DocumentNavigation,IntroTimeline,PushPolicy}.java tests/{BackPolicyTest,StartupTest,PushPolicyTest}.java
+          java -cp verification/classes com.jeongchamsi.preview.BackPolicyTest
+          java -cp verification/classes com.jeongchamsi.preview.StartupTest
+          java -cp verification/classes com.jeongchamsi.preview.PushPolicyTest
+
       - name: Build Jeongchamsi APK
         env:
           SIGNING_KEYSTORE_B64: ${{ secrets.SIGNING_KEYSTORE_B64 }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-        run: bash android/tools/build.sh
+        run: |
+          test -n "$SIGNING_KEYSTORE_B64" || { echo 'Stable signing secrets are required for an installable update.'; exit 1; }
+          export JCS_SIGNING_FILE="$RUNNER_TEMP/jcs-signing.jks"
+          trap 'rm -f "$JCS_SIGNING_FILE"' EXIT
+          printf '%s' "$SIGNING_KEYSTORE_B64" | base64 --decode > "$JCS_SIGNING_FILE"
+          gradle -p android --no-daemon assembleRelease
+          mkdir -p android/dist
+          cp android/build/outputs/apk/release/*.apk android/dist/Jeongchamsi-1.1.345.apk
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose android/dist/Jeongchamsi-1.1.345.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

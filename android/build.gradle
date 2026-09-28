@@ -1,0 +1,28 @@
+plugins { id 'com.android.application' version '8.7.3' }
+def cfg = new groovy.json.JsonSlurper().parse(file('config.json'))
+android {
+ namespace 'com.jeongchamsi.preview'
+ compileSdk 35
+ defaultConfig {
+  applicationId cfg.applicationId
+  minSdk 26
+  targetSdk 35
+  versionCode 345000 + Integer.parseInt(System.getenv('GITHUB_RUN_NUMBER') ?: '0')
+  versionName '1.1.345-updates'
+  buildConfigField 'String', 'HOME_URL', groovy.json.JsonOutput.toJson(cfg.homeUrl)
+ }
+ buildFeatures { buildConfig true }
+ sourceSets { main { manifest.srcFile 'AndroidManifest.xml'; java.srcDirs=['src']; res.srcDirs=['res']; assets.srcDirs=['assets'] } }
+ compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+ signingConfigs { release {
+  storeFile file(System.getenv('JCS_SIGNING_FILE') ?: 'missing-keystore')
+  storePassword System.getenv('SIGNING_STORE_PASSWORD')
+  keyAlias System.getenv('SIGNING_KEY_ALIAS')
+  keyPassword System.getenv('SIGNING_KEY_PASSWORD')
+ } }
+ buildTypes { release { minifyEnabled false; signingConfig signingConfigs.release } }
+}
+dependencies {
+ implementation 'com.google.firebase:firebase-messaging:24.1.0'
+ implementation 'androidx.work:work-runtime:2.9.1'
+}

@@ -1,0 +1,8 @@
+{
+  "goldLogoSource": "JCS_0_0_31_166/assets/brand/jcs-gold-159.png",
+  "goldLogoSha256": "4d0922dc35204aa27260f35a05c4ed4f1aa5e5a871e5657de39f83b446a58e9e",
+  "originalIntro": "2026-09-06 approved original DEX preserved for reference only",
+  "baseSource": "JCS_ANDROID_APPROVED_INTRO_FULL_FINAL_20260906.zip + JCS_ANDROID_SWIPE_BACK_PATCH_20260913.zip",
+  "intro": "Approved sequence preserved; 2.3s native Canvas animation; original logo pixels",
+  "fontSource": "existing web assets/fonts/GmarketSansTTFBold.ttf"
+}
