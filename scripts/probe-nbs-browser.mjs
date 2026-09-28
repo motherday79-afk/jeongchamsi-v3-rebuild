@@ -1,7 +1,7 @@
-// Feasibility probe: normal browser navigation, no challenge-token synthesis or TLS bypass.
+// Normal public-site browser navigation; no token synthesis or TLS bypass.
 import {chromium} from 'playwright';
-import {writeFile} from 'node:fs/promises';
 import {collectDocumentPolls} from '../lib/human-poll-document-collector.js';
+export async function collectNbsInBrowser(){
 const browser=await chromium.launch();
 try{
  const context=await browser.newContext(),page=await context.newPage();
@@ -17,8 +17,8 @@ try{
   return new Response(await response.body(),{status:response.status(),headers:response.headers()});
  };
  const result=await collectDocumentPolls({fetch:browserFetch,providerIds:['nbs']});
- await writeFile('nbs-browser-output.json',JSON.stringify(result));
  console.log('NBS_BROWSER',JSON.stringify(result.providers));
  console.log('NBS_ITEMS',JSON.stringify(result.items.map(p=>({date:p.publishedDate,overall:p.results.overall,ageRows:Object.keys(p.results.age).length,url:p.sourceUrl}))));
- if(!result.items.length)process.exitCode=1;
+ return result;
 }finally{await browser.close();}
+}
