@@ -94,6 +94,7 @@ export function renderBadgeCollection(status={},user={}){
 
 export function renderMyActivity(session,status={},search=''){
   if(!session.authenticated)return renderLogin();
+  if(status?.loadError)return subpage('MY JEONGCHAMSI · BADGES','내 배지 컬렉션','배지 정보를 불러오지 못했습니다.', '<p role="alert">기존 배지와 대표 설정은 변경되지 않았습니다. 잠시 후 새로고침해 주세요.</p>');
   const count=(status.earnedBadges||[]).length;
   return subpage('MY JEONGCHAMSI · BADGES','내 배지 컬렉션','활동으로 획득하고 운영진 승인을 통해 완성하는 정참시의 시민 컬렉션',`<section class="content-card badge-collection-intro"><div><span>COLLECTION STATUS</span><h2>${count}개 획득 · 총 ${BADGE_CATALOG.length}종</h2><p>대표 1개 · 전시 3개를 선택하면 메인 오른쪽 사이드바에 표시됩니다.</p></div><button class="ghost-btn" type="button" data-layout-route="/mypage">마이페이지</button></section>${renderBadgeCollection(status,session.user)}`);
 }

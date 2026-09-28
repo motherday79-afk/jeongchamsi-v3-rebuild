@@ -91,6 +91,7 @@ const filledBadgeSlot=(key,type)=>{const badge=badgeByKey(key);return badge?`<bu
 
 export function renderBadgeShowcase(status={},showMyPage=false,displayName=''){
   status=status||{};
+  if(status.loadError)return '<div class="side-badge-showcase" role="status">배지 정보를 불러오지 못했습니다. 기존 설정은 유지됩니다.</div>';
   const representative=badgeByKey(status.representativeBadge)?.key||'';
 
   const slots=[representative?filledBadgeSlot(representative,'representative'):emptyBadgeSlot('representative')];
