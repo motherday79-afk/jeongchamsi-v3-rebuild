@@ -6,11 +6,11 @@ const decodeRoute=raw=>{const index=raw.indexOf('?'),path=index<0?raw:raw.slice(
 export const routeFromLocation=location=>{
   const hash=String(location?.hash||'');
   const raw=hash.startsWith('#/')?hash.slice(1):`${String(location?.pathname||'/')||'/'}${String(location?.search||'')}`;
-  return decodeRoute(raw||'/');
+  const route=decodeRoute(raw||'/');return /^\/(academy|national-evaluation|keywords)(?:[/?]|$)/.test(route)?'/':route;
 };
 const routePath=route=>{const value=String(route||'/');return value.startsWith('/')?value:`/${value}`;};
 export const isTransientAnalysisRoute=route=>['person','compare'].includes(routePath(route).split('?')[0].split('/').filter(Boolean)[0]);
-const ADMIN_TABS=new Set(['operations','members','politicians','pipeline','site','keywords','participation']);
+const ADMIN_TABS=new Set(['operations','members','politicians','pipeline','site','participation']);
 export function adminRouteState(route='/admin'){
   const params=new URLSearchParams(String(route).split('?')[1]||''),tab=params.get('tab')||'operations';
   return {tab:ADMIN_TABS.has(tab)?tab:'operations',q:String(params.get('q')||''),person:String(params.get('person')||'')};

@@ -10,10 +10,7 @@ export const SERVICE_CATALOG = Object.freeze([
   { key:"generation", tone:"navy", label:"세대의 선택, 대통령", shortLabel:"세대별 대통령", description:"세대별 모의투표 결과", href:"/generation-president", launcher:false },
   { key:"president", tone:"gold", label:"대통령", shortLabel:"대통령", description:"대통령 정보와 기록", href:"/president", launcher:false },
   { key:"news", tone:"red", label:"정참시 NEWS", shortLabel:"NEWS", description:"정치 뉴스 모아보기", href:"/news", launcher:false },
-  { key:"evaluation", tone:"teal", label:"정참시민 전국 평가제", shortLabel:"전국 평가제", description:"정참시민 정치인 평가", href:"/national-evaluation", launcher:false },
-  { key:"academy", tone:"orange", label:"정참시 아카데미", shortLabel:"아카데미", description:"정치 교육 일정과 수강신청", href:"/academy", launcher:false },
   { key:"column", tone:"navy", label:"COLUMN", shortLabel:"COLUMN", description:"오늘 정치에서 읽어야 할 것", href:"/column", launcher:false },
-  { key:"keywords", tone:"green", label:"실시간 정치키워드", shortLabel:"정치키워드", description:"지금 많이 언급되는 정치어", href:"/keywords", launcher:false },
   { key:"trending", tone:"blue", label:"실시간 급상승 정치인", shortLabel:"급상승 정치인", description:"주목도가 빠르게 오른 정치인", href:"/trending", launcher:false }
 ]);
 const ICON_PATHS=Object.freeze({

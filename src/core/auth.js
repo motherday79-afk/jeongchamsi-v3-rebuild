@@ -65,8 +65,6 @@ function createRemoteAuthService(){
     async politicianPhotoStorageStatus(){return request('admin/politicians/photo');},
     async homeBannerStorageStatus(){return request('admin/home-banner');},
     async adminAudit(){return request('admin/audit');},
-    async keywordRules(){return request('admin/keyword-rules');},
-    async saveKeywordRules(input){return request('admin/keyword-rules',{method:'PATCH',body:JSON.stringify(input)});},
     async footerInfo(){return request('admin/footer-info');},
     async saveFooterInfo(input={}){return request('admin/footer-info',{method:'PATCH',body:JSON.stringify(input)});},
     async saveCollectionProfile(input){return request('admin/intelligence/collection-profile',{method:'PATCH',body:JSON.stringify(input)});},

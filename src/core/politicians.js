@@ -10,7 +10,6 @@ export function createPoliticianService(){
     profiles(ids=[]){return request(`?ids=${encodeURIComponent([...new Set(ids)].slice(0,100).join(','))}`);},
     list(type='assembly',offset=0,limit=30){return request(`?type=${encodeURIComponent(type)}&offset=${Math.max(0,Number(offset)||0)}&limit=${Math.max(1,Number(limit)||30)}`);},
     trending(offset=0,snapshot=''){return request(`?ranking=trending&offset=${Math.max(0,Number(offset)||0)}&snapshot=${encodeURIComponent(snapshot)}`);},
-    keywords(){return request('?keywords=1');},
     rankings(){return request('?ranking=overall');},
     mediaSpread({query='',personId='',publisher='',period='latest'}={}){const params=new URLSearchParams({media:'1',q:query,person:personId,publisher,period});return request(`?${params}`);},
     searchAll(query=''){return request(`?q=${encodeURIComponent(String(query||'').trim())}&all=1`);},

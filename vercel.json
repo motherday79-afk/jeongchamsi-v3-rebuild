@@ -1,6 +1,12 @@
 {
-  "regions": ["icn1"],
-  "git": {"deploymentEnabled": {"codex/poll-data": false}},
+  "regions": [
+    "icn1"
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "codex/poll-data": false
+    }
+  },
   "functions": {
     "api/gateway.js": {
       "maxDuration": 60,
@@ -15,19 +21,34 @@
     },
     "api/push-worker.js": {
       "maxDuration": 60,
-      "experimentalTriggers": [{"type":"queue/v2beta","topic":"completion-push"}]
+      "experimentalTriggers": [
+        {
+          "type": "queue/v2beta",
+          "topic": "completion-push"
+        }
+      ]
     },
     "api/now-rank-cron.js": {
       "maxDuration": 60
     },
-    "api/update-watchdog-cron.js": {"maxDuration":60},
+    "api/update-watchdog-cron.js": {
+      "maxDuration": 60
+    },
     "api/now-rank-worker.js": {
       "maxDuration": 60,
-      "experimentalTriggers": [{"type":"queue/v2beta","topic":"now-rank-refresh"}]
+      "experimentalTriggers": [
+        {
+          "type": "queue/v2beta",
+          "topic": "now-rank-refresh"
+        }
+      ]
     }
   },
   "crons": [
-    {"path":"/api/update-watchdog-cron","schedule":"15 9 * * *"},
+    {
+      "path": "/api/update-watchdog-cron",
+      "schedule": "15 9 * * *"
+    },
     {
       "path": "/api/now-rank-cron",
       "schedule": "53 6 * * *"
@@ -71,16 +92,8 @@
       "destination": "/api/share?path=community/:path*"
     },
     {
-      "source": "/academy/:path*",
-      "destination": "/api/share?path=academy/:path*"
-    },
-    {
       "source": "/poll/:path*",
       "destination": "/api/share?path=poll/:path*"
-    },
-    {
-      "source": "/national-evaluation/:path*",
-      "destination": "/api/share?path=national-evaluation/:path*"
     },
     {
       "source": "/generation-president/:path*",
@@ -118,6 +131,21 @@
     },
     {
       "source": "/polimarble/:path*",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/academy/:path*",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/national-evaluation/:path*",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/keywords/:path*",
       "destination": "/",
       "permanent": false
     }

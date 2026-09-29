@@ -20,8 +20,6 @@ import { createRequestReadScope } from '../lib/request-read-scope.js';
 import { castGenerationVote } from '../src/core/participation-model.js';
 import { APP_RELEASE } from '../src/core/release.js';
 import { createCommunityService, communityStats } from '../lib/community-service.js';
-import { cachedPublicKeywords } from '../lib/public-keyword-cache.js';
-import {readKeywordCorpus as readKeywordResults} from '../lib/keyword-corpus-cache.js';
 import { put } from '@vercel/blob';
 import { legacyRedisCommand, rebuildRedisCommand } from '../lib/redis-rest.js';
 import { collectLegacySnapshot, writeRebuildSnapshot, writePoliticianSeed, validatePoliticianSeed, TARGET_KEYS } from '../lib/migration-service.js';
@@ -42,7 +40,7 @@ import { createHomeBannerService, homeBannerStorageStatus } from '../lib/home-ba
 import { createFavoriteService } from '../lib/favorite-service.js';
 import { createInquiryService } from '../lib/inquiry-service.js';
 import { createApplicationService } from '../lib/application-service.js';
-import { createSiteSettingsService, KEYWORD_RULES_KEY, sanitizeKeywordRules } from '../lib/site-settings-service.js';
+import { createSiteSettingsService } from '../lib/site-settings-service.js';
 
 const COOKIE='jcsr2_session';
 const MAX_AGE=60*60*24*30;
@@ -78,7 +76,7 @@ const favoriteService=command=>{
  });
 };
 export function sanitizeContentInput(input={}){const safe={};for(const [key,limit] of Object.entries({title:200,body:20000,summary:500,category:80,coverImage:1000})){const value=String(input?.[key]||'').trim().slice(0,limit);if(value)safe[key]=value;}return safe;}
-export function isActiveAcademySlot(data={},slotId=''){const id=String(slotId||'');return !!id&&(Array.isArray(data?.slots)?data.slots:contentItems(data)).some(slot=>String(slot?.id||'')===id&&slot?.published!==false&&!slot?.closedAt);}
+
 export async function findPublishedPost(command,domain,postId){if(!['columns','community','itsme','news'].includes(String(domain||''))||!postId)return null;const data=await readDomain(command,domain,{items:[]});return contentItems(data).find(post=>String(post.id)===String(postId)&&post.published!==false)||null;}
 const RECORD_CONTENT_VIEW_LUA=`local current=tonumber(redis.call('GET',KEYS[2]) or '0');if ARGV[1]==ARGV[2] then return cjson.encode({ok=true,counted=false,increment=current}) end;local added=redis.call('SADD',KEYS[1],ARGV[1]);if added==0 then return cjson.encode({ok=true,counted=false,increment=current}) end;local next=redis.call('INCR',KEYS[2]);return cjson.encode({ok=true,counted=true,increment=next})`;
 export async function recordContentView(command,user,domain,postId){
@@ -109,6 +107,7 @@ async function handleMigration(req,res,route){
 }
 
 export async function handlePoliticians(req,res,command,url,intelligence){
+  if(url.searchParams.has('keywords'))return json(res,410,{ok:false,error:'FEATURE_REMOVED'});
   if(req.method!=='GET')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
   if(url.searchParams.get('media')==='1'){
     const result=await createMediaSpreadService({command}).search({query:String(url.searchParams.get('q')||'').slice(0,120),personId:String(url.searchParams.get('person')||''),publisher:String(url.searchParams.get('publisher')||'').slice(0,100),period:url.searchParams.get('period')});
@@ -139,21 +138,12 @@ export async function handlePoliticians(req,res,command,url,intelligence){
     const projected={...projectIntelligence(fullReport,tier,scope),analysisAccess};
     return json(res,200,{ok:true,accessTier:tier,analysisAccess,item:{...item,photo:photos[id]||null},intelligence:projected});
   }
-  const photos=url.searchParams.has('keywords')?{}:await readPoliticianPhotos(command);
-  if(ranking==='trending'||url.searchParams.has('keywords')){
+  const photos=await readPoliticianPhotos(command);
+  if(ranking==='trending'){
     const published=await intelligence.getPublicRankings();if(!published)return json(res,200,{ok:true,items:[],total:0,ready:false});
     const snapshot=url.searchParams.get('snapshot');if(snapshot&&snapshot!==published.snapshot)return json(res,409,{ok:false,error:'RANKING_UPDATED'});
     const profiles=(await Promise.all(POLITICIAN_TYPES.map(type=>readPoliticianType(command,type)))).flat(),byId=new Map(profiles.map(person=>[person.id,person]));
-    if(url.searchParams.has('keywords')){
-      let rules={};try{rules=JSON.parse(await command(['GET',KEYWORD_RULES_KEY])||'{}');}catch{}
-      const version=JSON.stringify([published.snapshot,published.generatedAt,rules,profiles.map(row=>[row.id,row.name])]);
-      const items=await readKeywordResults(command,version,async()=>{
-        const source=await intelligence.getPublicRankings({keywords:true});
-        if(source?.snapshot!==published.snapshot)throw new Error('RANKING_UPDATED');
-        return cachedPublicKeywords(source.keywordArticles||[],rules,source.generatedAt,profiles.map(row=>row.name));
-      });
-      return json(res,200,{ok:true,snapshot:published.snapshot,updatedAt:published.generatedAt,items:items.map(row=>({...row,people:row.people.map(id=>({id,name:byId.get(id)?.name||id}))}))});
-    }
+
     const rows=published.rising?.items||[],offset=Math.min(100,Math.max(0,Number(url.searchParams.get('offset'))||0)),items=rows.slice(offset,Math.min(100,offset+30)).map(row=>({...byId.get(row.id),...row,photo:photos[row.id]||null}));
     return json(res,200,{ok:true,items,total:Math.min(100,rows.length),offset,nextOffset:offset+items.length,ready:published.rising?.ready===true,snapshot:published.snapshot,previousAt:published.rising?.previousAt||'',updatedAt:published.generatedAt});
   }
@@ -253,6 +243,7 @@ export function applyPostEdit(post,input={}){
 }
 
 export async function handleContent(req,res,command,url){
+  if(['academy','nationalEvaluation'].includes(url.searchParams.get('domain')||req.query?.domain))return json(res,410,{ok:false,error:'FEATURE_REMOVED'});
   const domain=cleanDomain(url.searchParams.get('domain')||req.query?.domain);if(!domain)return json(res,400,{ok:false,error:'INVALID_DOMAIN'});
   if(req.method==='GET'){
     let data=(await readDomainWithViews(command,domain,null))||({items:[]});
@@ -327,17 +318,10 @@ export async function handleAction(req,res,command){
     if(scope.startsWith('generation:')){
       try{const result=await mutateParticipation(command,[TARGET_KEYS.content('generation'),TARGET_KEYS.activity(user.id)],([data,storedActivity])=>castGenerationVote(data,storedActivity,user,scope,option));return json(res,200,result);}catch(error){return json(res,409,{ok:false,error:error.message});}
     }
-    if(scope.startsWith('national:')){
-      try{const result=await mutateParticipation(command,[TARGET_KEYS.content('nationalEvaluation'),TARGET_KEYS.activity(user.id)],([data,a])=>{
-        const [evaluationId,personId]=scope.slice('national:'.length).split('::');if(!evaluationId||!personId||!['positive','neutral','negative'].includes(option))throw new Error('INVALID_NATIONAL_EVALUATION');
-        const active=Object.values(data.slots||{}).find(x=>String(x?.evaluationId||'')===evaluationId&&String(x?.subjectId||'')===personId&&x.enabled===true&&!x.closedAt);if(!active)throw new Error('EVALUATION_CLOSED');a.nationalEvaluationVotes=a.nationalEvaluationVotes||{};if(a.nationalEvaluationVotes[evaluationId])throw new Error('ALREADY_VOTED');data.results=data.results||{};data.results[evaluationId]={positive:0,neutral:0,negative:0,...data.results[evaluationId]};data.results[evaluationId][option]=Number(data.results[evaluationId][option]||0)+1;a.nationalEvaluationVotes[evaluationId]=option;return {ok:true};
-      });return json(res,200,result);}catch(error){return json(res,409,{ok:false,error:error.message});}
-    }
+
     return json(res,400,{ok:false,error:'INVALID_VOTE'});
   }
-  if(action==='academy-apply'){
-    const slotId=String(payload.slotId||''),academy=await readDomain(command,'academy',{slots:[]});if(!isActiveAcademySlot(academy,slotId))return json(res,404,{ok:false,error:'ACADEMY_SLOT_NOT_FOUND'});activity.academyApplications=[...new Set([slotId,...(activity.academyApplications||[])])].slice(0,100);await writeActivity(command,user.id,activity);return json(res,200,{ok:true,activity});
-  }
+
   return json(res,400,{ok:false,error:'UNKNOWN_ACTION'});
 }
 
@@ -388,19 +372,15 @@ export async function dispatchAdminIntelligence(route,method,service,input={},co
 async function handleAdmin(req,res,route,command){
   const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});if(user.role!=='admin')return json(res,403,{ok:false,error:'ADMIN_REQUIRED'});
   const adminPoliticians=createAdminPoliticianService({command,profilesProvider:()=>allPoliticianProfiles(command)});
-  if(route==='admin/keyword-rules'){
-    if(req.method==='GET'){let rules={};try{rules=JSON.parse(await command(['GET',KEYWORD_RULES_KEY])||'{}');}catch{}return json(res,200,{ok:true,rules:sanitizeKeywordRules(rules)});}
-    if(req.method==='PATCH'){const rules=sanitizeKeywordRules(bodyOf(req));await command(['SET',KEYWORD_RULES_KEY,JSON.stringify(rules)]);return json(res,200,{ok:true,rules});}
-    return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
-  }
+
   if(route==='admin/participation'&&req.method==='GET'){
-    const domains=['polls','generation','nationalEvaluation','community'],rows=await Promise.all(domains.map(async d=>[d,await readDomain(command,d,{items:[]})]));return json(res,200,{ok:true,data:Object.fromEntries(rows)});
+    const domains=['polls','generation','community'],rows=await Promise.all(domains.map(async d=>[d,await readDomain(command,d,{items:[]})]));return json(res,200,{ok:true,data:Object.fromEntries(rows)});
   }
   if(route==='admin/home-cage'&&req.method==='POST'){
     try{const result=await createCommunityService({command}).featureCage(String(bodyOf(req).id||''),user,{titleLayout:bodyOf(req).titleLayout});return json(res,200,result);}catch(error){return json(res,error.status||400,{ok:false,error:error.message});}
   }
   if(route==='admin/participation'&&req.method==='POST'){
-    const body=bodyOf(req),domain=String(body.domain||'');if(!['polls','generation','nationalEvaluation'].includes(domain))return json(res,400,{ok:false,error:'INVALID_PARTICIPATION_DOMAIN'});
+    const body=bodyOf(req),domain=String(body.domain||'');if(!['polls','generation'].includes(domain))return json(res,400,{ok:false,error:'INVALID_PARTICIPATION_DOMAIN'});
     try{
       const result=await mutateParticipation(command,[TARGET_KEYS.content(domain)],([current])=>{
         const result=body.operation==='cohort'&&domain==='generation'?saveGenerationCohort(current,body.input||{},user):body.operation==='demo'?setParticipationDemo(domain,current,body.itemId,body.input||{}):['edit','delete'].includes(body.operation)?editParticipationPost(domain,current,body.itemId,body.input||{},body.operation==='delete'):body.operation==='feature'?featureParticipationPost(domain,current,body.itemId):createParticipationPost(domain,current,body.input||{},user);
@@ -483,6 +463,8 @@ async function handleAdmin(req,res,route,command){
 
 export default async function handler(req,res){
   const url=new URL(req.url||'/',`https://${req.headers.host||'localhost'}`);const route=String(req.query?.path||url.searchParams.get('path')||url.pathname.replace(/^\/api\/v3\/?/,'')).replace(/^\/+|\/+$/g,'');
+  const removedBody=bodyOf(req);
+  if(route==='admin/keyword-rules'||(['content','admin/participation'].includes(route)&&['academy','nationalEvaluation'].includes(url.searchParams.get('domain')||req.query?.domain||removedBody.domain))||(route==='politicians'&&url.searchParams.has('keywords'))||(route==='action'&&(removedBody.action==='academy-apply'||String(removedBody.payload?.scope||'').startsWith('national:')||['academy','nationalEvaluation'].includes(removedBody.payload?.domain))))return json(res,410,{ok:false,error:'FEATURE_REMOVED'});
   try{
     if(route==='polimable'||route.startsWith('polimable/')||route==='polimarble'||route.startsWith('polimarble/'))return json(res,410,{ok:false,error:'FEATURE_REMOVED'});
     if(route.startsWith('migration/'))return handleMigration(req,res,route);

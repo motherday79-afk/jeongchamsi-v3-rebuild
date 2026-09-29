@@ -15,19 +15,19 @@ import { bindCampaignInteractions } from './ui/campaign-interactions.js?v=0.0.31
 import { refreshFontScale } from './ui/font-scale.js?v=0.0.31.56';
 import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.178';
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.56';
-import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.194';
-import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderKeywordsPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.349';
+import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.350';
+import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.350';
 import { focusCageCompose, setupHomeCompare, setupPoliticianAutocomplete, setupLayoutInteractions, setupPoliticianPhotoFallback, setupNowCarousel, setupCageCountdown, setupDesktopHomeViewport } from './ui/interactions.js?v=0.0.31.165';
-import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.200';
-import { createContentService, loadNavigationDashboard, loadPersonNavigation } from './core/content.js?v=0.0.31.178';
-import { createPoliticianService } from './core/politicians.js?v=0.0.31.147';
-import { sharePost, createNavigation, adminRouteState, adminRouteWith, isTransientAnalysisRoute } from './core/navigation.js?v=0.0.31.177';
+import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.350';
+import { createContentService, loadNavigationDashboard, loadPersonNavigation } from './core/content.js?v=0.0.31.350';
+import { createPoliticianService } from './core/politicians.js?v=0.0.31.350';
+import { sharePost, createNavigation, adminRouteState, adminRouteWith, isTransientAnalysisRoute } from './core/navigation.js?v=0.0.31.350';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.148';
-import * as views from './views/stage1.js?v=0.0.31.349';
+import * as views from './views/stage1.js?v=0.0.31.350';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.343';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.177';
-import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident, renderNationalEvaluationPage } from './views/participation-pages.js?v=0.0.31.178';
+import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident } from './views/participation-pages.js?v=0.0.31.350';
 import { renderPresidentPage } from './views/president.js?v=0.0.31.107';
 import { renderSearchPage, hasSearchSnapshot } from './views/search-page.js?v=0.0.31.179';
 import { loadSearchDiscovery } from './views/search-discovery.js?v=0.0.31.179';
@@ -212,7 +212,7 @@ async function render({preserveScroll=false,refreshHome=false,freshSession=false
   if(p[0]==='mypage'&&wantsWallet)dashboard.pointResult=await walletPromise;
   let body='';
   if(!p.length){
-    const [memberCount,columns,community,itsmePosts,newsPosts,polls,generation,nationalEvaluation,academy,rankResult,homeBanner,trendingResult,keywordResult,aiPanelResult,aiHumanResult,fortuneData]=await Promise.all([
+    const [memberCount,columns,community,itsmePosts,newsPosts,polls,generation,rankResult,homeBanner,trendingResult,aiPanelResult,aiHumanResult,fortuneData]=await Promise.all([
       auth.memberCount().catch(()=>0),
       content.list('columns').catch(()=>[]),
       content.list('community').catch(()=>[]),
@@ -220,15 +220,13 @@ async function render({preserveScroll=false,refreshHome=false,freshSession=false
       content.list('news').catch(()=>[]),
       content.readDomain('polls').catch(()=>({items:[]})),
       content.readDomain('generation').catch(()=>({})),
-      content.readDomain('nationalEvaluation').catch(()=>({})),
-      content.readDomain('academy').catch(()=>({items:[],slots:[]})),
       politicians.rankings().catch(()=>({ok:false,items:[]})),
-      content.homeBanner().catch(()=>null),politicians.trending().catch(()=>({items:[]})),politicians.keywords().catch(()=>({items:[]})),aiPanel.list(),aiPanel.humanPolls(),session.authenticated?auth.fortuneToday().catch(()=>({ok:false,error:'FORTUNE_LOAD_FAILED'})):Promise.resolve({ok:true,needsLogin:true})
+      content.homeBanner().catch(()=>null),politicians.trending().catch(()=>({items:[]})),aiPanel.list(),aiPanel.humanPolls(),session.authenticated?auth.fortuneToday().catch(()=>({ok:false,error:'FORTUNE_LOAD_FAILED'})):Promise.resolve({ok:true,needsLogin:true})
     ]);
     const rank=rankResult?.ok?(Array.isArray(rankResult.items)?rankResult.items:[]).slice(0,100):[];
-    const generationIds=(Array.isArray(generation?.candidates)?generation.candidates:[]).slice(0,75),evaluationIds=Object.values(nationalEvaluation?.slots||{}).map(slot=>slot?.subjectId).filter(Boolean),profileIds=[...new Set([...generationIds,...evaluationIds])],profileResult=profileIds.length?await politicians.profiles(profileIds).catch(()=>({items:[]})):{items:[]},resolvedPeople=(profileResult.items||[]).map(item=>({ok:true,item}));
-    const peopleById=Object.fromEntries(resolvedPeople.filter(result=>result?.ok&&result.item).map(result=>[result.item.id,result.item])),generationView={...generation,candidatePeople:peopleById,candidateLabels:Object.fromEntries(generationIds.map(id=>[id,peopleById[id]?.name||id]))},nationalEvaluationView={...nationalEvaluation,slots:Object.fromEntries(Object.entries(nationalEvaluation?.slots||{}).map(([key,slot])=>[key,{...slot,subjectName:peopleById[slot?.subjectId]?.name||slot?.subjectName,party:peopleById[slot?.subjectId]?.party||slot?.party,jurisdiction:peopleById[slot?.subjectId]?.jurisdiction||slot?.jurisdiction,photo:peopleById[slot?.subjectId]?.photo||slot?.photo}]))};
-    const home={...HOME_FIXTURE,aiPanelResult:{...aiPanelResult,human:aiHumanResult},fortuneData,trending:trendingResult.items||[],keywords:keywordResult.items||[],memberCount,columns,community,communityData:content.peekDomain('community')||{items:community},itsmePosts,newsPosts,polls,generation:generationView,nationalEvaluation:nationalEvaluationView,academy,rank,homeBanner,recentPoliticians:loadRecentPoliticians(),session,badgeStatus};
+    const generationIds=(Array.isArray(generation?.candidates)?generation.candidates:[]).slice(0,75),profileIds=[...new Set(generationIds)],profileResult=profileIds.length?await politicians.profiles(profileIds).catch(()=>({items:[]})):{items:[]},resolvedPeople=(profileResult.items||[]).map(item=>({ok:true,item}));
+    const peopleById=Object.fromEntries(resolvedPeople.filter(result=>result?.ok&&result.item).map(result=>[result.item.id,result.item])),generationView={...generation,candidatePeople:peopleById,candidateLabels:Object.fromEntries(generationIds.map(id=>[id,peopleById[id]?.name||id]))};
+    const home={...HOME_FIXTURE,aiPanelResult:{...aiPanelResult,human:aiHumanResult},fortuneData,trending:trendingResult.items||[],memberCount,columns,community,communityData:content.peekDomain('community')||{items:community},itsmePosts,newsPosts,polls,generation:generationView,rank,homeBanner,recentPoliticians:loadRecentPoliticians(),session,badgeStatus};
     body=`<div class="product-home-wrap">${renderHomeLayout(home)}</div>`;
   }
   else if(p[0]==='points'){const pointView=new URLSearchParams(r.split('?')[1]||'').get('view');body=renderPointShop(await content.points(),session,pointView==='support'?'support':pointView==='activity'?'activity':'shop');}
@@ -245,12 +243,9 @@ async function render({preserveScroll=false,refreshHome=false,freshSession=false
   else if(p[0]==='itsme') body=p[1]==='write'?await views.renderItsmeWrite(session,content):p[1]?await views.renderItsmeDetail(p[1],content,session,dashboard):await views.renderItsme(content,r);
   else if(p[0]==='poll') body=await renderPollBoard({content,session,route:r});
   else if(p[0]==='generation-president') body=await renderGenerationPresident({content,politicians,session,route:r});
-  else if(p[0]==='national-evaluation') body=await renderNationalEvaluationPage({content,politicians,session,route:r});
   else if(p[0]==='president') body=renderPresidentPage();
   else if(p[0]==='search') body=await renderSearchPage({query:new URLSearchParams(r.split('?')[1]||'').get('q')||'',page:searchParams.get('page')||1,personId:searchParams.get('person')||'',publisher:searchParams.get('publisher')||'',period:searchParams.get('period')||'latest',politicians,content});
-  else if(p[0]==='academy') body=await views.renderAcademy(content,session);
   else if(p[0]==='trending')body=renderTrendingPage(await politicians.trending());
-  else if(p[0]==='keywords')body=renderKeywordsPage(await politicians.keywords(),new URLSearchParams(r.split('?')[1]||'').get('q')||'');
   else if(p[0]==='now') body=await renderPoliticianDirectory(politicians,r);
   else if(p[0]==='person') body=await renderPoliticianDetail(p[1]||'',politicians,session,dashboard,personData.detail);
   else if(p[0]==='compare') body=await renderPoliticianCompare(politicians,r,session);
@@ -271,7 +266,7 @@ async function render({preserveScroll=false,refreshHome=false,freshSession=false
   else if(unstable.has(p[0])) body=`<section class="module"><span class="eyebrow">NEXT PHASE</span><h2>${p[0]}</h2><p class="module-desc">이 영역은 이번 버전에서 제외했습니다. NOW·정치인 데이터·분석 엔진은 연결하지 않습니다.</p></section>`;
   else body=`<section class="module"><h2>페이지를 찾을 수 없습니다</h2></section>`;
   if(renderId!==renderSequence)return;
-  if(['community','itsme','column','news','inquiry','poll','generation-president','national-evaluation','academy'].includes(p[0]))body=body.replace(/class="subpage\b/,'class="subpage board-typography');
+  if(['community','itsme','column','news','inquiry','poll','generation-president'].includes(p[0]))body=body.replace(/class="subpage\b/,'class="subpage board-typography');
   if(p[0]==='mypage'&&session.authenticated){
     const current=r.split('?')[0],tabs=[['/mypage','마이페이지'],['/mypage/favorites/politicians','즐겨찾는 정치인'],['/mypage/favorites/posts','즐겨찾는 게시글'],['/mypage/posts','내 게시글'],['/mypage/comments','내 댓글'],['/mypage/points','포인트']];
     body=`<div class="mypage-workspace"><nav class="mypage-section-nav" aria-label="마이페이지 메뉴">${tabs.map(([href,label])=>`<a href="${href}" data-layout-route="${href}" ${current===href?'aria-current="page"':''}>${label}</a>`).join('')}</nav>${body}</div>`;
@@ -363,7 +358,6 @@ document.addEventListener('toggle',async event=>{const details=event.target;if(!
 
 document.addEventListener('submit',async event=>{
   const memberSearch=event.target.closest('[data-admin-member-search]');if(memberSearch){event.preventDefault();navigation.navigate(adminRouteWith(route(),{tab:'members',q:String(new FormData(memberSearch).get('q')||'').trim()}));return;}
-  const keywordForm=event.target.closest('[data-keyword-rules-form]');if(keywordForm){event.preventDefault();const data=Object.fromEntries(new FormData(keywordForm)),parse=value=>Object.fromEntries(String(value||'').split('\n').map(line=>line.split('=').map(part=>part.trim())).filter(parts=>parts.length===2&&parts.every(Boolean)));data.aliases=parse(data.aliases);data.labels=parse(data.labels);const result=await auth.saveKeywordRules(data);keywordForm.querySelector('[data-form-state]').textContent=result.ok?'저장했습니다.':result.error||'저장하지 못했습니다.';return;}
   const footerInfoForm=event.target.closest('[data-footer-info-form]');
   if(footerInfoForm){event.preventDefault();const state=footerInfoForm.querySelector('[data-form-state]'),result=await auth.saveFooterInfo(Object.fromEntries(new FormData(footerInfoForm)));if(state)state.textContent=result?.ok?'풋터 정보를 저장하고 공개 화면에 반영했습니다.':(result?.error||'풋터 정보를 저장하지 못했습니다.');if(result?.ok){shellInfoCache=null;await render({preserveScroll:true});}return;}
   const bannerForm=event.target.closest('[data-home-banner-form]');
@@ -541,7 +535,6 @@ document.addEventListener('click',async event=>{
   if(favorite){event.preventDefault();const result=await content.toggleFavorite({kind:favorite.dataset.favoriteKind,domain:favorite.dataset.favoriteDomain||'',id:favorite.dataset.favoriteId});if(result?.status===401){navigation.navigate('/login');return;}if(!result?.ok){alert(result?.error||'즐겨찾기를 변경하지 못했습니다.');return;}await render({preserveScroll:true});return;}
   const action=event.target.closest('[data-stage-action]')?.dataset.stageAction;
   if(action==='logout'){await auth.logout();navigation.navigate('/');return;}
-  if(action==='academy-apply'){const result=await content.academyApply(event.target.closest('[data-slot-id]')?.dataset.slotId||'');if(result?.status===401){navigation.navigate('/login');return;}alert(result?.ok?'수강 신청을 접수했습니다.':(result?.error||'신청하지 못했습니다.'));}
 });
 
 await render();
