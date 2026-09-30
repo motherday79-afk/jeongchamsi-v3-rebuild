@@ -1,4 +1,4 @@
-import {setupHomeBannerRotation} from './home-banner-rotation.js?v=0.0.31.357';
+import {setupHomeBannerRotation} from './home-banner-rotation.js?v=0.0.31.358';
 import { renderPrescriptionReport } from '../views/prescription-visuals.js?v=0.0.31.56';
 import { refreshFontScale, setupFontScaleControl } from './font-scale.js?v=0.0.31.56';
 import { createHomeCompareMotion } from './compare-motion.js?v=0.0.31.164';
