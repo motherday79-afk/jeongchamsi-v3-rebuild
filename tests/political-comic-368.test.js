@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {createComicService} from '../lib/political-comic-service.js';
 import {DMZ_EPISODE} from '../src/data/political-comic-seed.js';
 import {renderHomeLayout} from '../src/layout/home-layout.js';
-import {renderComicPage} from '../src/views/political-comic.js';
+import {renderComicPage,renderComicAdmin} from '../src/views/political-comic.js';
 import fs from 'node:fs';
 import handler from '../api/gateway.js';
 const owner={id:'admin',role:'admin'};
@@ -51,4 +51,11 @@ test('finished comic has no detached captions and persisted seed artwork upgrade
  const data=await service.list({admin:true,user:owner});assert.equal(data.items[0].format,'comic');assert.equal(data.items[0].image,DMZ_EPISODE.image);
  const html=renderComicPage(data,DMZ_EPISODE.id);assert.doesNotMatch(html,/<figcaption|comic-takeaway/);assert.match(html,/comic-manuscript comic-square/);assert.match(html,/<details class="comic-sources">/);
  const library=renderComicPage(data);assert.doesNotMatch(library,/comic-home-copy|comic-panels/);assert.match(library,/comic-cover/);
+});
+test('finished manuscript publishes without twelve panel fields; cover and transcript round trip',async()=>{
+ const service=createComicService({command:store()});const input={...DMZ_EPISODE,id:'',coverImage:'/assets/banners/citizen-choice-369.webp',transcript:'전체 대본'};delete input.panels;
+ const saved=await service.save(input,owner);assert.equal(saved.panels.length,4);assert.equal(saved.transcript,'전체 대본');assert.equal(saved.coverImage,input.coverImage);
+ const page=renderComicPage({items:[saved]},saved.id);assert.match(page,/전체 대본/);
+ const admin=renderComicAdmin({items:[saved]},saved.id);assert.match(admin,/data-comic-upload="coverImage"/);assert.match(admin,/완성 만화 원고/);assert.doesNotMatch(admin,/name="title0"|name="text0"|name="alt0"|name="takeaway"/);
+ const listing=renderComicPage({items:[saved]});assert.match(listing,/citizen-choice-369.webp/);
 });

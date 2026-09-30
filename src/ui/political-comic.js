@@ -5,17 +5,23 @@ const errors={EDIT_CONFLICT:'다른 작업으로 회차가 변경됐습니다. �
 export function bindComicEditor(root,{onSaved}={}){
  root.addEventListener('change',async event=>{
   const input=event.target.closest('[data-comic-upload]');if(!input)return;
-  const file=input.files?.[0],form=input.closest('form'),status=form.querySelector('[data-comic-status]'),submit=form.querySelector('[type="submit"]');if(!file)return;
+  const file=input.files?.[0],form=input.closest('form'),status=form.querySelector('[data-comic-status]'),submit=form.querySelector('[type="submit"]');if(!file)return;const target=input.dataset.comicUpload||'image';
   if(file.size>1024*1024){status.textContent='이미지는 1MB 이하로 선택해 주세요.';input.value='';return;}
+  if(submit.disabled)return;
+  if(target==='image'){
+   const objectUrl=URL.createObjectURL(file);
+   try{const picture=await new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=reject;img.src=objectUrl;});if(Math.abs(picture.naturalWidth/picture.naturalHeight-1)>.015){status.textContent='원고는 가로와 세로가 같은 정사각형 2×2 이미지로 올려주세요.';input.value='';return;}}
+   catch{status.textContent='이미지를 읽을 수 없습니다. 다른 파일을 선택해 주세요.';return;}finally{URL.revokeObjectURL(objectUrl);}
+  }
   submit.disabled=true;input.disabled=true;status.textContent='이미지를 업로드하고 있습니다…';
-  try{const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=reject;reader.readAsDataURL(file);});const result=await comicRequest({method:'POST',body:JSON.stringify({operation:'upload-image',contentType:file.type,base64})});if(!result.ok)throw Error(result.error);form.elements.image.value=result.url;const preview=form.querySelector('[data-comic-preview]');preview.src=result.url;preview.hidden=false;status.textContent='업로드 완료. 저장하기를 눌러 회차에 반영해 주세요.';}catch{status.textContent='업로드에 실패했습니다. JPG·PNG·WebP 형식과 파일 크기를 확인해 주세요.';}finally{submit.disabled=false;input.disabled=false;}
+  try{const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=reject;reader.readAsDataURL(file);});const result=await comicRequest({method:'POST',body:JSON.stringify({operation:'upload-image',contentType:file.type,base64})});if(!result.ok)throw Error(result.error);form.elements[target].value=result.url;const preview=form.querySelector('[data-comic-preview="'+target+'"]');preview.src=result.url;preview.hidden=false;status.textContent='업로드 완료. 저장하기를 눌러 회차에 반영해 주세요.';}catch{status.textContent='업로드에 실패했습니다. JPG·PNG·WebP 형식과 파일 크기를 확인해 주세요.';}finally{submit.disabled=false;input.disabled=false;}
  });
  root.addEventListener('submit',async event=>{
   const form=event.target.closest('[data-comic-editor]');if(!form)return;event.preventDefault();
   const data=new FormData(form),input=Object.fromEntries(data),button=form.querySelector('[type="submit"]'),status=form.querySelector('[data-comic-status]');
-  input.published=data.has('published');input.panels=Array.from({length:4},(_,i)=>({title:data.get(`title${i}`),text:data.get(`text${i}`),alt:data.get(`alt${i}`)}));input.sources=String(data.get('sources')).split('\n').filter(v=>v.trim()).map(line=>{const at=line.indexOf('|');return {label:line.slice(0,at).trim(),url:line.slice(at+1).trim()};});
-  button.disabled=true;status.textContent='저장 중…';const result=await comicRequest({method:'POST',body:JSON.stringify({input})});button.disabled=false;
+  input.published=data.has('published');input.sources=String(data.get('sources')).split('\n').filter(v=>v.trim()).map(line=>{const at=line.indexOf('|');return {label:line.slice(0,at).trim(),url:line.slice(at+1).trim()};});
+  if(button.disabled)return;if(!input.image){status.textContent='완성 만화 원고를 먼저 업로드해 주세요.';return;}button.disabled=true;status.textContent='저장 중…';const result=await comicRequest({method:'POST',body:JSON.stringify({input})});button.disabled=false;
   if(!result.ok){status.textContent=errors[result.error]||'저장하지 못했습니다. 모든 필수 항목과 출처를 확인해 주세요.';return;}
-  form.elements.id.value=result.item.id;form.elements.updatedAt.value=result.item.updatedAt;status.textContent=input.published?'게시했습니다. 메인과 정치4컷에서 확인할 수 있습니다.':'비공개로 저장했습니다.';onSaved?.();
+  const publicLink=form.querySelector('[data-comic-public-link]');publicLink.href='/political-comic/'+encodeURIComponent(result.item.id);publicLink.hidden=false;form.elements.id.value=result.item.id;form.elements.updatedAt.value=result.item.updatedAt;status.textContent=input.published?'게시했습니다. 메인과 정치4컷에서 확인할 수 있습니다.':'비공개로 저장했습니다.';onSaved?.();
  });
 }
