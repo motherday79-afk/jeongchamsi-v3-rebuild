@@ -1,0 +1,18 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {renderAdminWorkspace,renderAdminOverview,ADMIN_MENU} from '../src/views/admin-workspace.js';
+import {renderAdminStable,renderAdminLoading} from '../src/views/stage1.js';
+const session={authenticated:true,user:{id:'admin',role:'admin',status:'active'}};
+function auth(){const calls=[];return {calls,adminSummary:async()=>{calls.push('operations');return {ok:true,users:{total:1234,admins:2},contents:{columns:20,community:25,comments:41}}},exportMembers:async()=>{calls.push('members');return [{id:'person1',nickname:'테스트 회원',role:'member'}]},adminPoliticians:async()=>{calls.push('politicians');return {items:[],completeness:{missing:{}}}},intelligenceStatus:async()=>{calls.push('pipeline');return {}},footerInfo:async()=>{calls.push('site');return {ok:true,info:{siteName:'정참시'}}}}}
+test('all menu destinations remain available, with exactly one current menu and mobile controls',()=>{
+ for(const key of ['operations','members','politicians','pipeline','site','participation','ai']){const html=renderAdminWorkspace(key,'<div>작업</div>');assert.equal((html.match(/aria-current="page"/g)||[]).length,1);assert.match(html,/aria-controls="admin-workspace-menu"/);assert.match(html,/aria-expanded="false"/);assert.match(html,/data-layout-route="\/admin\/ai-panel"/);assert.match(html,/data-layout-route="\/groups\?view=manage"/);assert.match(html,/data-admin-tab="participation"/);assert.equal(ADMIN_MENU.flatMap(g=>g.items).length,9)}});
+test('each control tab preserves its forms and only loads its own data',async()=>{
+ const forms={operations:'data-admin-audit-disclosure',members:'data-admin-member-search',politicians:'data-admin-politician-search',pipeline:'data-intelligence-action="collect"',site:'data-footer-info-form'};
+ for(const [tab,marker] of Object.entries(forms)){const service=auth(),html=await renderAdminStable(session,service,{tab});assert.deepEqual(service.calls,[tab]);assert.ok(html.includes(marker),tab);assert.match(html,/data-admin-workspace/);assert.match(html,new RegExp(`data-admin-panel="${tab}"`));assert.equal((html.match(/aria-label="관리자 메뉴"/g)||[]).length,1)}});
+test('dashboard uses actual totals and readable labels, leaving retired services out',()=>{const html=renderAdminOverview({users:{total:1234,admins:2},contents:{columns:20,comments:41,academy:50,nationalEvaluation:30}});assert.match(html,/1,234/);assert.match(html,/칼럼/);assert.match(html,/댓글/);assert.doesNotMatch(html,/academy|nationalEvaluation|50<|30</)});
+test('loading and failure retain navigation, and unprivileged members cannot fetch console data',async()=>{
+ assert.match(renderAdminLoading('members'),/aria-busy="true"/);const service=auth();service.adminSummary=async()=>({ok:false,error:'<script>bad</script>'});const html=await renderAdminStable(session,service);assert.match(html,/다시 불러오기/);assert.doesNotMatch(html,/<script>/);
+ const denied=await renderAdminStable({authenticated:true,user:{id:'staff',role:'admin'}},new Proxy({},{get(){throw Error('unauthorized fetch')}}));assert.match(denied,/최고관리자만/);assert.doesNotMatch(denied,/data-admin-workspace/);
+});
+import {toggleAdminMenu} from '../src/views/admin-workspace.js';
+test('mobile menu exposes its state and Escape can collapse it',()=>{let expanded='false',visible=false;const button={closest:()=>({classList:{toggle:(key,on)=>{assert.equal(key,'is-menu-open');visible=on}}}),getAttribute:()=>expanded,setAttribute:(key,value)=>{assert.equal(key,'aria-expanded');expanded=value}};assert.equal(toggleAdminMenu(button),true);assert.equal(visible,true);assert.equal(expanded,'true');assert.equal(toggleAdminMenu(button,false),false);assert.equal(visible,false);assert.equal(expanded,'false')});

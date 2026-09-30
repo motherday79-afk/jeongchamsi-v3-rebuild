@@ -83,8 +83,6 @@ function inlineDemoEditor(domain,item,candidateLabels={}){
 }
 
 export function renderParticipationAdminSettings(data={}){
- const links=[['operations','운영현황'],['members','회원관리'],['politicians','정치인정보'],['pipeline','데이터수집·게시'],['site','풋터정보'],['participation','참여·데모']];
- const nav=`<nav class="admin-tabs">${links.map(([key,label])=>`<button data-admin-tab="${key}" class="${key==='participation'?'is-active':''}">${label}</button>`).join('')}</nav>`;
  const sections=[['polls','시티즌 초이스','/poll'],['generation','세대별 대통령','/generation-president']].map(([domain,title,route])=>{
   const forms=(data[domain]?.items||[]).filter(x=>x.published!==false).map(item=>{
    return inlineDemoEditor(domain,item,data.generation?.candidateLabels||{});
@@ -92,7 +90,7 @@ export function renderParticipationAdminSettings(data={}){
   return `<section class="content-card"><div class="section-title"><h2>${title}</h2><button class="ghost-btn" data-layout-route="${route}">게시물·후보 생성 및 관리 →</button></div>${forms||'<p>먼저 게시물을 생성해 주세요.</p>'}</section>`;
  }).join('');
  const cages=(data.community?.items||[]).filter(x=>x.published!==false&&!x.deleted&&x.cageEnabled&&!x.cageParentId);
- return page('ADMIN · PARTICIPATION','참여 게시판 · 데모 관리','데모 수치는 실제 참여와 별도로 저장됩니다. 표시를 끄면 실제 결과로 돌아갑니다.',`${nav}<section class="content-card"><h2>메인 케이지 미리보기</h2><form data-home-cage-form class="stage-form"><label>노출할 케이지<select name="id"><option value="">최신 케이지 자동 선택</option>${cages.map(x=>`<option value="${esc(x.id)}" ${data.community?.featuredCageId===x.id?'selected':''}>${esc(x.title)}</option>`).join('')}</select></label><button class="primary-btn" type="submit">미리보기 저장</button><span data-form-state role="status"></span></form></section>${sections}`,'participation-settings-page');
+ return page('ADMIN · PARTICIPATION','참여 게시판 · 데모 관리','데모 수치는 실제 참여와 별도로 저장됩니다. 표시를 끄면 실제 결과로 돌아갑니다.',`<section class="content-card"><h2>메인 케이지 미리보기</h2><form data-home-cage-form class="stage-form"><label>노출할 케이지<select name="id"><option value="">최신 케이지 자동 선택</option>${cages.map(x=>`<option value="${esc(x.id)}" ${data.community?.featuredCageId===x.id?'selected':''}>${esc(x.title)}</option>`).join('')}</select></label><button class="primary-btn" type="submit">미리보기 저장</button><span data-form-state role="status"></span></form></section>${sections}`,'participation-settings-page');
 }
 
 export function renderPointShop(result={},session={},view='shop'){

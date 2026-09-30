@@ -1,3 +1,4 @@
+import {renderAdminWorkspace,toggleAdminMenu} from './views/admin-workspace.js?v=0.0.31.361';
 import {setupHomeBannerRotation} from './ui/home-banner-rotation.js?v=0.0.31.358';
 import {isSuperAdmin} from './core/membership.js?v=0.0.31.354';
 import {loadBadgeStatus} from './core/badge-loading.js?v=0.0.31.349';
@@ -26,10 +27,10 @@ import { createPoliticianService } from './core/politicians.js?v=0.0.31.350';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith, isTransientAnalysisRoute } from './core/navigation.js?v=0.0.31.350';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.148';
-import * as views from './views/stage1.js?v=0.0.31.360';
+import * as views from './views/stage1.js?v=0.0.31.361';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.354';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.354';
-import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident } from './views/participation-pages.js?v=0.0.31.350';
+import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident } from './views/participation-pages.js?v=0.0.31.361';
 import { renderPresidentPage } from './views/president.js?v=0.0.31.107';
 import { renderSearchPage, hasSearchSnapshot } from './views/search-page.js?v=0.0.31.360';
 import { loadSearchDiscovery } from './views/search-discovery.js?v=0.0.31.360';
@@ -197,7 +198,7 @@ async function render({preserveScroll=false,refreshHome=false,freshSession=false
     if(next){mountedSearch.replaceWith(next);setupPoliticianPhotoFallback(next);void loadSearchDiscovery(next,campaigns,searchTerm,{groups,session:()=>auth.session()});const publisherGrid=next.querySelector('.spread-publishers');if(publisherGrid)publisherGrid.scrollTop=publisherScroll;if(focusRoute)[...next.querySelectorAll('[data-layout-route]')].find(node=>node.getAttribute('data-layout-route')===focusRoute)?.focus({preventScroll:true});navigation?.cacheCurrent();return;}
     mountedSearch.removeAttribute('aria-busy');
   }
-  if(p[0]==='admin'){const target=document.querySelector('.page-wrap');if(target)target.innerHTML=views.renderAdminLoading(adminRouteState(r).tab);}
+  if(p[0]==='admin'){const target=document.querySelector('.page-wrap');if(target)target.innerHTML=views.renderAdminLoading(p[1]==='ai-panel'?'ai':adminRouteState(r).tab);}
   void loadShellInfo();
   const personRequestStarted=Date.now(),personData=p[0]==='person'?await loadPersonNavigation(p[1]||'',auth,content,politicians):null;
   if(personData?.detail)personData.detail=agePersonAccessResult(personData.detail,Date.now()-personRequestStarted);
@@ -269,6 +270,7 @@ async function render({preserveScroll=false,refreshHome=false,freshSession=false
   else if(unstable.has(p[0])) body=`<section class="module"><span class="eyebrow">NEXT PHASE</span><h2>${p[0]}</h2><p class="module-desc">이 영역은 이번 버전에서 제외했습니다. NOW·정치인 데이터·분석 엔진은 연결하지 않습니다.</p></section>`;
   else body=`<section class="module"><h2>페이지를 찾을 수 없습니다</h2></section>`;
   if(renderId!==renderSequence)return;
+  if(p[0]==='admin'&&isSuperAdmin(session.user)&&!body.includes('data-admin-workspace'))body=renderAdminWorkspace(p[1]==='ai-panel'?'ai':adminRouteState(r).tab,body);
   if(['community','itsme','column','news','inquiry','poll','generation-president'].includes(p[0]))body=body.replace(/class="subpage\b/,'class="subpage board-typography');
   if(p[0]==='mypage'&&session.authenticated){
     const current=r.split('?')[0],tabs=[['/mypage','마이페이지'],['/mypage/favorites/politicians','즐겨찾는 정치인'],['/mypage/favorites/posts','즐겨찾는 게시글'],['/mypage/posts','내 게시글'],['/mypage/comments','내 댓글'],['/mypage/points','포인트']];
@@ -513,6 +515,8 @@ document.addEventListener('click',async event=>{
   const referralCopy=event.target.closest('[data-copy-referral]');if(referralCopy){try{await navigator.clipboard.writeText(referralCopy.dataset.copyReferral);referralCopy.textContent='복사됨';}catch{referralCopy.textContent='코드를 선택해 복사해 주세요';}return;}
   const more=event.target.closest('[data-trending-more]');if(more){if(more.disabled)return;more.disabled=true;const container=more.closest('.module'),state=container.querySelector('[data-trending-status]');try{const result=await politicians.trending(Number(more.dataset.offset),more.dataset.snapshot);if(!more.isConnected)return;if(!result.ok){state.textContent=result.error==='RANKING_UPDATED'?'순위가 갱신되었습니다. 새로고침해 주세요.':'불러오지 못했습니다. 다시 시도해 주세요.';more.disabled=false;return;}container.querySelector('[data-trending-grid]').insertAdjacentHTML('beforeend',result.items.map(renderNowRankCard).join(''));more.dataset.offset=result.nextOffset;state.textContent=`${result.nextOffset} / ${result.total}명`;if(result.nextOffset>=result.total)more.remove();else more.disabled=false;}catch{if(more.isConnected){state.textContent='불러오지 못했습니다. 다시 시도해 주세요.';more.disabled=false;}}return;}
   const review=event.target.closest('[data-load-admin-review]');if(review){review.disabled=true;review.textContent='미리보기를 불러오는 중입니다.';try{const result=await auth.intelligencePreview();if(review.isConnected)review.closest('[data-admin-review-mount]').innerHTML=views.renderAdminReview(result);}catch{if(review.isConnected){review.disabled=false;review.textContent='다시 불러오기';}}return;}
+  const adminMenu=event.target.closest('[data-admin-menu-toggle]');
+  if(adminMenu){toggleAdminMenu(adminMenu);return;}
   const adminTab=event.target.closest('[data-admin-tab]');
   if(adminTab){event.preventDefault();navigation.navigate(adminRouteWith(route(),{tab:adminTab.dataset.adminTab}));return;}
   const politicianSummary=event.target.closest('.admin-politician-row>summary');
@@ -580,3 +584,5 @@ async function pollOptionImages(form,count){
  }
  return urls;
 }
+
+document.addEventListener('keydown',event=>{if(event.key!=='Escape')return;const menu=document.querySelector('[data-admin-menu-toggle][aria-expanded="true"]');if(menu){toggleAdminMenu(menu,false);menu.focus();}});
