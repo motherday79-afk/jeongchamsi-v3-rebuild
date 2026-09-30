@@ -1,5 +1,5 @@
 import {canAccessAdminEndpoint,canWriteEditorial,isSuperAdmin} from '../src/core/membership.js';
-import {homeBannerPlaylist,HOME_BANNER_INTERVAL} from '../src/core/home-banner-playlist.js';
+import {homeBannerPlaylist,HOME_BANNER_INTERVAL,HERO_BANNER_INTERVAL} from '../src/core/home-banner-playlist.js';
 import {uploadMineAdImage} from '../lib/mining-ad-image.js';
 import {pushService,enqueueCompletionPush} from '../lib/push-runtime.js';
 import {firebaseConfigured} from '../lib/push-fcm.js';
@@ -553,7 +553,7 @@ export default async function handler(req,res){
       try{if(req.method==='GET')return json(res,200,await (url.searchParams.get('member')?service.member(user,url.searchParams.get('member')):url.searchParams.get('wallet')==='1'?service.wallet(user):service.status(user)));if(req.method!=='POST')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});const input=bodyOf(req),op=input.operation;if(!['bank','order','review','cage','grant','activity-policy','activity-revoke','activity-restrict'].includes(op))return json(res,400,{ok:false,error:'INVALID_OPERATION'});return json(res,200,await service[({'activity-policy':'activityPolicy','activity-revoke':'activityRevoke','activity-restrict':'activityRestrict'})[op]||op](user,input));}catch(error){return json(res,error.message==='ADMIN_REQUIRED'?403:error.message==='LOGIN_REQUIRED'?401:400,{ok:false,error:error.message});}
     }
     if(route==='content')return handleContent(req,res,command,url);
-    if(route==='home/banner'&&req.method==='GET'){const service=createHomeBannerService({command}),[sidebar,hero,featuredCompare]=await Promise.all([service.get(),service.get('hero'),service.getCompare()]);return json(res,200,{ok:true,banner:{...(sidebar||{}),items:homeBannerPlaylist(sidebar),intervalMs:HOME_BANNER_INTERVAL,hero,featuredCompare:featuredCompare?{ids:featuredCompare.ids}:null}});}
+    if(route==='home/banner'&&req.method==='GET'){const service=createHomeBannerService({command}),[sidebar,hero,featuredCompare]=await Promise.all([service.get(),service.get('hero'),service.getCompare()]);return json(res,200,{ok:true,banner:{...(sidebar||{}),items:homeBannerPlaylist(sidebar),intervalMs:HOME_BANNER_INTERVAL,hero:{...(hero||{}),items:homeBannerPlaylist(hero,'hero'),intervalMs:HERO_BANNER_INTERVAL},featuredCompare:featuredCompare?{ids:featuredCompare.ids}:null}});}
     if(route==='site/footer-info'&&req.method==='GET')return json(res,200,{ok:true,info:await createSiteSettingsService({command}).get()});
     if(route==='politicians')return handlePoliticians(req,res,command,url);
     if(route==='action')return handleAction(req,res,command);

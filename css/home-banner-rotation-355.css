@@ -3,3 +3,8 @@
 .product-home-wrap .side-home-banner.home-banner-rotation>[data-home-banner-slide]{display:block;width:100%;height:100%}
 .product-home-wrap .side-home-banner.home-banner-rotation picture,.product-home-wrap .side-home-banner.home-banner-rotation img{width:100%;height:100%}
 .product-home-wrap .side-home-banner.home-banner-rotation img{object-fit:contain!important;background:#090908!important}
+.product-home-wrap .home-wide-banner.home-banner-rotation{background:#f4d5a0!important}
+.product-home-wrap .home-wide-banner.home-banner-rotation>[data-home-banner-slide][hidden]{display:none!important}
+.product-home-wrap .home-wide-banner.home-banner-rotation>[data-home-banner-slide]{display:block;width:100%;height:100%;position:absolute;inset:0}
+.product-home-wrap .home-wide-banner.home-banner-rotation picture,.product-home-wrap .home-wide-banner.home-banner-rotation img{display:block;width:100%;height:100%;object-fit:contain!important}
+.product-home-wrap .home-banner-image-only{cursor:default}

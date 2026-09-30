@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {homeBannerPlaylist,HOME_BANNER_INTERVAL,VELGARD_BANNER} from '../src/core/home-banner-playlist.js';
+import {homeBannerPlaylist,HOME_BANNER_INTERVAL,HERO_BANNER_INTERVAL,VELGARD_BANNER,HABI_BANNER} from '../src/core/home-banner-playlist.js';
 import {setupHomeBannerRotation} from '../src/ui/home-banner-rotation.js';
 import {homeBanner} from '../src/layout/home-layout.js';
 import {createHomeBannerService,BANNER_CAS_LUA} from '../lib/home-banner-service.js';
@@ -52,4 +52,26 @@ test('failed playlist commits clean up new uploads only',async()=>{
  await assert.rejects(service.save(input,'admin'),/BANNER_CHANGED_RETRY/);
  assert.equal(f.removed.length,3);assert.ok(!f.removed.includes('https://blob.example/old.png'));
  assert.equal(JSON.parse(f.values.get(TARGET_KEYS.homeBanner)).url,'https://blob.example/old.png');
+});
+
+test('left banner shows Habi first without any link and preserves existing linked banner',()=>{
+ const previous={url:'https://example.com/banner.png',designVersion:'upload',targetUrl:'https://example.com/film'};
+ const items=homeBannerPlaylist(previous,'hero');assert.deepEqual(items,[HABI_BANNER,previous]);
+ assert.deepEqual(homeBannerPlaylist({items},'hero'),items);
+ const html=homeBanner(previous,{},'hero');assert.match(html,/data-interval="90000"/);
+ const first=html.match(/<div data-home-banner-slide[^]*?<\/div>/)?.[0];
+ assert.ok(first);assert.match(first,/habi-halbi-pc-356/);assert.doesNotMatch(first,/<a\b|href=|data-layout-route|tabindex/);
+ assert.match(html,/href="https:\/\/example.com\/film"/);
+});
+test('left and right rotation timers independently use 90 and 60 seconds',()=>{
+ const delays=[];const roots=[90000,60000].map(interval=>({dataset:{interval:String(interval)},querySelectorAll:()=>[{hidden:false,setAttribute(){}},{hidden:true,setAttribute(){}}]}));
+ setupHomeBannerRotation({querySelectorAll:()=>roots},{setInterval:(_fn,delay)=>{delays.push(delay);return delays.length;},clearInterval:()=>{}});
+ assert.deepEqual(delays,[HERO_BANNER_INTERVAL,HOME_BANNER_INTERVAL]);
+});
+test('left uploads append image-only artwork without deleting previous assets or changing right playlist',async()=>{
+ const f=fixture(),key=TARGET_KEYS.homeBanner+':hero',old={url:'https://blob.example/old-hero.png',pathname:'home-banners/old-hero.png'};
+ f.values.set(key,JSON.stringify(old));const before=f.values.get(TARGET_KEYS.homeBanner),service=createHomeBannerService(f.options);
+ const result=await service.save({...input,placement:'hero',targetUrl:''},'admin');
+ assert.equal(result.intervalMs,90000);assert.equal(result.items.length,2);assert.equal(result.items[0].url,old.url);assert.equal(result.items[1].targetUrl,'');
+ assert.equal(f.values.get(TARGET_KEYS.homeBanner),before);assert.equal(f.removed.length,0);
 });

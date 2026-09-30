@@ -76,7 +76,7 @@ test('campaign clicks use the existing route event and open the real bundled exa
 
 test('the legacy hero continues to show its current artwork and destination',()=>{
  const html=renderHomeLayout({...HOME_FIXTURE,homeBanner:{...legacy,hero:{...legacy,targetUrl:'https://www.ihsnews.com/'}}});
- const hero=html.match(/<section class="home-wide-banner"[^]*?<\/section>/)?.[0]||'';
+ const hero=html.match(/<section class="home-wide-banner\b[^]*?<\/section>/)?.[0]||'';
  assert.match(hero,/\/assets\/banners\/hero-pc-117.webp/);
  assert.match(hero,/href="https:\/\/www.ihsnews.com\/" target="_blank"/);
  assert.doesNotMatch(hero,/campaign-night-transit|data-layout-route/);

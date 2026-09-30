@@ -1,4 +1,4 @@
-import {homeBannerPlaylist,HOME_BANNER_INTERVAL} from '../core/home-banner-playlist.js?v=0.0.31.355';
+import {homeBannerPlaylist,HOME_BANNER_INTERVAL,HERO_BANNER_INTERVAL} from '../core/home-banner-playlist.js?v=0.0.31.356';
 import {membershipLabel} from '../core/membership.js?v=0.0.31.354';
 import {APPAREL_PRODUCTS,renderApparelCatalog,renderApparelProduct} from '../views/apparel-shop.js?v=0.0.31.297';
 import {renderAiPanelHome} from '../views/ai-panel-pages.js?v=0.0.31.354';
@@ -99,11 +99,8 @@ export function renderBadgeShowcase(status={},showMyPage=false,displayName=''){
 function participationCard(status={},mobile=false,session={}){const authenticated=session?.authenticated===true;return `<section class="side-card side-participation side-participation-account participation-card promo-account-card${authenticated?'':' is-guest'}">${authenticated?`<div data-badge-showcase-mount data-badge-mypage="true" data-display-name="${esc(session.user?.nickname||'회원')}">${renderBadgeShowcase(status,true,session.user?.nickname||'회원')}</div><div data-member-summary-mount>${renderMemberSummary()}</div>`:'<div class="account-guest-intro"><b>정치에 참여할 시간</b><p>로그인하고 나의 참여 기록을 모아보세요.</p></div><a class="account-login-button" href="/login" data-layout-route="/login">정참시 로그인</a>'}</section>`;}
 
 export function homeBanner(banner={},session={},placement='sidebar'){
- if(placement==='sidebar'){
-  const slides=homeBannerPlaylist(banner).map((item,index)=>homeBannerArtwork(item,{},placement).replace(/^<section[^>]*>/,'').replace(/<\/section>$/,'').replace('<a ',`<a data-home-banner-slide aria-hidden="${index!==0}"${index?' hidden':''} `)).join('');
-  return `<section class="side-card side-home-banner home-banner-rotation" data-home-banner-rotation data-interval="${HOME_BANNER_INTERVAL}">${slides}${session?.user?.role==='admin'?'<button type="button" data-home-banner-edit="sidebar">배너 추가</button>':''}</section>`;
- }
- return homeBannerArtwork(banner,session,placement);
+  const slides=homeBannerPlaylist(banner,placement).map((item,index)=>homeBannerArtwork(item,{},placement).replace(/^<section[^>]*>/,'').replace(/<\/section>$/,'').replace(/<(a|div) /,(_match,tag)=>`<${tag} data-home-banner-slide aria-hidden="${index!==0}"${index?' hidden':''} `)).join('');
+  return `<section class="${placement==='hero'?'home-wide-banner':'side-card side-home-banner'} home-banner-rotation" data-home-banner-rotation data-interval="${placement==='hero'?HERO_BANNER_INTERVAL:HOME_BANNER_INTERVAL}">${slides}${session?.user?.role==='admin'?`<button type="button" data-home-banner-edit="${placement}">배너 추가</button>`:''}</section>`;
 }
 export function homeBannerArtwork(banner={},session={},placement='sidebar'){
  const original=imageUrl(banner?.url),hero=placement==='hero',restyle=!!original&&banner?.designVersion!=='upload';
@@ -125,7 +122,7 @@ export function homeBannerArtwork(banner={},session={},placement='sidebar'){
  const mobileMedia=campaign?'(max-width:600px)':'(max-width:600px), (hover:hover) and (max-width:767px)';
  const linkAttrs=route?` data-layout-route="${esc(route)}"`:target?' target="_blank" rel="noopener noreferrer"':'';
  const pcAttrs=campaign?` width="420" height="240" srcset="${base}-pc-170.webp 1x, ${base}-pc-2x-170.webp 2x"`:'';
- if(url)return `<section class="${cls}"><a href="${esc(route||target||'#')}"${linkAttrs}><picture>${tablet?`<source media="${tabletMedia}" srcset="${esc(tablet)}">`:''}${mobile?`<source media="${mobileMedia}" srcset="${esc(mobile)}">`:''}<img src="${esc(url)}"${pcAttrs} alt="${esc(alt)}" loading="lazy" decoding="async"></picture></a>${admin?edit:''}</section>`;
+ if(url)return `<section class="${cls}">${route||target?`<a href="${esc(route||target)}"${linkAttrs}>`:'<div class="home-banner-image-only">'}<picture>${tablet?`<source media="${tabletMedia}" srcset="${esc(tablet)}">`:''}${mobile?`<source media="${mobileMedia}" srcset="${esc(mobile)}">`:''}<img src="${esc(url)}"${pcAttrs} alt="${esc(alt)}" loading="lazy" decoding="async"></picture>${route||target?'</a>':'</div>'}${admin?edit:''}</section>`;
  return admin?`<section class="${cls} home-banner-empty"><b>${hero?'메인 가로 배너':'메인 사이드 배너'}</b><p>PC ${hero?'832 × 135':'420 × 240'}px · 모바일 ${hero?'720 × 300':'720 × 540'}px · 폴드 펼침·태블릿 ${hero?'1200 × 300':'1200 × 400'}px</p>${edit}</section>`:'';
 }
 
