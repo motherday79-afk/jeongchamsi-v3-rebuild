@@ -2,7 +2,7 @@ export const DMZ_EPISODE={
  id:'dmz-20260921',number:1,title:'DMZ 지뢰 사건, 무엇이 확인됐나',
  summary:'사고 발생부터 합동조사와 유엔사의 판단까지. 복잡한 이슈의 흐름을 네 장면으로 읽습니다.',
  category:'안보 · 남북관계',date:'2026-09-30',published:true,
- image:'/assets/webtoons/dmz-20260921.webp',
+ format:'comic',image:'/assets/webtoons/dmz-comic-369.webp',
  panels:[
   {title:'DMZ에서 발생한 사고',text:'9월 21일, DMZ에서 작전 중이던 우리 장병 3명이 지뢰 폭발로 다쳤습니다. 군은 사고 경위와 지뢰의 출처를 조사하기 시작했습니다.',alt:'숲속 DMZ 길을 이동하는 장병들과 멀리 피어오른 먼지. 사고 상황을 재구성한 그림.'},
   {title:'한국군·유엔사 합동조사',text:'한국군과 유엔사는 현장을 함께 조사했습니다. 추측을 앞세우기보다, 현장에서 발견한 증거를 확인하는 과정이 이어졌습니다.',alt:'통제된 숲길에서 현장 기록을 확인하는 조사 인원들.'},
