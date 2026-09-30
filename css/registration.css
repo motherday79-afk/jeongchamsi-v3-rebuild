@@ -2,7 +2,7 @@
 .join-welcome{display:flex;flex-direction:column;justify-content:space-between;gap:60px;padding:44px 32px;background:radial-gradient(ellipse at 0 0,#674286 0,transparent 65%),#241331;color:#fff}
 .join-wordmark{font-size:13px;letter-spacing:.2em;color:#e2c99e;font-weight:700}
 .join-page .join-kicker{display:block;font-size:11px;font-weight:700;letter-spacing:.09em;color:#79548f}
-.join-welcome .join-kicker{color:#d5b78a}
+.join-page .join-welcome .join-kicker{color:#e2c99e;font-size:18px;line-height:1.6;letter-spacing:.02em}
 .join-welcome h1{font-size:clamp(26px,3vw,40px);line-height:1.5;letter-spacing:-.055em;margin:18px 0;color:#fff;font-weight:750;word-break:keep-all}
 .join-welcome p{font-size:14px;line-height:1.95;color:#d6c9df;margin:0}
 .join-welcome-footer{display:grid;gap:12px;padding-top:28px;border-top:1px solid #ffffff26;font-size:12px;color:#d6c9df}

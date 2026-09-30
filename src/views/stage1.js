@@ -2,8 +2,8 @@ import {renderCollectionProfile,renderRefreshPolicy} from './person-refresh.js?v
 import { renderRankingWeights } from './ranking-weights.js?v=0.0.31.174';
 import { authorIdentity, postMenu, sharedPost, sharedWrite, communityBoard, cageDetail } from './community-ui.js?v=0.0.31.178';
 import { BADGE_CATALOG, badgeByKey, renderBadge } from '../data/badge-catalog.js?v=0.0.31.155';
-import {addressFields} from './registration.js?v=0.0.31.351';
-export {renderJoin} from './registration.js?v=0.0.31.351';
+import {addressFields} from './registration.js?v=0.0.31.352';
+export {renderJoin} from './registration.js?v=0.0.31.352';
 import {renderActivitySummary,renderMemberActivityAdmin,ledgerPresentation,totalSpent} from './activity-points.js?v=0.0.31.178';
 
 const esc=(v='')=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

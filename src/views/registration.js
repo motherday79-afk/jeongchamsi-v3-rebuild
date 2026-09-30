@@ -15,7 +15,7 @@ export function renderJoin(){
   return `<section class="join-page" aria-labelledby="join-title">
     <aside class="join-welcome">
       <span class="join-wordmark">JEONGCHAMSI</span>
-      <div><span class="join-kicker">정치에 참여할 시간</span><h1 id="join-title">당신의 관심이<br>참여가 되는 곳.</h1><p>정치를 읽고, 생각을 나누고.<br>정참시에서 함께 시작하세요.</p></div>
+      <div><span class="join-kicker">정치에 참여할 시간</span><h1 id="join-title">당신의 관심이<br>가장 큰 자산 입니다.</h1><p>여.야.중도 모두가 한자리에서<br>의견을 나누고 소통 할 수 있어야 합니다.</p></div>
       <div class="join-welcome-footer"><span>이미 함께하고 계신가요?</span><a href="/login" data-layout-route="/login">로그인 <span aria-hidden="true">↗</span></a></div>
     </aside>
     <form class="stage-form join-required-form" data-stage-form="join">
