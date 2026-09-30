@@ -1,7 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import {renderHomeLayout} from '../src/layout/home-layout.js';
 const base={rank:[],columns:[],community:[],session:{},polls:{items:[{id:'poll-1',question:'어떤 선택을 하시겠습니까?',featured:true,options:[{votes:5},{votes:3}]}]}};
+test('banner styles have one owner and outrank the historical poll ID background',()=>{
+ const css=fs.readFileSync(new URL('../css/citizen-sidebar-367.css',import.meta.url),'utf8');
+ assert.match(css,/\.product-home-wrap \.home-balanced-layout #poll\.citizen-choice-banner\{[^}]*citizen-choice-369\.webp/);
+ assert.doesNotMatch(fs.readFileSync(new URL('../css/comic-citizen-369.css',import.meta.url),'utf8'),/citizen-choice/);
+});
 test('citizen choice appears once at the end of the sidebar after the mine',()=>{
  const html=renderHomeLayout(base),main=html.split('<main class="main-column">')[1].split('</main>')[0],side=html.split('<aside class="side-column">')[1].split('</aside>')[0];
  assert.doesNotMatch(main,/id="poll"/);assert.equal((html.match(/citizen-choice-banner/g)||[]).length,1);
