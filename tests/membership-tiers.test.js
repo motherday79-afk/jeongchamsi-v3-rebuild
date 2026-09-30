@@ -74,10 +74,10 @@ test('console page and survey management reject staff; editorial form allows pla
 });
 
 test('platinum permanent report shows all ten diagnoses without timers or photo editing',async()=>{
- const result={ok:true,item:{id:'p1',name:'테스트 정치인',type:'assembly',party:'무소속'},accessTier:'admin',intelligence:{accessTier:'admin',diagnoses:Array.from({length:10},(_,i)=>({id:String(i+1).padStart(2,'0'),title:`진단 ${i+1}`,headline:'분석',score:50,display:{kind:'summary',items:[]}})),prescriptions:[]}};
+ const result={ok:true,item:{id:'p1',name:'테스트 정치인',type:'assembly',party:'무소속'},accessTier:'admin',intelligence:{accessTier:'admin',diagnoses:Array.from({length:10},(_,i)=>({id:String(i+1).padStart(2,'0'),title:`진단 ${i+1}`,headline:'분석',score:50,display:{kind:'summary',items:[]}})),prescriptions:[{id:'01',title:'비공개 처방',strategicJudgment:'PRIVATE_RX'}]}};
  const html=await renderPoliticianDetail('p1',{get:async()=>result},{authenticated:true,user:platinum},{},result);
  assert.match(html,/data-diagnostic-topic="10"/);
- assert.doesNotMatch(html,/data-paid-analysis|data-analysis-access|data-politician-photo-form/);
+ assert.doesNotMatch(html,/data-paid-analysis|data-analysis-access|data-politician-photo-form|data-prescription-payload|data-prescription-disclosure|PRIVATE_RX/);
 });
 
 test('editorial service allows platinum own posts but not changing other authors',async()=>{

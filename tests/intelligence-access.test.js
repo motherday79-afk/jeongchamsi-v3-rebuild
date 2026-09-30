@@ -30,7 +30,7 @@ test('member projection exposes six interpreted diagnoses without strategy field
 });
 
 test('admin projection exposes all diagnoses then all prescriptions',()=>{
-  const result=projectIntelligence(report,'admin','compare');
+  const result=projectIntelligence(report,'admin','compare',{id:'admin',role:'admin'});
   assert.deepEqual(result.diagnoses.map(topic=>topic.id),['01','02','03','04','05','06','07','08','09','10']);
   assert.deepEqual(result.prescriptions.map(topic=>topic.id),['01','02','03','04','05','06','07','08','09','10']);
   assert.equal(result.stInterpretation,ST_INTERPRETATION);
@@ -46,7 +46,7 @@ test('detail and compare use identical projected values',()=>{
 
 test('sparse source input remains complete without prohibited placeholders',()=>{
   const sparse=buildIntelligenceDraft({...person,id:'assembly-999',name:'희소 정치인'},{snapshotId:'2026-09-03',collectedAt:'2026-09-03T00:00:00.000Z',news:{items:[]},sourceErrors:[]},{peers:[]},'JCS_INTELLIGENCE_V2');
-  const result=projectIntelligence(sparse,'admin','detail');
+  const result=projectIntelligence(sparse,'admin','detail',{id:'admin',role:'admin'});
   assert.equal(result.diagnoses.length,10);
   assert.equal(result.prescriptions.length,10);
   const narrative={...result,diagnoses:result.diagnoses.map(({display,...diagnosis})=>diagnosis)};

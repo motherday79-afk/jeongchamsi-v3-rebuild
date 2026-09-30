@@ -8,7 +8,7 @@ import {fixture,profiles} from './helpers/person-refresh-fixture.js';
 const secret='person-analysis-access-test-secret',user={id:'member',role:'member'},personId='assembly-211',walletKey='jcs:points:v1:wallet:member';
 async function setup(){
  const f=await fixture({now:()=>Date.now()});
- f.db.values.set(TARGET_KEYS.users,JSON.stringify({member:user,other:{id:'other',role:'member'},admin:{id:'admin',role:'admin'},suspended:{id:'suspended',role:'member',status:'suspended'}}));
+ f.db.values.set(TARGET_KEYS.users,JSON.stringify({member:user,other:{id:'other',role:'member'},staff:{id:'staff',role:'admin'},platinum:{id:'platinum',role:'platinum'},admin:{id:'admin',role:'admin'},suspended:{id:'suspended',role:'member',status:'suspended'}}));
  f.db.values.set(TARGET_KEYS.politicians('assembly'),JSON.stringify({items:profiles}));f.db.values.set(walletKey,JSON.stringify({balance:1000}));
  await f.service.saveRefreshPolicy({enabled:true,fee:100,cooldownMinutes:10});
  const pay=()=>f.service.requestMemberRefresh(user,{personId,requestId:'api-access-request-12345',quotedFee:100});
@@ -23,7 +23,7 @@ async function setup(){
 test('only the paying member receives full detail and comparison for the purchased person',async()=>{
  const f=await setup();await f.pay();
  for(const q of ['', '&view=compare']){
-  const result=await f.call('member',personId,q);assert.equal(result.accessTier,'admin');assert.equal(result.intelligence.diagnoses.length,10);assert.ok(result.intelligence.prescriptions.length>0);assert.equal(result.analysisAccess.active,true);assert.deepEqual(result.intelligence.analysisAccess,result.analysisAccess);assert.equal(result.headers['Cache-Control'],'no-store');
+  const result=await f.call('member',personId,q);assert.equal(result.accessTier,'admin');assert.equal(result.intelligence.diagnoses.length,10);assert.equal(result.intelligence.prescriptions,undefined);assert.equal(result.intelligence.prescriptionPriorities,undefined);assert.equal(result.analysisAccess.active,true);assert.deepEqual(result.intelligence.analysisAccess,result.analysisAccess);assert.equal(result.headers['Cache-Control'],'no-store');
   const other=await f.call('other',personId,q);assert.equal(other.accessTier,'member');assert.equal(other.intelligence.diagnoses.length,6);assert.equal(other.intelligence.prescriptions,undefined);
   const peer=await f.call('member','assembly-026',q);assert.equal(peer.accessTier,'member');assert.equal(peer.intelligence.prescriptions,undefined);
  }
@@ -64,4 +64,12 @@ test('three separately purchased people render real projected deep comparison wi
  assert.equal(f.db.values.get(walletKey),before);
  const wallet=JSON.parse(before);wallet.analysisAccess['assembly-026'].expiresAt=Date.now()-1;wallet.analysisAccess['assembly-026'].grantedAt=wallet.analysisAccess['assembly-026'].expiresAt-86400000;f.db.values.set(walletKey,JSON.stringify(wallet));
  const expired=await renderPoliticianCompare(service,route,session);assert.ok(expired.includes('data-compare-access-gate'));assert.ok(!expired.includes('data-comparison-topic="10"'));assert.equal(JSON.parse(f.db.values.get(walletKey)).balance,700);
+});
+
+test('only highest administrator receives prescriptions through detail and comparison APIs',async()=>{
+ const f=await setup();for(const query of ['', '&view=compare']){for(const actor of ['staff','platinum']){const result=await f.call(actor,personId,query+'&role=superadmin&includePrescriptions=true');assert.equal(result.intelligence.diagnoses.length,10);assert.equal(result.intelligence.prescriptions,undefined);assert.equal(result.intelligence.prescriptionPriorities,undefined)}const owner=await f.call('admin',personId,query);assert.equal(owner.intelligence.prescriptions.length,10);assert.ok(owner.intelligence.prescriptionPriorities);}
+});
+test('prescription entry and embedded payload appear only for the highest administrator',async()=>{
+ const f=await setup();await f.pay();const {renderPoliticianDetail}=await import('../src/views/politicians.js');
+ for(const [id,role] of [['admin','admin'],['staff','admin'],['platinum','platinum'],['member','member']]){const result=await f.call(id),html=await renderPoliticianDetail(personId,{get:async()=>result},{authenticated:true,user:{id,role}},{},result);assert.equal(html.includes('data-prescription-disclosure'),id==='admin',id);assert.equal(html.includes('data-prescription-payload'),id==='admin',id);assert.match(html,/data-diagnostic-topic="10"/);}
 });

@@ -137,7 +137,7 @@ export async function handlePoliticians(req,res,command,url,intelligence){
     // Check the member's grant after asynchronous report reads, immediately before projection.
     const analysisAccess=accountTier==='member'?await readPersonAnalysisAccess(command,user,id):null;
     const tier=accountTier==='admin'||analysisAccess?.active?'admin':accountTier;
-    const projected={...projectIntelligence(fullReport,tier,scope),analysisAccess};
+    const projected={...projectIntelligence(fullReport,tier,scope,user),analysisAccess};
     return json(res,200,{ok:true,accessTier:tier,analysisAccess,item:{...item,photo:photos[id]||null},intelligence:projected});
   }
   const photos=await readPoliticianPhotos(command);
