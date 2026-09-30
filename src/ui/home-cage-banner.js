@@ -26,6 +26,7 @@ function titleLines(title){
 export function renderCageBanner({title,titleLayout=null,blue=0,red=0}={}){
  const text=String(title||'다음 케이지를 준비 중입니다'),count=n=>Number.isFinite(Number(n))?Math.max(0,Number(n)):0;
  const total=count(blue)+count(red),left=total?Math.round(count(blue)*100/total):0,right=total?100-left:0;
+ const energyShare=total?left:50,blueWidth=1110*energyShare/100,redWidth=1110-blueWidth,split=332+blueWidth;
  const id=`cage-promo-${++serial}`,manual=cageTitleGeometry(text,titleLayout),lines=manual?manual.lines.map(line=>line.text):titleLines(text);
  const quoted=lines.length===2&&/^['"‘“].+['"’”]$/.test(lines[0]);
  const geometry=manual||cageTitleFontGeometry(lines,quoted?'first':'equal');
@@ -33,7 +34,19 @@ export function renderCageBanner({title,titleLayout=null,blue=0,red=0}={}){
  return `<svg class="cage-promo-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1774 887" aria-hidden="true" focusable="false">
  <defs><clipPath id="${id}-progressive-board"><polygon points="114,470 291,513 294,742 114,697"/></clipPath><clipPath id="${id}-conservative-board"><polygon points="1472,509 1633,473 1633,704 1468,744"/></clipPath><clipPath id="${id}-title"><rect x="390" y="84" width="1015" height="282"/></clipPath><linearGradient id="${id}-ink" gradientUnits="userSpaceOnUse" x1="0" y1="90" x2="0" y2="356"><stop offset="0" stop-color="#fffdf6"/><stop offset=".58" stop-color="#fff6dc"/><stop offset="1" stop-color="#e7bc66"/></linearGradient><filter id="${id}-title-shadow" x="-5%" y="-10%" width="110%" height="125%"><feDropShadow dx="2" dy="3" stdDeviation="2" flood-color="#000" flood-opacity=".8"/></filter>
  <filter id="${id}-patch-feather" x="-10%" y="-30%" width="120%" height="160%"><feGaussianBlur stdDeviation="4"/></filter><clipPath id="${id}-patch-bounds"><rect x="688" y="0" width="405" height="114"/><rect x="685" y="414" width="410" height="110"/></clipPath><mask id="${id}-live-patches" maskUnits="userSpaceOnUse" x="688" y="0" width="407" height="524"><g fill="white" filter="url(#${id}-patch-feather)"><rect x="704" y="-12" width="372" height="112" rx="8"/><rect x="701" y="430" width="374" height="78" rx="12"/></g></mask></defs>
+ <defs>
+ <image id="${id}-energy-source" href="/assets/banners/cage-energy-source-353.webp" width="1802" height="872"/>
+ <linearGradient id="${id}-energy-fade" x1="0" y1="0" x2="0" y2="1"><stop stop-color="black"/><stop offset=".13" stop-color="white"/><stop offset=".82" stop-color="white"/><stop offset="1" stop-color="black"/></linearGradient>
+ <mask id="${id}-energy-mask" maskUnits="userSpaceOnUse" x="332" y="478" width="1110" height="223"><rect x="332" y="478" width="1110" height="223" fill="url(#${id}-energy-fade)"/></mask>
+ <clipPath id="${id}-vs"><path d="M780 589 L829 580 L957 574 L981 589 L977 609 L958 637 L970 650 L949 691 L825 704 L781 680 Z"/></clipPath>
+ </defs>
  <image id="${id}-template" href="/assets/banners/cage-template-156.webp" width="1774" height="887"/>
+ <!-- Use the same centered energy artwork as the detail page, without its scoreboards or VS. -->
+ <g data-cage-energy-share="${energyShare}" mask="url(#${id}-energy-mask)">
+ <svg data-cage-energy="progressive" x="332" y="478" width="${blueWidth}" height="223" viewBox="420 398 480 155" preserveAspectRatio="none"><use href="#${id}-energy-source"/></svg>
+ <svg data-cage-energy="conservative" x="${split}" y="478" width="${redWidth}" height="223" viewBox="900 398 480 155" preserveAspectRatio="none"><use href="#${id}-energy-source"/></svg>
+ </g>
+ <use href="#${id}-template" clip-path="url(#${id}-vs)"/>
  <image href="/assets/banners/cage-live-move-166.png" width="1774" height="887" clip-path="url(#${id}-patch-bounds)" mask="url(#${id}-live-patches)" data-cage-art-patches="header-only" data-cage-live-position="above-vs" data-cage-live-y="439" data-cage-live-bottom="498"/>
  ${titleArt}
  <g class="cage-readout cage-readout--progressive"><use href="#${id}-template" clip-path="url(#${id}-progressive-board)"/><g fill="#f1fcff" stroke="#def9ff" stroke-width="1" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" transform="translate(132 563) skewY(14)"><text x="78" y="111" font-size="118" textLength="156" lengthAdjust="spacingAndGlyphs">${left}%</text></g></g>
