@@ -1,3 +1,4 @@
+import {homeBannerPlaylist,HOME_BANNER_INTERVAL} from '../core/home-banner-playlist.js?v=0.0.31.355';
 import {membershipLabel} from '../core/membership.js?v=0.0.31.354';
 import {APPAREL_PRODUCTS,renderApparelCatalog,renderApparelProduct} from '../views/apparel-shop.js?v=0.0.31.297';
 import {renderAiPanelHome} from '../views/ai-panel-pages.js?v=0.0.31.354';
@@ -97,7 +98,14 @@ export function renderBadgeShowcase(status={},showMyPage=false,displayName=''){
 
 function participationCard(status={},mobile=false,session={}){const authenticated=session?.authenticated===true;return `<section class="side-card side-participation side-participation-account participation-card promo-account-card${authenticated?'':' is-guest'}">${authenticated?`<div data-badge-showcase-mount data-badge-mypage="true" data-display-name="${esc(session.user?.nickname||'회원')}">${renderBadgeShowcase(status,true,session.user?.nickname||'회원')}</div><div data-member-summary-mount>${renderMemberSummary()}</div>`:'<div class="account-guest-intro"><b>정치에 참여할 시간</b><p>로그인하고 나의 참여 기록을 모아보세요.</p></div><a class="account-login-button" href="/login" data-layout-route="/login">정참시 로그인</a>'}</section>`;}
 
-function homeBanner(banner={},session={},placement='sidebar'){
+export function homeBanner(banner={},session={},placement='sidebar'){
+ if(placement==='sidebar'){
+  const slides=homeBannerPlaylist(banner).map((item,index)=>homeBannerArtwork(item,{},placement).replace(/^<section[^>]*>/,'').replace(/<\/section>$/,'').replace('<a ',`<a data-home-banner-slide aria-hidden="${index!==0}"${index?' hidden':''} `)).join('');
+  return `<section class="side-card side-home-banner home-banner-rotation" data-home-banner-rotation data-interval="${HOME_BANNER_INTERVAL}">${slides}${session?.user?.role==='admin'?'<button type="button" data-home-banner-edit="sidebar">배너 추가</button>':''}</section>`;
+ }
+ return homeBannerArtwork(banner,session,placement);
+}
+export function homeBannerArtwork(banner={},session={},placement='sidebar'){
  const original=imageUrl(banner?.url),hero=placement==='hero',restyle=!!original&&banner?.designVersion!=='upload';
  // Keep future admin uploads authoritative; only replace the bundled legacy sidebar design.
  const campaign=!hero&&(!original||banner?.designVersion!=='upload'),base='/assets/banners/campaign-night-transit';

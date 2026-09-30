@@ -1,13 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {renderHomeLayout} from '../src/layout/home-layout.js';
+import {renderHomeLayout,homeBannerArtwork} from '../src/layout/home-layout.js';
 import {HOME_FIXTURE} from '../src/fixtures/home.js';
 import {setupLayoutNavigation} from '../src/ui/interactions.js';
 import {loadCampaignPage} from '../src/core/campaign-routing.js';
 import {createCampaignService} from '../lib/campaign-service.js';
 
 const legacy={url:'https://images.fixture.invalid/old-sidebar.png',targetUrl:'https://www.youtube.com/@old',alt:'정참시유튜브'};
-const sidebar=(banner,session={})=>renderHomeLayout({...HOME_FIXTURE,homeBanner:banner,session}).match(/<section class="side-card side-home-banner\b[^]*?<\/section>/)?.[0]||'';
+const sidebar=(banner,session={})=>homeBannerArtwork(banner,session);
 const uploaded={...legacy,designVersion:'upload',mobileUrl:'https://images.fixture.invalid/mobile.webp',tabletUrl:'https://images.fixture.invalid/tablet.webp'};
 
 test('the existing legacy sidebar becomes the approved campaign with a whole-image internal link',()=>{

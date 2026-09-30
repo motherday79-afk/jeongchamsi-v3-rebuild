@@ -1,3 +1,4 @@
+import {setupHomeBannerRotation} from './ui/home-banner-rotation.js?v=0.0.31.355';
 import {isSuperAdmin} from './core/membership.js?v=0.0.31.354';
 import {loadBadgeStatus} from './core/badge-loading.js?v=0.0.31.349';
 import {createAiPanelClient} from './core/ai-panel-client.js?v=0.0.31.194';
@@ -12,26 +13,26 @@ import { cageLoginReturn, cageOpinionCompletion } from './core/cage-entry.js?v=0
 import { bindCageTitleEditors } from './ui/cage-title-editor.js?v=0.0.31.167';
 import { createCampaignClient } from './core/campaign-client.js?v=0.0.31.158';
 import { loadCampaignPage } from './core/campaign-routing.js?v=0.0.31.160';
-import { bindCampaignInteractions } from './ui/campaign-interactions.js?v=0.0.31.165';
+import { bindCampaignInteractions } from './ui/campaign-interactions.js?v=0.0.31.355';
 import { refreshFontScale } from './ui/font-scale.js?v=0.0.31.56';
-import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.354';
+import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.355';
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.56';
 import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.354';
-import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.354';
-import { focusCageCompose, setupHomeCompare, setupPoliticianAutocomplete, setupLayoutInteractions, setupPoliticianPhotoFallback, setupNowCarousel, setupCageCountdown, setupDesktopHomeViewport } from './ui/interactions.js?v=0.0.31.165';
+import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.355';
+import { focusCageCompose, setupHomeCompare, setupPoliticianAutocomplete, setupLayoutInteractions, setupPoliticianPhotoFallback, setupNowCarousel, setupCageCountdown, setupDesktopHomeViewport } from './ui/interactions.js?v=0.0.31.355';
 import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.354';
 import { createContentService, loadNavigationDashboard, loadPersonNavigation } from './core/content.js?v=0.0.31.350';
 import { createPoliticianService } from './core/politicians.js?v=0.0.31.350';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith, isTransientAnalysisRoute } from './core/navigation.js?v=0.0.31.350';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.148';
-import * as views from './views/stage1.js?v=0.0.31.354';
+import * as views from './views/stage1.js?v=0.0.31.355';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.354';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.354';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident } from './views/participation-pages.js?v=0.0.31.350';
 import { renderPresidentPage } from './views/president.js?v=0.0.31.107';
-import { renderSearchPage, hasSearchSnapshot } from './views/search-page.js?v=0.0.31.354';
-import { loadSearchDiscovery } from './views/search-discovery.js?v=0.0.31.354';
+import { renderSearchPage, hasSearchSnapshot } from './views/search-page.js?v=0.0.31.355';
+import { loadSearchDiscovery } from './views/search-discovery.js?v=0.0.31.355';
 import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.31.56';
 import {regionLocalityOptions,resolveRegionLocality} from './data/korean-regions.js?v=0.0.31.351';
 import {activityFormPayload,activityRequestId,settleActivityRequest,rememberActivityFeedback,rememberSubmissionFeedback,showActivityFeedback,hydrateActivityHints,bindActivityPoints,authoringResult} from './ui/activity-points.js?v=0.0.31.178';
@@ -173,7 +174,7 @@ async function render({preserveScroll=false,refreshHome=false,freshSession=false
   if(p[0]==='polimable'||p[0]==='polimarble'){location.replace('/');return;}
   if(freshSession)await auth.session({fresh:true});
   if(!p.length&&!refreshHome&&homeSnapshot){
-    app.replaceChildren(homeSnapshot.node);watchAnalysisAccess(document);setupDesktopHomeViewport(document);setupCageCountdown(document);
+    app.replaceChildren(homeSnapshot.node);setupHomeBannerRotation(document);watchAnalysisAccess(document);setupDesktopHomeViewport(document);setupCageCountdown(document);
     setupHomeCompare(document);setupPoliticianAutocomplete(document,(query,limit)=>politicians.search(query,limit));refreshFontScale(document);
     if(!preserveScroll)window.scrollTo(0,0);
     const snapshot=homeSnapshot;
@@ -374,9 +375,9 @@ document.addEventListener('submit',async event=>{
     if(submit.disabled)return;submit.disabled=true;state.textContent='기기별 배너 3종을 저장하고 있습니다…';
     try{const encode=async file=>{const bytes=new Uint8Array(await file.arrayBuffer());let binary='';for(let start=0;start<bytes.length;start+=32768)binary+=String.fromCharCode(...bytes.subarray(start,start+32768));return {contentType:file.type,dataBase64:btoa(binary)};};
       const result=await content.saveHomeBanner({placement:String(data.get('placement')||'sidebar'),pc:await encode(pc),mobile:await encode(mobile),...(tablet instanceof File&&tablet.size?{tablet:await encode(tablet)}:{}),targetUrl:String(data.get('targetUrl')||''),alt:String(data.get('alt')||'정참시 배너')});
-      const messages={BANNER_STORAGE_NOT_CONFIGURED:'배너 저장소가 연결되지 않았습니다.',BANNER_BOTH_REQUIRED:'기기별 배너 이미지를 모두 선택해 주세요.',BANNER_PAIR_TOO_LARGE:'이미지의 합계 용량은 3MB 이하입니다.',BANNER_TOO_LARGE:'이미지별 최대 2MB입니다.',BANNER_TYPE_INVALID:'JPG·PNG·WEBP·GIF 이미지만 업로드할 수 있습니다.',BANNER_SIGNATURE_INVALID:'손상되었거나 지원하지 않는 이미지입니다.',BANNER_TARGET_URL_INVALID:'클릭 이동 주소는 https://로 시작해야 합니다.'};
+      const messages={BANNER_PLAYLIST_FULL:'배너는 최대 20개까지 등록할 수 있습니다.',BANNER_CHANGED_RETRY:'다른 배너가 함께 등록되었습니다. 다시 저장해 주세요.',BANNER_STORAGE_NOT_CONFIGURED:'배너 저장소가 연결되지 않았습니다.',BANNER_BOTH_REQUIRED:'기기별 배너 이미지를 모두 선택해 주세요.',BANNER_PAIR_TOO_LARGE:'이미지의 합계 용량은 3MB 이하입니다.',BANNER_TOO_LARGE:'이미지별 최대 2MB입니다.',BANNER_TYPE_INVALID:'JPG·PNG·WEBP·GIF 이미지만 업로드할 수 있습니다.',BANNER_SIGNATURE_INVALID:'손상되었거나 지원하지 않는 이미지입니다.',BANNER_TARGET_URL_INVALID:'클릭 이동 주소는 https://로 시작해야 합니다.'};
       state.textContent=result?.ok?'기기별 배너 3종을 저장했습니다.':messages[result?.error]||'배너를 저장하지 못했습니다. 다시 시도해 주세요.';
-      if(result?.ok){bannerForm.closest('dialog')?.close();await render({preserveScroll:true});}
+      if(result?.ok){bannerForm.closest('dialog')?.close();homeSnapshot=null;navigation?.clearCache();await render({preserveScroll:true,refreshHome:true});}
     }catch{state.textContent='배너를 저장하지 못했습니다. 다시 시도해 주세요.';}finally{submit.disabled=false;}return;
   }
   const youtubeChannel=event.target.closest('[data-youtube-channel-form]');
@@ -507,7 +508,7 @@ document.addEventListener('click',async event=>{
  const unpin=event.target.closest('[data-jc-unpin]'),commentLike=event.target.closest('[data-jc-comment-like]');
  if(unpin||commentLike){event.preventDefault();const button=unpin||commentLike;if(button.disabled)return;button.disabled=true;try{const result=unpin?await content.update('community',button.dataset.postId,{pinKind:''}):await content.likeComment(button.dataset.domain,button.dataset.postId,button.dataset.commentId);if(result?.status===401){button.disabled=false;navigation.navigate('/login');return;}if(result?.error){let state=button.closest('.jc49').querySelector('[data-jc-error]');if(!state){state=document.createElement('p');state.dataset.jcError='';state.setAttribute('role','alert');button.closest('.jc49').append(state);}state.textContent=formErrors[result.error]||result.error;return;}await render({preserveScroll:true});}catch{button.title='처리하지 못했습니다. 다시 시도해 주세요.';}finally{button.disabled=false;}return;}
   const bannerEdit=event.target.closest('[data-home-banner-edit]');
-  if(bannerEdit){event.preventDefault();const placement=bannerEdit.dataset.homeBannerEdit==='hero'?'hero':'sidebar',dialog=document.createElement('dialog');dialog.className='home-banner-dialog';dialog.innerHTML=`<form data-home-banner-form><h2>${placement==='hero'?'메인 가로 배너':'메인 사이드 배너'} 등록</h2><input type="hidden" name="placement" value="${placement}"><p>PC·모바일·폴드 펼침/태블릿 이미지 모두 필수 · JPG·PNG·WEBP·GIF<br>각각 최대 2MB, 전체 합계 최대 3MB</p><p data-banner-storage-status data-state="checking">배너 저장소 연결 확인 중…</p><label>PC 이미지 · ${placement==='hero'?'832 × 135':'420 × 240'}px<input type="file" name="pc" accept="image/jpeg,image/png,image/webp,image/gif" required></label><label>모바일 이미지 · ${placement==='hero'?'720 × 300':'720 × 540'}px<input type="file" name="mobile" accept="image/jpeg,image/png,image/webp,image/gif" required></label><label>폴드 펼침·태블릿 이미지 · ${placement==='hero'?'1200 × 300':'1200 × 400'}px<input type="file" name="tablet" accept="image/jpeg,image/png,image/webp,image/gif" required></label><label>클릭 이동 URL<input type="url" name="targetUrl" placeholder="https://" required></label><label>대체 텍스트<input name="alt" maxlength="120" placeholder="배너 설명" required></label><span data-form-state role="status"></span><div class="home-banner-actions"><button type="button" class="ghost-btn" data-home-banner-close>취소</button><button type="submit" class="primary-btn">저장</button></div></form>`;document.body.append(dialog);dialog.addEventListener('close',()=>dialog.remove(),{once:true});dialog.showModal();const state=dialog.querySelector('[data-banner-storage-status]'),result=await auth.homeBannerStorageStatus?.().catch(()=>null),configured=!!result?.storage?.configured;if(state){state.dataset.state=configured?'ready':'missing';state.textContent=configured?'배너 저장소 연결됨':'배너 저장소 미연결 · Vercel Blob 연결 및 재배포 필요';}return;}
+  if(bannerEdit){event.preventDefault();const placement=bannerEdit.dataset.homeBannerEdit==='hero'?'hero':'sidebar',dialog=document.createElement('dialog');dialog.className='home-banner-dialog';dialog.innerHTML=`<form data-home-banner-form><h2>${placement==='hero'?'메인 가로 배너':'메인 사이드 배너'} 등록</h2><input type="hidden" name="placement" value="${placement}">${placement==='sidebar'?'<p>등록한 배너는 기존 배너와 함께 1분마다 순서대로 노출됩니다.</p>':''}<p>PC·모바일·폴드 펼침/태블릿 이미지 모두 필수 · JPG·PNG·WEBP·GIF<br>각각 최대 2MB, 전체 합계 최대 3MB</p><p data-banner-storage-status data-state="checking">배너 저장소 연결 확인 중…</p><label>PC 이미지 · ${placement==='hero'?'832 × 135':'420 × 240'}px<input type="file" name="pc" accept="image/jpeg,image/png,image/webp,image/gif" required></label><label>모바일 이미지 · ${placement==='hero'?'720 × 300':'720 × 540'}px<input type="file" name="mobile" accept="image/jpeg,image/png,image/webp,image/gif" required></label><label>폴드 펼침·태블릿 이미지 · ${placement==='hero'?'1200 × 300':'1200 × 400'}px<input type="file" name="tablet" accept="image/jpeg,image/png,image/webp,image/gif" required></label><label>클릭 이동 URL<input type="url" name="targetUrl" placeholder="https://" required></label><label>대체 텍스트<input name="alt" maxlength="120" placeholder="배너 설명" required></label><span data-form-state role="status"></span><div class="home-banner-actions"><button type="button" class="ghost-btn" data-home-banner-close>취소</button><button type="submit" class="primary-btn">저장</button></div></form>`;document.body.append(dialog);dialog.addEventListener('close',()=>dialog.remove(),{once:true});dialog.showModal();const state=dialog.querySelector('[data-banner-storage-status]'),result=await auth.homeBannerStorageStatus?.().catch(()=>null),configured=!!result?.storage?.configured;if(state){state.dataset.state=configured?'ready':'missing';state.textContent=configured?'배너 저장소 연결됨':'배너 저장소 미연결 · Vercel Blob 연결 및 재배포 필요';}return;}
   const bannerClose=event.target.closest('[data-home-banner-close]');if(bannerClose){event.preventDefault();bannerClose.closest('dialog')?.close();return;}
   const referralCopy=event.target.closest('[data-copy-referral]');if(referralCopy){try{await navigator.clipboard.writeText(referralCopy.dataset.copyReferral);referralCopy.textContent='복사됨';}catch{referralCopy.textContent='코드를 선택해 복사해 주세요';}return;}
   const more=event.target.closest('[data-trending-more]');if(more){if(more.disabled)return;more.disabled=true;const container=more.closest('.module'),state=container.querySelector('[data-trending-status]');try{const result=await politicians.trending(Number(more.dataset.offset),more.dataset.snapshot);if(!more.isConnected)return;if(!result.ok){state.textContent=result.error==='RANKING_UPDATED'?'순위가 갱신되었습니다. 새로고침해 주세요.':'불러오지 못했습니다. 다시 시도해 주세요.';more.disabled=false;return;}container.querySelector('[data-trending-grid]').insertAdjacentHTML('beforeend',result.items.map(renderNowRankCard).join(''));more.dataset.offset=result.nextOffset;state.textContent=`${result.nextOffset} / ${result.total}명`;if(result.nextOffset>=result.total)more.remove();else more.disabled=false;}catch{if(more.isConnected){state.textContent='불러오지 못했습니다. 다시 시도해 주세요.';more.disabled=false;}}return;}

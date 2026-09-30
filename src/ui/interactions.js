@@ -1,3 +1,4 @@
+import {setupHomeBannerRotation} from './home-banner-rotation.js?v=0.0.31.355';
 import { renderPrescriptionReport } from '../views/prescription-visuals.js?v=0.0.31.56';
 import { refreshFontScale, setupFontScaleControl } from './font-scale.js?v=0.0.31.56';
 import { createHomeCompareMotion } from './compare-motion.js?v=0.0.31.164';
@@ -259,7 +260,7 @@ export function setupCopyRestrictions(root=document){
  root.addEventListener('contextmenu',event=>{if(!copyAllowed(event.target))event.preventDefault();});
  root.addEventListener('copy',event=>{const selection=root.getSelection?.()||globalThis.getSelection?.();if(copyAllowed(event.target)||(copyAllowed(selection?.anchorNode)&&copyAllowed(selection?.focusNode)))return;event.preventDefault();});
 }
-export function setupLayoutInteractions(root=document,options={}){setupDesktopHomeViewport(root);setupCopyRestrictions(root);setupPostMenuDismissal(root);setupCageCountdown(root);setupEmptyHomeModule(root);setupDrawer(root);setupLauncherExpansion(root);setupNowCarousel(root);setupLayoutNavigation(root);setupCompareSearch(root);setupHomeCompare(root);setupPoliticianPhotoFallback(root);setupPoliticianAutocomplete(root,options.politicianSearch);setupDiagnosisInteractions(root);setupDetail47Interactions(root);setupFontScaleControl(root);}
+export function setupLayoutInteractions(root=document,options={}){setupHomeBannerRotation(root);setupDesktopHomeViewport(root);setupCopyRestrictions(root);setupPostMenuDismissal(root);setupCageCountdown(root);setupEmptyHomeModule(root);setupDrawer(root);setupLauncherExpansion(root);setupNowCarousel(root);setupLayoutNavigation(root);setupCompareSearch(root);setupHomeCompare(root);setupPoliticianPhotoFallback(root);setupPoliticianAutocomplete(root,options.politicianSearch);setupDiagnosisInteractions(root);setupDetail47Interactions(root);setupFontScaleControl(root);}
 
 const postMenuRoots=new WeakSet();
 export function setupPostMenuDismissal(root=document){
