@@ -30,3 +30,10 @@ test('searched-person monthly position appears between the profile and existing 
  assert.ok(profile>=0&&attention>profile&&controls>attention&&directory>controls);
  assert.match(html,/최신순/);assert.match(html,/누적순/);assert.match(html,/연합뉴스/);
 });
+
+test('names and spaced party names open SPREAD directly',async()=>{
+ for(const [query,kind,name] of [['김민석','person','김민석'],['더불어 민주당','party','더불어민주당'],['국민의 힘','party','국민의힘']]){
+ const s=setup(),data=analyzeMediaIndex(index,{query,now:at});assert.equal(data.target.kind,kind);assert.equal(data.target.name,name);
+ const html=await renderSearchPage({...s,query});assert.match(html,/JCS SPREAD/);assert.match(html,/class="spread-target"/);assert.equal(s.counts().boardCalls,0);
+ }
+});

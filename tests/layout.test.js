@@ -133,9 +133,10 @@ test('home board previews place the current representative badge immediately aft
   assert.match(html,/정참시민<\/span><span class="author-representative-badge"[^>]*>[^]*data-badge-key="first-penguin"/);
 });
 
-test('main header politician autocomplete routes a selected result directly to its detail page',async()=>{
+test('main header submits to SPREAD without autocomplete; other politician pickers retain routes',async()=>{
   const header=siteHeader(7,{authenticated:false,user:null});
-  assert.match(header,/data-politician-select-mode="route"/);
+  assert.doesNotMatch(header,/data-politician-autocomplete|data-politician-select-mode/);
+  assert.match(header,/data-layout-search/);
   const interactions=await import('../src/ui/interactions.js');
   assert.equal(typeof interactions.politicianSuggestionSelection,'function');
   assert.deepEqual(interactions.politicianSuggestionSelection('route',{id:'assembly-001',name:'김민석'}),{route:'/person/assembly-001'});

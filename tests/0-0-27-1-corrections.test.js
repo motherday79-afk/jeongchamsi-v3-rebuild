@@ -29,9 +29,9 @@ test('전체 서비스는 상위 6개를 유지하고 중복 없이 추가 7개�
   assert.doesNotMatch(launcher,/<small>[^<]+<\/small>/);
 });
 
-test('메인 검색 자동완성은 헤더 밖으로 잘리지 않고 한 글자부터 표시된다',async()=>{
+test('메인 검색은 자동완성을 사용하지 않는다',async()=>{
   const header=siteHeader(0,{authenticated:false});
-  assert.match(header,/data-politician-autocomplete/);
+  assert.doesNotMatch(header,/data-politician-autocomplete/);
   const css=await readFile(new URL('../css/pages.css',import.meta.url),'utf8');
   const start=css.lastIndexOf('JCS_0_0_27_2 · SEARCH UI CORRECTION');
   assert.ok(start>0);
