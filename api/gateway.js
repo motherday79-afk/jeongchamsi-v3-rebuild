@@ -1,3 +1,4 @@
+import {createComicService} from '../lib/political-comic-service.js';
 import {canAccessAdminEndpoint,canWriteEditorial,isSuperAdmin} from '../src/core/membership.js';
 import {homeBannerPlaylist,HOME_BANNER_INTERVAL,HERO_BANNER_INTERVAL} from '../src/core/home-banner-playlist.js';
 import {uploadMineAdImage} from '../lib/mining-ad-image.js';
@@ -551,6 +552,23 @@ export default async function handler(req,res){
       if(req.method==='GET'&&url.searchParams.get('clock')==='1')return json(res,200,{ok:true,serverNow:Date.now()});
       const service=createPointService({command}),user=await currentUser(req,command);
       try{if(req.method==='GET')return json(res,200,await (url.searchParams.get('member')?service.member(user,url.searchParams.get('member')):url.searchParams.get('wallet')==='1'?service.wallet(user):service.status(user)));if(req.method!=='POST')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});const input=bodyOf(req),op=input.operation;if(!['bank','order','review','cage','grant','activity-policy','activity-revoke','activity-restrict'].includes(op))return json(res,400,{ok:false,error:'INVALID_OPERATION'});return json(res,200,await service[({'activity-policy':'activityPolicy','activity-revoke':'activityRevoke','activity-restrict':'activityRestrict'})[op]||op](user,input));}catch(error){return json(res,error.message==='ADMIN_REQUIRED'?403:error.message==='LOGIN_REQUIRED'?401:400,{ok:false,error:error.message});}
+    }
+    if(route==='political-comic'){
+      const service=createComicService({command}),admin=url.searchParams.get('admin')==='1';
+      const user=req.method!=='GET'||admin?await currentUser(req,command):null;
+      try{
+        if(req.method==='GET')return json(res,200,await service.list({admin,user}));
+        if(req.method!=='POST')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
+        if(!isSuperAdmin(user))return json(res,403,{ok:false,error:'ADMIN_REQUIRED'});
+        const body=bodyOf(req);
+        if(body.operation==='upload-image'){
+          const valid=validatePoliticianPhoto({contentType:body.contentType,bytes:Buffer.from(String(body.base64||''),'base64')});
+          if(!politicianPhotoStorageStatus().configured)return json(res,503,{ok:false,error:'PHOTO_STORAGE_NOT_CONFIGURED'});
+          const blob=await put('webtoons/'+Date.now()+'.'+valid.extension,valid.bytes,{access:'public',contentType:valid.contentType,addRandomSuffix:true});
+          return json(res,201,{ok:true,url:blob.url});
+        }
+        return json(res,200,{ok:true,item:await service.save(body.input||{},user)});
+      }catch(error){return json(res,error.status||400,{ok:false,error:error.message||'COMIC_SAVE_FAILED'});}
     }
     if(route==='content')return handleContent(req,res,command,url);
     if(route==='home/banner'&&req.method==='GET'){const service=createHomeBannerService({command}),[sidebar,hero,featuredCompare]=await Promise.all([service.get(),service.get('hero'),service.getCompare()]);return json(res,200,{ok:true,banner:{...(sidebar||{}),items:homeBannerPlaylist(sidebar),intervalMs:HOME_BANNER_INTERVAL,hero:{...(hero||{}),items:homeBannerPlaylist(hero,'hero'),intervalMs:HERO_BANNER_INTERVAL},featuredCompare:featuredCompare?{ids:featuredCompare.ids}:null}});}
