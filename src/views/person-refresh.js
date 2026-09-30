@@ -1,3 +1,4 @@
+import {isSuperAdmin} from '../core/membership.js?v=0.0.31.354';
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const number=value=>typeof value==='number'&&Number.isFinite(value)?value.toLocaleString('ko-KR'):'미확인';
 const volume=(row,field)=>row?.[field+'Range']?'10건 미만':number(row?.[field]);
@@ -21,7 +22,8 @@ export function renderMemberRefreshAction(item,session){
 }
 export function renderMemberRefreshMount(item,session,placement='bottom'){
  if(!session?.authenticated)return '';
- if(session.user?.role==='admin')return placement==='top'?'':`<section class="content-card person-refresh-member"><a class="ghost-btn" href="/admin?tab=politicians&amp;q=${encodeURIComponent(item.name)}&amp;person=${esc(item.id)}" data-layout-route="/admin?tab=politicians&amp;q=${encodeURIComponent(item.name)}&amp;person=${esc(item.id)}">${esc(item.name)} 개별 수집·게시 관리</a></section>`;
+ if(session.user?.role==='admin'&&!isSuperAdmin(session.user))return '';
+ if(isSuperAdmin(session.user))return placement==='top'?'':`<section class="content-card person-refresh-member"><a class="ghost-btn" href="/admin?tab=politicians&amp;q=${encodeURIComponent(item.name)}&amp;person=${esc(item.id)}" data-layout-route="/admin?tab=politicians&amp;q=${encodeURIComponent(item.name)}&amp;person=${esc(item.id)}">${esc(item.name)} 개별 수집·게시 관리</a></section>`;
  const top=placement==='top',id=top?` id="person-refresh-top-${String(item.id).replace(/[^a-zA-Z0-9_-]/g,'-')}"`:'';
  return `<section${id} class="content-card person-refresh-member${top?' person-refresh-member-top':''}" data-member-refresh="${esc(item.id)}" data-person-name="${esc(item.name)}" data-refresh-user="${esc(session.user?.id)}" data-refresh-placement="${top?'top':'bottom'}"${top?' role="region" aria-label="유료 데이터 갱신" tabindex="-1"':''} hidden></section>`;
 }

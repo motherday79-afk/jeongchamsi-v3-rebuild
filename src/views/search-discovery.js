@@ -1,4 +1,4 @@
-import {KIDS_PRODUCTS,cheerArtDefs,cheerProductImage} from '../layout/home-layout.js?v=0.0.31.274';
+import {KIDS_PRODUCTS,cheerArtDefs,cheerProductImage} from '../layout/home-layout.js?v=0.0.31.354';
 import {renderCampaignItemCard} from './campaign-pages.js?v=0.0.31.160';
 import {renderGroupCover} from './group-pages.js?v=0.0.31.179';
 

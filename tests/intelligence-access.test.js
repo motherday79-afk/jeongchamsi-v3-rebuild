@@ -9,8 +9,8 @@ const report=buildIntelligenceDraft(person,{snapshotId:'2026-09-03',collectedAt:
 test('session users map to public member and admin access tiers',()=>{
   assert.equal(accessTierForUser(null),'public');
   assert.equal(accessTierForUser({role:'member'}),'member');
-  assert.equal(accessTierForUser({role:'partner'}),'member');
-  assert.equal(accessTierForUser({role:'admin'}),'admin');
+  assert.equal(accessTierForUser({id:'partner',role:'partner'}),'admin');
+  assert.equal(accessTierForUser({id:'admin',role:'admin'}),'admin');
 });
 
 test('public projection exposes three diagnoses and no private prescriptions',()=>{

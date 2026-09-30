@@ -1,3 +1,4 @@
+import {isSuperAdmin} from '../core/membership.js?v=0.0.31.354';
 import {serviceIconSvg,moduleActionIconSvg} from '../ui/service-icons.js?v=0.0.31.197';
 // Pure HTML renderers. Mutations and JSON/file handling live in ai-panel-interactions.
 const esc=(v='')=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -190,7 +191,7 @@ function selectedPanelDetails(result,p){
   return `<section class="ai-section"><span class="ai-kicker">IMMUTABLE PANEL · ${esc(panel.id)}</span><h3>${esc(panel.name||panel.id)} · 저장된 프로필</h3><p>${panel.isSample?'SAMPLE / DEV ONLY · ':''}전체 ${profiles.length}개 ID · 변경하려면 새 패널 버전을 만드세요.</p>${profiles.slice((page-1)*pageSize,page*pageSize).map(profile=>`<details><summary>${esc(profile.id)} · ${esc(value(profile.age))} · ${esc(value(profile.region))}</summary>${metadata(profileFields.map(([k,l])=>[l,profile[k]]))}</details>`).join('')||'<p>프로필이 없습니다.</p>'}<nav class="ai-pagination" aria-label="저장된 프로필 페이지">${page>1?link(route('/admin/ai-panel',{tab:'panels',panelId:panel.id,profilePage:page-1}),'← 이전','ai-outline'):''}<span>${page} / ${last}</span>${page<last?link(route('/admin/ai-panel',{tab:'panels',panelId:panel.id,profilePage:page+1}),'다음 →','ai-outline'):''}</nav></section>`;
 }
 export function renderAiPanelAdmin({session={},data={},detail={},params={},human={}}={}){
-  if(!session.authenticated||session.user?.role!=='admin'||session.user?.status!=='active')return '<section class="module ai-panel"><h2>접근 권한이 없습니다</h2><p>활성 관리자 계정만 이용할 수 있습니다.</p></section>';
+  if(!session.authenticated||!isSuperAdmin(session.user)||session.user?.status!=='active')return '<section class="module ai-panel"><h2>접근 권한이 없습니다</h2><p>활성 관리자 계정만 이용할 수 있습니다.</p></section>';
   const p=paramsOf(params),panels=arr(data.panels),runs=arr(data.runs),explicit=detail.ok===true?detail.item:null,active=runs.find(x=>x.status!=='published'),latest=runs[0],focused=p.focus==='1'?explicit:null,r=p.history==='1'?explicit||active||latest:focused||active||latest||explicit,tab=p.tab==='panels'?'panels':'runs';
   const head=`<header class="ai-hero ai-admin-hero"><div class="ai-title-with-icon"><span class="ai-poll-icon">${serviceIconSvg('survey')}</span><div><span class="ai-kicker">ADMIN · JCS AI PANEL</span><h1>AI 여론조사 관리</h1><p>JCS HUMAN POLL 붙여넣기 → AI 통합파일 등록 → 메인에 게시. 세 단계만 사용하면 됩니다.</p></div></div>${link('/admin','← 관리자 메뉴','ai-detail-link')}</header><nav class="ai-tabs">${link('/admin/ai-panel?tab=runs','AI 여론조사',tab==='runs'?'active':'')}${link('/admin/ai-panel?tab=panels','고급설정',tab==='panels'?'active':'')}</nav>`;
   if(data.ok===false||detail.ok===false)return `<div class="ai-panel ai-page ai-admin">${head}${empty(true)}</div>`;

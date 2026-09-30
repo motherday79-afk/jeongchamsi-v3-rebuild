@@ -1,6 +1,7 @@
-import {renderAiPanelPublic,renderAiPanelAdmin} from '../views/ai-panel-pages.js?v=0.0.31.346';
+import {isSuperAdmin} from './membership.js?v=0.0.31.354';
+import {renderAiPanelPublic,renderAiPanelAdmin} from '../views/ai-panel-pages.js?v=0.0.31.354';
 export async function loadAiPanelPage({admin=false,params=new URLSearchParams(),session={},client}={}){
- if(admin&&!(session.authenticated&&session.user?.role==='admin'&&session.user?.status==='active'))return renderAiPanelAdmin({session});
+ if(admin&&!(session.authenticated&&isSuperAdmin(session.user)&&session.user?.status==='active'))return renderAiPanelAdmin({session});
  const [list,human]=await Promise.all([client.list({manage:admin}),client.humanPolls?.()||Promise.resolve({})]);const id=params.get('id')||(!admin?list.items?.[0]?.id:'');const detail=id?await client.get(id,{edit:admin}):{};
  if(admin){if(params.get('panelId'))list.selectedPanel=await client.panel(params.get('panelId'));return renderAiPanelAdmin({session,data:list,detail,params,human});}
  const profiles=detail.item?.panel?.profiles||[],q=(params.get('q')||'').trim().toLowerCase(),age=params.get('age'),filtered=profiles.filter(x=>(!q||x.id.toLowerCase().includes(q))&&(!age||String(x.age)===age));

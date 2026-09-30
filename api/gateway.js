@@ -1,3 +1,4 @@
+import {canAccessAdminEndpoint,canWriteEditorial,isSuperAdmin} from '../src/core/membership.js';
 import {uploadMineAdImage} from '../lib/mining-ad-image.js';
 import {pushService,enqueueCompletionPush} from '../lib/push-runtime.js';
 import {firebaseConfigured} from '../lib/push-fcm.js';
@@ -191,7 +192,7 @@ export async function dispatchBadgeRequest(route,method,user,body,service,target
     return {status:result.ok?200:badgeErrorStatus(result.error),body:result};
   }
   if(route==='admin/users'&&method==='PATCH'){
-    if(user.role!=='admin')return {status:403,body:{ok:false,error:'ADMIN_REQUIRED'}};
+    if(!isSuperAdmin(user))return {status:403,body:{ok:false,error:'SUPERADMIN_REQUIRED'}};
     if(!targetUser)return {status:404,body:{ok:false,error:'USER_NOT_FOUND'}};
     const result=await service.replaceGrants(targetUser,body?.grantedBadges||[]);
     return {status:result.ok?200:badgeErrorStatus(result.error),body:result};
@@ -266,7 +267,7 @@ export async function handleContent(req,res,command,url){
     const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});
     const pollImageUpload=domain==='polls'&&bodyOf(req).operation==='upload-image';if(pollImageUpload&&user.role!=='admin')return json(res,403,{ok:false,error:'ADMIN_REQUIRED'});
     if(!['columns','community','itsme','news'].includes(domain)&&!pollImageUpload)return json(res,403,{ok:false,error:'WRITE_NOT_ALLOWED'});
-    if(['columns','news'].includes(domain)&&!['admin','partner'].includes(user.role)&&!(bodyOf(req).operation==='upload-image'&&bodyOf(req).id))return json(res,403,{ok:false,error:'EDITOR_WRITE_FORBIDDEN'});
+    if(['columns','news'].includes(domain)&&!canWriteEditorial(user)&&!(bodyOf(req).operation==='upload-image'&&bodyOf(req).id))return json(res,403,{ok:false,error:'EDITOR_WRITE_FORBIDDEN'});
     if(bodyOf(req).operation==='upload-image'){
       try{const body=bodyOf(req);if(!['columns','news','polls'].includes(domain))return json(res,403,{ok:false,error:'IMAGE_NOT_ALLOWED'});
       if(body.id){const data=await readDomain(command,domain,{items:[]}),post=contentItems(data).find(row=>String(row.id)===String(body.id));if(!canManagePost(user,post))return json(res,403,{ok:false,error:'POST_EDIT_FORBIDDEN'});}
@@ -370,7 +371,7 @@ export async function dispatchAdminIntelligence(route,method,service,input={},co
 }
 
 async function handleAdmin(req,res,route,command){
-  const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});if(user.role!=='admin')return json(res,403,{ok:false,error:'ADMIN_REQUIRED'});
+  const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});if(!canAccessAdminEndpoint(user,route))return json(res,403,{ok:false,error:'SUPERADMIN_REQUIRED'});
   const adminPoliticians=createAdminPoliticianService({command,profilesProvider:()=>allPoliticianProfiles(command)});
 
   if(route==='admin/participation'&&req.method==='GET'){

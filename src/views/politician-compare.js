@@ -1,5 +1,6 @@
+import {canViewAdminAnalysis} from '../core/membership.js?v=0.0.31.354';
 import { renderPrescriptionDisclosure } from './prescription-visuals.js';
-import { renderAnalysisAccess } from './person-refresh.js?v=0.0.31.177';
+import { renderAnalysisAccess } from './person-refresh.js?v=0.0.31.354';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const COMPARE_EN={'01':'POLITICAL BRAND POSITIONING','02':'AGE × GENDER SUPPORT STRUCTURE','03':'LOCAL SENTIMENT & MESSAGE FIT','04':'CORE SUPPORT DYNAMICS','05':'COMPETITOR POSITIONING','06':'ISSUE & CRISIS RISK','07':'MEDIA & ONLINE INFLUENCE','08':'ELECTION & CAMPAIGN STRENGTH','09':'POLITICAL ACTION CONVERSION','10':'TOTAL POLITICAL POSITION'};
@@ -194,7 +195,7 @@ function renderCompareAccessGate(records,ids){
 }
 
 export async function renderPoliticianCompare(service,route='/compare',session=null){
-  const isAdmin=session?.user?.role==='admin',isMember=!!session?.user&&!isAdmin,fetchLimit=isAdmin||isMember?4:2;
+  const isAdmin=canViewAdminAnalysis(session?.user),isMember=!!session?.user&&!isAdmin,fetchLimit=isAdmin||isMember?4:2;
   const query=new URLSearchParams(String(route).split('?')[1]||'');
   const rawIds=[...new Set(String(query.get('ids')||'').split(',').map(id=>id.trim()).filter(Boolean))];
   const ids=rawIds.slice(0,fetchLimit),run=query.get('run')==='1'&&ids.length>=2;

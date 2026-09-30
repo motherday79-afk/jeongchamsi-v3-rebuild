@@ -1,3 +1,4 @@
+import {isSuperAdmin} from './membership.js?v=0.0.31.354';
 // AI synthetic responses are not observations of human respondents.
 export const AI_DISCLOSURE='AI 합성 응답이며 실제 인간 여론조사가 아닙니다.';
 export const AI_CHOICES=['very-positive','positive','negative','very-negative','undecided'];
@@ -13,7 +14,7 @@ const normalizeIntelligenceExplanation=value=>{const raw=String(value??'').trim(
 export const fail=code=>{throw new Error(`AI_PANEL_${code}`);};
 export const isObject=v=>v!==null&&typeof v==='object'&&!Array.isArray(v);
 export const validId=v=>typeof v==='string'&&/^[a-zA-Z0-9_-]{1,100}$/.test(v);
-export const isAdmin=u=>!!u?.id&&u.role==='admin'&&u.status==='active';
+export const isAdmin=u=>isSuperAdmin(u)&&u.status==='active';
 const str=(v,max=2000,required=false)=>{if(v==null&&!required)return '';if(typeof v!=='string'||v.length>max||(required&&!v.trim()))fail('INPUT_INVALID');return v.trim();};
 const url=v=>{const s=str(v,2000,true);try{const u=new URL(s);if(!['http:','https:'].includes(u.protocol)||u.username||u.password)fail('INPUT_INVALID');}catch{fail('INPUT_INVALID');}return s;};
 const date=v=>{const s=str(v,10,true);if(!/^\d{4}-\d{2}-\d{2}$/.test(s)||!Number.isFinite(Date.parse(s))||new Date(s).toISOString().slice(0,10)!==s)fail('INPUT_INVALID');return s;};

@@ -1,5 +1,6 @@
+import {membershipLabel} from '../core/membership.js?v=0.0.31.354';
 import {APPAREL_PRODUCTS,renderApparelCatalog,renderApparelProduct} from '../views/apparel-shop.js?v=0.0.31.297';
-import {renderAiPanelHome} from '../views/ai-panel-pages.js?v=0.0.31.346';
+import {renderAiPanelHome} from '../views/ai-panel-pages.js?v=0.0.31.354';
 import { cageComposeRoute, isCageClosed } from '../core/cage-entry.js?v=0.0.31.178';
 import { renderCageBanner } from '../ui/home-cage-banner.js?v=0.0.31.353';
 import { GENERATION_AGES, participationDisplay, demoLabel } from '../core/participation-model.js?v=0.0.31.79';
@@ -63,10 +64,10 @@ function accountPanel(session={},mobile=false){
   const authenticated=session?.authenticated===true;
   const nickname=esc(session?.user?.nickname||'회원');
   if(mobile)return authenticated
-    ? `<div class="mobile-login mobile-login-authenticated"><div><b>${nickname}님</b><span>${session.user?.role==='admin'?'관리자 계정':'정참시 회원'} · 로그인 상태 유지 중</span></div><button type="button" data-layout-route="/mypage">마이페이지</button></div>`
+    ? `<div class="mobile-login mobile-login-authenticated"><div><b>${nickname}님</b><span>${membershipLabel(session.user)} · 로그인 상태 유지 중</span></div><button type="button" data-layout-route="/mypage">마이페이지</button></div>`
     : `<div class="mobile-login"><div><b>정참시에 로그인하세요</b><span>즐겨찾기 · 참여 · 배지 · 알림</span></div><button type="button" data-layout-route="/login">로그인</button></div>`;
   return authenticated
-    ? `<section class="side-card login-card side-login side-login-authenticated"><span class="side-login-status">SIGNED IN</span><b>${nickname}님</b><p>${session.user?.role==='admin'?'관리자 계정':'정참시 회원'}으로 로그인되어 있습니다</p><button type="button" data-layout-route="/mypage">마이페이지</button></section>`
+    ? `<section class="side-card login-card side-login side-login-authenticated"><span class="side-login-status">SIGNED IN</span><b>${nickname}님</b><p>${membershipLabel(session.user)}으로 로그인되어 있습니다</p><button type="button" data-layout-route="/mypage">마이페이지</button></section>`
     : `<section class="side-card login-card side-login"><b>정참시에 로그인하세요</b><p>즐겨찾기, 참여 기록, 배지, 알림을 한곳에서 관리합니다</p><button type="button" data-layout-route="/login">로그인</button></section>`;
 }
 
