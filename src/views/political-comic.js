@@ -6,7 +6,7 @@ const image=p=>`<img src="${safe(p.coverImage||p.image)}" alt="${esc(p.title)} �
 const brand='<span class="comic-wordmark">정치<span>4</span>컷<i>JCS TOON</i></span>';
 export function renderComicHome(result={}){
  const rows=(result.items||[]).slice(0,3);
- return '<section class="political-comic-home" id="political-comic"><header>'+brand+link('/political-comic','전체 회차 보기 ↗')+'</header><div class="comic-home-gallery">'+rows.map(p=>link('/political-comic/'+encodeURIComponent(p.id),image(p),'comic-home-thumbnail')).join('')+'</div></section>';
+ return '<section class="political-comic-home" id="political-comic"><header>'+brand+link('/political-comic','전체 회차 보기 ↗')+'</header><div class="comic-home-gallery">'+rows.map(p=>link('/political-comic/'+encodeURIComponent(p.id),'<h2 class="comic-home-title"><span>EP.'+issue(p)+'</span> '+esc(p.title)+'</h2><div class="comic-home-picture">'+image(p)+'</div>','comic-home-thumbnail')).join('')+'</div></section>';
 }
 export function renderComicPage(result={},id=''){
  const list=result.items||[],p=list.find(p=>p.id===id);

@@ -59,11 +59,12 @@ test('finished manuscript publishes without twelve panel fields; cover and trans
  const admin=renderComicAdmin({items:[saved]},saved.id);assert.doesNotMatch(admin,/data-comic-upload="coverImage"/);assert.match(admin,/완성 만화 원고/);assert.doesNotMatch(admin,/name="title0"|name="text0"|name="alt0"|name="takeaway"/);
  const listing=renderComicPage({items:[saved]});assert.match(listing,/citizen-choice-369.webp/);
 });
-test('minimal editor saves without sources; home shows only latest three linked images',async()=>{
+test('minimal editor saves without sources; home shows latest three linked images with episode titles',async()=>{
  const service=createComicService({command:store()});const saved=await service.save({format:'comic',title:'한 줄 제목',date:'2026-10-01',image:DMZ_EPISODE.image,published:true},owner);
  assert.equal(saved.title,'한 줄 제목');assert.deepEqual(saved.sources,[]);
  const rows=Array.from({length:4},(_,i)=>({...saved,id:'episode-'+i,number:i+1}));const home=renderComicHome({items:rows});
- assert.equal((home.match(/class="comic-home-thumbnail"/g)||[]).length,3);assert.doesNotMatch(home,/episode-3|4컷으로 읽기|comic-kicker|<h2>/);
+ assert.equal((home.match(/class="comic-home-thumbnail"/g)||[]).length,3);assert.doesNotMatch(home,/episode-3|4컷으로 읽기|comic-kicker/);
+ assert.match(home,/EP\.01<\/span> 한 줄 제목/);assert.ok(home.indexOf('comic-home-title')<home.indexOf('comic-home-picture'));
  const admin=renderComicAdmin({items:[saved]},saved.id);assert.doesNotMatch(admin,/name="sources"|name="category"|name="transcript"|name="coverImage"/);
  const page=renderComicPage({items:[saved]},saved.id);assert.doesNotMatch(page,/기준|출처|comic-editor-note/);
 });
