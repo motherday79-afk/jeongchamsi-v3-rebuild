@@ -1,6 +1,24 @@
+import {readFortuneState,revealFortune,saveFortuneState} from '../core/fortune-card-state.js?v=0.0.31.363';
 export function bindFortuneInteractions(root,{auth,onSaved=()=>{}}={}){
  if(!root||root.__jcsFortuneBound)return;root.__jcsFortuneBound=true;
  root.addEventListener('click',event=>{
+  const reveal=event.target.closest('[data-fortune-reveal]');
+  if(reveal){
+   const section=reveal.closest('[data-fortune-state-key]');if(!section)return;
+   const key=section.dataset.fortuneStateKey,date=section.dataset.fortuneDate,id=reveal.dataset.fortuneReveal;
+   const state=revealFortune(readFortuneState(key,date),id);saveFortuneState(key,state);
+   section.querySelectorAll('[data-fortune-reveal]').forEach(button=>{
+    const opened=state.opened.includes(button.dataset.fortuneReveal),selected=button.dataset.fortuneReveal===id;
+    button.classList.toggle('is-revealed',opened);button.classList.toggle('is-selected',selected);
+    button.setAttribute('aria-expanded',String(selected));
+    button.setAttribute('aria-label',button.dataset.fortuneLabel+' 운세'+(opened?' '+button.dataset.fortuneScore+'점, 풀이 보기':' 카드 열기'));
+    button.querySelector('.fortune-card-back').setAttribute('aria-hidden',String(opened));
+    button.querySelector('.fortune-card-front').setAttribute('aria-hidden',String(!opened));
+   });
+   section.querySelectorAll('[data-fortune-reading]').forEach(panel=>{panel.hidden=panel.dataset.fortuneReading!==id;});
+   const placeholder=section.querySelector('[data-fortune-placeholder]');if(placeholder)placeholder.hidden=true;
+   return;
+  }
   const toggle=event.target.closest('[data-fortune-toggle]');
   if(toggle){event.preventDefault();const card=toggle.closest('.side-fortune'),form=card?.querySelector('[data-fortune-profile-form]'),intro=card?.querySelector('[data-fortune-intro]');if(!form)return;const next=form.hidden;form.hidden=!next;if(intro)intro.hidden=next;toggle.setAttribute('aria-expanded',String(next));return;}
   const cancel=event.target.closest('[data-fortune-cancel]');
