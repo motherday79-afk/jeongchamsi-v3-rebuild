@@ -10,13 +10,11 @@ export function bindFortuneInteractions(root,{auth,onSaved=()=>{}}={}){
    section.querySelectorAll('[data-fortune-reveal]').forEach(button=>{
     const opened=state.opened.includes(button.dataset.fortuneReveal),selected=button.dataset.fortuneReveal===id;
     button.classList.toggle('is-revealed',opened);button.classList.toggle('is-selected',selected);
-    button.setAttribute('aria-expanded',String(selected));
-    button.setAttribute('aria-label',button.dataset.fortuneLabel+' 운세'+(opened?' '+button.dataset.fortuneScore+'점, 풀이 보기':' 카드 열기'));
+    button.setAttribute('aria-expanded',String(opened));
+    button.setAttribute('aria-label',button.dataset.fortuneLabel+' 운세'+(opened?' '+button.dataset.fortuneScore+'점':' 카드 열기'));
     button.querySelector('.fortune-card-back').setAttribute('aria-hidden',String(opened));
     button.querySelector('.fortune-card-front').setAttribute('aria-hidden',String(!opened));
    });
-   section.querySelectorAll('[data-fortune-reading]').forEach(panel=>{panel.hidden=panel.dataset.fortuneReading!==id;});
-   const placeholder=section.querySelector('[data-fortune-placeholder]');if(placeholder)placeholder.hidden=true;
    return;
   }
   const toggle=event.target.closest('[data-fortune-toggle]');

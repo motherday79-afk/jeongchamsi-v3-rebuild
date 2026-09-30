@@ -6,5 +6,5 @@ const fortune={ok:true,date:'2026-09-25',overall:{score:82,title:'좋은 흐름�
 
 test('daily fortune result is rendered as a return-worthy ritual card',()=>{
  const html=renderFortuneCard(fortune,{authenticated:true,user:{id:'member'}});
- assert.match(html,/fortune-ritual/);assert.match(html,/오늘의 한마디/);assert.match(html,/fortune-deck/);assert.match(html,/금전·사업·관계/);assert.match(html,/data-fortune-reading/);
+ assert.match(html,/fortune-ritual/);assert.match(html,/오늘의 한마디/);assert.match(html,/fortune-deck/);assert.match(html,/금전·사업·관계/);assert.doesNotMatch(html,/data-fortune-reading/);
 });

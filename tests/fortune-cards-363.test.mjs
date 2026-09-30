@@ -23,25 +23,25 @@ test('blocked or corrupt browser storage does not break fortune',()=>{
  assert.deepEqual(readFortuneState(key,fortune.date,broken).opened,['money']);
  assert.deepEqual(readFortuneState('corrupt',fortune.date,{getItem:()=>'{no'}).opened,[]);
 });
-test('render starts with three accessible closed cards and concealed readings',()=>{
+test('render ends at three cards without any detail panel',()=>{
  const html=renderFortuneCard(fortune,{authenticated:true,user:{id:'fresh-render'}});
  assert.equal((html.match(/data-fortune-reveal=/g)||[]).length,3);
  assert.equal((html.match(/aria-expanded="false"/g)||[]).length,3);
- assert.equal((html.match(/data-fortune-reading="[^"]+" hidden/g)||[]).length,3);
- assert.match(html,/今日|오늘의 한마디/);assert.match(html,/금전 상세 풀이/);assert.doesNotMatch(html,/fortune-guidance-item/);
+ assert.doesNotMatch(html,/data-fortune-reading|fortune-reading|fortune-precision-note|aria-controls/);
+ assert.match(html,/今日|오늘의 한마디/);assert.doesNotMatch(html,/금전 상세 풀이/);assert.doesNotMatch(html,/fortune-guidance-item/);
 });
 test('saved cards render open without requiring DOM initialization',()=>{
  const key=fortuneStateKey('restored-render');saveFortuneState(key,{date:fortune.date,opened:['money'],selected:'money'},storage());
  const html=renderFortuneCard(fortune,{authenticated:true,user:{id:'restored-render'}});
- assert.match(html,/is-revealed is-selected/);assert.match(html,/data-fortune-reading="money">/);
- assert.match(html,/data-fortune-placeholder hidden/);
+ assert.match(html,/is-revealed is-selected/);assert.doesNotMatch(html,/data-fortune-reading/);
+ assert.doesNotMatch(html,/data-fortune-placeholder/);
 });
 test('login and profile setup remain available',()=>{
  assert.match(renderFortuneCard({},{}),/로그인하고 보기/);
  assert.match(renderFortuneCard({needsProfile:true},{authenticated:true}),/data-fortune-profile-form/);
 });
 import {bindFortuneInteractions} from '../src/ui/fortune-interactions.js';
-test('click handler reveals cards, changes reading, and retains prior reveals',()=>{
+test('click handler retains revealed cards without changing a detail panel',()=>{
  const buttons=['money','business','relationship'].map(id=>{
   const classes=new Set(),attrs={},faces={'.fortune-card-back':{},'.fortune-card-front':{}};
   return {dataset:{fortuneReveal:id,fortuneLabel:id,fortuneScore:'80'},attrs,classes,faces,
@@ -52,8 +52,8 @@ test('click handler reveals cards, changes reading, and retains prior reveals',(
  const section={dataset:{fortuneStateKey:'interaction-test',fortuneDate:fortune.date},querySelectorAll:s=>s==='[data-fortune-reveal]'?buttons:panels,querySelector:()=>placeholder};
  const handlers={},root={addEventListener(k,fn){handlers[k]=fn}};bindFortuneInteractions(root,{});
  for(const index of [0,2,0]){buttons[index].closest=()=>section;handlers.click({target:{closest:s=>s==='[data-fortune-reveal]'?buttons[index]:null}})}
- assert.equal(buttons[0].attrs['aria-expanded'],'true');assert.equal(buttons[2].attrs['aria-expanded'],'false');
+ assert.equal(buttons[0].attrs['aria-expanded'],'true');assert.equal(buttons[2].attrs['aria-expanded'],'true');
  assert.equal(buttons[2].classes.has('is-revealed'),true);assert.equal(buttons[1].classes.has('is-revealed'),false);
- assert.deepEqual(panels.map(p=>p.hidden),[false,true,true]);assert.equal(placeholder.hidden,true);
+ assert.deepEqual(panels.map(p=>p.hidden),[true,true,true]);assert.equal(placeholder.hidden,false);
  assert.equal(buttons[0].faces['.fortune-card-back']['aria-hidden'],'true');
 });
