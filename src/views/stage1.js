@@ -2,7 +2,8 @@ import {renderCollectionProfile,renderRefreshPolicy} from './person-refresh.js?v
 import { renderRankingWeights } from './ranking-weights.js?v=0.0.31.174';
 import { authorIdentity, postMenu, sharedPost, sharedWrite, communityBoard, cageDetail } from './community-ui.js?v=0.0.31.178';
 import { BADGE_CATALOG, badgeByKey, renderBadge } from '../data/badge-catalog.js?v=0.0.31.155';
-import { regionProvinceOptions, regionDistrictOptions, regionSubdistrictOptions } from '../data/korean-regions.js?v=0.0.31.56';
+import {addressFields} from './registration.js?v=0.0.31.351';
+export {renderJoin} from './registration.js?v=0.0.31.351';
 import {renderActivitySummary,renderMemberActivityAdmin,ledgerPresentation,totalSpent} from './activity-points.js?v=0.0.31.178';
 
 const esc=(v='')=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -82,8 +83,6 @@ export async function renderInquiryDetail(id,content,session={}){
 }
 
 export function renderLogin(){return page('MEMBER','로그인',`<form class="stage-form" data-stage-form="login">${field('id','아이디')}${field('password','비밀번호','password')}<button class="primary-btn">로그인</button><button class="ghost-btn" type="button" data-layout-route="/join">회원가입</button><span data-form-state></span></form>`);}
-const addressFields=(user={})=>{const province=user.regionProvince||'',city=user.regionCity||'',district=user.regionDistrict||'',sub=regionSubdistrictOptions(province,city),options=(rows,value,placeholder)=>`<option value="">${placeholder}</option>${rows.map(row=>`<option value="${esc(row)}"${row===value?' selected':''}>${esc(row)}</option>`).join('')}`;return `<label class="form-field"><span>주소 시·도</span><select name="regionProvince" data-region-province required>${options(regionProvinceOptions(),province,'시·도 선택')}</select></label><label class="form-field"><span>주소 시·군·구</span><select name="regionCity" data-region-city required${province?'':' disabled'}>${options(regionDistrictOptions(province),city,'시·군·구 선택')}</select></label><label class="form-field" data-region-district-field${sub.length?'':' hidden'}><span>주소 구</span><select name="regionDistrict" data-region-district${sub.length?' required':' disabled'}>${options(sub,district,'구 선택')}</select></label>`;};
-export function renderJoin(){const provinces=regionProvinceOptions().map(name=>`<option value="${esc(name)}">${esc(name)}</option>`).join('');return page('MEMBER','회원가입',`<form class="stage-form join-required-form" data-stage-form="join">${requiredField('id','아이디')}${requiredField('password','비밀번호','password')}${requiredField('nickname','닉네임')}${requiredField('name','이름')}${requiredField('email','이메일','email')}<label class="form-field"><span>전화번호</span><span class="phone-entry"><span data-phone-prefix>010</span><input name="phoneDigits" inputmode="numeric" autocomplete="tel-national" pattern="[0-9]{8}" minlength="8" maxlength="8" placeholder="뒷번호 8자리" required></span></label><label class="form-field"><span>출생년도</span><input name="birthYear" type="number" min="1900" max="${new Date().getFullYear()}" inputmode="numeric" required></label>${addressFields()}${field('referrerCode','추천인코드 (선택)')}<small>추천받은 분의 숫자 코드를 입력해 주세요.</small><p class="form-required-notice">아이디·닉네임·이름·이메일·전화번호·출생년도·주소는 필수정보입니다.</p><button class="primary-btn">가입</button><span data-form-state></span></form>`);}
 const BADGE_TIERS=['BRONZE','SILVER','GOLD','PLATINUM','BLACK'];
 const BADGE_TIER_LABEL={BRONZE:'브론즈',SILVER:'실버',GOLD:'골드',PLATINUM:'플래티넘',BLACK:'블랙'};
 

@@ -1,0 +1,38 @@
+.join-page{display:grid;grid-template-columns:minmax(240px,.8fr) minmax(0,1.4fr);max-width:1120px;margin:24px auto 48px;border:1px solid #e5dfeb;border-radius:24px;overflow:hidden;background:#fff;box-shadow:0 16px 60px #2712370b}
+.join-welcome{display:flex;flex-direction:column;justify-content:space-between;gap:60px;padding:44px 32px;background:radial-gradient(ellipse at 0 0,#674286 0,transparent 65%),#241331;color:#fff}
+.join-wordmark{font-size:13px;letter-spacing:.2em;color:#e2c99e;font-weight:700}
+.join-page .join-kicker{display:block;font-size:11px;font-weight:700;letter-spacing:.09em;color:#79548f}
+.join-welcome .join-kicker{color:#d5b78a}
+.join-welcome h1{font-size:clamp(26px,3vw,40px);line-height:1.5;letter-spacing:-.055em;margin:18px 0;color:#fff;font-weight:750;word-break:keep-all}
+.join-welcome p{font-size:14px;line-height:1.95;color:#d6c9df;margin:0}
+.join-welcome-footer{display:grid;gap:12px;padding-top:28px;border-top:1px solid #ffffff26;font-size:12px;color:#d6c9df}
+.join-welcome-footer a{display:flex;justify-content:space-between;color:#fff;font-size:14px;font-weight:700;text-decoration:none}
+.join-page .join-required-form{display:grid;gap:28px;max-width:none;min-width:0;padding:40px;margin:0}
+.join-form-header h2{margin:8px 0;font-size:28px;letter-spacing:-.045em;color:#261831}
+.join-form-header p,.join-section-note{font-size:13px;line-height:1.7;color:#73657c;margin:0}
+.join-section{min-width:0;padding:0;border:0;margin:0}
+.join-section legend{width:100%;padding:0 0 14px;margin-bottom:16px;border-bottom:1px solid #ede7f1;font-size:15px;font-weight:750;color:#302039}
+.join-section legend>span{margin-right:8px;color:#9b7aa9;font-size:11px;letter-spacing:.05em}
+.join-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 16px}
+.join-section-note{margin:-5px 0 14px}
+.join-page .form-field{min-width:0;display:flex;flex-direction:column;gap:8px;margin:0}
+.join-page .form-field>span{font-size:12px;font-weight:650;color:#51415b}
+.join-page .form-field input,.join-page .form-field select{box-sizing:border-box;min-width:0;width:100%;height:48px;border:1px solid #e1d9e8;border-radius:9px;background:#fcfafc;padding:0 12px;color:#2e2038;font:inherit;font-size:14px;outline-offset:3px;transition:border-color .15s,box-shadow .15s}
+.join-page .form-field input::placeholder{color:#918497;opacity:1}
+.join-page .form-field input:focus,.join-page .form-field select:focus{outline:2px solid #8860a8;border-color:#8860a8;background:#fff}
+.join-page .form-field select:disabled{background:#f0edf2;color:#817487}
+.join-page .form-field small{color:#7e6f87;font-size:11px;font-weight:400;line-height:1.6}
+.join-page .form-field .phone-entry{display:flex;align-items:center;gap:9px;min-width:0}
+.join-page .phone-entry>[data-phone-prefix]{display:grid;place-items:center;flex:0 0 48px;height:48px;background:#f0eaf4;border-radius:9px;color:#5d426e;font-size:13px}
+.join-page .form-field em{margin-left:6px;font-style:normal;font-size:10px;color:#88748f;font-weight:400}
+.join-referral{padding:16px;border:1px solid #ece6f0;border-radius:12px}
+.join-form-footer{display:grid;gap:12px}
+.join-form-footer p{margin:0;color:#7a6b82;font-size:11px;line-height:1.6}
+.join-page .primary-btn{display:flex;justify-content:space-between;align-items:center;min-height:52px;padding:14px 20px;background:#603786;color:#fff;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer}
+.join-page .primary-btn:hover{background:#4d286f}
+.join-page .primary-btn:disabled{opacity:.6;cursor:wait}
+.join-form-footer>a{justify-self:center;color:#7b6985;font-size:11px;text-underline-offset:3px}
+.join-form-footer [data-form-state]:empty{display:none}
+.join-form-footer [data-form-state]{color:#993d54;font-size:13px;line-height:1.6}
+@media(max-width:900px){.join-page{grid-template-columns:minmax(210px,.7fr) minmax(0,1.4fr)}.join-welcome{padding:32px 24px}.join-page .join-required-form{padding:28px}.join-fields{grid-template-columns:1fr}}
+@media(max-width:600px){.join-page{display:block;margin:8px 0 28px;border-radius:18px}.join-welcome{padding:26px 24px;gap:22px}.join-welcome h1{font-size:28px;line-height:1.4;margin:10px 0}.join-welcome p{font-size:12px}.join-welcome-footer{display:flex;align-items:center;justify-content:space-between;padding-top:16px;gap:16px}.join-welcome-footer a{gap:20px}.join-wordmark{font-size:10px}.join-page .join-required-form{padding:26px 22px;gap:26px}.join-form-header h2{font-size:24px}.join-fields{gap:17px}.join-page .form-field input,.join-page .form-field select{font-size:16px;min-height:50px}}

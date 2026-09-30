@@ -27,3 +27,19 @@ export const CITY_DISTRICTS=Object.freeze({
 });
 export const regionSubdistrictOptions=(province,city)=>CITY_DISTRICTS[String(province||'')]?.[String(city||'')]||[];
 export function validRegion(province,city,district=''){const cities=regionDistrictOptions(province),districts=regionSubdistrictOptions(province,city);return cities.includes(city)&&(districts.length?districts.includes(district):!district);}
+
+// Display city and district together while keeping the stored administrative fields separate.
+export function regionLocalityOptions(province){
+  return regionDistrictOptions(province).flatMap(city=>{
+    const districts=regionSubdistrictOptions(province,city);
+    return districts.length?districts.map(district=>`${city} ${district}`):[city];
+  });
+}
+export function resolveRegionLocality(province,label){
+  for(const city of regionDistrictOptions(province)){
+    const districts=regionSubdistrictOptions(province,city);
+    if(!districts.length&&label===city)return {regionCity:city,regionDistrict:''};
+    for(const district of districts)if(label===`${city} ${district}`)return {regionCity:city,regionDistrict:district};
+  }
+  return null;
+}
