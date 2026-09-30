@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createComicService} from '../lib/political-comic-service.js';
-import {DMZ_EPISODE} from '../src/data/political-comic-seed.js';
+import {DMZ_EPISODE,COMIC_EPISODES} from '../src/data/political-comic-seed.js';
 import {renderHomeLayout} from '../src/layout/home-layout.js';
 import {renderComicPage,renderComicAdmin,renderComicHome} from '../src/views/political-comic.js';
 import fs from 'node:fs';
@@ -10,12 +10,12 @@ const owner={id:'admin',role:'admin'};
 function store(initial=null){let raw=initial;return async args=>{if(args[0]==='GET')return raw;if(args[0]==='EVAL'){if((raw||'')!==args[4])return 0;raw=args[5];return 1;}throw Error('Unexpected command');};}
 test('initial issue is published, drafts remain owner-only, unpublished seed stays hidden',async()=>{
  const service=createComicService({command:store()});
- assert.equal((await service.list()).items.length,1);
+ assert.equal((await service.list()).items.length,COMIC_EPISODES.length);
  await assert.rejects(()=>service.list({admin:true,user:{id:'staff',role:'admin'}}),/ADMIN_REQUIRED/);
  await assert.rejects(()=>service.save(DMZ_EPISODE,{id:'member'}),/ADMIN_REQUIRED/);
  await service.save({...DMZ_EPISODE,published:false},owner);
- assert.equal((await service.list()).items.length,0);
- assert.equal((await service.list({admin:true,user:owner})).items.length,1);
+ assert.equal((await service.list()).items.length,COMIC_EPISODES.length-1);
+ assert.equal((await service.list({admin:true,user:owner})).items.length,COMIC_EPISODES.length);
 });
 test('four complete panels and safe image/source URLs required; stale edits rejected',async()=>{
  const service=createComicService({command:store()});
@@ -27,7 +27,7 @@ test('four complete panels and safe image/source URLs required; stale edits reje
 });
 test('new issues retain earlier episodes and render four accessible scenes without raw HTML',async()=>{
  const service=createComicService({command:store()});const added=await service.save({...DMZ_EPISODE,id:'',title:'<script>alert(1)</script>'},owner);
- assert.equal(added.number,2);assert.equal((await service.list()).items.length,2);
+ assert.equal(added.number,COMIC_EPISODES.length+1);assert.equal((await service.list()).items.length,COMIC_EPISODES.length+1);
  const html=renderComicPage({items:[added]},added.id);assert.equal((html.match(/<figure>/g)||[]).length,4);assert.equal((html.match(/role="img"/g)||[]).length,4);assert.doesNotMatch(html,/<script>/);assert.doesNotMatch(html,/출처와 내용 확인/);
 });
 test('home includes issue before columns and after polls; mobile retains that order',()=>{
@@ -47,8 +47,8 @@ test('HTTP endpoint allows public reading but rejects anonymous management and u
 });
 test('finished comic has no detached captions and persisted seed artwork upgrades without republishing',async()=>{
  const service=createComicService({command:store(JSON.stringify({items:[{...DMZ_EPISODE,image:'/assets/webtoons/dmz-20260921.webp',published:false}]}))});
- assert.equal((await service.list()).items.length,0);
- const data=await service.list({admin:true,user:owner});assert.equal(data.items[0].format,'comic');assert.equal(data.items[0].image,DMZ_EPISODE.image);
+ assert.equal((await service.list()).items.length,COMIC_EPISODES.length-1);
+ const data=await service.list({admin:true,user:owner});const dmz=data.items.find(p=>p.id===DMZ_EPISODE.id);assert.equal(dmz.format,'comic');assert.equal(dmz.image,DMZ_EPISODE.image);
  const html=renderComicPage(data,DMZ_EPISODE.id);assert.doesNotMatch(html,/<figcaption|comic-takeaway/);assert.match(html,/comic-manuscript comic-square/);assert.doesNotMatch(html,/<details class="comic-sources">/);
  const library=renderComicPage(data);assert.doesNotMatch(library,/comic-home-copy|comic-panels/);assert.match(library,/comic-cover/);
 });
