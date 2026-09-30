@@ -793,16 +793,16 @@ html.desktop-home-fixed .product-home-wrap .home-promo-row,html.desktop-home-fix
  .site-shell:has(.service-dock)>.page-wrap{width:calc(100% - 24px);max-width:860px;margin-left:auto;margin-right:auto}
  .site-shell:has(.service-dock) .product-home-wrap{width:100%;margin:4px auto 36px}
  .product-home-wrap .home-balanced-layout{gap:14px;margin-top:12px}
- .product-home-wrap .home-balanced-layout #itsme{order:10}
- .product-home-wrap .home-balanced-layout #now{order:20}
+ .product-home-wrap .home-balanced-layout #itsme{order:100}
+ .product-home-wrap .home-balanced-layout #now{order:10}
  .product-home-wrap .home-balanced-layout #national-eval{order:30}
  .product-home-wrap .home-balanced-layout .home-cage-preview{order:40;height:clamp(190px,46vw,260px);min-height:190px;border-radius:12px}
  .product-home-wrap .home-balanced-layout #cheer-shop{order:50}
- .product-home-wrap .home-balanced-layout #column{order:60}
+ .product-home-wrap .home-balanced-layout #column{order:30}
  .product-home-wrap .home-balanced-layout .side-home-banner{order:70}
  .product-home-wrap .home-balanced-layout #compare{order:80}
  .product-home-wrap .home-balanced-layout #community{order:90}
- .product-home-wrap .home-balanced-layout #poll{order:100}
+ .product-home-wrap .home-balanced-layout #poll{order:110}
  .product-home-wrap .home-balanced-layout #generation-president{order:110}
  .product-home-wrap .home-balanced-layout #academy{order:120}
  .product-home-wrap .home-balanced-layout .side-recent{order:130}
@@ -1605,3 +1605,6 @@ body :is(input,textarea,[contenteditable=""],[contenteditable="true"],[contented
 .jcs-private-intelligence-v3 .admin-intelligence-report-title>span,.jcs-private-intelligence-v3 .admin-pi-diagnosis span{color:#e8cd8f}
 
 .admin-tabs :is(a.active,button.is-active){background:var(--jcs-purple-gloss);border-color:#b89960;box-shadow:inset 0 1px 0 #c69ce766;color:#fff}
+
+/* 360: main content order matches desktop and mobile. */
+@media(max-width:1024px){.product-home-wrap .home-balanced-layout .ai-home{order:20}}
