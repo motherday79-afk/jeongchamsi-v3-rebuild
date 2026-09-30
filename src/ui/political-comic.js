@@ -19,7 +19,7 @@ export function bindComicEditor(root,{onSaved}={}){
  root.addEventListener('submit',async event=>{
   const form=event.target.closest('[data-comic-editor]');if(!form)return;event.preventDefault();
   const data=new FormData(form),input=Object.fromEntries(data),button=form.querySelector('[type="submit"]'),status=form.querySelector('[data-comic-status]');
-  input.published=data.has('published');input.sources=String(data.get('sources')).split('\n').filter(v=>v.trim()).map(line=>{const at=line.indexOf('|');return {label:line.slice(0,at).trim(),url:line.slice(at+1).trim()};});
+  input.published=data.has('published');
   if(button.disabled)return;if(!input.image){status.textContent='완성 만화 원고를 먼저 업로드해 주세요.';return;}button.disabled=true;status.textContent='저장 중…';const result=await comicRequest({method:'POST',body:JSON.stringify({input})});button.disabled=false;
   if(!result.ok){status.textContent=errors[result.error]||'저장하지 못했습니다. 모든 필수 항목과 출처를 확인해 주세요.';return;}
   const publicLink=form.querySelector('[data-comic-public-link]');publicLink.href='/political-comic/'+encodeURIComponent(result.item.id);publicLink.hidden=false;form.elements.id.value=result.item.id;form.elements.updatedAt.value=result.item.updatedAt;status.textContent=input.published?'게시했습니다. 메인과 정치4컷에서 확인할 수 있습니다.':'비공개로 저장했습니다.';onSaved?.();

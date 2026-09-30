@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {createComicService} from '../lib/political-comic-service.js';
 import {DMZ_EPISODE} from '../src/data/political-comic-seed.js';
 import {renderHomeLayout} from '../src/layout/home-layout.js';
-import {renderComicPage,renderComicAdmin} from '../src/views/political-comic.js';
+import {renderComicPage,renderComicAdmin,renderComicHome} from '../src/views/political-comic.js';
 import fs from 'node:fs';
 import handler from '../api/gateway.js';
 const owner={id:'admin',role:'admin'};
@@ -28,7 +28,7 @@ test('four complete panels and safe image/source URLs required; stale edits reje
 test('new issues retain earlier episodes and render four accessible scenes without raw HTML',async()=>{
  const service=createComicService({command:store()});const added=await service.save({...DMZ_EPISODE,id:'',title:'<script>alert(1)</script>'},owner);
  assert.equal(added.number,2);assert.equal((await service.list()).items.length,2);
- const html=renderComicPage({items:[added]},added.id);assert.equal((html.match(/<figure>/g)||[]).length,4);assert.equal((html.match(/role="img"/g)||[]).length,4);assert.doesNotMatch(html,/<script>/);assert.match(html,/출처와 내용 확인/);
+ const html=renderComicPage({items:[added]},added.id);assert.equal((html.match(/<figure>/g)||[]).length,4);assert.equal((html.match(/role="img"/g)||[]).length,4);assert.doesNotMatch(html,/<script>/);assert.doesNotMatch(html,/출처와 내용 확인/);
 });
 test('home includes issue before columns and after polls; mobile retains that order',()=>{
  const html=renderHomeLayout({rank:[],columns:[],community:[],session:{},comicResult:{items:[DMZ_EPISODE]}});
@@ -49,13 +49,21 @@ test('finished comic has no detached captions and persisted seed artwork upgrade
  const service=createComicService({command:store(JSON.stringify({items:[{...DMZ_EPISODE,image:'/assets/webtoons/dmz-20260921.webp',published:false}]}))});
  assert.equal((await service.list()).items.length,0);
  const data=await service.list({admin:true,user:owner});assert.equal(data.items[0].format,'comic');assert.equal(data.items[0].image,DMZ_EPISODE.image);
- const html=renderComicPage(data,DMZ_EPISODE.id);assert.doesNotMatch(html,/<figcaption|comic-takeaway/);assert.match(html,/comic-manuscript comic-square/);assert.match(html,/<details class="comic-sources">/);
+ const html=renderComicPage(data,DMZ_EPISODE.id);assert.doesNotMatch(html,/<figcaption|comic-takeaway/);assert.match(html,/comic-manuscript comic-square/);assert.doesNotMatch(html,/<details class="comic-sources">/);
  const library=renderComicPage(data);assert.doesNotMatch(library,/comic-home-copy|comic-panels/);assert.match(library,/comic-cover/);
 });
 test('finished manuscript publishes without twelve panel fields; cover and transcript round trip',async()=>{
  const service=createComicService({command:store()});const input={...DMZ_EPISODE,id:'',coverImage:'/assets/banners/citizen-choice-369.webp',transcript:'전체 대본'};delete input.panels;
  const saved=await service.save(input,owner);assert.equal(saved.panels.length,4);assert.equal(saved.transcript,'전체 대본');assert.equal(saved.coverImage,input.coverImage);
- const page=renderComicPage({items:[saved]},saved.id);assert.match(page,/전체 대본/);
- const admin=renderComicAdmin({items:[saved]},saved.id);assert.match(admin,/data-comic-upload="coverImage"/);assert.match(admin,/완성 만화 원고/);assert.doesNotMatch(admin,/name="title0"|name="text0"|name="alt0"|name="takeaway"/);
+ const page=renderComicPage({items:[saved]},saved.id);assert.doesNotMatch(page,/전체 대본/);
+ const admin=renderComicAdmin({items:[saved]},saved.id);assert.doesNotMatch(admin,/data-comic-upload="coverImage"/);assert.match(admin,/완성 만화 원고/);assert.doesNotMatch(admin,/name="title0"|name="text0"|name="alt0"|name="takeaway"/);
  const listing=renderComicPage({items:[saved]});assert.match(listing,/citizen-choice-369.webp/);
+});
+test('minimal editor saves without sources; home shows only latest three linked images',async()=>{
+ const service=createComicService({command:store()});const saved=await service.save({format:'comic',title:'한 줄 제목',date:'2026-10-01',image:DMZ_EPISODE.image,published:true},owner);
+ assert.equal(saved.title,'한 줄 제목');assert.deepEqual(saved.sources,[]);
+ const rows=Array.from({length:4},(_,i)=>({...saved,id:'episode-'+i,number:i+1}));const home=renderComicHome({items:rows});
+ assert.equal((home.match(/class="comic-home-thumbnail"/g)||[]).length,3);assert.doesNotMatch(home,/episode-3|4컷으로 읽기|comic-kicker|<h2>/);
+ const admin=renderComicAdmin({items:[saved]},saved.id);assert.doesNotMatch(admin,/name="sources"|name="category"|name="transcript"|name="coverImage"/);
+ const page=renderComicPage({items:[saved]},saved.id);assert.doesNotMatch(page,/기준|출처|comic-editor-note/);
 });

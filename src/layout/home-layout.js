@@ -1,4 +1,4 @@
-import {renderComicHome} from '../views/political-comic.js?v=0.0.31.370';
+import {renderComicHome} from '../views/political-comic.js?v=0.0.31.372';
 import {fortuneFrontArt} from '../ui/fortune-card-art.js?v=0.0.31.366';
 import {fortuneStateKey,readFortuneState} from '../core/fortune-card-state.js?v=0.0.31.363';
 import {homeBannerPlaylist,HOME_BANNER_INTERVAL,HERO_BANNER_INTERVAL} from '../core/home-banner-playlist.js?v=0.0.31.358';
