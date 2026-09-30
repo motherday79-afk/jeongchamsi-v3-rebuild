@@ -68,11 +68,11 @@ test('anonymous comparison is strictly 1:1 and waits for the explicit compare ac
 });
 
 test('member comparison reveals six interpreted topics only after compare is pressed',async()=>{
-  const html=await renderPoliticianCompare(serviceFor('member'),'/compare?ids=assembly-001,assembly-002,assembly-003&run=1',{authenticated:true,user:{role:'member'}});
+  const html=await renderPoliticianCompare(serviceFor('member'),'/compare?ids=assembly-001,assembly-002&run=1',{authenticated:true,user:{id:'member',role:'member'}});
   assert.match(html,/data-compare-role="member"[^>]*data-compare-limit="2"/);
   assert.equal((html.match(/data-compare-slot/g)||[]).length,2);
-  assert.equal((html.match(/data-comparison-topic=/g)||[]).length,6);
-  for(const marker of ['JCS MEMBER POLITICAL COMPARISON','세대·성별 지지구조 분석','지역구 민심·메시지 진단','data-diagnosis-display="demographic"'])assert.match(html,new RegExp(marker));
+  assert.equal((html.split('data-board-panel="diagnosis" hidden>')[1].match(/data-board-metric=/g)||[]).length,6);
+  for(const marker of ['data-compare-board','세대·성별 지지구조 분석','지역구 민심·메시지 진단','data-board-metric="score-02"'])assert.match(html,new RegExp(marker));
   assert.doesNotMatch(html,/실행 처방|경쟁 대응 우선순위/);
 });
 
@@ -82,31 +82,31 @@ test('JCS support conversion remains populated when Gallup context is unavailabl
     intelligence.sources=intelligence.sources.filter(source=>!/한국갤럽/.test(source.type));
     return {ok:true,item,intelligence:projectIntelligence(intelligence,'member','compare')};
   }};
-  const html=await renderPoliticianCompare({...serviceFor('member'),getForCompare:noGallup.getForCompare},'/compare?ids=assembly-001,assembly-002&run=1',{authenticated:true,user:{role:'member'}});
+  const html=await renderPoliticianCompare({...serviceFor('member'),getForCompare:noGallup.getForCompare},'/compare?ids=assembly-001,assembly-002&run=1',{authenticated:true,user:{id:'member',role:'member'}});
   assert.match(html,/세대·성별 지지구조 분석/);
-  assert.match(html,/data-diagnosis-display="demographic"/);
+  assert.match(html,/data-board-metric="score-02"/);
   assert.doesNotMatch(html,/실행 처방/);
 });
 
 test('admin comparison accepts four people and renders ten-topic matrix only after execution',async()=>{
-  const ids=profiles.map(profile=>profile.id).join(',');
-  const waiting=await renderPoliticianCompare(serviceFor('admin'),`/compare?ids=${ids}`,{authenticated:true,user:{role:'admin'}});
+  const ids=profiles.slice(0,4).map(profile=>profile.id).join(',');
+  const waiting=await renderPoliticianCompare(serviceFor('admin'),`/compare?ids=${ids}`,{authenticated:true,user:{id:'admin',role:'admin'}});
   assert.doesNotMatch(waiting,/ADMIN CONSULTING SUMMARY|NOW OPERATING INDEX|SUPPORT QUALITY RADAR/);
-  const html=await renderPoliticianCompare(serviceFor('admin'),`/compare?ids=${ids}&run=1`,{authenticated:true,user:{role:'admin'}});
+  const html=await renderPoliticianCompare(serviceFor('admin'),`/compare?ids=${ids}&run=1`,{authenticated:true,user:{id:'admin',role:'admin'}});
   assert.match(html,/data-compare-role="admin"/);
   assert.match(html,/data-compare-limit="4"/);
   assert.equal((html.match(/data-compare-slot/g)||[]).length,4);
   assert.equal((html.match(/data-compare-selected=/g)||[]).length,4);
   assert.doesNotMatch(html,/data-compare-selected="assembly-005"/);
-  assert.match(html,/관리자 다중 비교/);
-  assert.match(html,/최대 4명/);
-  assert.equal((html.match(/data-comparison-topic=/g)||[]).length,10);
-  for(const marker of ['관리자 경쟁 분석 요약','가장 격차가 큰 영역','data-diagnosis-display="summary"','실행 처방'])assert.match(html,new RegExp(marker));
+  assert.match(html,/정치인 비교분석/);
+  assert.match(html,/4명 비교 중/);
+  assert.equal((html.split('data-board-panel="diagnosis" hidden>')[1].match(/data-board-metric=/g)||[]).length,10);
+  for(const marker of ['핵심 비교','항목별 분석','data-board-metric="score-10"','data-compare-board'])assert.match(html,new RegExp(marker));
 });
 
 test('one failed comparison load preserves successful people and identifies the retry id',async()=>{
   const partialService={...service,getForCompare:async id=>id==='assembly-002'?{ok:false,error:'STORAGE_REQUEST'}:service.getForCompare(id)};
-  const html=await renderPoliticianCompare(partialService,'/compare?ids=assembly-001,assembly-002&run=1',{user:{role:'admin'}});
+  const html=await renderPoliticianCompare(partialService,'/compare?ids=assembly-001,assembly-002&run=1',{user:{id:'admin',role:'admin'}});
   assert.match(html,/data-compare-selected="assembly-001"/);
   assert.match(html,/data-compare-failed="assembly-002"/);
   assert.match(html,/assembly-002/);
@@ -116,7 +116,7 @@ test('one failed comparison load preserves successful people and identifies the 
 
 test('empty comparison preserves role capacity layout without fake values',async()=>{
   const publicHtml=await renderPoliticianCompare(service,'/compare',null);
-  const adminHtml=await renderPoliticianCompare(serviceFor('admin'),'/compare',{user:{role:'admin'}});
+  const adminHtml=await renderPoliticianCompare(serviceFor('admin'),'/compare',{user:{id:'admin',role:'admin'}});
   assert.equal((publicHtml.match(/data-compare-slot/g)||[]).length,2);
   assert.equal((adminHtml.match(/data-compare-slot/g)||[]).length,4);
   assert.equal((publicHtml.match(/data-compare-search-form/g)||[]).length,1);
@@ -133,7 +133,7 @@ test('empty comparison preserves role capacity layout without fake values',async
 });
 
 test('comparison keeps the approved selected profile card and remove route',async()=>{
-  const html=await renderPoliticianCompare(service,'/compare?ids=assembly-001',{user:{role:'admin'}});
+  const html=await renderPoliticianCompare(service,'/compare?ids=assembly-001',{user:{id:'admin',role:'admin'}});
   assert.match(html,/김민석/);
   assert.match(html,/더불어민주당/);
   assert.match(html,/선거구 1/);
@@ -145,7 +145,7 @@ test('comparison keeps the approved selected profile card and remove route',asyn
 });
 
 test('search results stay inside the full-width picker and add a politician to the existing route',async()=>{
-  const html=await renderPoliticianCompare(service,'/compare?ids=assembly-001&q=강&slot=2',{user:{role:'admin'}});
+  const html=await renderPoliticianCompare(service,'/compare?ids=assembly-001&q=강&slot=2',{user:{id:'admin',role:'admin'}});
   assert.equal((html.match(/data-compare-search-results/g)||[]).length,1);
   assert.match(html,/강민국/);
   assert.match(html,/data-compare-add="assembly-002"/);
@@ -154,7 +154,7 @@ test('search results stay inside the full-width picker and add a politician to t
 });
 
 test('adding or removing a politician clears run state and compare button adds run=1',async()=>{
-  const html=await renderPoliticianCompare(service,'/compare?ids=assembly-001,assembly-002&run=1&q=강&slot=3',{user:{role:'admin'}});
+  const html=await renderPoliticianCompare(service,'/compare?ids=assembly-001,assembly-002&run=1&q=강&slot=3',{user:{id:'admin',role:'admin'}});
   assert.match(html,/data-compare-run[^>]*data-layout-route="\/compare\?ids=assembly-001%2Cassembly-002&amp;run=1"/);
   assert.match(html,/data-compare-remove="assembly-001"[^>]*data-layout-route="\/compare\?ids=assembly-002"/);
   assert.match(html,/data-compare-add="assembly-003"[^>]*data-layout-route="\/compare\?ids=assembly-001%2Cassembly-002%2Cassembly-003"/);
@@ -180,7 +180,7 @@ test('politician client sends an encoded all-category search request',async()=>{
   try{
     const result=await createPoliticianService().search('서울 시장',12);
     assert.equal(result.ok,true);
-    assert.equal(requested,'/api/v3/politicians?q=%EC%84%9C%EC%9A%B8%20%EC%8B%9C%EC%9E%A5&limit=12');
+    assert.equal(requested,'/api/v3/politicians?q=%EC%84%9C%EC%9A%B8%20%EC%8B%9C%EC%9E%A5&limit=12&offset=0');
   }finally{globalThis.fetch=originalFetch;}
 });
 

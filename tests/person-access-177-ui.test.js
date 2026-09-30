@@ -41,10 +41,10 @@ test('paid members can compare two, three, or four fully unlocked people with fu
   const ids=Array.from({length:count},(_,index)=>String.fromCharCode(97+index));
   const html=await renderPoliticianCompare({getForCompare:async id=>paidResult(id),get:async id=>paidResult(id),search:async()=>({ok:true,items:[]})},`/compare?ids=${ids.join(',')}&run=1`,memberSession);
   assert.match(html,/data-compare-limit="4"/);
-  assert.match(html,/jcs-compare-report-paid/);
+  assert.match(html,/data-paid-analysis="compare"/);
   assert.match(html,/data-analysis-access/);
-  assert.equal((html.match(/data-compare-matrix-profile="/g)||[]).length,count);
-  assert.match(html,/data-comparison-topic="10"/);
+  assert.equal((html.match(/data-board-person="/g)||[]).length,count*2);
+  assert.match(html,/data-board-metric="score-10"/);
  }
 });
 
@@ -53,14 +53,14 @@ test('mixed unlocked and locked comparison blocks the full report and links ever
  const html=await renderPoliticianCompare({getForCompare:async id=>results[id],get:async id=>results[id],search:async()=>({ok:true,items:[]})},'/compare?ids=a,b,c&run=1',memberSession);
  assert.match(html,/data-compare-access-gate/);
  assert.match(html,/href="\/person\/b"/);
- assert.doesNotMatch(html,/jcs-compare-report-paid/);
+ assert.doesNotMatch(html,/data-paid-analysis="compare"/);
  assert.doesNotMatch(html,/OPEN_SECRET/);
 });
 
 test('ordinary two-person member comparison remains available when neither person is unlocked',async()=>{
  const html=await renderPoliticianCompare({getForCompare:async id=>memberResult(id),get:async id=>memberResult(id),search:async()=>({ok:true,items:[]})},'/compare?ids=a,b&run=1',memberSession);
  assert.match(html,/data-compare-limit="2"/);
- assert.match(html,/jcs-compare-report-member/);
+ assert.match(html,/data-compare-role="member"/);
  assert.doesNotMatch(html,/data-compare-access-gate/);
 });
 

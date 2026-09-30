@@ -25,139 +25,35 @@ const serviceFor=tier=>({
   async getForCompare(id){const index=people.findIndex(person=>person.id===id),item=people[index];return item?{ok:true,item,intelligence:projectIntelligence(reportFor(item,index),tier,'compare')}:{ok:false,error:'NOT_FOUND'};}
 });
 
-test('guest comparison waits for the button then renders only 01 07 09 for two people',async()=>{
-  const waiting=await renderPoliticianCompare(serviceFor('public'),'/compare?ids=assembly-101,assembly-102',null);
-  assert.doesNotMatch(waiting,/data-comparison-topic/);
-  const html=await renderPoliticianCompare(serviceFor('public'),'/compare?ids=assembly-101,assembly-102&run=1',null);
-  assert.match(html,/data-compare-limit="2"/);
-  assert.deepEqual([...html.matchAll(/data-comparison-topic="(\d{2})"/g)].map(match=>match[1]),['01','07','09']);
-  assert.match(html,/로그인하고 상세 비교 보기/);
-  assert.equal((html.match(/data-diagnosis-display="brand"/g)||[]).length,2);
-  assert.equal((html.match(/data-diagnosis-display="media"/g)||[]).length,2);
-  assert.equal((html.match(/data-diagnosis-display="action"/g)||[]).length,2);
-  assert.doesNotMatch(html,/핵심 원인|실행 처방|세대·성별 지지구조 분석/);
-});
 
-test('member comparison renders six interpreted topics for exactly two people',async()=>{
-  const html=await renderPoliticianCompare(serviceFor('member'),'/compare?ids=assembly-101,assembly-102,assembly-103&run=1',{authenticated:true,user:{role:'member'}});
-  assert.deepEqual([...html.matchAll(/data-comparison-topic="(\d{2})"/g)].map(match=>match[1]),['01','02','03','05','07','09']);
-  assert.equal((html.match(/data-compare-matrix-profile=/g)||[]).length,2);
-  for(const kind of ['brand','demographic','local','competitor','media','action'])assert.equal((html.match(new RegExp(`data-diagnosis-display="${kind}"`,'g'))||[]).length,2);
-  assert.doesNotMatch(html,/>정치적 의미<|>현재 위치<|>기회 요인<|>위험 요인<|>서브데이터</);
-  assert.doesNotMatch(html,/실행 처방|관리해야 할 위험|경쟁 대응 우선순위/);
+const section=html=>html.split('data-board-panel="diagnosis" hidden>')[1]?.split('</section>')[0]||'';
+test('each tier compares only its server-projected diagnosis rows',async()=>{
+ for(const [tier,ids] of [['public',['01','07','09']],['member',['01','02','03','05','07','09']],['admin',['01','02','03','04','05','06','07','08','09','10']]]){
+  const session=tier==='public'?null:{user:{id:tier==='admin'?'admin':'member',role:tier}};
+  const html=await renderPoliticianCompare(serviceFor(tier),'/compare?ids=assembly-101,assembly-102&run=1',session);
+  assert.deepEqual([...section(html).matchAll(/data-board-metric="score-(\d{2})"/g)].map(m=>m[1]),ids);
+  assert.doesNotMatch(html,/jcs-compare-person-cell|data-prescription-shell/);
+ }
 });
-
-test('every comparison tier uses the approved light report language and chapter axes',async()=>{
-  for(const [tier,session,count] of [['public',null,3],['member',{authenticated:true,user:{role:'member'}},6],['admin',{authenticated:true,user:{role:'admin'}},10]]){
-    const html=await renderPoliticianCompare(serviceFor(tier),'/compare?ids=assembly-101,assembly-102&run=1',session);
-    assert.match(html,new RegExp(`class="jcs-compare-report jcs-compare-report-${tier} jcs-approved-compare"[^>]*data-approved-access="${tier}"`));
-    assert.equal((html.match(/class="jcs-compare-topic-axis jcs-chapter-head"/g)||[]).length,count);
-    assert.equal((html.match(/class="jcs-no"/g)||[]).length,count);
-    assert.equal((html.match(/class="jcs-en"/g)||[]).length,count);
-  }
+test('four-person selection is capped and over-cap requests produce an explicit gate',async()=>{
+ const html=await renderPoliticianCompare(serviceFor('admin'),'/compare?ids='+people.map(p=>p.id).join(',')+'&run=1',{user:{id:'admin',role:'admin'}});
+ assert.match(html,/data-compare-limit="4"/);assert.match(html,/data-compare-access-gate/);assert.doesNotMatch(html,/data-compare-selected="assembly-105"/);
+ const valid=await renderPoliticianCompare(serviceFor('admin'),'/compare?ids='+people.slice(0,4).map(p=>p.id).join(',')+'&run=1',{user:{id:'admin',role:'admin'}});
+ assert.equal((section(valid).match(/data-board-person=/g)||[]).length,4);
 });
-
-test('comparison period controls are real and scoped to each politician cell',async()=>{
-  const member=await renderPoliticianCompare(serviceFor('member'),'/compare?ids=assembly-101,assembly-102&run=1',{authenticated:true,user:{role:'member'}});
-  assert.equal((member.match(/data-jcs-competitor-period-scope/g)||[]).length,2);
-  assert.equal((member.match(/data-jcs-competitor-period-scope[\s\S]*?data-jcs-period="24H"/g)||[]).length,2);
-  assert.equal((member.match(/data-jcs-competitor-period-scope[\s\S]*?data-jcs-period="7D"/g)||[]).length,2);
-  assert.equal((member.match(/data-jcs-competitor-period-scope[\s\S]*?data-jcs-period="30D"/g)||[]).length,2);
-  const guest=await renderPoliticianCompare(serviceFor('public'),'/compare?ids=assembly-101,assembly-102&run=1',null);
-  assert.equal((guest.match(/data-jcs-media-period-scope/g)||[]).length,2);
-  assert.equal((guest.match(/class="jcs-media-toggle"/g)||[]).length,6);
+test('large board uses real projected scores and source detail stays collapsed',async()=>{
+ const service=serviceFor('member'),report=await service.getForCompare('assembly-101');
+ const html=await renderPoliticianCompare(service,'/compare?ids=assembly-101,assembly-102&run=1',{user:{id:'member',role:'member'}});
+ for(const t of report.intelligence.diagnoses)assert.match(section(html),new RegExp('data-board-metric="score-'+t.id+'"'));
+ assert.ok(html.includes(new Intl.NumberFormat('ko-KR',{maximumFractionDigits:1}).format(report.intelligence.diagnoses[0].score)));
+ assert.match(html,/<details class="cb-evidence">/);assert.doesNotMatch(html,/<details class="cb-evidence" open/);
 });
-
-test('comparison media outlet lists also start collapsed',async()=>{
-  const html=await renderPoliticianCompare(serviceFor('public'),'/compare?ids=assembly-101,assembly-102&run=1',null);
-  assert.equal((html.match(/class="jcs-media-toggle"[^>]*aria-expanded="false"/g)||[]).length,6);
-  assert.equal((html.match(/class="jcs-cmp-bars jcs-media-list"[^>]*hidden/g)||[]).length,6);
-  assert.equal((html.match(/전체 목록 보기 <span>＋<\/span>/g)||[]).length,6);
+test('comparison search and removal routes remain usable',async()=>{
+ const html=await renderPoliticianCompare(serviceFor('admin'),'/compare?ids=assembly-101&q=비교정치인',{user:{id:'admin',role:'admin'}});
+ assert.match(html,/data-compare-add="assembly-102"/);assert.match(html,/data-compare-remove="assembly-101"/);
 });
-
-test('competitor period panels switch article totals, sentiment values and representative headlines together',async()=>{
-  const member=await renderPoliticianCompare(serviceFor('member'),'/compare?ids=assembly-101,assembly-102&run=1',{authenticated:true,user:{role:'member'}});
-  assert.equal((member.match(/data-jcs-competitor-frame-period="24H"/g)||[]).length,2);
-  assert.equal((member.match(/data-jcs-competitor-frame-period="7D"/g)||[]).length,2);
-  assert.equal((member.match(/data-jcs-competitor-frame-period="30D"/g)||[]).length,2);
-  assert.equal((member.match(/class="jcs-cmp-period-headlines"/g)||[]).length,6);
-});
-
-test('comparison brand keeps the five approved indicators visually distinct',async()=>{
-  const html=await renderPoliticianCompare(serviceFor('public'),'/compare?ids=assembly-101,assembly-102&run=1',null);
-  for(const tool of ['ring','segments','axis','radar','trend'])assert.equal((html.match(new RegExp(`data-brand-tool="${tool}"`,'g'))||[]).length,2);
-  assert.doesNotMatch(html,/class="jcs-cmp-bars"><div class="jcs-cmp-bar"><span>브랜드 선명도/);
-});
-
-test('administrator comparison caps selection at four and renders all ten topics with photo headers',async()=>{
-  const ids=people.map(person=>person.id).join(',');
-  const html=await renderPoliticianCompare(serviceFor('admin'),`/compare?ids=${ids}&run=1`,{authenticated:true,user:{role:'admin'}});
-  assert.match(html,/data-compare-limit="4"/);
-  assert.equal((html.match(/data-compare-selected=/g)||[]).length,4);
-  assert.equal((html.match(/data-compare-matrix-profile=/g)||[]).length,4);
-  assert.doesNotMatch(html,/data-compare-selected="assembly-105"/);
-  assert.deepEqual([...html.matchAll(/data-comparison-topic="(\d{2})"/g)].map(match=>match[1]),['01','02','03','04','05','06','07','08','09','10']);
-  for(let index=101;index<=104;index++)assert.match(html,new RegExp(`/assets/politicians/assembly-${index}\\.jpg`));
-  for(const kind of ['brand','demographic','local','support','competitor','risk','media','campaign','action','summary'])assert.equal((html.match(new RegExp(`data-diagnosis-display="${kind}"`,'g'))||[]).length,4);
-  for(const label of ['정참시 전략 판단','실행 처방','실행 우선순위'])assert.match(html,new RegExp(label));
-  for(const label of ['정치 활동·미디어 전환 처방','JCS 종합 실행 처방'])assert.match(html,new RegExp(label));
-  assert.doesNotMatch(html,/정책·공약 반응 전략 처방|중장기 정치 성장 전략 처방/);
-  assert.equal((html.match(/data-prescription-topic=/g)||[]).length,10);
-  assert.match(html,/진단 근거/);
-  assert.equal((html.match(/data-competitor-response=/g)||[]).length,3);
-  for(const label of ['공세 영역','방어 영역','회피 영역','단기 역전 가능 영역'])assert.match(html,new RegExp(label));
-  assert.equal((html.match(/대표 뉴스는 핵심 이슈 주제에서 벗어난 관련 기사 집계를 의미합니다\./g)||[]).length,1);
-  assert.doesNotMatch(html,/>정치적 의미<|>현재 위치<|>기회 요인<|>위험 요인<|>서브데이터</);
-  assert.equal((html.match(/>비교 기준</g)||[]).length,0);
-  assert.equal((html.match(/data-politician-type=/g)||[]).length,4);
-  for(let index=0;index<4;index++)assert.match(html,new RegExp(reportFor(people[index],index).politicianType.primaryType));
-});
-
-test('administrator comparison uses aligned compact cells instead of nesting full detail dashboards',async()=>{
-  const ids=people.slice(0,4).map(person=>person.id).join(',');
-  const html=await renderPoliticianCompare(serviceFor('admin'),`/compare?ids=${ids}&run=1`,{user:{role:'admin'}});
-  assert.equal((html.match(/data-compare-topic-axis=/g)||[]).length,10);
-  assert.equal((html.match(/data-compare-person-cell=/g)||[]).length,40);
-  assert.equal((html.match(/data-compare-display="competitor"/g)||[]).length,4);
-  assert.doesNotMatch(html,/jcs-dx-competitor-grid/);
-  assert.doesNotMatch(html,/2026-\d{2}-\d{2}T\d{2}/);
-  assert.doesNotMatch(html,/jcs-dx-stack|jcs-dx-grid-2|jcs-dx-summary-grid/);
-});
-
-test('administrator target strategy produces one response card per selected rival for two three and four people',async()=>{
-  for(const count of [2,3,4]){
-    const ids=people.slice(0,count).map(person=>person.id).join(',');
-    const html=await renderPoliticianCompare(serviceFor('admin'),`/compare?ids=${ids}&run=1&strategy=assembly-101`,{user:{role:'admin'}});
-    assert.equal((html.match(/data-competitor-response=/g)||[]).length,count-1);
-    for(let index=2;index<=count;index++)assert.match(html,new RegExp(`비교정치인${index}`));
-  }
-});
-
-test('comparison cells use the same projected topic values as detail data',async()=>{
-  const projected=projectIntelligence(reportFor(people[0],0),'member','detail');
-  const html=await renderPoliticianCompare(serviceFor('member'),'/compare?ids=assembly-101,assembly-102&run=1',{user:{role:'member'}});
-  assert.match(html,new RegExp(projected.diagnoses[0].display.nowSignal));
-  assert.match(html,/data-diagnosis-display="brand"/);
-});
-
-test('local comparison uses the approved voter structure and JCS message path without empty election placeholders',async()=>{
-  const source=await readFile(new URL('../src/views/politician-compare.js',import.meta.url),'utf8');
-  const block=source.slice(source.indexOf('function compareLocal'),source.indexOf('function compareSupport'));
-  assert.match(block,/data\.population/);
-  assert.match(block,/data\.messagePath/);
-  assert.doesNotMatch(block,/data\.elections|선거 기록|득표율/);
-});
-
-test('administrator can change the strategy baseline politician',async()=>{
-  const html=await renderPoliticianCompare(serviceFor('admin'),'/compare?ids=assembly-101,assembly-102&run=1&strategy=assembly-102',{user:{role:'admin'}});
-  assert.match(html,/비교정치인2 기준 전략 처방/);
-  assert.match(html,/class="active" data-layout-route="[^"]*strategy=assembly-102"/);
-});
-
-test('comparison search and removal routes remain usable after the matrix change',async()=>{
-  const html=await renderPoliticianCompare(serviceFor('admin'),'/compare?ids=assembly-101&q=비교정치인',{user:{role:'admin'}});
-  assert.match(html,/data-politician-autocomplete/);
-  assert.match(html,/data-compare-add="assembly-102"/);
-  assert.match(html,/data-compare-remove="assembly-101"/);
-  assert.match(html,/정치인 이름·정당·지역 검색/);
+test('board typography stays readable with scrolling, sticky axes and reduced motion',async()=>{
+ const css=await readFile(new URL('../css/comparison-board-364.css',import.meta.url),'utf8');
+ assert.deepEqual([...css.matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/g)].filter(m=>Number(m[1])<14),[]);
+ for(const term of ['position:sticky','overflow:auto','prefers-reduced-motion','--board-count'])assert.ok(css.includes(term));
 });

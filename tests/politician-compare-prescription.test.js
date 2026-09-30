@@ -18,14 +18,8 @@ const service={
   async search(){return {ok:true,items:[]};}
 };
 
-test('administrator comparison uses the same collapsed visual 01-10 prescription engine as detail',async()=>{
-  const html=await renderPoliticianCompare(service,'/compare?ids=assembly-001,assembly-002&run=1&strategy=assembly-001',{authenticated:true,user:{role:'admin'}});
-  assert.match(html,/data-prescription-shell/);
-  assert.match(html,/data-prescription-scope="compare"/);
-  assert.match(html,/data-prescription-disclosure[^>]*aria-expanded="false"/);
-  assert.match(html,/data-prescription-payload/);
-  assert.match(html,/data-prescription-mount[^>]*hidden/);
-  assert.match(html,/처방 10/);
-  assert.doesNotMatch(html,/class="jcs-compare-prescription"/);
-  assert.doesNotMatch(html,/class="jcs-compare-priority"/);
+test('comparison sends users to detail instead of duplicating strategic prescriptions',async()=>{
+ const html=await renderPoliticianCompare(service,'/compare?ids=assembly-001,assembly-002&run=1',{user:{id:'admin',role:'admin'}});
+ assert.match(html,/data-compare-board/);assert.match(html,/href="\/person\/assembly-001"/);
+ assert.doesNotMatch(html,/data-prescription-shell|data-prescription-payload|전략 판단 1|처방 10/);
 });

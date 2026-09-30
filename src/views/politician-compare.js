@@ -1,9 +1,8 @@
 import {canViewAdminAnalysis} from '../core/membership.js?v=0.0.31.354';
-import { renderPrescriptionDisclosure } from './prescription-visuals.js';
+import {renderComparisonBoard} from './comparison-board.js?v=0.0.31.364';
 import { renderAnalysisAccess } from './person-refresh.js?v=0.0.31.362';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-const COMPARE_EN={'01':'POLITICAL BRAND POSITIONING','02':'AGE × GENDER SUPPORT STRUCTURE','03':'LOCAL SENTIMENT & MESSAGE FIT','04':'CORE SUPPORT DYNAMICS','05':'COMPETITOR POSITIONING','06':'ISSUE & CRISIS RISK','07':'MEDIA & ONLINE INFLUENCE','08':'ELECTION & CAMPAIGN STRENGTH','09':'POLITICAL ACTION CONVERSION','10':'TOTAL POLITICAL POSITION'};
 
 function queryRoute(ids,run=false){
   if(!ids.length)return '/compare';
@@ -36,145 +35,8 @@ function failedSlot(id,index,ids,run=false){
   return `<article class="politician-compare-slot is-failed" data-compare-slot data-compare-failed="${esc(id)}"><span class="politician-compare-slot-index">${String(index+1).padStart(2,'0')}</span><div class="politician-compare-load-error"><b>비교 데이터를 불러오지 못했습니다</b><p>${esc(id)}</p><button type="button" data-layout-route="${esc(queryRoute(ids,run))}">다시 시도</button><button type="button" data-layout-route="${esc(queryRoute(nextIds))}">목록에서 빼기</button></div></article>`;
 }
 
-const available=value=>value!==null&&value!==undefined&&value!==''&&Number.isFinite(Number(value));
-const compareText=value=>{
-  if(value===null||value===undefined||value==='')return '';
-  if(typeof value==='string'||typeof value==='number')return `<span>${esc(value)}</span>`;
-  if(Array.isArray(value))return value.map(compareText).join('');
-  if(typeof value==='object'){
-    const label=value.label||value.title||value.age||value.type||'',metric=value.value??value.score,details=[];
-    if(value.male!==undefined||value.female!==undefined)details.push(`남성 ${value.male??'—'} · 여성 ${value.female??'—'}`);
-    if(value.body)details.push(value.body);if(value.detail)details.push(value.detail);if(value.note)details.push(value.note);
-    if(label||metric!==undefined||details.length)return `<span>${label?`<b>${esc(label)}</b>`:''}${metric!==undefined&&metric!==null?`<strong>${esc(metric)}</strong>`:''}${details.map(detail=>`<small>${esc(detail)}</small>`).join('')}</span>`;
-    return Object.entries(value).map(([key,item])=>`<span><b>${esc(key)}</b>${compareText(item)}</span>`).join('');
-  }
-  return '';
-};
-
-const comparisonTopic=(entry,id)=>(entry.intelligence?.diagnoses||[]).find(topic=>topic.id===id)||null;
-const topicSignal=topic=>{
-  if(available(topic?.score))return Number(topic.score);
-  const metric=(topic?.metrics||[]).find(row=>available(row?.value??row?.score));
-  if(metric)return Number(metric.value??metric.score);
-  const chart=Array.isArray(topic?.miniChart)?topic.miniChart.filter(available):[];
-  return chart.length?Number(chart.at(-1)):null;
-};
-
-function relativePositions(entries,topicId){
-  const values=entries.map(entry=>topicSignal(comparisonTopic(entry,topicId)));
-  if(values.some(value=>value===null))return values.map(()=>({label:'구조 기준',value:null}));
-  const high=Math.max(...values),low=Math.min(...values);
-  if(high===low)return values.map(value=>({label:'경합',value}));
-  return values.map(value=>({label:value===high?'우위':value===low?'열세':'경합',value}));
-}
-
-function compareProfileHeader(entry){
-  const brand=comparisonTopic(entry,'01'),rank=entry.intelligence?.rank||{},type=entry.intelligence?.politicianType;
-  return `<article class="jcs-compare-matrix-profile" data-compare-matrix-profile="${esc(entry.item.id)}">${profilePhoto(entry.item,'jcs-compare-matrix-avatar')}<div><h3>${esc(entry.item.name)}</h3><p>${esc(entry.item.party)}</p><small>${esc(entry.item.office||entry.item.roleLabel||entry.item.jurisdiction)}</small><em>${esc(entry.item.jurisdiction)}</em></div>${type?`<div class="jcs-compare-type" data-politician-type="${esc(type.primaryType)}"><b>${esc(type.primaryType)}</b><span>${esc(type.currentPhase)}</span></div>`:''}<footer><b>${rank.overall?`전체 ${rank.overall}위`:'NOW 순위 산정 전'}</b><span>${esc(brand?.trend?.direction||'—')}</span></footer></article>`;
-}
-
-const compareField=(label,value,className='')=>`<div class="jcs-compare-field ${className}"><b>${esc(label)}</b><div>${compareText(value)}</div></div>`;
-
-function publicCompareCell(topic,position){const primary=topic?.id==='01';return `<article class="jcs-compare-topic-cell"><strong>${esc(topic?.headline)}</strong>${primary?compareField('핵심 사건',topic?.coreEvent):''}${compareField('정치적 의미',topic?.politicalMeaning,'is-meaning')}${compareField('상대 비교',position.label)}${primary?compareField('최근 흐름',topic?.trend):''}${compareField('JCS 상대지수',topic?.score)}</article>`;}
-
-function memberCompareCell(topic,position){const primary=topic?.id==='01';return `<article class="jcs-compare-topic-cell">${compareField('현재 평가',topic?.currentPosition,'is-summary')}${primary?compareField('핵심 사건',topic?.coreEvent):''}${compareField('정치적 의미',topic?.politicalMeaning,'is-meaning')}${primary?compareField('변화 원인',topic?.changeReason):''}${primary?compareField('과거와 현재',topic?.pastPresentConnection):''}${compareField('핵심 수치',`${topic?.score} · ${topic?.percentile}`)}${primary?compareField('최근 변화',topic?.trend):''}${compareField('현재 우위·열세·경합',position.label)}${compareField('격차 요약',position.value)}${compareField('동급·경쟁 비교',topic?.benchmark)}${compareField('정참시 비교 해석',topic?.interpretation,'is-interpretation')}${topic?.id==='06'?compareField('서브데이터',topic?.supportingData):''}${compareField('기준일·출처',[topic?.updatedAt,...(topic?.sourceTypes||[])])}</article>`;}
-
-function adminCompareCell(topic,position){const primary=topic?.id==='01';return `<article class="jcs-compare-topic-cell">${primary?compareField('핵심 사건',topic?.coreEvent):''}${compareField('정치적 의미',topic?.politicalMeaning,'is-meaning')}${compareField('현재 위치',topic?.currentPosition,'is-position')}${primary?compareField('변화 원인',topic?.changeReason):''}${primary?compareField('과거와 현재',topic?.pastPresentConnection):''}${compareField('점수·상대 위치',`${position.label} · ${topic?.score}`)}${compareField('직군 위치',topic?.percentile)}${primary?compareField('최근 변화',topic?.trend):''}${primary?compareField('근거 데이터',topic?.evidence):''}${topic?.id==='06'?compareField('서브데이터',topic?.supportingData):''}${compareField('정참시 해석',topic?.interpretation,'is-interpretation')}${compareField('활용 가능한 기회',topic?.opportunity)}${compareField('관리해야 할 위험',topic?.risk)}</article>`;}
-
-const compactNumber=value=>{if(value===null||value===undefined||value==='')return '—';const number=Number(value);if(!Number.isFinite(number))return '—';if(Math.abs(number)>=1000000)return `${Math.round(number/100000)/10}M`;if(Math.abs(number)>=1000)return `${Math.round(number/100)/10}K`;return String(Math.round(number*10)/10);};
-const shortDate=value=>{const match=String(value||'').match(/\d{4}-(\d{2})-(\d{2})/);return match?`${match[1]}.${match[2]}`:'—';};
-const percent=value=>value!==null&&value!==undefined&&value!==''&&Number.isFinite(Number(value))?`${Math.round(Number(value))}%`:'—';
-const compactBar=(label,value,max=100)=>`<div class="jcs-cmp-bar"><span>${esc(label)}</span><i><em style="width:${Math.max(0,Math.min(100,Number(value)||0))/Math.max(1,max)*100}%"></em></i><b>${esc(value??'—')}</b></div>`;
-const compactStat=(label,value,unit='')=>`<div class="jcs-cmp-stat"><span>${esc(label)}</span><b>${esc(value??'—')}${value===null||value===undefined||value===''?'':esc(unit)}</b></div>`;
-const displayOf=topic=>topic?.display||{};
-
-function compareBrand(data){
-  const indicators=(data.indicators||[]).slice(0,5);
-  const scores=Array.from({length:5},(_,index)=>Math.max(0,Math.min(100,Number(indicators[index]?.value||0)+50))),label=index=>esc(indicators[index]?.label||['브랜드 선명도','정책 연결도','이미지 일관성','경쟁자 차별성','확장성'][index]);
-  return `${data.search?.basis?`<p>${esc(data.search.basis)}</p>`:''}<div class="jcs-cmp-signal"><span>NOW SIGNAL</span><b>${esc(data.nowSignal||'관측 신호 없음')}</b></div><div class="jcs-cmp-brand-tools"><article data-brand-tool="ring"><span>${label(0)}</span><div class="jcs-cmp-brand-ring" style="--cmp-score:${scores[0]}%"><b>${scores[0]}</b></div></article><article data-brand-tool="segments"><span>${label(1)}</span><b>${scores[1]}</b><div class="jcs-cmp-brand-segments">${Array.from({length:6},(_,index)=>`<i class="${index<Math.round(scores[1]/17)?'is-on':''}"></i>`).join('')}</div></article><article data-brand-tool="trend"><span>${label(2)}</span><svg viewBox="0 0 120 62" role="img" aria-label="${label(2)} ${scores[2]}"><path d="M4 46 L26 24 L48 43 L70 28 L92 47 L116 ${54-Math.round(scores[2]*.42)}" fill="none" stroke="currentColor" stroke-width="3"/></svg></article><article data-brand-tool="axis"><span>${label(3)}</span><div class="jcs-cmp-brand-axis"><i style="width:${scores[3]}%"></i></div><b>${Number(indicators[3]?.value||0)>0?'+':''}${Number(indicators[3]?.value||0)}</b></article><article data-brand-tool="radar"><span>${label(4)}</span><svg viewBox="0 0 100 92" role="img" aria-label="${label(4)} ${scores[4]}"><polygon points="50,5 93,35 77,85 23,85 7,35" fill="none" stroke="#d8e1e2"/><polygon points="50,${50-scores[4]*.4} ${50+scores[4]*.42},42 ${50+scores[4]*.25},${50+scores[4]*.4} ${50-scores[4]*.25},${50+scores[4]*.4} ${50-scores[4]*.42},42" fill="rgba(22,143,148,.22)" stroke="currentColor" stroke-width="2"/></svg></article></div><div class="jcs-cmp-stat-grid">${compactStat('PC 검색',compactNumber(data.search?.pc))}${compactStat('MOBILE 검색',compactNumber(data.search?.mobile))}${compactStat('브랜드 위험',data.totalSign?.risk,'/50')}${compactStat('브랜드 기회',data.totalSign?.opportunity,'/50')}</div>`;
-}
-function compareDemographic(data){
-  return `<div class="jcs-cmp-age">${(data.cohorts||[]).map(row=>`<div><header><b>${esc(row.age)}</b><strong>${percent(row.total)}</strong></header><i><em class="is-man" style="width:${Number(row.male)||0}%"></em><em class="is-woman" style="width:${Number(row.female)||0}%"></em></i><footer><span>남 ${percent(row.male)}</span><span>여 ${percent(row.female)}</span></footer></div>`).join('')}</div>`;
-}
-function compareLocal(data){
-  const population=data.population||[],messagePath=data.messagePath||[];
-  return `<div class="jcs-cmp-local-ages">${population.map(row=>`<article><b>${esc(String(row.age).replace(' 이상','+'))}</b><i><em style="width:${Number(row.totalShare)||0}%"></em></i><strong>${percent(row.totalShare)}</strong><span>남 ${percent(row.maleShare)} · 여 ${percent(row.femaleShare)}</span></article>`).join('')}</div><div class="jcs-cmp-bars jcs-cmp-local-path">${messagePath.map(row=>compactBar(row.label,row.value)).join('')}</div><div class="jcs-cmp-local-evidence">${(data.agenda||[]).map(row=>`<details><summary>#${esc(row.label)} · ${percent(row.share)} · 활동 근거 ${row.count>=3?'3+':esc(row.count||0)}건</summary>${(row.evidence||[]).map(item=>`<a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">${esc(item.title)} ↗</a>`).join('')}</details>`).join('')}</div><p class="jcs-cmp-local-judgment">${esc(data.localJudgment||'')}</p>`;
-}
-function compareSupport(data){
-  return `<div class="jcs-cmp-support">${(data.composition||[]).slice(0,3).map(row=>`<div><i class="is-${esc(row.key)}"></i><b>${esc(row.label)}</b><strong>${percent(row.value)}</strong></div>`).join('')}</div>`;
-}
-function compareCompetitor(data){
-  const person=(data.people||[])[0]||{},election=person.election||{};
-  const periods=['24H','7D','30D'].map(label=>(person.newsPeriods||[]).find(row=>row.label===label)||{label,value:0});
-  const periodPanel=row=>{const frame=person.framePeriods?.find(item=>item.label===row.label)||(row.label==='30D'?{...(person.frames||{}),items:[]}:{positive:0,neutral:0,negative:0,items:[]}),items=frame.items||[];return `<div class="jcs-cmp-period-value" data-jcs-period-panel="${row.label}" data-jcs-competitor-frame-period="${row.label}"${row.label==='30D'?'':' hidden'}>${compactStat(`${row.label} 기사`,row.value,'건')}<div class="jcs-cmp-frames"><span class="is-positive">긍정 <b>${frame.positive??0}</b></span><span class="is-neutral">중립 <b>${frame.neutral??0}</b></span><span class="is-negative">부정 <b>${frame.negative??0}</b></span></div><div class="jcs-cmp-period-headlines">${items.length?items.slice(0,3).map(item=>`<span>${esc(item.title)}</span>`).join(''):'<span class="is-empty">기간 내 대표 뉴스 없음</span>'}</div></div>`;};
-  return `<div data-jcs-period-scope data-jcs-competitor-period-scope><div class="jcs-periods" aria-label="경쟁 기사 기간">${periods.map(row=>`<button type="button" data-jcs-period="${row.label}" aria-pressed="${row.label==='30D'}">${row.label}</button>`).join('')}</div><div class="jcs-cmp-stat-grid">${compactStat('전체 NOW',person.overallRank?`${person.overallRank}위`:'—')}${compactStat('분야 NOW',person.categoryRank?`${person.categoryRank}위`:'—')}${compactStat('PC 검색',compactNumber(person.pc))}${compactStat('모바일 검색',compactNumber(person.mobile))}</div>${periods.map(periodPanel).join('')}</div><div class="jcs-cmp-election"><b>${esc(election.election||'현재 경쟁 신호')}</b><span>${election.voteRate!==null&&election.voteRate!==undefined?`${election.voteRate}%`:`JCS ${person.competition?.index??'—'}`}</span>${election.margin!==null&&election.margin!==undefined?`<em>${election.margin>=0?'+':''}${esc(election.margin)}p</em>`:''}</div>`;
-}
-function compareRisk(data){
-  const velocity=data.velocity||[],p=data.persistence||{},frames=data.frames||{};
-  return `${data.search?.basis?`<p>${esc(data.search.basis)}</p>`:''}<div class="jcs-cmp-signal"><span>NOW SIGNAL</span><b>${esc(data.nowSignal||'관측 신호 없음')}</b></div><div class="jcs-cmp-direction"><i style="--cmp-direction:${Math.max(0,Math.min(100,(Number(data.direction)||0)+50))}%"></i><span>위험</span><span>중립</span><span>기회</span></div><div class="jcs-cmp-stat-grid">${velocity.slice(0,3).map(row=>compactStat(row.label,row.value,'건')).join('')}${compactStat('최초',shortDate(p.from))}${compactStat('최근',shortDate(p.to))}${compactStat('지속',p.durationDays,'일')}</div><div class="jcs-cmp-frames"><span class="is-positive">긍정 <b>${frames.positive??0}</b></span><span class="is-neutral">중립 <b>${frames.neutral??0}</b></span><span class="is-negative">부정 <b>${frames.negative??0}</b></span></div>`;
-}
-function compareMedia(data){
-  const ownership=data.ownership||{},periods=['24H','7D','30D'].map(label=>(data.periods||[]).find(row=>row.label===label)||{...data,label,allSources:data.allSources||data.topSources||[]});
-  return `<div data-jcs-period-scope data-jcs-media-period-scope><div class="jcs-periods" aria-label="언론 분석 기간">${periods.map(row=>`<button type="button" data-jcs-period="${row.label}" aria-pressed="${row.label==='30D'}">${row.label}</button>`).join('')}</div>${periods.map(row=>{const sources=(row.allSources||[]).slice(0,6);return `<div class="jcs-media-period-panel jcs-cmp-media-period" data-jcs-period-panel="${row.label}"${row.label==='30D'?'':' hidden'}><div class="jcs-cmp-stat-grid">${compactStat('대표 기사',row.articleCount,'건')}${compactStat('전체 매체',row.sourceCount,'개')}${compactStat('주요 10개 매체',row.majorShare,'%')}${compactStat('비메이저',row.nonMajorShare,'%')}</div><div class="jcs-cmp-bars jcs-media-list" hidden>${sources.map(source=>compactBar(source.name,source.share??source.count)).join('')||'<p class="jcs-cmp-empty">집계 매체 없음</p>'}</div><button type="button" class="jcs-media-toggle" aria-expanded="false">전체 목록 보기 <span>＋</span></button></div>`;}).join('')}</div><div class="jcs-cmp-ownership"><span style="flex:${Math.max(1,Number(ownership.led)||0)}">본인 ${ownership.led??0}</span><span style="flex:${Math.max(1,Number(ownership.external)||0)}">외부 ${ownership.external??0}</span></div>`;
-}
-function compareCampaign(data){
-  const foundations=(data.foundations||[]).slice(0,4),regions=(data.regionalStructure||[]).slice(0,3);
-  return `<div class="jcs-cmp-foundations">${foundations.map(row=>`<article class="is-${esc(row.key)}"><span>${esc(row.label)}</span><strong>${esc(row.value)}</strong><i><em style="width:${Number(row.value)||0}%"></em></i></article>`).join('')}</div><div class="jcs-cmp-regions">${regions.map(row=>`<span><b>${esc(row.name)}</b><strong>${esc(row.status)}</strong></span>`).join('')}</div>`;
-}
-function compareAction(data){
-  return `<div class="jcs-cmp-stat-grid">${compactStat('관측 활동',data.activityCount,'건')}${compactStat('직접 선점',data.initiative?.firstMover,'건')}${compactStat('이슈 합류',data.initiative?.joined,'건')}${compactStat('미디어 전환',data.conversion?.total,'건')}</div><div class="jcs-cmp-bars">${(data.composition||[]).map(row=>compactBar(row.label,row.value)).join('')}</div>`;
-}
-function compareSummary(data){
-  return `<div class="jcs-cmp-total"><span>JCS 종합</span><strong>${esc(data.totalScore??'—')}</strong></div><div class="jcs-cmp-stat-grid">${(data.items||[]).map(row=>compactStat(row.label,row.value)).join('')}</div>`;
-}
-function limitedCompareDisplay(topic,role){
- const data=displayOf(topic),member=role==='member';let body='';
- if(data.kind==='brand')body=`${data.search?.basis?`<p>${esc(data.search.basis)}</p>`:''}<div class="jcs-cmp-bars">${(data.indicators||[]).slice(0,member?3:1).map(row=>compactBar(row.label,Math.max(0,Math.min(100,Number(row.value||0)+50)))).join('')}</div><div class="jcs-cmp-stat-grid">${compactStat('PC 검색',compactNumber(data.search?.pc))}${compactStat('모바일 검색',compactNumber(data.search?.mobile))}</div>`;
- if(data.kind==='demographic')body=`<div class="jcs-cmp-bars">${(data.cohorts||[]).map(row=>compactBar(row.age,row.total)).join('')}</div>`;
- if(data.kind==='local')body=`<div class="jcs-cmp-bars">${(data.population||[]).map(row=>compactBar(row.age,row.totalShare)).join('')}</div><div class="jcs-cmp-local-tags">${(data.agenda||[]).slice(0,3).map(row=>`<span>#${esc(row.label)} <b>${percent(row.share)}</b></span>`).join('')}</div>`;
- if(data.kind==='competitor'){const person=data.people?.[0]||{};body=`<div class="jcs-cmp-stat-grid">${compactStat('전체 NOW',person.overallRank,'위')}${compactStat('대표 기사',person.newsCount,'건')}${compactStat('경쟁 지수',person.competition?.index,'P')}</div>`;}
- if(data.kind==='media')body=`<div class="jcs-cmp-stat-grid">${compactStat('집계 기사',data.articleCount,'건')}${compactStat('보도 매체',data.sourceCount,'개')}</div><div class="jcs-cmp-bars">${(data.topSources||data.allSources||[]).slice(0,member?3:1).map(row=>compactBar(row.name,row.share)).join('')}</div>`;
- if(data.kind==='action')body=`<div class="jcs-cmp-stat-grid">${compactStat('관측 활동',data.activityCount,'건')}</div><div class="jcs-cmp-bars">${(data.composition||[]).slice(0,member?3:1).map(row=>compactBar(row.label,row.value)).join('')}</div>`;
- return `<div class="jcs-compare-compact" data-compare-display="${esc(data.kind)}" data-diagnosis-display="${esc(data.kind)}" data-compare-density="${role}">${body}<p class="jcs-cmp-brief">${esc(topic.headline||'')}</p></div>`;
-}
-function renderCompareDisplay(topic){
-  const data=displayOf(topic),kind=data.kind||'unknown',renderers={brand:compareBrand,demographic:compareDemographic,local:compareLocal,support:compareSupport,competitor:compareCompetitor,risk:compareRisk,media:compareMedia,campaign:compareCampaign,action:compareAction,summary:compareSummary},renderer=renderers[kind];
-  return `<div class="jcs-compare-compact" data-compare-display="${esc(kind)}" data-diagnosis-display="${esc(kind)}">${renderer?renderer(data):'<p class="jcs-cmp-empty">비교 가능한 데이터 없음</p>'}</div>`;
-}
-function visualCompareCell(topic,position,role){return `<article class="jcs-compare-topic-cell jcs-compare-person-cell" data-compare-person-cell="${esc(topic?.id||'unknown')}">${['admin','paid'].includes(role)?renderCompareDisplay(topic):limitedCompareDisplay(topic,role)}<footer><b>${esc(position.label)}</b>${available(position.value)?`<span>상대 지수 ${esc(position.value)}</span>`:''}</footer></article>`;}
-
-function adminComparisonSummary(entries,topicIds){
-  const comparable=topicIds.map(id=>{
-    const values=entries.map(entry=>topicSignal(comparisonTopic(entry,id)));
-    if(values.some(value=>value===null))return null;
-    const high=Math.max(...values),low=Math.min(...values),leader=entries[values.indexOf(high)]?.item?.name||'';
-    return {id,title:comparisonTopic(entries[0],id)?.title||id,gap:Number((high-low).toFixed(1)),leader};
-  }).filter(Boolean).sort((a,b)=>b.gap-a.gap);
-  const widest=comparable[0],closest=[...comparable].sort((a,b)=>a.gap-b.gap)[0];
-  return `<section class="content-card jcs-compare-executive"><span>ADMIN COMPETITIVE CONCLUSION</span><h2>관리자 경쟁 분석 요약</h2><div><article><b>가장 격차가 큰 영역</b><p>${widest?`${esc(widest.title)} · ${widest.gap}p · ${esc(widest.leader)} 우위`:'구조 지표 기준 비교'}</p></article><article><b>단기간 역전 가능성 검토 영역</b><p>${closest?`${esc(closest.title)} · 현재 격차 ${closest.gap}p`:'구조 지표 기준 비교'}</p></article><article><b>구조적 불리 영역·우선 경쟁자</b><p>${widest?`${esc(widest.title)}의 선두 ${esc(widest.leader)}를 우선 비교`:'구조 지표 기준 비교'}</p></article><article><b>계층·지역·메시지 판단</b><p>02·03·09 항목의 진단값과 처방을 기준으로 확인</p></article></div></section>`;
-}
-
-function comparePrescription(item,target){return `<article class="jcs-compare-prescription" data-prescription-topic="${item.id}"><header><span>${item.id}</span><h3>${esc(item.title)}</h3><em>${esc(item.priority)}</em></header>${compareField('전략 기준 정치인',target.item.name)}${compareField('진단 근거',item.diagnosisBasis,'is-basis')}${compareField('목표',item.objective)}${compareField('정참시 전략 판단',item.strategicJudgment,'is-judgment')}${compareField('실행 처방',item.actions,'is-action')}${compareField('타깃·메시지',[item.target,item.messageDirection])}${compareField('채널·시점',[...(item.channels||[]),item.timing])}${compareField('예상 변화·추적 지표',[item.expectedImpact,...(item.monitoringIndicators||[])])}</article>`;}
-
-function competitorResponseCards(entries,target,topicIds){
-  return `<section class="jcs-competitor-response"><header><span>COMPETITOR RESPONSE PLAYBOOK</span><h2>${esc(target.item.name)} 기준 경쟁자별 대응</h2><p>상세페이지와 동일한 진단값의 격차만 사용해 공세·방어·회피 순서를 정합니다.</p></header><div>${entries.filter(entry=>entry.item.id!==target.item.id).map(rival=>{
-    const gaps=topicIds.map(id=>{const own=topicSignal(comparisonTopic(target,id)),other=topicSignal(comparisonTopic(rival,id)),topic=comparisonTopic(target,id);return own===null||other===null?null:{id,title:topic?.title||id,gap:own-other};}).filter(Boolean),offense=[...gaps].sort((a,b)=>b.gap-a.gap)[0],defense=[...gaps].sort((a,b)=>a.gap-b.gap)[0],short=[...gaps].sort((a,b)=>Math.abs(a.gap)-Math.abs(b.gap))[0];
-    return `<article data-competitor-response="${esc(rival.item.id)}"><header>${profilePhoto(rival.item,'jcs-competitor-response-avatar')}<div><b>${esc(rival.item.name)}</b><span>${esc([rival.item.party,rival.item.jurisdiction].filter(Boolean).join(' · '))}</span></div></header>${compareField('공세 영역',offense?`${offense.title} · ${offense.gap>=0?'+':''}${offense.gap}p`:'동일 구조 기준')}${compareField('방어 영역',defense?`${defense.title} · ${defense.gap>=0?'+':''}${defense.gap}p`:'동일 구조 기준')}${compareField('회피 영역',defense&&defense.gap<0?`${defense.title}의 직접 우열 공방`:'근거 없는 인물 공방')}${compareField('단기 역전 가능 영역',short?`${short.title} · 격차 ${Math.abs(short.gap)}p`:'동일 구조 기준')}</article>`;
-  }).join('')}</div></section>`;
-}
-function comparePriority(value,prescriptions){const byId=new Map(prescriptions.map(row=>[row.id,row.title]));return `<section class="jcs-compare-priority"><h2>실행 우선순위</h2><div>${[['즉시 실행','immediate'],['30일 이내 실행','days30'],['90일 이내 실행','days90'],['중장기 관리','longTerm']].map(([label,key])=>`<article><b>${label}</b>${(value?.[key]||[]).map(id=>`<span>${esc(id)} · ${esc(byId.get(id))}</span>`).join('')}</article>`).join('')}</div></section>`;}
-
 function renderDiagnosticComparison(entries,role,strategyId='',access=null){
-  if(!entries.length)return '';
-  const full=['admin','paid'].includes(role),topicIds=(entries[0].intelligence?.diagnoses||[]).map(topic=>topic.id),titles={public:['JCS OPEN POLITICAL COMPARISON','정참시 공개 비교'],member:['JCS MEMBER POLITICAL COMPARISON','정참시 회원 상세 비교'],paid:['JCS 24H DEEP POLITICAL COMPARISON','24시간 심층 비교 분석'],admin:['JCS ADMIN POLITICAL COMPARISON','정참시 관리자 경쟁 분석']},[en,ko]=titles[role]||titles.public;
-  const header=`<div class="jcs-compare-matrix-profile-row" style="--compare-count:${entries.length}"><div class="jcs-compare-matrix-corner"><span>COMPARE</span><b>동일 기준 비교</b></div>${entries.map(compareProfileHeader).join('')}</div>`;
-  const sections=topicIds.map((id,index)=>{
-    const topic=comparisonTopic(entries[0],id),positions=relativePositions(entries,id);
-    return `<section class="jcs-compare-topic" data-comparison-topic="${id}"><div class="jcs-compare-topic-row" style="--compare-count:${entries.length}"><aside class="jcs-compare-topic-axis jcs-chapter-head" data-compare-topic-axis="${id}"><span class="jcs-no">${full?id:String(index+1).padStart(2,'0')}</span><div><b>${esc(topic?.title)}</b><small class="jcs-en">${esc(COMPARE_EN[id]||'JCS POLITICAL DIAGNOSIS')}</small></div></aside>${entries.map((entry,index)=>visualCompareCell(comparisonTopic(entry,id),positions[index],role)).join('')}</div></section>`;
-  }).join('');
-  const target=entries.find(entry=>entry.item.id===strategyId)||entries[0],prescriptions=target?.intelligence?.prescriptions||[],targetSelector=full?`<nav class="jcs-strategy-target"><b>전략 기준 정치인</b>${entries.map(entry=>`<button type="button" class="${entry.item.id===target.item.id?'active':''}" data-layout-route="/compare?ids=${encodeURIComponent(entries.map(row=>row.item.id).join(','))}&run=1&strategy=${encodeURIComponent(entry.item.id)}">${esc(entry.item.name)}</button>`).join('')}</nav>`:'';
-  const adminRx=full&&prescriptions.length?`${targetSelector}${competitorResponseCards(entries,target,topicIds)}<section class="jcs-compare-transition"><span>FROM DIAGNOSIS TO PRESCRIPTION</span><h2>${esc(target.item.name)} 기준 전략 처방</h2><p>위 비교 진단을 기준 정치인의 실행 전략으로 전환합니다.</p></section>${renderPrescriptionDisclosure(target.intelligence||{prescriptions},{scope:'compare',subject:target.item.name,diagnoses:target.intelligence?.diagnoses||[]})}`:'';
-  return `<section class="jcs-compare-report jcs-compare-report-${role}${role==='paid'?' jcs-compare-report-admin':''} jcs-approved-compare" data-approved-access="${role==='paid'?'admin':role}"${role==='paid'?' data-paid-analysis="compare"':''}><header class="jcs-compare-report-heading"><span>${en}</span><h2>${ko}</h2><p>${full?esc(entries[0].intelligence?.stInterpretation||'상세페이지와 동일한 진단 01~10을 비교합니다.'):'상세페이지와 동일한 분석값을 같은 항목과 기준으로 직접 비교합니다.'}</p><small class="jcs-representative-news-guide">대표 뉴스는 핵심 이슈 주제에서 벗어난 관련 기사 집계를 의미합니다.</small></header>${role==='paid'?renderAnalysisAccess(access,entries.map(entry=>entry.item.id)):''}${full?adminComparisonSummary(entries,topicIds):''}<div class="jcs-compare-matrix" style="--compare-count:${entries.length}">${header}${sections}</div>${adminRx}${role==='public'?'<footer><button type="button" class="primary-btn" data-layout-route="/login">로그인하고 상세 비교 보기</button></footer>':''}</section>`;
+ return renderComparisonBoard(entries,{role,accessMarkup:role==='paid'?renderAnalysisAccess(access,entries.map(entry=>entry.item.id)):''});
 }
 
 const resultAccess=result=>result?.analysisAccess||result?.intelligence?.analysisAccess||null;
@@ -239,5 +101,6 @@ export async function renderPoliticianCompare(service,route='/compare',session=n
   const submittedResults=searchState.query?`<div class="politician-compare-search-results politician-compare-global-results" data-compare-search-results>${availableResults.length?availableResults.map(candidate=>searchResult(candidate,ids)).join(''):'<p>검색 결과가 없습니다.</p>'}</div>`:'';
   const globalSearch=ids.length<limit?`<form class="politician-compare-global-search" data-compare-search-form data-compare-search-slot="${Math.min(limit,ids.length+1)}" data-compare-search-base="${esc(queryRoute(ids))}" role="search"><label for="compare-person-search">정치인 추가</label><div class="politician-compare-global-search-field"><input id="compare-person-search" type="search" name="q" value="${esc(searchState.query)}" placeholder="정치인 이름·정당·지역 검색" autocomplete="off" data-politician-autocomplete data-politician-select-mode="compare" data-politician-base="${esc(queryRoute(ids))}" required><button type="submit">검색</button></div>${submittedResults}</form>`:'';
   const runButton=ready?`<div class="politician-compare-run-row"><button class="primary-btn" type="button" data-compare-run data-layout-route="${esc(queryRoute(ids,true))}">${run?'다시 비교하기':'비교하기'}</button></div>`:'';
-  return `<main class="subpage politician-compare-page compare-capacity-${limit}" data-compare-role="${role}" data-compare-limit="${limit}" data-compare-executed="${run}"><section class="page-hero politician-compare-hero"><span class="eyebrow">${eyebrow}</span><h1>${title}</h1><p>${description}</p><div class="politician-compare-capacity"><strong>${ids.length}</strong><span>/ ${limit}명 선택</span><b>${limit===4?'최대 4명':'1:1 전용'}</b></div></section><section class="content-card politician-compare-selection"><div class="section-title"><div><span class="eyebrow">SELECTED PROFILES</span><h2>비교 대상</h2></div><span>검색하여 선택 · ${limit===4?'2~4명 비교':'1:1 비교'}</span></div>${globalSearch}<div class="politician-compare-slots">${slotMarkup}</div>${runButton}</section>${analysis}</main>`;
+  if(run&&analysis.includes('data-compare-board'))return `<main class="subpage politician-compare-page compare-workspace" data-compare-role="${role}" data-compare-limit="${limit}" data-compare-executed="true"><div class="cb-topbar"><a href="/" data-layout-route="/">← 정참시</a><b>정치인 비교분석</b><span>${entries.length}명 비교 중</span></div><details class="cb-selection"><summary>비교 대상 변경 <span>${selected.map(item=>esc(item.name)).join(' · ')} ＋</span></summary><section class="politician-compare-selection">${globalSearch}<div class="politician-compare-slots">${slotMarkup}</div>${runButton}</section></details>${analysis}</main>`;
+  return `<main class="subpage politician-compare-page compare-workspace compare-setup compare-capacity-${limit}" data-compare-role="${role}" data-compare-limit="${limit}" data-compare-executed="${run}"><div class="cb-topbar"><a href="/" data-layout-route="/">← 정참시</a><b>정치인 비교분석</b><span>대상 선택</span></div><section class="page-hero politician-compare-hero"><span class="eyebrow">${eyebrow}</span><h1>${title}</h1><p>${description}</p><div class="politician-compare-capacity"><strong>${ids.length}</strong><span>/ ${limit}명 선택</span><b>${limit===4?'최대 4명':'1:1 전용'}</b></div></section><section class="content-card politician-compare-selection"><div class="section-title"><div><span class="eyebrow">SELECTED PROFILES</span><h2>비교 대상</h2></div><span>검색하여 선택 · ${limit===4?'2~4명 비교':'1:1 비교'}</span></div>${globalSearch}<div class="politician-compare-slots">${slotMarkup}</div>${runButton}</section>${analysis}</main>`;
 }

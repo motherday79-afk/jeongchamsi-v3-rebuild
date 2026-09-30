@@ -1,3 +1,4 @@
+import {bindComparisonBoard} from './ui/comparison-board.js?v=0.0.31.364';
 import {renderAdminWorkspace,toggleAdminMenu} from './views/admin-workspace.js?v=0.0.31.361';
 import {setupHomeBannerRotation} from './ui/home-banner-rotation.js?v=0.0.31.358';
 import {isSuperAdmin} from './core/membership.js?v=0.0.31.354';
@@ -27,9 +28,9 @@ import { createPoliticianService } from './core/politicians.js?v=0.0.31.350';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith, isTransientAnalysisRoute } from './core/navigation.js?v=0.0.31.350';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.148';
-import * as views from './views/stage1.js?v=0.0.31.363';
+import * as views from './views/stage1.js?v=0.0.31.364';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.362';
-import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.362';
+import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.364';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident } from './views/participation-pages.js?v=0.0.31.361';
 import { renderPresidentPage } from './views/president.js?v=0.0.31.107';
 import { renderSearchPage, hasSearchSnapshot } from './views/search-page.js?v=0.0.31.363';
@@ -349,6 +350,7 @@ bindCampaignInteractions(document,{client:campaigns,onSaved:async(_result,target
 bindPersonRefresh(document,{auth,onPublished:event=>{navigation.clearCache();return render({preserveScroll:true,freshSession:event?.revalidate===true});}});
 bindRankingWeights(document,{auth,onSaved:()=>render({preserveScroll:true})});
 bindActivityPoints(document,{loadMemberPage:(panel,page)=>loadMemberPoints(panel,page)});
+bindComparisonBoard(document);
 bindFortuneInteractions(document,{auth,onSaved:async()=>{navigation.clearCache();homeSnapshot=null;await render({preserveScroll:true,freshSession:true});}});
 window.addEventListener('jcs:layout-route',event=>navigation.navigate(event.detail?.route||'/'));
 window.addEventListener('jcs:layout-search',event=>navigation.navigate(`/search?q=${encodeURIComponent(String(event.detail?.query||'').trim())}`));
