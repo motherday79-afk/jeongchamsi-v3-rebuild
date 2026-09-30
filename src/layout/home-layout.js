@@ -1,4 +1,4 @@
-import {homeBannerPlaylist,HOME_BANNER_INTERVAL,HERO_BANNER_INTERVAL} from '../core/home-banner-playlist.js?v=0.0.31.356';
+import {homeBannerPlaylist,HOME_BANNER_INTERVAL,HERO_BANNER_INTERVAL} from '../core/home-banner-playlist.js?v=0.0.31.357';
 import {membershipLabel} from '../core/membership.js?v=0.0.31.354';
 import {APPAREL_PRODUCTS,renderApparelCatalog,renderApparelProduct} from '../views/apparel-shop.js?v=0.0.31.297';
 import {renderAiPanelHome} from '../views/ai-panel-pages.js?v=0.0.31.354';

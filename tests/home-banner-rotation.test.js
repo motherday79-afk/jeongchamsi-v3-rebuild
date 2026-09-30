@@ -54,13 +54,13 @@ test('failed playlist commits clean up new uploads only',async()=>{
  assert.equal(JSON.parse(f.values.get(TARGET_KEYS.homeBanner)).url,'https://blob.example/old.png');
 });
 
-test('left banner shows Habi first without any link and preserves existing linked banner',()=>{
+test('left banner opens the Habi film site and preserves existing linked banner',()=>{
  const previous={url:'https://example.com/banner.png',designVersion:'upload',targetUrl:'https://example.com/film'};
  const items=homeBannerPlaylist(previous,'hero');assert.deepEqual(items,[HABI_BANNER,previous]);
  assert.deepEqual(homeBannerPlaylist({items},'hero'),items);
  const html=homeBanner(previous,{},'hero');assert.match(html,/data-interval="90000"/);
- const first=html.match(/<div data-home-banner-slide[^]*?<\/div>/)?.[0];
- assert.ok(first);assert.match(first,/habi-halbi-pc-356/);assert.doesNotMatch(first,/<a\b|href=|data-layout-route|tabindex/);
+ const first=html.match(/<a data-home-banner-slide[^]*?<\/a>/)?.[0];
+ assert.ok(first);assert.match(first,/habi-halbi-pc-356/);assert.match(first,/href="https:\/\/habi-halbi-film.vercel.app\/" target="_blank" rel="noopener noreferrer"/);
  assert.match(html,/href="https:\/\/example.com\/film"/);
 });
 test('left and right rotation timers independently use 90 and 60 seconds',()=>{

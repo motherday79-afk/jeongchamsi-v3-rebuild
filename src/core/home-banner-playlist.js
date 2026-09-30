@@ -5,7 +5,7 @@ export const HABI_BANNER=Object.freeze({
  url:'/assets/banners/habi-halbi-pc-356.webp',
  mobileUrl:'/assets/banners/habi-halbi-mobile-356.webp',
  tabletUrl:'/assets/banners/habi-halbi-tablet-356.webp',
- targetUrl:'',alt:'하비와 할비 · 가까이 다가가면 보인다. · 2027년 8월, 화성에서 만납니다. 감독 박인식'
+ targetUrl:'https://habi-halbi-film.vercel.app/',alt:'하비와 할비 · 가까이 다가가면 보인다. · 2027년 8월, 화성에서 만납니다. 감독 박인식'
 });
 export const VELGARD_BANNER=Object.freeze({
  id:'velgard-355',designVersion:'upload',placement:'sidebar',
