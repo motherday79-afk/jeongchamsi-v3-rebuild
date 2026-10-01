@@ -17,8 +17,11 @@ function itemsFrom(domain,data){if(Array.isArray(data?.items))return data.items;
 
 function createRemoteContentService(){
   const readCache=new Map();
+  let visitPath='',visitId='',viewRequests=new Map();
+  const beginVisit=route=>{const next=String(route||'/').split('?')[0];if(next!==visitPath){visitPath=next;visitId=globalThis.crypto?.randomUUID?.()||id();viewRequests=new Map();}};
   const readDomain=async domain=>{const x=await request(`content?domain=${encodeURIComponent(domain)}`);const data=x.ok?x.data:null;if(data)readCache.set(domain,data);return data;};
   return {
+    beginVisit,
     async points(){return request('points');},
     async memberPoints(id){return request('points?member='+encodeURIComponent(id));},
     async myWallet(){return request('points?wallet=1');},
@@ -27,7 +30,14 @@ function createRemoteContentService(){
     async readDomain(domain){return (await readDomain(domain))||{items:[]};},
     peekDomain(domain){return readCache.get(domain);},
     async list(domain){const data=await readDomain(domain);return itemsFrom(domain,data).slice().sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));},
-    async get(domain,itemId){await request('action',{method:'POST',body:JSON.stringify({action:'post-view',payload:{domain,postId:itemId}})});const data=await readDomain(domain);return itemsFrom(domain,data).find(x=>String(x.id)===String(itemId))||null;},
+    async get(domain,itemId){
+      const path=`/${domain==='columns'?'column':domain}/${itemId}`,key=`${domain}:${itemId}`;
+      if(visitPath===path&&['columns','community','itsme','news'].includes(domain)){
+        if(!viewRequests.has(key))viewRequests.set(key,request('action',{method:'POST',body:JSON.stringify({action:'post-view',payload:{domain,postId:itemId,visitId}})}).catch(()=>null));
+        await viewRequests.get(key);
+      }
+      const data=await readDomain(domain);return itemsFrom(domain,data).find(x=>String(x.id)===String(itemId))||null;
+    },
     async create(domain,input={}){const x=await request(`content?domain=${encodeURIComponent(domain)}`,{method:'POST',body:JSON.stringify({input})});return x.ok?x.item:{error:x.error,status:x.status,...(x.retryAfterSeconds!=null?{retryAfterSeconds:x.retryAfterSeconds}:{})};},
     async uploadImage(domain,file,id=''){const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=reject;reader.readAsDataURL(file);});return request(`content?domain=${encodeURIComponent(domain)}`,{method:'POST',body:JSON.stringify({operation:'upload-image',id,contentType:file.type,base64})});},
     async update(domain,id,input={}){const x=await request(domain==='inquiry'?'inquiries':`content?domain=${encodeURIComponent(domain)}`,{method:'PATCH',body:JSON.stringify({id,input})});return x.ok?x.item:{error:x.error,status:x.status};},

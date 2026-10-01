@@ -1,3 +1,4 @@
+import {randomUUID} from 'node:crypto';
 import {createComicService} from '../lib/political-comic-service.js';
 import {canAccessAdminEndpoint,canWriteEditorial,isSuperAdmin} from '../src/core/membership.js';
 import {homeBannerPlaylist,HOME_BANNER_INTERVAL,HERO_BANNER_INTERVAL} from '../src/core/home-banner-playlist.js';
@@ -85,10 +86,13 @@ const favoriteService=command=>{
 export function sanitizeContentInput(input={}){const safe={};for(const [key,limit] of Object.entries({title:200,body:20000,summary:500,category:80,coverImage:1000})){const value=String(input?.[key]||'').trim().slice(0,limit);if(value)safe[key]=value;}return safe;}
 
 export async function findPublishedPost(command,domain,postId){if(!['columns','community','itsme','news'].includes(String(domain||''))||!postId)return null;const data=await readDomain(command,domain,{items:[]});return contentItems(data).find(post=>String(post.id)===String(postId)&&post.published!==false)||null;}
-const RECORD_CONTENT_VIEW_LUA=`local current=tonumber(redis.call('GET',KEYS[2]) or '0');if ARGV[1]==ARGV[2] then return cjson.encode({ok=true,counted=false,increment=current}) end;local added=redis.call('SADD',KEYS[1],ARGV[1]);if added==0 then return cjson.encode({ok=true,counted=false,increment=current}) end;local next=redis.call('INCR',KEYS[2]);return cjson.encode({ok=true,counted=true,increment=next})`;
-export async function recordContentView(command,user,domain,postId){
-  if(!user)return {ok:false,error:'LOGIN_REQUIRED'};const cleanDomain=String(domain||''),cleanPostId=String(postId||'');if(!['columns','community','itsme','news'].includes(cleanDomain)||!cleanPostId)return {ok:false,error:'INVALID_POST'};
-  const post=await findPublishedPost(command,cleanDomain,cleanPostId);if(!post)return {ok:false,error:'POST_NOT_FOUND'};const raw=await command(['EVAL',RECORD_CONTENT_VIEW_LUA,'2',TARGET_KEYS.viewers(cleanDomain,cleanPostId),TARGET_KEYS.viewCount(cleanDomain,cleanPostId),String(user.id),String(post.ownerId||'')]);try{const result=JSON.parse(raw);return {...result,views:Number(post.views||0)+Number(result.increment||0)};}catch{return {ok:false,error:'VIEW_STORAGE_INVALID'};}
+const RECORD_CONTENT_VIEW_LUA=`-- JCS_POST_VISIT_V2
+local current=tonumber(redis.call('GET',KEYS[2]) or '0');local added=redis.call('SET',KEYS[1],'1','NX','EX',600);if not added then return cjson.encode({ok=true,counted=false,increment=current}) end;local next=redis.call('INCR',KEYS[2]);return cjson.encode({ok=true,counted=true,increment=next})`;
+export async function recordContentView(command,user,domain,postId,visitId=randomUUID()){
+  const cleanDomain=String(domain||''),cleanPostId=String(postId||'');if(!['columns','community','itsme','news'].includes(cleanDomain)||!cleanPostId||cleanPostId.length>200)return {ok:false,error:'INVALID_POST'};
+  if(!/^[a-zA-Z0-9_-]{8,80}$/.test(String(visitId)))return {ok:false,error:'INVALID_VISIT'};
+  const post=await findPublishedPost(command,cleanDomain,cleanPostId);if(!post)return {ok:false,error:'POST_NOT_FOUND'};
+  const raw=await command(['EVAL',RECORD_CONTENT_VIEW_LUA,'2',`jcsr2:post-visit:v2:${cleanDomain}:${cleanPostId}:${visitId}`,TARGET_KEYS.viewCount(cleanDomain,cleanPostId)]);try{const result=JSON.parse(raw);return {...result,views:Number(post.views||0)+Number(result.increment||0)};}catch{return {ok:false,error:'VIEW_STORAGE_INVALID'};}
 }
 
 async function handleMigration(req,res,route){
@@ -290,6 +294,12 @@ export async function handleContent(req,res,command,url){
 
 export async function handleAction(req,res,command){
   if(req.method!=='POST')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
+  const viewBody=bodyOf(req);
+  if(viewBody.action==='post-view'){
+    if(req.headers?.['sec-fetch-site']==='cross-site')return json(res,403,{ok:false,error:'ORIGIN_FORBIDDEN'});
+    const payload=viewBody.payload||viewBody,result=await recordContentView(command,null,String(payload.domain||''),String(payload.postId||''),payload.visitId);
+    return json(res,result.ok?200:result.error==='POST_NOT_FOUND'?404:400,result);
+  }
   const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});
   const body=bodyOf(req),action=String(body.action||''),payload=body.payload||body;let activity=await readActivity(command,user.id);
 
@@ -314,7 +324,6 @@ export async function handleAction(req,res,command){
     const result=await favoriteService(command).toggle(user,payload);
     return json(res,result.ok?200:result.error==='FAVORITE_TARGET_NOT_FOUND'?404:400,result);
   }
-  if(action==='post-view'){const result=await recordContentView(command,user,String(payload.domain||''),String(payload.postId||''));return json(res,result.ok?200:result.error==='POST_NOT_FOUND'?404:400,result);}
   if(action==='vote'){
     const scope=String(payload.scope||''),option=String(payload.option||'');
     if(scope.startsWith('poll:')){
