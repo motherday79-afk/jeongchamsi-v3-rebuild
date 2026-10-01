@@ -56,7 +56,7 @@ function createRemoteContentService(){
     async createPartnerApplication(input={}){return request('partner-applications',{method:'POST',body:JSON.stringify(input)});},
     async listPartnerApplications(){return request('partner-applications');},
     async comment(domain,postId,text,options={}){return request('action',{method:'POST',body:JSON.stringify({action:'comment-add',payload:{domain,postId,text,...options}})});},
-    async editComment(domain,postId,commentId,text){return request('action',{method:'POST',body:JSON.stringify({action:'comment-edit',payload:{domain,postId,commentId,text}})});},
+    async editComment(domain,postId,commentId,text,options={}){return request('action',{method:'POST',body:JSON.stringify({action:'comment-edit',payload:{domain,postId,commentId,text,...options}})});},
     async deleteComment(domain,postId,commentId){return request('action',{method:'POST',body:JSON.stringify({action:'comment-delete',payload:{domain,postId,commentId}})});},
     async likeComment(domain,postId,commentId){return request('action',{method:'POST',body:JSON.stringify({action:'comment-like',payload:{domain,postId,commentId}})});},
     async commentsFor(domain,postId){const data=await readDomain('comments');return itemsFrom('comments',data).filter(x=>x.published!==false&&String(x.domain)===String(domain)&&String(x.postId)===String(postId));},

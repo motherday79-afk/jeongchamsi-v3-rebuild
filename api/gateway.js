@@ -61,7 +61,7 @@ function contentItems(data){return Array.isArray(data?.items)?data.items:[];}
 export async function attachRepresentativeBadges(command,data={items:[]}){
   const source=data&&typeof data==='object'?data:{items:[]},items=contentItems(source),owners=[...new Set(items.map(item=>String(item?.ownerId||'')).filter(Boolean))];
   const badges=new Map(await Promise.all(owners.map(async ownerId=>{const activity=await readActivity(command,ownerId),key=String(activity?.representativeBadge||'');return [ownerId,VALID_BADGE_KEYS.has(key)?key:''];})));
-  return {...source,items:items.map(item=>({...item,representativeBadge:badges.get(String(item?.ownerId||''))||''}))};
+  return {...source,items:items.map(item=>({...item,representativeBadge:item.authorAlias?'':badges.get(String(item?.ownerId||''))||''}))};
 }
 export function politicianPhotoErrorCode(error){
   const code=String(error?.message||error||'PHOTO_UPLOAD_FAILED');
@@ -300,7 +300,7 @@ export async function handleAction(req,res,command){
       if(action==='post-like')result=await service.likePost(domain,postId,user);
       if(action==='comment-like')result=await service.likeComment(domain,postId,id,user);
       if(action==='comment-delete')result=await service.deleteComment(domain,postId,id,user);
-      if(action==='comment-edit')result={ok:true,comment:await service.editComment(domain,postId,id,payload.text,user)};
+      if(action==='comment-edit')result={ok:true,comment:await service.editComment(domain,postId,id,payload.text,user,payload)};
       if(action==='comment-add')result={ok:true,comment:await service.addComment(domain,postId,payload,user)};
       if(result.comment){const {likedBy,...safe}=result.comment;result.comment=safe;}
       return json(res,200,result);
