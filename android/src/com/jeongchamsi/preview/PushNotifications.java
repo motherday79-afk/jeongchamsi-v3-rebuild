@@ -24,10 +24,12 @@ public final class PushNotifications {
  private static final ExecutorService IO=Executors.newSingleThreadExecutor();
  static SharedPreferences prefs(Context c){return c.getSharedPreferences("jcs-update-push",Context.MODE_PRIVATE);}
  static String origin(){try{URL u=new URL(BuildConfig.HOME_URL);return "https://"+u.getHost();}catch(Exception e){throw new IllegalStateException(e);}}
- static void channel(Context c){c.getSystemService(NotificationManager.class).createNotificationChannel(new NotificationChannel(CHANNEL,"나우랭크·여론조사 갱신",NotificationManager.IMPORTANCE_DEFAULT));}
+ static void channel(Context c){c.getSystemService(NotificationManager.class).createNotificationChannel(new NotificationChannel(CHANNEL,"정참시 소식 알림",NotificationManager.IMPORTANCE_DEFAULT));}
  static boolean allowed(Context c){return (Build.VERSION.SDK_INT<33||c.checkSelfPermission("android.permission.POST_NOTIFICATIONS")==PackageManager.PERMISSION_GRANTED)&&c.getSystemService(NotificationManager.class).areNotificationsEnabled();}
- static JSONObject request(JSONObject body)throws Exception {
-  String base=origin();HttpURLConnection conn=(HttpURLConnection)new URL(base+"/api/v3/push/device").openConnection();
+ static JSONObject request(JSONObject body)throws Exception {return requestAt("device",body);}
+ static JSONObject message(String event)throws Exception {if(!PushPolicy.event(event))throw new SecurityException();return requestAt("message?id="+event,null);}
+ static JSONObject requestAt(String endpoint,JSONObject body)throws Exception {
+  String base=origin();HttpURLConnection conn=(HttpURLConnection)new URL(base+"/api/v3/push/"+endpoint).openConnection();
   conn.setInstanceFollowRedirects(false);conn.setConnectTimeout(8000);conn.setReadTimeout(8000);
   String cookie=CookieManager.getInstance().getCookie(base);if(cookie!=null)conn.setRequestProperty("Cookie",cookie);
   conn.setRequestProperty("Origin",base);conn.setRequestProperty("Accept","application/json");
@@ -44,12 +46,12 @@ public final class PushNotifications {
    a.runOnUiThread(()->{
     if(a.isFinishing())return;
     boolean enabled=prefs(a).getBoolean("enabled",false)&&allowed(a);
-    new AlertDialog.Builder(a).setTitle("갱신 알림 설정")
-     .setMessage("나우랭크와 JCS 여론조사가 실제로 갱신되면 이 기기로 알려드립니다.\n현재: "+(enabled?"켜짐":"꺼짐")+(!state.optBoolean("configured")?"\n서버 푸시 연결을 준비하고 있습니다.":""))
+    new AlertDialog.Builder(a).setTitle("정참시 알림 설정")
+     .setMessage("가입한 모임의 공지 알림을 이 기기로 받습니다. 모임별 수신 여부는 각 모임에서 설정할 수 있습니다. 관리자에게는 나우랭크·여론조사 갱신 알림도 전달됩니다.\n현재: "+(enabled?"켜짐":"꺼짐")+(!state.optBoolean("configured")?"\n서버 푸시 연결을 준비하고 있습니다.":""))
      .setPositiveButton("알림 켜기",(d,w)->{if(!state.optBoolean("configured")){show(a,"서버 연결 완료 후 다시 시도해 주세요.");return;}enable(a);})
      .setNegativeButton("알림 끄기",(d,w)->disable(a)).setNeutralButton("닫기",null).show();
    });
-  }catch(SecurityException e){show(a,"관리자 계정으로 로그인한 뒤 설정해 주세요.");}catch(Exception e){show(a,"알림 설정을 불러오지 못했습니다. 다시 시도해 주세요.");}});
+  }catch(SecurityException e){show(a,"정참시에 로그인한 뒤 설정해 주세요.");}catch(Exception e){show(a,"알림 설정을 불러오지 못했습니다. 다시 시도해 주세요.");}});
  }
  public static void enable(Activity a){
   channel(a);
@@ -58,20 +60,20 @@ public final class PushNotifications {
   FirebaseMessaging.getInstance().setAutoInitEnabled(true);
   FirebaseMessaging.getInstance().getToken().addOnSuccessListener(token->IO.execute(()->{try{
    JSONObject state=request(null);if(!state.optBoolean("configured"))throw new java.io.IOException("PUSH_NOT_CONFIGURED");
-   request(new JSONObject().put("token",token).put("enabled",true));
-   prefs(a).edit().putString("token",token).putString("user",state.getString("userId")).putBoolean("enabled",true).apply();show(a,"갱신 알림을 켰습니다.");
+   request(new JSONObject().put("token",token).put("enabled",true).put("groups",true));
+   prefs(a).edit().putString("token",token).putString("user",state.getString("userId")).putBoolean("enabled",true).apply();show(a,"정참시 알림을 켰습니다.");
   }catch(Exception e){FirebaseMessaging.getInstance().setAutoInitEnabled(false);show(a,"알림 등록에 실패했습니다. 로그인과 연결을 확인해 주세요.");}})).addOnFailureListener(e->show(a,"기기 알림 등록에 실패했습니다. Google Play 서비스를 확인해 주세요."));
  }
  public static void disable(Activity a){
   prefs(a).edit().putBoolean("enabled",false).apply();FirebaseMessaging.getInstance().setAutoInitEnabled(false);
-  a.getSystemService(NotificationManager.class).cancelAll();sync(a);show(a,"이 기기의 갱신 알림을 껐습니다.");
+  a.getSystemService(NotificationManager.class).cancelAll();sync(a);show(a,"이 기기의 정참시 알림을 껐습니다.");
  }
  public static void sync(Context c){
   IO.execute(()->{SharedPreferences p=prefs(c);String token=p.getString("token","");if(token.isEmpty())return;
    try{JSONObject state=request(null);boolean same=state.optString("userId").equals(p.getString("user",""));
     boolean enabled=same&&p.getBoolean("enabled",false)&&allowed(c);
     if(!same)p.edit().putBoolean("enabled",false).apply();
-    request(new JSONObject().put("token",token).put("enabled",enabled));
+    request(new JSONObject().put("token",token).put("enabled",enabled).put("groups",true));
    }catch(SecurityException e){p.edit().putBoolean("enabled",false).apply();}catch(Exception ignored){} });
  }
  static void newToken(Context c,String token){prefs(c).edit().putString("token",token).apply();sync(c);}

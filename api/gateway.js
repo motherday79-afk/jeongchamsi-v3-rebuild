@@ -2,6 +2,7 @@ import {createComicService} from '../lib/political-comic-service.js';
 import {canAccessAdminEndpoint,canWriteEditorial,isSuperAdmin} from '../src/core/membership.js';
 import {homeBannerPlaylist,HOME_BANNER_INTERVAL,HERO_BANNER_INTERVAL} from '../src/core/home-banner-playlist.js';
 import {uploadMineAdImage} from '../lib/mining-ad-image.js';
+import {groupPushService} from '../lib/group-push-runtime.js';
 import {pushService,enqueueCompletionPush} from '../lib/push-runtime.js';
 import {firebaseConfigured} from '../lib/push-fcm.js';
 import {withRankingMutation} from '../lib/now-rank-schedule.js';
@@ -209,7 +210,7 @@ async function handleUser(req,res,route,command,url){
   if(route==='user/login'&&req.method==='POST'){
     const body=bodyOf(req);const user=await authenticateUser(command,body.id,body.password);if(!user)return json(res,401,{ok:false,error:'INVALID_LOGIN'});setSession(res,user);return json(res,200,{ok:true,user});
   }
-  if(route==='user/logout'&&req.method==='POST'){const user=await currentUser(req,command);if(user)await pushService(command).revoke(user.id);clearSession(res);return json(res,200,{ok:true});}
+  if(route==='user/logout'&&req.method==='POST'){const user=await currentUser(req,command);if(user){await pushService(command).revoke(user.id);await groupPushService(command).revoke(user.id);}clearSession(res);return json(res,200,{ok:true});}
   if(route==='user/session'&&req.method==='GET'){const user=await referralProfile(command,await currentUser(req,command));return json(res,200,{authenticated:!!user,user:user||null});}
   if(route==='user/profile'&&req.method==='POST'){const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});return json(res,200,await updateProfile(command,user.id,bodyOf(req)));}
   if(route==='user/fortune'){
@@ -472,14 +473,18 @@ export default async function handler(req,res){
     if(route==='polimable'||route.startsWith('polimable/')||route==='polimarble'||route.startsWith('polimarble/'))return json(res,410,{ok:false,error:'FEATURE_REMOVED'});
     if(route.startsWith('migration/'))return handleMigration(req,res,route);
     const command=rebuildRedisCommand();
+    if(route==='push/message'){
+      const user=await currentUser(req,command);if(req.method!=='GET')return json(res,405,{ok:false});
+      try{return json(res,200,await groupPushService(command).message(url.searchParams.get('id'),user));}catch{return json(res,403,{ok:false,error:'PUSH_FORBIDDEN'});}
+    }
     if(route==='push/device'){
       const user=await currentUser(req,command);
-      if(!user||user.role!=='admin'||user.status!=='active')return json(res,403,{ok:false,error:'PUSH_FORBIDDEN'});
+      if(!user||user.status!=='active')return json(res,403,{ok:false,error:'PUSH_FORBIDDEN'});
       if(req.method==='GET')return json(res,200,{ok:true,configured:firebaseConfigured(),userId:user.id});
       if(req.method!=='POST')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
       if(req.headers.origin!==url.origin||req.headers['sec-fetch-site']==='cross-site')return json(res,403,{ok:false,error:'PUSH_ORIGIN_INVALID'});
       const body=bodyOf(req);if(Buffer.byteLength(JSON.stringify(body))>8192)return json(res,413,{ok:false,error:'PUSH_INPUT_INVALID'});
-      try{return json(res,200,await pushService(command).register(user,body));}catch(error){return json(res,400,{ok:false,error:'PUSH_INPUT_INVALID'});}
+      try{if(body.groups===true)await groupPushService(command).register(user,body);else if(!isSuperAdmin(user))return json(res,403,{ok:false,error:'PUSH_APP_UPDATE_REQUIRED'});if(isSuperAdmin(user))await pushService(command).register(user,body);return json(res,200,{ok:true,enabled:body.enabled});}catch(error){return json(res,400,{ok:false,error:'PUSH_INPUT_INVALID'});}
     }
     if(['mine','mine/admin','mine/visit','mine/image'].includes(route)){
       const result=await miningRequest(req,{service:{...createMiningService({command}),upload:uploadMineAdImage},user:await currentUser(req,command),url});
@@ -497,7 +502,7 @@ export default async function handler(req,res){
       return json(res,result.status,result.data);
     }
     if(route==='groups'){
-      const result=await groupRequest(req,{service:createGroupService({command}),user:await currentUser(req,command),url});
+      const result=await groupRequest(req,{service:createGroupService({command,notifications:groupPushService(command)}),user:await currentUser(req,command),url});
       if(result.media){
         res.statusCode=200;res.setHeader('Content-Type',result.media.contentType);res.setHeader('Cache-Control','private, no-store');res.setHeader('X-Content-Type-Options','nosniff');
         await pipeline(Readable.fromWeb(result.media.stream),res);return;

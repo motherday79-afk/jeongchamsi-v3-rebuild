@@ -92,7 +92,7 @@ public final class MainActivity extends Activity {
         CookieManager.getInstance().setAcceptCookie(true);
         CookieManager.getInstance().setAcceptThirdPartyCookies(web, true);
         web.setWebChromeClient(new WebChromeClient());
-        web.getSettings().setUserAgentString(web.getSettings().getUserAgentString()+" JCSAndroid/1.1.345");
+        web.getSettings().setUserAgentString(web.getSettings().getUserAgentString()+" JCSAndroid/1.1.383");
         web.setOnTouchListener((view, event) -> {
             // System Back can begin in this WebView, then cancel its touch
             // stream when the OS claims the edge gesture. ACTION_DOWN must not

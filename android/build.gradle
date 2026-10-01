@@ -7,8 +7,8 @@ android {
   applicationId cfg.applicationId
   minSdk 26
   targetSdk 35
-  versionCode 345000 + Integer.parseInt(System.getenv('GITHUB_RUN_NUMBER') ?: '0')
-  versionName '1.1.345-updates'
+  versionCode 383000 + Integer.parseInt(System.getenv('GITHUB_RUN_NUMBER') ?: '0')
+  versionName '1.1.383-group-notices'
   buildConfigField 'String', 'HOME_URL', groovy.json.JsonOutput.toJson(cfg.homeUrl)
  }
  buildFeatures { buildConfig true }

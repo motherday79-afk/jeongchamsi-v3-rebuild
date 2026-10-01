@@ -63,8 +63,8 @@ jobs:
           fi
           gradle -p android --no-daemon assembleRelease
           mkdir -p android/dist
-          cp android/build/outputs/apk/release/*.apk android/dist/Jeongchamsi-1.1.345.apk
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose android/dist/Jeongchamsi-1.1.345.apk
+          cp android/build/outputs/apk/release/*.apk android/dist/Jeongchamsi-1.1.383.apk
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose android/dist/Jeongchamsi-1.1.383.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

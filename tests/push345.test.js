@@ -12,7 +12,7 @@ function memory(){const strings=new Map(),hashes=new Map();return async([op,key,
  if(op==='EVAL'){if(strings.get(args[1])===args[2])strings.delete(args[1]);return 1;}
  throw Error(op);
 };}
-const admin={id:'owner',role:'admin',status:'active'},token='a'.repeat(140);
+const admin={id:'admin',role:'admin',status:'active'},token='a'.repeat(140);
 test('only active administrator can register and tokens stay private',async()=>{
  const service=createPushService({command:memory(),getUser:async()=>admin});
  await assert.rejects(service.register({id:'member',role:'member'},{token,enabled:true}),/FORBIDDEN/);

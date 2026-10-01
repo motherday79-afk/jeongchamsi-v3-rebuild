@@ -1,6 +1,6 @@
 const clean=v=>String(v??'').trim();
 const bool=v=>v===true||v==='true'||v==='on'||v==='1';
-export const groupErrorMessage=result=>({LOGIN_REQUIRED:'로그인 후 이용해 주세요.',GROUP_FORBIDDEN:'이 작업을 수행할 권한이 없습니다.',GROUP_NOT_FOUND:'모임을 찾을 수 없습니다.',GROUP_CONFLICT:'다른 변경이 먼저 저장되었습니다. 입력 내용을 유지한 채 새로고침 후 다시 시도해 주세요.',GROUP_INPUT_INVALID:'입력 내용을 확인해 주세요.',GROUP_REVIEW_REQUIRED:'관리자 승인이 필요합니다.',GROUP_EXAMPLE_READ_ONLY:'예시 모임은 읽기 전용입니다.',GROUP_OWNER_TRANSFER_REQUIRED:'모임을 닫거나 나가기 전에 모임장을 위임해 주세요.',GROUP_MEMBERS_ONLY:'승인된 모임원만 볼 수 있습니다.',GROUP_INVITE_INVALID:'초대 링크가 유효하지 않습니다.',GROUP_IMAGE_INVALID:'JPG, PNG 또는 WEBP 이미지를 선택해 주세요.',GROUP_IMAGE_TOO_LARGE:'이미지는 2MB 이하여야 합니다.',GROUP_MEDIA_NOT_CONFIGURED:'이미지 저장소가 준비되지 않았습니다.',GROUP_LIMIT_REACHED:'허용된 개수를 초과했습니다.',GROUP_STORAGE_FAILED:'이미지를 저장하지 못했습니다.'}[result?.error]||'저장하지 못했습니다. 잠시 후 다시 시도해 주세요.');
+export const groupErrorMessage=result=>({GROUP_PUSH_DISABLED:'관리자가 이 모임의 발송을 중지했습니다.',GROUP_PUSH_LIMIT:'오늘 또는 이번 달 발송 한도를 모두 사용했습니다.',GROUP_PUSH_INTERVAL:'이전 발송으로부터 30분 후 다시 보내실 수 있습니다.',LOGIN_REQUIRED:'로그인 후 이용해 주세요.',GROUP_FORBIDDEN:'이 작업을 수행할 권한이 없습니다.',GROUP_NOT_FOUND:'모임을 찾을 수 없습니다.',GROUP_CONFLICT:'다른 변경이 먼저 저장되었습니다. 입력 내용을 유지한 채 새로고침 후 다시 시도해 주세요.',GROUP_INPUT_INVALID:'입력 내용을 확인해 주세요.',GROUP_REVIEW_REQUIRED:'관리자 승인이 필요합니다.',GROUP_EXAMPLE_READ_ONLY:'예시 모임은 읽기 전용입니다.',GROUP_OWNER_TRANSFER_REQUIRED:'모임을 닫거나 나가기 전에 모임장을 위임해 주세요.',GROUP_MEMBERS_ONLY:'승인된 모임원만 볼 수 있습니다.',GROUP_INVITE_INVALID:'초대 링크가 유효하지 않습니다.',GROUP_IMAGE_INVALID:'JPG, PNG 또는 WEBP 이미지를 선택해 주세요.',GROUP_IMAGE_TOO_LARGE:'이미지는 2MB 이하여야 합니다.',GROUP_MEDIA_NOT_CONFIGURED:'이미지 저장소가 준비되지 않았습니다.',GROUP_LIMIT_REACHED:'허용된 개수를 초과했습니다.',GROUP_STORAGE_FAILED:'이미지를 저장하지 못했습니다.'}[result?.error]||'저장하지 못했습니다. 잠시 후 다시 시도해 주세요.');
 
 export function groupInputFromFormData(d,operation){
  if(operation==='create'||operation==='settings'){
@@ -15,7 +15,9 @@ export function groupInputFromFormData(d,operation){
 }
 export function groupMutationFromForm(d){
  const operation=clean(d.get('operation')); let input={};
- if(operation==='comment')input={postId:clean(d.get('postId')),body:clean(d.get('body')),...(clean(d.get('requestId'))?{requestId:clean(d.get('requestId'))}:{})};
+ if(operation==='push-send')input={title:clean(d.get('title')),body:clean(d.get('body')),requestId:clean(d.get('requestId'))};
+ else if(operation==='push-policy')input={daily:Number(d.get('daily')),monthly:Number(d.get('monthly')),disabled:bool(d.get('disabled'))};
+ else if(operation==='comment')input={postId:clean(d.get('postId')),body:clean(d.get('body')),...(clean(d.get('requestId'))?{requestId:clean(d.get('requestId'))}:{})};
  else if(operation==='rsvp')input={eventId:clean(d.get('eventId')),response:clean(d.get('response'))};
  else if(operation==='member')input={userId:clean(d.get('userId')),decision:clean(d.get('decision')),reason:clean(d.get('reason'))};
  else if(operation==='review')input={decision:clean(d.get('decision')),reason:clean(d.get('reason'))};

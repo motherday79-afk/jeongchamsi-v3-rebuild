@@ -1,3 +1,4 @@
+import {renderGroupPush} from './group-push.js?v=0.0.31.383';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const text=v=>esc(v).replace(/\r?\n/g,'<br>');
 const link=(href,label,cls='')=>`<a${cls?` class="${cls}"`:''} href="${esc(href)}" data-layout-route="${esc(href)}">${label}</a>`;
@@ -46,8 +47,9 @@ export function renderGroupDetail(item,session={},tab='posts',galleryPage=1,invi
  const example=item.isExample===true,raw=item.viewer||{},v=example?{...raw,canWrite:false,canManage:false,canEditSettings:false,canReview:false}:raw,read=v.canRead===true,manage=v.canManage===true,mutatingManage=v.canManage===true&&v.canWrite===true,ownerish=['owner','admin'].includes(v.role);
  const safeItem={...item,isExample:example,viewer:v,posts:(item.posts||[]).map(p=>example?{...p,canEdit:false,canDelete:false,canModerate:false}:p),events:(item.events||[]).map(e=>example?{...e,canEdit:false,canDelete:false}:e)};
  const detailRoute=key=>`/groups/${encodeURIComponent(item.id)}?${new URLSearchParams({tab:key,...(invite?{invite}:{})})}`;
- const tabs=[['posts','글'],['gallery','갤러리'],['events','일정'],...(manage?[['members','모임원']]:[]),...(v.canEditSettings?[['settings','설정']]:[])];let body='';
+ const tabs=[['posts','글'],['gallery','갤러리'],['events','일정'],...(item.push?[['notifications','공지 알림']]:[]),...(manage?[['members','모임원']]:[]),...(v.canEditSettings?[['settings','설정']]:[])];let body='';
  if(!read)body=`<section class="group-locked"><h2>승인된 모임원에게 공개됩니다.</h2><p>${text(item.rules)}</p></section>`;
+ else if(tab==='notifications')body=renderGroupPush(item);
  else if(tab==='gallery')body=`${v.canWrite?`<details class="group-composer group-gallery-composer"><summary>사진 올리기</summary>${postForm(manage,null,'gallery',v.role!=='admin',v.userId,item.id)}</details>`:''}${gallery(safeItem,galleryPage,invite)}`;
  else if(tab==='events')body=`${mutatingManage?`<details class="group-composer group-event-composer"><summary>일정 등록</summary>${eventForm()}</details>`:''}${eventRows(safeItem)}`;
  else if(tab==='members'&&manage){
