@@ -8,15 +8,15 @@ import {TARGET_KEYS} from '../lib/migration-service.js';
 
 test('Velgard is first, old banners remain, and only one image link is initially visible',()=>{
  const previous={url:'https://images.example/old.webp',designVersion:'upload',targetUrl:'https://example.com',alt:'기존 광고'};
- assert.deepEqual(homeBannerPlaylist(previous),[VELGARD_BANNER,previous,OPEN_EVENT_BANNER]);
- assert.equal(homeBannerPlaylist(null).length,3);
- assert.equal(homeBannerPlaylist({items:[VELGARD_BANNER,previous,previous]}).length,3);
+ assert.deepEqual(homeBannerPlaylist(previous),[VELGARD_BANNER,previous]);
+ assert.equal(homeBannerPlaylist(null).length,2);
+ assert.equal(homeBannerPlaylist({items:[VELGARD_BANNER,previous,previous]}).length,2);
  const html=homeBanner(previous);
  assert.match(html,/href="https:\/\/velgard.store"/);
  assert.match(html,/data-interval="60000"/);
- assert.equal((html.match(/data-home-banner-slide/g)||[]).length,3);
+ assert.equal((html.match(/data-home-banner-slide/g)||[]).length,2);
  assert.equal((html.match(/aria-hidden="false"/g)||[]).length,1);
- assert.equal((html.match(/aria-hidden="true" hidden/g)||[]).length,2);
+ assert.equal((html.match(/aria-hidden="true" hidden/g)||[]).length,1);
  assert.doesNotMatch(html,/data-home-banner-edit/);
  assert.match(homeBanner(previous,{user:{role:'admin'}}),/배너 추가/);
 });
@@ -56,11 +56,13 @@ test('failed playlist commits clean up new uploads only',async()=>{
 
 test('left banner opens the Habi film site and preserves existing linked banner',()=>{
  const previous={url:'https://example.com/banner.png',designVersion:'upload',targetUrl:'https://example.com/film'};
- const items=homeBannerPlaylist(previous,'hero');assert.deepEqual(items,[HABI_BANNER,previous]);
+ const items=homeBannerPlaylist(previous,'hero');assert.deepEqual(items,[OPEN_EVENT_BANNER,HABI_BANNER,previous]);
  assert.deepEqual(homeBannerPlaylist({items},'hero'),items);
  const html=homeBanner(previous,{},'hero');assert.match(html,/data-interval="90000"/);
  const first=html.match(/<a data-home-banner-slide[^]*?<\/a>/)?.[0];
- assert.ok(first);assert.match(first,/habi-halbi-pc-356/);assert.match(first,/href="https:\/\/habi-halbi-film.vercel.app\/" target="_blank" rel="noopener noreferrer"/);
+ assert.ok(first);assert.match(first,/open-event-hero-pc-379/);assert.match(first,/community-9f2fca83-f1b3-44af-bef7-a52a47ec465d/);
+ assert.match(html,/href="https:\/\/habi-halbi-film.vercel.app\/" target="_blank" rel="noopener noreferrer"/);
+ assert.doesNotMatch(homeBanner(previous),/open-event/);
  assert.match(html,/href="https:\/\/example.com\/film"/);
 });
 test('left and right rotation timers independently use 90 and 60 seconds',()=>{
