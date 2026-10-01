@@ -24,7 +24,7 @@ test('comic comments require login, public episode and ownership, and preserve o
  await assert.rejects(service.addComment('political-comic','missing',{text:'의견'},member),/POST_NOT_FOUND/);
  await assert.rejects(service.createPost('political-comic',{title:'권한 우회'},member),/WRITE_NOT_ALLOWED/);
  const c=await service.addComment('political-comic',id,{text:'웹툰으로 보니 내용을 이해하는 데 도움이 됩니다.',requestId:'comic-comment-0001'},member);
- assert.equal(c.domain,'political-comic');assert.equal(JSON.parse(db.get(COMIC_KEY)).items.length,4);
+ assert.equal(c.domain,'political-comic');assert.equal(JSON.parse(db.get(COMIC_KEY)).items.length,COMIC_EPISODES.length);
  await assert.rejects(service.editComment('political-comic',id,c.id,'남의 댓글 수정',other),/COMMENT_EDIT_FORBIDDEN/);
  assert.equal((await service.editComment('political-comic',id,c.id,'수정한 의견',member)).text,'수정한 의견');
  assert.equal((await service.deleteComment('political-comic',id,c.id,member)).ok,true);
