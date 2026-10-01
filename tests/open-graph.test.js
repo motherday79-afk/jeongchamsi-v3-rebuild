@@ -67,19 +67,19 @@ test('academy and participation routes receive their own service metadata',async
   const evaluation=await buildShareMetadata('/national-evaluation',source);
   const generation=await buildShareMetadata('/generation-president',source);
   const president=await buildShareMetadata('/president',source);
-  assert.equal(academy.title,'정치 데이터 읽기');
-  assert.match(academy.description,/실전 정치 데이터 강의/);
-  assert.equal(evaluation.title,'정참시민 전국 평가제');
+  assert.equal(academy.title,'정참시 — 정치에 참여할 시간');
+  assert.doesNotMatch(academy.description,/실전 정치 데이터 강의/);
+  assert.equal(evaluation.title,'정참시 — 정치에 참여할 시간');
   assert.equal(generation.title,'세대별로 대통령을 뽑는다면?');
   assert.equal(president.image,`${SITE_ORIGIN}/assets/og/jcs-president.png`);
-  assert.equal(new Set([academy.image,evaluation.image,generation.image,president.image]).size,4);
+  assert.equal(new Set([academy.image,evaluation.image,generation.image,president.image]).size,3);
 });
 
-test('public comparison is limited to two profiles and keeps administrator intelligence out',async()=>{
+test('public comparison preserves selected profiles and keeps administrator intelligence out',async()=>{
   const card=await buildShareMetadata('/compare?ids=assembly-001,assembly-002,assembly-003&admin=1',source);
-  assert.equal(card.title,'김민석 vs 홍준표 | 정참시 정치인 비교');
-  assert.match(card.description,/김민석과 홍준표/);
-  assert.equal(card.url,`${SITE_ORIGIN}/compare?ids=assembly-001%2Cassembly-002`);
+  assert.equal(card.title,'김민석 vs 홍준표 vs 오세훈 | 정참시 정치인 비교');
+  assert.match(card.description,/김민석 · 홍준표 · 오세훈/);
+  assert.equal(card.url,`${SITE_ORIGIN}/compare?ids=assembly-001%2Cassembly-002%2Cassembly-003`);
   assert.equal(card.image,`${SITE_ORIGIN}/assets/og/jcs-compare.png`);
   assert.doesNotMatch(JSON.stringify(card),/admin|전략|처방/);
 });

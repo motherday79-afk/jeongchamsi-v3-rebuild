@@ -71,6 +71,7 @@ export function brandMarkSvg(className=''){
 }
 // Gold is assigned to each glyph's distinguishing part, rather than a frame around it.
 const NAV_SOLID={
+ comic:'<rect x="2" y="2" width="28" height="28" rx="4"/><path data-gold-stroke d="M16 4v24M4 16h24" stroke-width="2"/><path d="M7 6h6v5H9l-2 2zM19 20h7v5h-4l-3 2z" fill="#faf5ff"/>',
  groups:'<circle data-gold cx="16" cy="8" r="5"/><circle cx="5" cy="12" r="4"/><circle cx="27" cy="12" r="4"/><path d="M0 28v-6a5 5 0 0 1 9-3v9zm23 0v-9a5 5 0 0 1 9 3v6z"/><path data-gold d="M10 29V21a6 6 0 0 1 12 0v8z"/>',
  campaign:'<path d="M6 2h14v8h7v18a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2m16 0 5 6h-5z"/><path d="M9 15h7M9 21h7M9 26h11" stroke="#f7efff" stroke-width="2" stroke-linecap="round"/><path data-gold d="m24 11 2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/>',
  president:'<path data-gold d="m2 11 14-8 14 8zM3 28h26v2H3z"/><path d="M4 13h24v3H4zM6 17h4v9H6zm8 0h4v9h-4zm8 0h4v9h-4z"/>',

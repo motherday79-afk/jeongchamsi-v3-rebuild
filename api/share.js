@@ -3,6 +3,8 @@ import { rebuildRedisCommand } from '../lib/redis-rest.js';
 import { readDomain } from '../lib/rebuild-store.js';
 import { getPolitician, readPoliticianPhotos } from '../lib/politician-store.js';
 import { buildShareMetadata, renderShareDocument } from '../lib/share-metadata.js';
+import {createComicService} from '../lib/political-comic-service.js';
+import {APPAREL_PRODUCTS} from '../src/views/apparel-shop.js';
 
 const indexFile=new URL('../index.html',import.meta.url);
 
@@ -17,6 +19,8 @@ function requestRoute(req){
 export function createPublicShareSource(command){
   let photosPromise=null;
   return {
+    readComics(){return createComicService({command}).list();},
+    getProduct(id){const p=APPAREL_PRODUCTS.find(p=>p.id===id);return p?{...p,image:'/assets/shop/apparel-297/'+p.key+'-banner.jpg'}:null;},
     async getPolitician(id){
       const [person,photos]=await Promise.all([getPolitician(command,id),photosPromise||(photosPromise=readPoliticianPhotos(command))]);
       return person?{...person,photo:photos[id]||null}:null;
@@ -37,7 +41,7 @@ export default async function handler(req,res){
   }catch(error){
     console.error('[share-metadata]',String(error?.code||error?.message||error));
     const indexHtml=await readFile(indexFile,'utf8');
-    const meta=await buildShareMetadata('/');
+    const meta=await buildShareMetadata(requestRoute(req));
     res.statusCode=200;
     res.setHeader('Content-Type','text/html; charset=utf-8');
     res.setHeader('Cache-Control','public, max-age=0, s-maxage=60');

@@ -1,5 +1,5 @@
 import {isSuperAdmin,membershipLabel} from '../core/membership.js?v=0.0.31.354';
-import { SERVICE_CATALOG, serviceIconSvg, serviceNavIconSvg, brandMarkSvg } from '../ui/service-icons.js?v=0.0.31.350';
+import { SERVICE_CATALOG, serviceIconSvg, serviceNavIconSvg, brandMarkSvg } from '../ui/service-icons.js?v=0.0.31.377';
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 
 export function renderInitialLoading(target){

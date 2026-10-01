@@ -1,5 +1,5 @@
 import {isSuperAdmin} from '../core/membership.js?v=0.0.31.354';
-import {serviceIconSvg,moduleActionIconSvg} from '../ui/service-icons.js?v=0.0.31.197';
+import {serviceIconSvg,moduleActionIconSvg} from '../ui/service-icons.js?v=0.0.31.377';
 // Pure HTML renderers. Mutations and JSON/file handling live in ai-panel-interactions.
 const esc=(v='')=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const arr=v=>Array.isArray(v)?v:[];

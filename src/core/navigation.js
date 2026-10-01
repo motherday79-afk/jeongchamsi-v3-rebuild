@@ -25,7 +25,7 @@ export function adminRouteWith(route='/admin',updates={}){
 export function shareableUrlForRoute(route,origin='https://www.jeongchamsi.com'){
   const url=new URL(routePath(route),origin);
   if(url.pathname==='/compare'){
-    const ids=[...new Set(String(url.searchParams.get('ids')||'').split(',').filter(Boolean))].slice(0,2);
+    const ids=[...new Set(String(url.searchParams.get('ids')||'').split(',').filter(Boolean))].slice(0,4);
     url.search='';if(ids.length)url.searchParams.set('ids',ids.join(','));
   }
   return url.href;

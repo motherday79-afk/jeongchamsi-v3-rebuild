@@ -11,7 +11,7 @@ test('legacy hash routes and clean share routes resolve to the same application 
 
 test('public share URLs always use the official domain and strip non-public compare parameters',()=>{
   assert.equal(shareableUrlForRoute('/person/assembly-001'),'https://www.jeongchamsi.com/person/assembly-001');
-  assert.equal(shareableUrlForRoute('/compare?ids=a,b,c&admin=1'),'https://www.jeongchamsi.com/compare?ids=a%2Cb');
+  assert.equal(shareableUrlForRoute('/compare?ids=a,b,c&admin=1'),'https://www.jeongchamsi.com/compare?ids=a%2Cb%2Cc');
 });
 
 test('Vercel routes public clean URLs through the server metadata response before the SPA fallback',async()=>{

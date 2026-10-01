@@ -12,7 +12,7 @@
 #poll.citizen-choice-banner .citizen-choice-topic p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:#fff;font-size:17px;font-weight:650;line-height:1.5;margin:8px 0 0;word-break:keep-all;overflow-wrap:anywhere;text-shadow:0 1px 6px #16051f}
 #poll.citizen-choice-banner .citizen-choice-footer{display:flex;align-items:center;justify-content:space-between;gap:8px}
 #poll.citizen-choice-banner .citizen-choice-footer>span{color:#e9d9f5;font-size:13px;font-weight:600;line-height:1.4}
-#poll.citizen-choice-banner .citizen-choice-footer>strong{display:flex;align-items:center;justify-content:center;gap:8px;flex-shrink:0;background:#fff;border:0;border-radius:9px;color:#59367b;font-size:14px;font-weight:800;line-height:1.3;padding:11px 12px;min-height:40px;box-sizing:border-box}
+#poll.citizen-choice-banner .citizen-choice-footer>strong{display:flex;align-items:center;justify-content:center;gap:0;flex-shrink:0;background:#fff;border:0;border-radius:9px;color:#59367b;font-size:14px;font-weight:800;line-height:1.3;padding:10px 14px;min-height:40px;box-sizing:border-box}
 #poll.citizen-choice-banner:focus-visible{outline:3px solid #7952b0;outline-offset:4px}
 @media(hover:hover){#poll.citizen-choice-banner:hover .citizen-choice-footer>strong{background:#eee1fc}#poll.citizen-choice-banner:hover{filter:brightness(1.04)}}
 @media(max-width:1024px){.product-home-wrap .home-balanced-layout{--home-entry-height:300px}}

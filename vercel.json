@@ -108,6 +108,42 @@
       "destination": "/api/share?path=compare"
     },
     {
+      "source": "/political-comic/:path*",
+      "destination": "/api/share?path=political-comic/:path*"
+    },
+    {
+      "source": "/ai-panel/:path*",
+      "destination": "/api/share?path=ai-panel/:path*"
+    },
+    {
+      "source": "/now/:path*",
+      "destination": "/api/share?path=now/:path*"
+    },
+    {
+      "source": "/shop/:path*",
+      "destination": "/api/share?path=shop/:path*"
+    },
+    {
+      "source": "/groups/:path*",
+      "destination": "/api/share?path=groups/:path*"
+    },
+    {
+      "source": "/campaigns/:path*",
+      "destination": "/api/share?path=campaigns/:path*"
+    },
+    {
+      "source": "/points/:path*",
+      "destination": "/api/share?path=points/:path*"
+    },
+    {
+      "source": "/support/:path*",
+      "destination": "/api/share?path=support/:path*"
+    },
+    {
+      "source": "/about/:path*",
+      "destination": "/api/share?path=about/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
