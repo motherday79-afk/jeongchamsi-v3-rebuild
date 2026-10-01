@@ -1,9 +1,10 @@
+import {renderWebBroadcast,broadcastRequest,bindWebBroadcast} from './ui/web-broadcast.js?v=0.0.31.384';
 import {renderPageShare,bindPageShare} from './ui/page-share.js?v=0.0.31.378';
 import {sharedComments} from './views/community-ui.js?v=0.0.31.383';
 import {renderComicPage,renderComicAdmin} from './views/political-comic.js?v=0.0.31.378';
 import {comicRequest,bindComicEditor} from './ui/political-comic.js?v=0.0.31.372';
 import {bindComparisonBoard} from './ui/comparison-board.js?v=0.0.31.364';
-import {renderAdminWorkspace,toggleAdminMenu} from './views/admin-workspace.js?v=0.0.31.368';
+import {renderAdminWorkspace,toggleAdminMenu} from './views/admin-workspace.js?v=0.0.31.384';
 import {setupHomeBannerRotation} from './ui/home-banner-rotation.js?v=0.0.31.380';
 import {isSuperAdmin} from './core/membership.js?v=0.0.31.354';
 import {loadBadgeStatus} from './core/badge-loading.js?v=0.0.31.349';
@@ -13,7 +14,7 @@ import {bindAiPanelInteractions} from './ui/ai-panel-interactions.js?v=0.0.31.34
 import {bindPersonRefresh,loadMemberRefresh,watchAnalysisAccess} from './ui/person-refresh.js?v=0.0.31.362';
 import { bindRankingWeights, rankingWeightsReady, updateRunningRankingWeights } from './ui/ranking-weights.js?v=0.0.31.174';
 import { createGroupClient } from './core/group-client.js?v=0.0.31.172';
-import { loadGroupPage, groupLoginReturn } from './core/group-routing.js?v=0.0.31.383';
+import { loadGroupPage, groupLoginReturn } from './core/group-routing.js?v=0.0.31.384';
 import { bindGroupInteractions } from './ui/group-interactions.js?v=0.0.31.383';
 import { cageLoginReturn, cageOpinionCompletion } from './core/cage-entry.js?v=0.0.31.178';
 import { bindCageTitleEditors } from './ui/cage-title-editor.js?v=0.0.31.167';
@@ -32,13 +33,13 @@ import { createPoliticianService } from './core/politicians.js?v=0.0.31.350';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith, isTransientAnalysisRoute } from './core/navigation.js?v=0.0.31.377';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.148';
-import * as views from './views/stage1.js?v=0.0.31.383';
+import * as views from './views/stage1.js?v=0.0.31.384';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.362';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.364';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident } from './views/participation-pages.js?v=0.0.31.361';
 import { renderPresidentPage } from './views/president.js?v=0.0.31.107';
-import { renderSearchPage, hasSearchSnapshot } from './views/search-page.js?v=0.0.31.383';
-import { loadSearchDiscovery } from './views/search-discovery.js?v=0.0.31.383';
+import { renderSearchPage, hasSearchSnapshot } from './views/search-page.js?v=0.0.31.384';
+import { loadSearchDiscovery } from './views/search-discovery.js?v=0.0.31.384';
 import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.31.56';
 import {regionLocalityOptions,resolveRegionLocality} from './data/korean-regions.js?v=0.0.31.351';
 import {activityFormPayload,activityRequestId,settleActivityRequest,rememberActivityFeedback,rememberSubmissionFeedback,showActivityFeedback,hydrateActivityHints,bindActivityPoints,authoringResult} from './ui/activity-points.js?v=0.0.31.178';
@@ -240,6 +241,7 @@ async function render({preserveScroll=false,refreshHome=false,freshSession=false
   }
   else if(p[0]==='political-comic'){const comics=await comicRequest();body=renderComicPage(comics,p[1]||'');const episode=comics.items?.find(x=>x.id===p[1]);if(episode)body+='<div class="jc49 comic-comment-wrap">'+await sharedComments('political-comic',episode,content,session)+'</div>';}
   else if(p[0]==='admin'&&p[1]==='political-comic') body=renderAdminWorkspace('comics',renderComicAdmin(await comicRequest({},true),searchParams.get('id')||''));
+  else if(p[0]==='admin'&&p[1]==='notifications') body=renderAdminWorkspace('notifications',renderWebBroadcast(await broadcastRequest()));
   else if(p[0]==='points'){const pointView=new URLSearchParams(r.split('?')[1]||'').get('view');body=renderPointShop(await content.points(),session,pointView==='support'?'support':pointView==='activity'?'activity':'shop');}
   else if(p[0]==='ai-panel'||(p[0]==='admin'&&p[1]==='ai-panel')) body=await loadAiPanelPage({admin:p[0]==='admin',params:searchParams,session,client:aiPanel});
   else if(p[0]==='groups') body=await loadGroupPage({parts:p,searchParams,session,client:groups});
@@ -345,6 +347,7 @@ async function refreshAiPanelAdmin(operation,result){
     navigation?.cacheCurrent();
   }catch{await render({preserveScroll:true});}
 }
+bindWebBroadcast(document);
 bindAiPanelInteractions(document,{client:aiPanel,navigate:target=>navigation.navigate(target),onSaved:async(result,operation)=>refreshAiPanelAdmin(operation,result)});
 bindGroupInteractions(document,{client:groups,onSaved:async(_result,targetRoute)=>{
   navigation.clearCache();

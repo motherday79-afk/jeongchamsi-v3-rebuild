@@ -3,6 +3,9 @@ import {canAccessAdminEndpoint,canWriteEditorial,isSuperAdmin} from '../src/core
 import {homeBannerPlaylist,HOME_BANNER_INTERVAL,HERO_BANNER_INTERVAL} from '../src/core/home-banner-playlist.js';
 import {uploadMineAdImage} from '../lib/mining-ad-image.js';
 import {groupPushService} from '../lib/group-push-runtime.js';
+import {createWebPushService} from '../lib/web-push-service.js';
+import {webPushRequest} from '../lib/web-push-http.js';
+import {webBroadcastService} from '../lib/web-broadcast-runtime.js';
 import {pushService,enqueueCompletionPush} from '../lib/push-runtime.js';
 import {firebaseConfigured} from '../lib/push-fcm.js';
 import {withRankingMutation} from '../lib/now-rank-schedule.js';
@@ -476,6 +479,19 @@ export default async function handler(req,res){
     if(route==='push/message'){
       const user=await currentUser(req,command);if(req.method!=='GET')return json(res,405,{ok:false});
       try{return json(res,200,await groupPushService(command).message(url.searchParams.get('id'),user));}catch{return json(res,403,{ok:false,error:'PUSH_FORBIDDEN'});}
+    }
+    if(route==='push/broadcast'){
+      const user=await currentUser(req,command);
+      if(!isSuperAdmin(user)||user.status!=='active')return json(res,403,{ok:false,error:'PUSH_FORBIDDEN'});
+      const service=webBroadcastService(command);
+      if(req.method==='GET'){await service.recover();return json(res,200,await service.status(user));}
+      if(req.method!=='POST')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
+      if(req.headers.origin!==url.origin||req.headers['sec-fetch-site']==='cross-site')return json(res,403,{ok:false,error:'ORIGIN_FORBIDDEN'});
+      const body=bodyOf(req);if(JSON.stringify(body).length>8192)return json(res,413,{ok:false,error:'PUSH_INPUT_INVALID'});
+      try{return json(res,200,await service.create(user,body));}catch(e){const known=['PUSH_INPUT_INVALID','PUSH_NO_RECIPIENTS','PUSH_BROADCAST_INTERVAL'];return json(res,known.includes(e.message)?400:503,{ok:false,error:known.includes(e.message)?e.message:'PUSH_SERVER_ERROR'});}
+    }
+    if(route==='push/web'){
+      const result=await webPushRequest(req,{service:createWebPushService({command}),user:await currentUser(req,command),url});return json(res,result.status,result.body);
     }
     if(route==='push/device'){
       const user=await currentUser(req,command);

@@ -54,6 +54,10 @@ test('only active opted-in members with registered devices get messages; web not
  const member=await f.service.status('g1',{id:'off'});assert.equal(member.messages.length,1);assert.equal(member.canSend,false);assert.equal(member.messages[0].delivery,undefined);
  assert.equal(await f.service.status('g1',{id:'pending'}),null);assert.equal(await f.service.status('g1',null),null);
 });
+test('web subscriptions receive visible group content through the same membership checks',async()=>{
+ const f=fixture(),key='web-browser';f.hashes.set(GP.devices('one'),{[key]:JSON.stringify({kind:'web',subscription:{endpoint:'https://fcm.googleapis.com/send/test'},at:1})});f.values.set(GP.binding(key),'one');
+ const r=await f.post();await f.service.deliver(r.id);assert.equal(f.sent.length,1);assert.equal(f.sent[0].token.kind,'web');assert.equal(f.sent[0].p.title,'동네 모임 · 공지 <제목>');assert.equal(f.sent[0].p.body,'내용입니다.');
+});
 test('leave and opt-out after queueing block delivery and native message fetch',async()=>{
  const f=fixture();await f.service.register({id:'one'},{token:token('a'),enabled:true});const r=await f.post();f.g.members.find(m=>m.userId==='one').status='left';f.g.members.find(m=>m.userId==='two').notify=false;f.saveGroup();await f.service.deliver(r.id);assert.equal(f.sent.length,0);
  await assert.rejects(f.service.message(r.id,{id:'one'}),/GROUP_FORBIDDEN/);

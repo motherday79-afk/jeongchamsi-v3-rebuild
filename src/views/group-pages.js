@@ -1,4 +1,4 @@
-import {renderGroupPush} from './group-push.js?v=0.0.31.383';
+import {renderGroupPush} from './group-push.js?v=0.0.31.384';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const text=v=>esc(v).replace(/\r?\n/g,'<br>');
 const link=(href,label,cls='')=>`<a${cls?` class="${cls}"`:''} href="${esc(href)}" data-layout-route="${esc(href)}">${label}</a>`;
