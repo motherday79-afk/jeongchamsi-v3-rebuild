@@ -15,8 +15,9 @@ export const VELGARD_BANNER=Object.freeze({
  targetUrl:'https://velgard.store',
  alt:'하루, 가장 완벽한 컨설팅이 시작됩니다. 벨가르드'
 });
+export const OPEN_EVENT_BANNER=Object.freeze({id:'open-event-378',designVersion:'upload',placement:'sidebar',url:'/assets/banners/open-event-pc-378.webp',mobileUrl:'/assets/banners/open-event-mobile-378.webp',tabletUrl:'/assets/banners/open-event-tablet-378.webp',targetUrl:'https://www.jeongchamsi.com/community/community-9f2fca83-f1b3-44af-bef7-a52a47ec465d',alt:'정참시 오픈 이벤트 · 나도 관리자다 · 게시판 관리자 5명, 플래티넘 회원 10명, 총 15명 모집'});
 export function homeBannerPlaylist(banner,placement='sidebar'){
  const registered=Array.isArray(banner?.items)?banner.items.filter(item=>item?.url||item?.id==='jcs-default-campaign'):banner?.url?[banner]:[];
- const items=[placement==='hero'?HABI_BANNER:VELGARD_BANNER,...(registered.length?registered:placement==='hero'?[]:[{id:'jcs-default-campaign'}])];
+ const items=[placement==='hero'?HABI_BANNER:VELGARD_BANNER,...(registered.length?registered:placement==='hero'?[]:[{id:'jcs-default-campaign'}]),...(placement==='sidebar'?[OPEN_EVENT_BANNER]:[])];
  const seen=new Set();return items.filter(item=>{const id=item.id||item.url||'default-campaign';if(seen.has(id))return false;seen.add(id);return true;});
 }

@@ -11,6 +11,7 @@ export function renderPageShare(route){
  const clean=publicShareRoute(route);if(!clean)return '';
  return '<div class="page-share-bar"><button type="button" data-page-share="'+esc(clean)+'"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="5" r="3"/><circle cx="18" cy="19" r="3"/><path d="m9 10 6-3M9 14l6 3"/></svg>공유하기</button><span data-page-share-state role="status"></span></div>';
 }
+export function renderShareMenu(route){return '<details class="jc-menu comic-share-menu"><summary aria-label="게시글 메뉴">⋯</summary><div class="jc-popover">'+renderPageShare(route)+'</div></details>';}
 export async function sharePage(route,title,capabilities=globalThis.navigator){
  const clean=publicShareRoute(route);if(!clean)throw Error('SHARE_UNAVAILABLE');const url=shareableUrlForRoute(clean);
  if(typeof capabilities?.share==='function')try{await capabilities.share({title,url});return {status:'shared',url};}catch(e){if(e.name==='AbortError')return {status:'cancelled',url};}

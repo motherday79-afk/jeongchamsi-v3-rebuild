@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {homeBannerPlaylist,HOME_BANNER_INTERVAL,HERO_BANNER_INTERVAL,VELGARD_BANNER,HABI_BANNER} from '../src/core/home-banner-playlist.js';
+import {homeBannerPlaylist,HOME_BANNER_INTERVAL,HERO_BANNER_INTERVAL,VELGARD_BANNER,HABI_BANNER,OPEN_EVENT_BANNER} from '../src/core/home-banner-playlist.js';
 import {setupHomeBannerRotation} from '../src/ui/home-banner-rotation.js';
 import {homeBanner} from '../src/layout/home-layout.js';
 import {createHomeBannerService,BANNER_CAS_LUA} from '../lib/home-banner-service.js';
@@ -8,15 +8,15 @@ import {TARGET_KEYS} from '../lib/migration-service.js';
 
 test('Velgard is first, old banners remain, and only one image link is initially visible',()=>{
  const previous={url:'https://images.example/old.webp',designVersion:'upload',targetUrl:'https://example.com',alt:'기존 광고'};
- assert.deepEqual(homeBannerPlaylist(previous),[VELGARD_BANNER,previous]);
- assert.equal(homeBannerPlaylist(null).length,2);
- assert.equal(homeBannerPlaylist({items:[VELGARD_BANNER,previous,previous]}).length,2);
+ assert.deepEqual(homeBannerPlaylist(previous),[VELGARD_BANNER,previous,OPEN_EVENT_BANNER]);
+ assert.equal(homeBannerPlaylist(null).length,3);
+ assert.equal(homeBannerPlaylist({items:[VELGARD_BANNER,previous,previous]}).length,3);
  const html=homeBanner(previous);
  assert.match(html,/href="https:\/\/velgard.store"/);
  assert.match(html,/data-interval="60000"/);
- assert.equal((html.match(/data-home-banner-slide/g)||[]).length,2);
+ assert.equal((html.match(/data-home-banner-slide/g)||[]).length,3);
  assert.equal((html.match(/aria-hidden="false"/g)||[]).length,1);
- assert.equal((html.match(/aria-hidden="true" hidden/g)||[]).length,1);
+ assert.equal((html.match(/aria-hidden="true" hidden/g)||[]).length,2);
  assert.doesNotMatch(html,/data-home-banner-edit/);
  assert.match(homeBanner(previous,{user:{role:'admin'}}),/배너 추가/);
 });
