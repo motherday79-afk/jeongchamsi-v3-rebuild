@@ -60,7 +60,7 @@ test('left banner opens the Habi film site and preserves existing linked banner'
  assert.deepEqual(homeBannerPlaylist({items},'hero'),items);
  const html=homeBanner(previous,{},'hero');assert.match(html,/data-interval="90000"/);
  const first=html.match(/<a data-home-banner-slide[^]*?<\/a>/)?.[0];
- assert.ok(first);assert.match(first,/open-event-hero-pc-379/);assert.match(first,/community-9f2fca83-f1b3-44af-bef7-a52a47ec465d/);
+ assert.ok(first);assert.match(first,/open-event-hero-pc-380/);assert.match(first,/community-9f2fca83-f1b3-44af-bef7-a52a47ec465d/);
  assert.match(html,/href="https:\/\/habi-halbi-film.vercel.app\/" target="_blank" rel="noopener noreferrer"/);
  assert.doesNotMatch(homeBanner(previous),/open-event/);
  assert.match(html,/href="https:\/\/example.com\/film"/);
