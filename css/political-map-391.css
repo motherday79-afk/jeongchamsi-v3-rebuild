@@ -2,15 +2,17 @@
 @media(max-width:767px){.pmap-home>header{padding:12px 14px}.pmap-home h2{font-size:18px}.pmap-tabs{padding:6px 8px;gap:2px}.pmap-tabs button{font-size:13px;padding:6px 2px}.pmap-preview{height:140px;padding:2px 14px;gap:10px;grid-template-columns:36% 1fr}.pmap-mini-map{height:134px}.pmap-total>span{font-size:13px}.pmap-total>strong{font-size:26px}.pmap-mini-note{font-size:12px;margin-bottom:8px}.pmap-page{padding:18px 14px;border-radius:14px}.pmap-page h1{font-size:28px}.pmap-page .pmap-tabs button{font-size:14px;padding:10px 2px}.pmap-layout{grid-template-columns:1fr;gap:14px}.pmap-map-panel>.pmap-svg{height:440px}.pmap-summary{padding:18px}.pmap-summary .pmap-total{flex-direction:row;align-items:center}.pmap-summary .pmap-total>strong{font-size:36px}.pmap-summary .pmap-party-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 18px}.pmap-summary .pmap-party{grid-template-columns:8px 1fr auto;font-size:14px}.pmap-party em{display:none}.pmap-people{grid-template-columns:1fr}.pmap-roster h2{font-size:20px}.pmap-roster form{width:100%}.pmap-roster form label{flex:1;min-width:0}.pmap-roster input{width:100%}.pmap-toolbar{gap:8px}.pmap-toolbar label{width:100%;justify-content:space-between}.pmap-toolbar select{flex:1}.pmap-subnote{font-size:14px}.pmap-map-note{font-size:13px}}
 
 /* Main map needs a readable canvas; tablet/mobile have their own legacy section ordering. */
-.pmap-home .pmap-preview{height:430px;grid-template-columns:minmax(0,58%) minmax(0,1fr);padding:8px 20px;gap:20px;align-items:center}
-.pmap-home .pmap-mini-map{height:414px;width:100%;background:radial-gradient(ellipse,#eee7f5,#fbfafc 75%)}
+.pmap-home .pmap-preview{height:310px;grid-template-columns:minmax(0,58%) minmax(0,1fr);padding:8px 20px;gap:20px;align-items:center}
+.pmap-home .pmap-mini-map{height:294px;width:100%;background:radial-gradient(ellipse,#eee7f5,#fbfafc 75%)}
 .pmap-flag text{font-size:24px;stroke-width:5px;font-weight:800}
-.pmap-home .pmap-mini-stats{padding:16px 0}
-.pmap-home .pmap-total{align-items:flex-start;flex-direction:column;gap:8px;margin-bottom:16px}
-.pmap-home .pmap-total>span{font-size:16px}.pmap-home .pmap-total>strong{font-size:40px}
-.pmap-home .pmap-party{font-size:16px;padding:10px 0}.pmap-home .pmap-party>b{font-size:19px}
-.pmap-home-categories{display:grid;gap:9px;margin-top:20px;border-top:1px solid #e4dcec;padding-top:16px;font-size:14px;color:#655672}
+.pmap-home .pmap-mini-stats{padding:0}
+.pmap-home .pmap-total{align-items:flex-start;flex-direction:column;gap:4px;margin-bottom:8px}
+.pmap-home .pmap-total>span{font-size:16px}.pmap-home .pmap-total>strong{font-size:32px}
+.pmap-home .pmap-party{font-size:16px;padding:6px 0}.pmap-home .pmap-party>b{font-size:19px}
+.pmap-home-categories{display:grid;gap:4px;margin-top:10px;border-top:1px solid #e4dcec;padding-top:8px;font-size:14px;color:#655672}
 .pmap-home-categories>span{display:flex;justify-content:space-between;gap:8px}.pmap-home-categories b{color:#342540}
 .pmap-home .pmap-mini-note{font-size:14px;line-height:1.5;margin:6px 16px 16px}
 @media(max-width:1024px){.product-home-wrap .pmap-home{order:24!important}}
-@media(max-width:767px){.pmap-home .pmap-preview{height:auto;grid-template-columns:1fr;gap:4px;padding:8px 14px}.pmap-home .pmap-mini-map{height:390px}.pmap-home .pmap-mini-stats{padding:8px 4px}.pmap-home .pmap-total{flex-direction:row;align-items:center;margin-bottom:6px}.pmap-home .pmap-total>strong{font-size:32px}.pmap-home .pmap-party{font-size:15px;padding:7px 0}.pmap-home-categories{grid-template-columns:repeat(3,1fr);margin-top:10px;padding-top:10px;font-size:13px}.pmap-home-categories>span{flex-direction:column;gap:4px}.pmap-home .pmap-mini-note{font-size:13px}.pmap-home .pmap-tabs button{font-size:14px;min-height:40px}}
+@media(max-width:767px){.pmap-home .pmap-preview{height:auto;grid-template-columns:1fr;gap:4px;padding:8px 14px}.pmap-home .pmap-mini-map{height:250px}.pmap-home .pmap-mini-stats{padding:8px 4px}.pmap-home .pmap-total{flex-direction:row;align-items:center;margin-bottom:6px}.pmap-home .pmap-total>strong{font-size:32px}.pmap-home .pmap-party{font-size:15px;padding:7px 0}.pmap-home-categories{grid-template-columns:repeat(3,1fr);margin-top:10px;padding-top:10px;font-size:13px}.pmap-home-categories>span{flex-direction:column;gap:4px}.pmap-home .pmap-mini-note{font-size:13px}.pmap-home .pmap-tabs button{font-size:14px;min-height:40px}}
+
+.pmap-home .pmap-flag text{font-size:28px}
