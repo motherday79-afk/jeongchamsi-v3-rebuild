@@ -8,19 +8,43 @@ export function homeInstallGuide({userAgent='',platform='',maxTouchPoints=0,stan
  return '<p>PC에서는 Chrome 또는 Edge 주소창의 설치 아이콘이나 브라우저 메뉴의 <strong>앱 설치</strong>를 이용할 수 있습니다.</p><p>휴대폰에 아이콘을 만들려면 휴대폰에서 정참시를 열고 이 버튼을 눌러 주세요.</p>';
 }
 export function bindHomeInstall(root=document){
- let prompt=null,installed=false;
- window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();prompt=e;});
- window.addEventListener('appinstalled',()=>{installed=true;prompt=null;});
+ const state=window.jcsInstall||(window.jcsInstall={event:null,installed:false});
+ // The head bootstrap owns the browser event; the dialog also reacts to late offers.
  if(globalThis.isSecureContext&&globalThis.navigator?.serviceWorker)void navigator.serviceWorker.register('/sw.js',{scope:'/',updateViaCache:'none'}).catch(()=>{});
- function guide(trigger,message=''){
-  const dialog=document.createElement('dialog');dialog.className='home-install-dialog';dialog.setAttribute('aria-labelledby','home-install-title');
-  const copy=message?`<p>${message}</p>`:homeInstallGuide({userAgent:navigator.userAgent,platform:navigator.platform,maxTouchPoints:navigator.maxTouchPoints,standalone:installed||matchMedia('(display-mode: standalone)').matches||navigator.standalone===true});
-  dialog.innerHTML=`<h2 id="home-install-title">홈 화면에 정참시 추가</h2>${copy}<form method="dialog"><button>확인</button></form>`;
-  document.body.append(dialog);dialog.addEventListener('close',()=>{dialog.remove();if(trigger.isConnected)trigger.focus();},{once:true});dialog.showModal();
+ let dialog=null,trigger=null,inFlight=false;
+ const standalone=()=>state.installed||matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+ function refresh(){
+  if(!dialog?.isConnected)return;
+  const install=dialog.querySelector('[data-install-now]'),help=dialog.querySelector('[data-install-help]');
+  install.hidden=!state.event||standalone();install.disabled=inFlight;
+  help.hidden=!!state.event&&!standalone();
+  if(standalone()){help.hidden=false;help.innerHTML='<p>정참시가 홈 화면 앱으로 추가되어 있습니다. 바탕화면의 정참시 아이콘으로 열어주세요.</p>';}
  }
- root.addEventListener('click',async e=>{
-  const button=e.target.closest('[data-home-install]');if(!button||button.disabled)return;
-  if(prompt){const event=prompt;prompt=null;button.disabled=true;try{const choice=await event.prompt();if(choice?.outcome==='accepted')guide(button,'설치 요청을 완료했습니다. 아이콘 생성은 기기에서 확인해 주세요.');}catch{guide(button);}finally{button.disabled=false;}}
-  else guide(button);
+ window.addEventListener('jcs:install-ready',refresh);
+ function guide(button){
+  if(dialog?.isConnected){refresh();return;}
+  trigger=button;dialog=document.createElement('dialog');dialog.className='home-install-dialog';dialog.setAttribute('aria-labelledby','home-install-title');
+  dialog.innerHTML='<img src="/assets/brand/jcs-push-192.png" width="64" height="64" alt="" style="border-radius:16px"><h2 id="home-install-title">홈 화면에 정참시 추가</h2><p>아이콘을 누르면 정참시가 바로 열립니다.</p><button type="button" data-install-now hidden>정참시 추가</button><div data-install-help>'+homeInstallGuide({userAgent:navigator.userAgent,platform:navigator.platform,maxTouchPoints:navigator.maxTouchPoints,standalone:standalone()})+'</div><p data-install-state role="status"></p><form method="dialog"><button>닫기</button></form>';
+  document.body.append(dialog);dialog.addEventListener('close',()=>{dialog.remove();dialog=null;if(trigger?.isConnected)trigger.focus();},{once:true});
+  dialog.querySelector('[data-install-now]').addEventListener('click',()=>void install(button));refresh();dialog.showModal();
+ }
+ async function install(button){
+  if(inFlight)return;
+  const offer=state.event;if(!offer){guide(button);return;}
+  state.event=null;inFlight=true;button.disabled=true;
+  try{
+   // No await before prompt(): preserve the installation button's user activation.
+   const response=offer.prompt();
+   const result=await response,choice=result?.outcome?result:await offer.userChoice;
+   if(choice?.outcome==='accepted'){
+    if(dialog?.isConnected)dialog.close();
+    button.querySelector('span')?.replaceChildren(document.createTextNode('추가 요청 완료 · 홈 화면을 확인하세요'));
+   }else if(dialog?.isConnected){dialog.querySelector('[data-install-state]').textContent='설치를 취소했습니다. 아래 방법으로 나중에 추가할 수도 있습니다.';}
+  }catch{guide(button);if(dialog)dialog.querySelector('[data-install-state]').textContent='설치 창을 열지 못했습니다. 아래 브라우저 메뉴로 추가해 주세요.';}
+  finally{inFlight=false;button.disabled=false;refresh();}
+ }
+ root.addEventListener('click',event=>{
+  const button=event.target.closest('[data-home-install]');if(!button||button.disabled)return;
+  if(state.event&&!standalone())void install(button);else guide(button);
  });
 }
