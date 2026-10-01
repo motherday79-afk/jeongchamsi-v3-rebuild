@@ -1,0 +1,24 @@
+{
+  "repository": "https://github.com/DevMinGeonPark/mapcn-kr",
+  "revision": "06c7a3456dd82965bd29042130441515717519ab",
+  "boundaryDate": "2026-07-01",
+  "files": [
+    {
+      "file": "data/sido.json",
+      "url": "https://raw.githubusercontent.com/DevMinGeonPark/mapcn-kr/06c7a3456dd82965bd29042130441515717519ab/data/sido.json",
+      "sha256": "fe5a298eab78f4e8d09d22e4f79ac9ddac05cd7a07927937d603be747cfec851"
+    },
+    {
+      "file": "data/sgg.json",
+      "url": "https://raw.githubusercontent.com/DevMinGeonPark/mapcn-kr/06c7a3456dd82965bd29042130441515717519ab/data/sgg.json",
+      "sha256": "eaab38fdfe5fd56678deb376a07a8bcc909264f4f1900cfb6e9dae6c8fd13087"
+    },
+    {
+      "file": "LICENSE-DATA",
+      "url": "https://raw.githubusercontent.com/DevMinGeonPark/mapcn-kr/06c7a3456dd82965bd29042130441515717519ab/LICENSE-DATA",
+      "sha256": "09a3d1eed1c9d3da9be5e9152e451e1c936c44f272938d1cd5f9d1200a3c8bff"
+    }
+  ],
+  "regions": 16,
+  "districts": 256
+}

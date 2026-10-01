@@ -27,6 +27,7 @@ import { campaignRequest } from '../lib/campaign-http.js';
 import { createRequestReadScope } from '../lib/request-read-scope.js';
 import { castGenerationVote } from '../src/core/participation-model.js';
 import { APP_RELEASE } from '../src/core/release.js';
+import { POLITICAL_MAP_TYPES } from '../src/core/political-map-model.js';
 import { createCommunityService, communityStats } from '../lib/community-service.js';
 import { put } from '@vercel/blob';
 import { legacyRedisCommand, rebuildRedisCommand } from '../lib/redis-rest.js';
@@ -120,6 +121,12 @@ async function handleMigration(req,res,route){
 export async function handlePoliticians(req,res,command,url,intelligence){
   if(url.searchParams.has('keywords'))return json(res,410,{ok:false,error:'FEATURE_REMOVED'});
   if(req.method!=='GET')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
+  if(url.searchParams.get('map')==='1'){
+    const groups=await Promise.all(POLITICAL_MAP_TYPES.map(async type=>(await readPoliticianType(command,type)).map(person=>({
+      id:String(person.id||''),name:String(person.name||''),type,party:String(person.party||''),region:String(person.region||''),jurisdiction:String(person.jurisdiction||''),isVacant:person.isVacant===true
+    }))));
+    return json(res,200,{ok:true,items:groups.flat().filter(person=>person.id),asOf:new Date().toISOString(),basis:'정참시 등록 정치인 정보'});
+  }
   if(url.searchParams.get('media')==='1'){
     const result=await createMediaSpreadService({command}).search({query:String(url.searchParams.get('q')||'').slice(0,120),personId:String(url.searchParams.get('person')||''),publisher:String(url.searchParams.get('publisher')||'').slice(0,100),period:url.searchParams.get('period')});
     return json(res,200,result);

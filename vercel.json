@@ -60,6 +60,10 @@
   ],
   "rewrites": [
     {
+      "source": "/political-map/:path*",
+      "destination": "/api/share?path=political-map/:path*"
+    },
+    {
       "source": "/notifications",
       "destination": "/notifications.html"
     },

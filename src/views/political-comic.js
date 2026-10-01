@@ -1,4 +1,4 @@
-import {renderShareMenu} from '../ui/page-share.js?v=0.0.31.378';
+import {renderShareMenu} from '../ui/page-share.js?v=0.0.31.391';
 import {moduleActionIconSvg} from '../ui/service-icons.js?v=0.0.31.377';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const safe=v=>/^\/assets\/[a-zA-Z0-9_./-]+$/.test(v||'')||/^https:\/\//.test(v||'')?esc(v):'';
