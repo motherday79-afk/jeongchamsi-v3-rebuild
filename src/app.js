@@ -1,3 +1,4 @@
+import {renderMyDeviceMenu,bindHomeInstall} from './ui/home-install.js?v=0.0.31.385';
 import {renderWebBroadcast,broadcastRequest,bindWebBroadcast} from './ui/web-broadcast.js?v=0.0.31.384';
 import {renderPageShare,bindPageShare} from './ui/page-share.js?v=0.0.31.378';
 import {sharedComments} from './views/community-ui.js?v=0.0.31.383';
@@ -33,7 +34,7 @@ import { createPoliticianService } from './core/politicians.js?v=0.0.31.350';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith, isTransientAnalysisRoute } from './core/navigation.js?v=0.0.31.377';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.148';
-import * as views from './views/stage1.js?v=0.0.31.384';
+import * as views from './views/stage1.js?v=0.0.31.385';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.362';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.364';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident } from './views/participation-pages.js?v=0.0.31.361';
@@ -283,8 +284,8 @@ async function render({preserveScroll=false,refreshHome=false,freshSession=false
   if(p[0]==='admin'&&isSuperAdmin(session.user)&&!body.includes('data-admin-workspace'))body=renderAdminWorkspace(p[1]==='ai-panel'?'ai':adminRouteState(r).tab,body);
   if(['community','itsme','column','news','inquiry','poll','generation-president'].includes(p[0]))body=body.replace(/class="subpage\b/,'class="subpage board-typography');
   if(p[0]==='mypage'&&session.authenticated){
-    const current=r.split('?')[0],tabs=[['/mypage','마이페이지'],['/mypage/favorites/politicians','즐겨찾는 정치인'],['/mypage/favorites/posts','즐겨찾는 게시글'],['/mypage/posts','내 게시글'],['/mypage/comments','내 댓글'],['/mypage/points','포인트']];
-    body=`<div class="mypage-workspace"><nav class="mypage-section-nav" aria-label="마이페이지 메뉴">${tabs.map(([href,label])=>`<a href="${href}" data-layout-route="${href}" ${current===href?'aria-current="page"':''}>${label}</a>`).join('')}</nav>${body}</div>`;
+    const current=r.split('?')[0],tabs=[['/mypage','마이페이지'],['/notifications','알림 설정'],['/mypage/favorites/politicians','즐겨찾는 정치인'],['/mypage/favorites/posts','즐겨찾는 게시글'],['/mypage/posts','내 게시글'],['/mypage/comments','내 댓글'],['/mypage/points','포인트']];
+    body=`<div class="mypage-workspace">${renderMyDeviceMenu()}<nav class="mypage-section-nav" aria-label="마이페이지 메뉴">${tabs.map(([href,label])=>`<a href="${href}" ${href==='/notifications'?'':`data-layout-route="${href}"`} ${current===href?'aria-current="page"':''}>${label}</a>`).join('')}</nav>${body}</div>`;
   }
   if(refreshHome&&homeSnapshot&&document.querySelector('.product-home-wrap')&&homeSnapshot.identity===sessionIdentity(session))updateVisibleHome(body);
   else if(!await shell(body,session,renderId))return;
@@ -347,6 +348,7 @@ async function refreshAiPanelAdmin(operation,result){
     navigation?.cacheCurrent();
   }catch{await render({preserveScroll:true});}
 }
+bindHomeInstall(document);
 bindWebBroadcast(document);
 bindAiPanelInteractions(document,{client:aiPanel,navigate:target=>navigation.navigate(target),onSaved:async(result,operation)=>refreshAiPanelAdmin(operation,result)});
 bindGroupInteractions(document,{client:groups,onSaved:async(_result,targetRoute)=>{
