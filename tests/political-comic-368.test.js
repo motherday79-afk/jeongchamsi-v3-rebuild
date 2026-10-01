@@ -34,6 +34,7 @@ test('home includes issue before columns and after polls; mobile retains that or
  const html=renderHomeLayout({rank:[],columns:[],community:[],session:{},comicResult:{items:[DMZ_EPISODE]}});
  const pos=html.indexOf('id="political-comic"');assert.ok(pos>html.indexOf('ai-home'));assert.ok(pos<html.indexOf('id="column"'));assert.match(html,/\/political-comic\/dmz-20260921/);
  const css=fs.readFileSync(new URL('../css/political-comic-368.css',import.meta.url),'utf8');assert.match(css,/political-comic-home\{order:25!important/);
+ assert.doesNotMatch(css.split('@media')[0],/\border\s*:/,'desktop must follow poll/comic/column DOM order');
 });
 test('HTTP endpoint allows public reading but rejects anonymous management and uploads',async()=>{
  const keys=['JCS_REBUILD_REDIS_REST_URL','JCS_REBUILD_REDIS_REST_TOKEN','JCS_REBUILD_REDIS_REDIS_URL','JCS_REBUILD_REDIS_URL'],saved=new Map(keys.map(k=>[k,process.env[k]])),oldFetch=globalThis.fetch;
