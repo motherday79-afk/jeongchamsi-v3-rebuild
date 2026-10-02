@@ -16,3 +16,11 @@
 @media(max-width:767px){.pmap-home .pmap-preview{height:auto;grid-template-columns:1fr;gap:4px;padding:8px 14px}.pmap-home .pmap-mini-map{height:250px}.pmap-home .pmap-mini-stats{padding:8px 4px}.pmap-home .pmap-total{flex-direction:row;align-items:center;margin-bottom:6px}.pmap-home .pmap-total>strong{font-size:32px}.pmap-home .pmap-party{font-size:15px;padding:7px 0}.pmap-home-categories{grid-template-columns:repeat(3,1fr);margin-top:10px;padding-top:10px;font-size:13px}.pmap-home-categories>span{flex-direction:column;gap:4px}.pmap-home .pmap-mini-note{font-size:13px}.pmap-home .pmap-tabs button{font-size:14px;min-height:40px}}
 
 .pmap-home .pmap-flag text{font-size:28px}
+
+/* Use the same white, two-line module heading as established home sections. */
+.pmap-home,.political-comic-home{background:#fff;border:1px solid #e7e7eb;border-radius:16px;box-shadow:none}
+.pmap-home>.module-header,.political-comic-home>.module-header{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:20px;margin:0;background:#fff;border:0}
+.pmap-home>.module-header h2,.political-comic-home>.module-header h2{font-size:18px;line-height:1.4;letter-spacing:-.4px;color:#111827;margin:5px 0 0;font-weight:750}
+.pmap-home>.module-header .eyebrow,.political-comic-home>.module-header .eyebrow{display:block;font-size:10px;line-height:1.4;letter-spacing:.13em;color:#24344b;margin:0}
+.pmap-home>.module-header .module-icon-action,.political-comic-home>.module-header .module-icon-action{flex-shrink:0}
+@media(max-width:767px){.pmap-home>.module-header,.political-comic-home>.module-header{padding:16px 14px}.pmap-home>.module-header h2,.political-comic-home>.module-header h2{font-size:18px}}

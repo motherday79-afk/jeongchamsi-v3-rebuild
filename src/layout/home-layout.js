@@ -1,15 +1,15 @@
-import {renderPoliticalMapHome} from '../views/political-map.js?v=0.0.31.392';
-import {renderComicHome} from '../views/political-comic.js?v=0.0.31.391';
+import {renderPoliticalMapHome} from '../views/political-map.js?v=0.0.31.394';
+import {renderComicHome} from '../views/political-comic.js?v=0.0.31.394';
 import {fortuneFrontArt} from '../ui/fortune-card-art.js?v=0.0.31.366';
 import {fortuneStateKey,readFortuneState} from '../core/fortune-card-state.js?v=0.0.31.363';
 import {homeBannerPlaylist,HOME_BANNER_INTERVAL,HERO_BANNER_INTERVAL} from '../core/home-banner-playlist.js?v=0.0.31.380';
 import {membershipLabel} from '../core/membership.js?v=0.0.31.354';
 import {APPAREL_PRODUCTS,renderApparelCatalog,renderApparelProduct} from '../views/apparel-shop.js?v=0.0.31.297';
-import {renderAiPanelHome} from '../views/ai-panel-pages.js?v=0.0.31.377';
+import {renderAiPanelHome} from '../views/ai-panel-pages.js?v=0.0.31.394';
 import { cageComposeRoute, isCageClosed } from '../core/cage-entry.js?v=0.0.31.178';
 import { renderCageBanner } from '../ui/home-cage-banner.js?v=0.0.31.353';
 import { GENERATION_AGES, participationDisplay, demoLabel } from '../core/participation-model.js?v=0.0.31.79';
-import { SERVICE_CATALOG, moduleActionIconSvg, serviceIconSvg, serviceNavIconSvg } from '../ui/service-icons.js?v=0.0.31.377';
+import { SERVICE_CATALOG, moduleActionIconSvg, serviceIconSvg, serviceNavIconSvg } from '../ui/service-icons.js?v=0.0.31.394';
 import { badgeByKey, renderBadge } from '../data/badge-catalog.js?v=0.0.31.155';
 
 const partyClass=(party='')=>party.includes('더불어')?'party-democratic':party.includes('국민의힘')?'party-peoplepower':party.includes('개혁신당')?'party-reform':party.includes('조국혁신당')?'party-innovation':party.includes('진보당')?'party-progressive':party.includes('기본소득당')?'party-basicincome':party.includes('사회민주당')?'party-socialdemocratic':party.includes('공석')?'party-vacant':'party-independent';
