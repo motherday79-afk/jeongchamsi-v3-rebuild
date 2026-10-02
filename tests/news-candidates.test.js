@@ -13,7 +13,7 @@ const load=rows=>async()=>({ok:true,text:async()=>rss(rows)});
 
 test('retains homonyms for curation without adding them to accepted articles or counts',async()=>{
  const political=article('김민석 총리 정책 발표',1),homonym=article('배우 김민석 드라마 출연',2),unrelated=article('다른 사람 인터뷰',3);
- const result=await fetchGoogleNews(person,{now,fetchImpl:load([political,homonym,homonym,unrelated])});
+ const result=await fetchGoogleNews(person,{now,retainCandidates:true,fetchImpl:load([political,homonym,homonym,unrelated])});
  assert.deepEqual(result.items.map(row=>row.url),[political.url]);
  assert.deepEqual(result.periodCounts,{h24:1,d7:1,d30:1});
  assert.deepEqual(result.candidates.map(row=>row.url),[political.url,homonym.url]);
@@ -22,7 +22,7 @@ test('retains homonyms for curation without adding them to accepted articles or 
 
 test('legacy and curated exclusions remove candidates before optional original article reads',async()=>{
  const legacy=article('배우 김민석 드라마 출연',1),curated=article('김민석 근황 인터뷰',2),kept=article('김민석 총리 정책 발표',3),reads=[];
- const result=await fetchGoogleNews(person,{now,fetchImpl:load([legacy,curated,kept]),exclusions:[googleNewsFingerprint(legacy)],excludeArticle:item=>item.url===curated.url,inspectOriginalArticles:true,readArticleContext:async item=>{reads.push(item.url);return {status:'unavailable'};}});
+ const result=await fetchGoogleNews(person,{now,retainCandidates:true,fetchImpl:load([legacy,curated,kept]),exclusions:[googleNewsFingerprint(legacy)],excludeArticle:item=>item.url===curated.url,inspectOriginalArticles:true,readArticleContext:async item=>{reads.push(item.url);return {status:'unavailable'};}});
  assert.deepEqual(reads,[]);
  assert.deepEqual(result.items.map(row=>row.url),[kept.url]);
  assert.deepEqual(result.candidates.map(row=>row.url),[kept.url]);
@@ -31,7 +31,7 @@ test('legacy and curated exclusions remove candidates before optional original a
 
 test('candidate pool keeps at most 200 newest deduplicated articles',async()=>{
  let query=0;
- const result=await fetchGoogleNews(person,{now,fetchImpl:async()=>{const offset=query++*45;return {ok:true,text:async()=>rss(Array.from({length:45},(_,index)=>({...article(`김민석 소식 ${offset+index}`,offset+index),publishedAt:new Date(now()-(offset+index+1)*60000).toISOString()})))};}});
+ const result=await fetchGoogleNews(person,{now,retainCandidates:true,fetchImpl:async()=>{const offset=query++*45;return {ok:true,text:async()=>rss(Array.from({length:45},(_,index)=>({...article(`김민석 소식 ${offset+index}`,offset+index),publishedAt:new Date(now()-(offset+index+1)*60000).toISOString()})))};}});
  assert.equal(result.items.length,225);
  assert.equal(result.candidates.length,200);
  assert.equal(result.candidates[0].url,'https://example.com/0');
@@ -70,3 +70,4 @@ test('public and member projections never expose the retained candidate pool',()
   assert.equal(output.includes('"candidates"'),false);
  }
 });
+test('normal collection has no extra candidate pool until explicitly enabled',async()=>{const result=await fetchGoogleNews(person,{now,fetchImpl:load([article('김민석 총리 정책 발표',1),article('배우 김민석 드라마 출연',2)]),inspectOriginalArticles:false});assert.equal(result.items.length,1);assert.deepEqual(result.candidates,[]);});

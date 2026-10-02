@@ -157,7 +157,7 @@ export async function handlePoliticians(req,res,command,url,intelligence){
     // Check the member's grant after asynchronous report reads, immediately before projection.
     const analysisAccess=accountTier==='member'?await readPersonAnalysisAccess(command,user,id):null;
     const tier=accountTier==='admin'||analysisAccess?.active?'admin':accountTier;
-    const projected={...projectIntelligence(fullReport,tier,scope,user),analysisAccess};
+    const projected={...projectIntelligence(fullReport,tier,scope,user),analysisAccess,...(user?.role==='admin'?{articleCurationEnabled:report?.articleCurationEnabled===true}:{})};
     return json(res,200,{ok:true,accessTier:tier,analysisAccess,item:{...item,photo:photos[id]||null},intelligence:projected});
   }
   const photos=await readPoliticianPhotos(command);
@@ -582,7 +582,7 @@ export default async function handler(req,res){
     }
     if(route==='article-curation'){
       const service=createArticleCurationService({command}),candidateStore=createArticleCandidates({command}),intelligence=createIntelligenceService({command});
-      const result=await articleCurationRequest(req,{url,user:await currentUser(req,command),service,getPerson:id=>getPolitician(command,id),getReport:(id,person)=>intelligence.getArticleEditorReport(id,person),getCachedCandidates:async id=>{const raw=await command(['GET','jcs:v3:article-editor-pool:'+encodeURIComponent(id)]);return raw?JSON.parse(raw):null;},cacheCandidates:(id,rows)=>command(['SET','jcs:v3:article-editor-pool:'+encodeURIComponent(id),JSON.stringify(rows),'EX','3600']),getCandidates:async(person,report,state)=>req.method==='GET'?candidateStore.load(person,report,service,state):[...(await candidateStore.read(person.id)),...(report?.raw?.news?.candidates||[]),...(report?.raw?.news?.items||[]),...(report?.news||[])]});
+      const result=await articleCurationRequest(req,{url,user:await currentUser(req,command),service,getPerson:id=>getPolitician(command,id),getReport:(id,person)=>intelligence.getArticleEditorReport(id,person),getCachedCandidates:async id=>{const raw=await command(['GET','jcs:v3:article-editor-pool:'+encodeURIComponent(id)]);return raw?JSON.parse(raw):null;},cacheCandidates:(id,rows)=>command(['SET','jcs:v3:article-editor-pool:'+encodeURIComponent(id),JSON.stringify(rows),'EX','3600']),getCandidates:async(person,report,state)=>(req.method==='GET'||bodyOf(req)?.operation==='start')?candidateStore.load(person,report,service,state):[...(await candidateStore.read(person.id)),...(report?.raw?.news?.candidates||[]),...(report?.raw?.news?.items||[]),...(report?.news||[])]});
       return json(res,result.status,result.body);
     }
     if(route==='person-refresh'){

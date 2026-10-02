@@ -29,7 +29,7 @@ test('rendered edit targets preserve rival identity and suppress paid/suspended 
  const person={id:'assembly-031',type:'assembly',name:'김테스트',party:'테스트',office:'국회의원'};
  const raw={personId:person.id,snapshotId:'test',collectedAt:'2026-10-02T00:00:00Z',officialProfile:person,news:{items:[{title:'김테스트 정책',source:'뉴스',url:'https://example.com/a',publishedAt:'2026-10-01'}]},sourceErrors:[]};
  const report=buildIntelligenceDraft(person,raw,{peers:[{id:'assembly-032',name:'이경쟁',type:'assembly'}]});
- const result={ok:true,item:person,intelligence:projectIntelligence(report,'admin','detail')};
+ const result={ok:true,item:person,intelligence:{...projectIntelligence(report,'admin','detail'),articleCurationEnabled:true}};
  const render=user=>renderPoliticianDetail(person.id,{}, {user},{},result);
  const html=await render({id:'staff',role:'admin'});
  const targets=[...html.matchAll(/data-article-editor="([^"]+)" data-article-slot="([^"]+)"/g)].map(match=>[match[1],match[2]]);
