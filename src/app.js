@@ -1,20 +1,21 @@
-import {renderMockBillPage,bindMockBillNavigation} from './views/mock-bill.js?v=0.0.31.409';
+import {loadBillSettings,renderBillSettings,bindBillSettings} from './ui/mock-bill-settings.js?v=0.0.31.410';
+import {renderMockBillPage,bindMockBillNavigation} from './views/mock-bill.js?v=0.0.31.410';
 import {bindArticleCuration} from './ui/article-curation.js?v=0.0.31.404';
 import {renderPoliticalMapPage,mountPoliticalMaps} from './views/political-map.js?v=0.0.31.400';
 import {renderMyDeviceMenu,bindHomeInstall} from './ui/home-install.js?v=0.0.31.398';
 import {renderWebBroadcast,broadcastRequest,bindWebBroadcast} from './ui/web-broadcast.js?v=0.0.31.384';
-import {renderPageShare,bindPageShare} from './ui/page-share.js?v=0.0.31.409';
+import {renderPageShare,bindPageShare} from './ui/page-share.js?v=0.0.31.410';
 import {sharedComments} from './views/community-ui.js?v=0.0.31.400';
 import {renderComicPage,renderComicAdmin} from './views/political-comic.js?v=0.0.31.394';
 import {comicRequest,bindComicEditor} from './ui/political-comic.js?v=0.0.31.372';
 import {bindComparisonBoard} from './ui/comparison-board.js?v=0.0.31.364';
-import {renderAdminWorkspace,toggleAdminMenu} from './views/admin-workspace.js?v=0.0.31.384';
+import {renderAdminWorkspace,toggleAdminMenu} from './views/admin-workspace.js?v=0.0.31.410';
 import {setupHomeBannerRotation} from './ui/home-banner-rotation.js?v=0.0.31.380';
 import {isSuperAdmin} from './core/membership.js?v=0.0.31.354';
 import {loadBadgeStatus} from './core/badge-loading.js?v=0.0.31.349';
-import {createAiPanelClient} from './core/ai-panel-client.js?v=0.0.31.409';
-import {loadAiPanelPage} from './core/ai-panel-routing.js?v=0.0.31.409';
-import {bindAiPanelInteractions} from './ui/ai-panel-interactions.js?v=0.0.31.409';
+import {createAiPanelClient} from './core/ai-panel-client.js?v=0.0.31.410';
+import {loadAiPanelPage} from './core/ai-panel-routing.js?v=0.0.31.410';
+import {bindAiPanelInteractions} from './ui/ai-panel-interactions.js?v=0.0.31.410';
 import {bindPersonRefresh,loadMemberRefresh,watchAnalysisAccess} from './ui/person-refresh.js?v=0.0.31.362';
 import { bindRankingWeights, rankingWeightsReady, updateRunningRankingWeights } from './ui/ranking-weights.js?v=0.0.31.174';
 import { createGroupClient } from './core/group-client.js?v=0.0.31.172';
@@ -29,7 +30,7 @@ import { refreshFontScale } from './ui/font-scale.js?v=0.0.31.56';
 import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.400';
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.56';
 import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.394';
-import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.409';
+import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.410';
 import { focusCageCompose, setupHomeCompare, setupPoliticianAutocomplete, setupLayoutInteractions, setupPoliticianPhotoFallback, setupNowCarousel, setupCageCountdown, setupDesktopHomeViewport } from './ui/interactions.js?v=0.0.31.380';
 import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.354';
 import { createContentService, loadNavigationDashboard, loadPersonNavigation } from './core/content.js?v=0.0.31.389';
@@ -243,9 +244,10 @@ async function render({preserveScroll=false,refreshHome=false,freshSession=false
     const home={...HOME_FIXTURE,comicResult,aiPanelResult:{...aiPanelResult,human:aiHumanResult,party:partyResult},fortuneData,trending:trendingResult.items||[],memberCount,columns,community,communityData:content.peekDomain('community')||{items:community},itsmePosts,newsPosts,polls,generation:generationView,rank,homeBanner,recentPoliticians:loadRecentPoliticians(),session,badgeStatus};
     body=`<div class="product-home-wrap">${renderHomeLayout(home)}</div>`;
   }
-  else if(p[0]==='mock-bill')body=renderMockBillPage();
+  else if(p[0]==='mock-bill')body=renderMockBillPage(await loadBillSettings().catch(()=>({})));
   else if(p[0]==='political-map')body=renderPoliticalMapPage();
   else if(p[0]==='political-comic'){const comics=await comicRequest();body=renderComicPage(comics,p[1]||'');const episode=comics.items?.find(x=>x.id===p[1]);if(episode)body+='<div class="jc49 comic-comment-wrap">'+await sharedComments('political-comic',episode,content,session)+'</div>';}
+  else if(p[0]==='admin'&&p[1]==='mock-bill') body=renderAdminWorkspace('bills',renderBillSettings(await loadBillSettings(true)));
   else if(p[0]==='admin'&&p[1]==='political-comic') body=renderAdminWorkspace('comics',renderComicAdmin(await comicRequest({},true),searchParams.get('id')||''));
   else if(p[0]==='admin'&&p[1]==='notifications') body=renderAdminWorkspace('notifications',renderWebBroadcast(await broadcastRequest()));
   else if(p[0]==='points'){const pointView=new URLSearchParams(r.split('?')[1]||'').get('view');body=renderPointShop(await content.points(),session,pointView==='support'?'support':pointView==='activity'?'activity':'shop');}
@@ -322,6 +324,7 @@ navigation=createNavigation({window,readSnapshot:()=>['groups','ai-panel','commu
 navigation.start();
 bindPageShare(document);
 bindMockBillNavigation(document);
+bindBillSettings(document,{onSaved:()=>navigation.clearCache()});
 bindCageTitleEditors(document);
 async function refreshAiPanelAdmin(operation,result){
   homeSnapshot=null;navigation.clearCache();

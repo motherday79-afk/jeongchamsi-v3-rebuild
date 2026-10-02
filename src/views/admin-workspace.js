@@ -4,7 +4,7 @@ const icon=key=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stro
 export const ADMIN_MENU=[
  {title:'운영 · 회원',items:[['operations','운영현황','서비스의 주요 현황과 최근 작업을 확인하세요.'],['members','회원관리','회원 정보, 이용 상태와 권한을 한곳에서 관리하세요.'],['points','활동 포인트','', '/points?view=activity'],['groups','모임 관리','','/groups?view=manage']]},
  {title:'데이터 · 여론조사',items:[['politicians','정치인 정보','정치인을 검색하고 프로필과 공개 정보를 관리하세요.'],['pipeline','데이터 수집·게시','수집 진행 상황을 확인하고 검증된 데이터를 게시하세요.'],['ai','AI 패널 관리','여론조사 자료와 AI 패널의 조사 결과를 관리하세요.','/admin/ai-panel']]},
- {title:'콘텐츠',items:[['comics','정치4컷','이슈 웹툰을 등록하고 설명과 출처를 관리하세요.','/admin/political-comic'],['notifications','전체 회원 웹 푸시','웹 알림을 허용한 회원에게 소식을 전하고 발송 이력을 확인하세요.','/admin/notifications']]},
+ {title:'콘텐츠',items:[['bills','JCS AI 모의법안','상세페이지의 소개 문구를 수정하세요.','/admin/mock-bill'],['comics','정치4컷','이슈 웹툰을 등록하고 설명과 출처를 관리하세요.','/admin/political-comic'],['notifications','전체 회원 웹 푸시','웹 알림을 허용한 회원에게 소식을 전하고 발송 이력을 확인하세요.','/admin/notifications']]},
  {title:'서비스 설정',items:[['participation','참여·데모','참여 게시판과 메인 노출 설정을 관리하세요.'],['site','사이트·풋터 정보','서비스에 표시할 운영 정보와 연락처를 관리하세요.']]}
 ];
 export function renderAdminWorkspace(active='operations',body='',{loading=false}={}){

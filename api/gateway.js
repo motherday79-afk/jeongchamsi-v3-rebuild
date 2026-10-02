@@ -1,3 +1,4 @@
+import {createMockBillSettings} from '../lib/mock-bill-settings.js';
 import {createArticleCurationService} from '../lib/article-curation.js';
 import {createArticleCandidates} from '../lib/article-candidates.js';
 import {articleCurationRequest} from '../lib/article-curation-http.js';
@@ -472,6 +473,11 @@ async function handleAdmin(req,res,route,command){
     try{const banner=await createHomeBannerService({command}).save({placement:body.placement||'sidebar',pc:body.pc?{contentType:pc.contentType,bytes:Buffer.from(pcEncoded,'base64')}:null,mobile:body.mobile?{contentType:mobile.contentType,bytes:Buffer.from(mobileEncoded,'base64')}:null,tablet:body.tablet?{contentType:tablet.contentType,bytes:Buffer.from(tabletEncoded,'base64')}:null,targetUrl:body.targetUrl,alt:body.alt},user.id);return json(res,200,{ok:true,banner});}
     catch(error){const code=String(error?.message||'BANNER_UPLOAD_FAILED'),storage=code==='BANNER_STORAGE_NOT_CONFIGURED'||/No blob credentials|BLOB_READ_WRITE_TOKEN|VERCEL_OIDC_TOKEN|BLOB_STORE_ID/i.test(code);return json(res,code==='BANNER_TOO_LARGE'?413:storage?503:400,{ok:false,error:storage?'BANNER_STORAGE_NOT_CONFIGURED':code});}
   }
+  if(route==='admin/mock-bill-settings'){
+    if(req.method==='GET')return json(res,200,await createMockBillSettings({command}).get());
+    if(req.method==='PATCH'){try{return json(res,200,await createMockBillSettings({command}).save(bodyOf(req)));}catch(error){if(error.message==='INVALID_INTRODUCTION')return json(res,400,{error:error.message});throw error;}}
+    return json(res,405,{error:'METHOD_NOT_ALLOWED'});
+  }
   if(route==='admin/footer-info'&&req.method==='GET')return json(res,200,{ok:true,info:await createSiteSettingsService({command}).get()});
   if(route==='admin/footer-info'&&req.method==='PATCH'){
     const info=await createSiteSettingsService({command}).save(bodyOf(req),user.id);
@@ -528,6 +534,7 @@ export default async function handler(req,res){
       if(result.redirect){res.statusCode=303;res.setHeader('Location',result.redirect);res.setHeader('Cache-Control','no-store');res.setHeader('Referrer-Policy','no-referrer');res.end();return;}
       return json(res,result.status,result.data);
     }
+    if(route==='mock-bill-settings'&&req.method==='GET')return json(res,200,await createMockBillSettings({command}).get());
     if(route==='party-polls'){
       if(req.method!=='GET')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
       return json(res,200,await createPartyPollService({command}).list());
