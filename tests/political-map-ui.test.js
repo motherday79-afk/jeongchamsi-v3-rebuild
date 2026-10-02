@@ -20,3 +20,7 @@ test('detached home snapshot still receives async map data and keeps one event b
  const {mountPoliticalMap}=await import('../src/ui/political-map.js');const original=globalThis.fetch;let resolve;globalThis.fetch=()=>new Promise(r=>{resolve=r;});const content={innerHTML:''},listeners=[];const root={dataset:{politicalMap:'home'},isConnected:false,querySelector:()=>content,addEventListener:name=>listeners.push(name)};
  try{const pending=mountPoliticalMap(root);resolve({ok:true,json:async()=>({ok:true,items,asOf:'2026-10-02',basis:'등록 정보'})});await pending;assert.match(content.innerHTML,/pmap-preview/);await mountPoliticalMap(root);assert.equal(listeners.filter(x=>x==='click').length,1);}finally{globalThis.fetch=original;}
 });
+test('overall map uses separate solid party flags and omits the home ratio caption',()=>{
+ const svg=mapSvg(items,state,true);assert.ok((svg.match(/class="pmap-party-flag"/g)||[]).length>16);assert.ok(svg.includes('data-flag-party="더불어민주당"'));assert.ok(!svg.includes('<linearGradient'));
+ const html=renderPoliticalMapContent({items,basis:'등록 정보',asOf:'2026-10-02'},state,true);assert.ok(!html.includes('pmap-mini-note'));
+});

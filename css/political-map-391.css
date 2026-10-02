@@ -24,3 +24,13 @@
 .pmap-home>.module-header .eyebrow,.political-comic-home>.module-header .eyebrow{display:block;font-size:10px;line-height:1.4;letter-spacing:.13em;color:#24344b;margin:0}
 .pmap-home>.module-header .module-icon-action,.political-comic-home>.module-header .module-icon-action{flex-shrink:0}
 @media(max-width:767px){.pmap-home>.module-header,.political-comic-home>.module-header{padding:16px 14px}.pmap-home>.module-header h2,.political-comic-home>.module-header h2{font-size:18px}}
+
+/* Tighten headings and preserve readable numbers within a shorter map module. */
+.pmap-home>.module-header,.political-comic-home>.module-header{padding-bottom:6px}
+.political-comic-home .comic-home-gallery{padding-top:6px}
+.pmap-home .pmap-preview{height:280px;padding-bottom:8px}
+.pmap-home .pmap-mini-map{height:264px}
+.pmap-home .pmap-total{flex-direction:row;align-items:center;margin-bottom:6px}
+.pmap-home .pmap-party{padding:5px 0}
+.pmap-home .pmap-flag text{font-size:26px}
+@media(max-width:767px){.pmap-home>.module-header,.political-comic-home>.module-header{padding-bottom:6px}.political-comic-home .comic-home-gallery{padding-top:4px}.pmap-home .pmap-preview{height:auto}.pmap-home .pmap-mini-map{height:225px}}
