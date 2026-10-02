@@ -1,3 +1,6 @@
+import {createArticleCurationService} from '../lib/article-curation.js';
+import {createArticleCandidates} from '../lib/article-candidates.js';
+import {articleCurationRequest} from '../lib/article-curation-http.js';
 import {revokeLogoutPush} from '../lib/push-logout.js';
 import {randomUUID} from 'node:crypto';
 import {createComicService} from '../lib/political-comic-service.js';
@@ -576,6 +579,11 @@ export default async function handler(req,res){
       if(req.method==='POST'){const result=await service.createPartnerApplication(user,bodyOf(req));return json(res,result.ok?201:400,result);}
       if(req.method==='GET'){const result=await service.listPartnerApplications(user);return json(res,result.ok?200:403,result);}
       return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
+    }
+    if(route==='article-curation'){
+      const service=createArticleCurationService({command}),candidateStore=createArticleCandidates({command}),intelligence=createIntelligenceService({command});
+      const result=await articleCurationRequest(req,{url,user:await currentUser(req,command),service,getPerson:id=>getPolitician(command,id),getReport:id=>intelligence.getPublicIntelligence(id),getCandidates:async(person,report,state)=>req.method==='GET'?candidateStore.load(person,report,service,state):[...(await candidateStore.read(person.id)),...(report?.raw?.news?.candidates||[]),...(report?.raw?.news?.items||[]),...(report?.news||[])]});
+      return json(res,result.status,result.body);
     }
     if(route==='person-refresh'){
       const user=await currentUser(req,command);if(!user||user.status==='suspended')return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});

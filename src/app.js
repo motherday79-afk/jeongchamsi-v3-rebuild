@@ -1,3 +1,4 @@
+import {bindArticleCuration} from './ui/article-curation.js?v=0.0.31.401';
 import {renderPoliticalMapPage,mountPoliticalMaps} from './views/political-map.js?v=0.0.31.400';
 import {renderMyDeviceMenu,bindHomeInstall} from './ui/home-install.js?v=0.0.31.398';
 import {renderWebBroadcast,broadcastRequest,bindWebBroadcast} from './ui/web-broadcast.js?v=0.0.31.384';
@@ -35,8 +36,8 @@ import { createPoliticianService } from './core/politicians.js?v=0.0.31.350';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith, isTransientAnalysisRoute } from './core/navigation.js?v=0.0.31.377';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.148';
-import * as views from './views/stage1.js?v=0.0.31.400';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.362';
+import * as views from './views/stage1.js?v=0.0.31.401';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.401';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.364';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident } from './views/participation-pages.js?v=0.0.31.361';
 import { renderPresidentPage } from './views/president.js?v=0.0.31.107';
@@ -352,6 +353,8 @@ async function refreshAiPanelAdmin(operation,result){
   }catch{await render({preserveScroll:true});}
 }
 bindHomeInstall(document);
+bindArticleCuration(document);
+document.addEventListener('jcs:article-curation-changed',()=>{navigation?.clearCache();void render({preserveScroll:true});});
 bindWebBroadcast(document);
 bindAiPanelInteractions(document,{client:aiPanel,navigate:target=>navigation.navigate(target),onSaved:async(result,operation)=>refreshAiPanelAdmin(operation,result)});
 bindGroupInteractions(document,{client:groups,onSaved:async(_result,targetRoute)=>{
