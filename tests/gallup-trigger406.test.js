@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {gallupFingerprint} from '../lib/gallup-trigger.js';
+test('Gallup fingerprint ignores collection timestamps and table order but detects corrections',()=>{const p={publishedDate:'2026-10-02',startDate:'2026-09-29',endDate:'2026-10-01',results:{parties:[{id:'a',value:60},{id:'b',value:40}]}};assert.equal(gallupFingerprint(p),gallupFingerprint({...p,fetchedAt:'different',results:{parties:[...p.results.parties].reverse()}}));assert.notEqual(gallupFingerprint(p),gallupFingerprint({...p,results:{parties:[{id:'a',value:61},{id:'b',value:39}]}}));assert.equal(gallupFingerprint(p),gallupFingerprint({...p,results:undefined,parties:p.results.parties}));});
