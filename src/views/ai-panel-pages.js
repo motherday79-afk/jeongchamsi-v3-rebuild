@@ -1,4 +1,4 @@
-import {renderPartyPoll,renderPollTopicTabs} from './party-poll.js?v=0.0.31.406';
+import {renderPartyPoll,renderPollTopicTabs} from './party-poll.js?v=0.0.31.407';
 import {isSuperAdmin} from '../core/membership.js?v=0.0.31.354';
 import {serviceIconSvg,moduleActionIconSvg} from '../ui/service-icons.js?v=0.0.31.394';
 // Pure HTML renderers. Mutations and JSON/file handling live in ai-panel-interactions.
@@ -16,9 +16,9 @@ const paramsOf=p=>p instanceof URLSearchParams?Object.fromEntries(p):p||{};
 const route=(path,params={})=>`${path}${Object.values(params).some(v=>v!==undefined&&v!==null&&v!=='')?'?'+new URLSearchParams(Object.entries(params).filter(([,v])=>v!==undefined&&v!==null&&v!=='')).toString():''}`;
 const link=(path,label,cls='')=>`<a class="${esc(cls)}" href="#${esc(path)}" data-layout-route="${esc(path)}">${esc(label)}</a>`;
 const isGallupSimulation=r=>r?.questionVersion==='gallup-proportion-simulation-v1'||r?.results?.EXPOSED?.model==='gallup-proportion-simulation-v1';
-const simulationDisclosure='<p class="ai-disclosure">한국갤럽 공식 비율에 가상패널 1,000개를 배정한 시뮬레이션입니다. 실제 응답자 조사나 독립적인 AI 예측·LLM 응답이 아닙니다. 세부 집계도 가상 배정 결과입니다.</p>';
+const simulationDisclosure='';
 const disclosureFor=r=>isGallupSimulation(r)?simulationDisclosure:disclosure;
-const disclosure='<p class="ai-disclosure">AI 패널 결과는 설정된 프로필에 따른 AI 응답입니다. 갤럽·리얼미터·NBS의 실제 여론조사 결과와 구분해 비교합니다.</p>';
+const disclosure='';
 const empty=(failed=false)=>`<div class="ai-empty"><span class="ai-kicker">HUMAN ↔ AI POLL</span><h3>${failed?'자료를 불러오지 못했습니다':'첫 공개 조사를 준비하고 있습니다'}</h3><p>${failed?'잠시 후 다시 방문해 주세요.':'준비가 끝나면 결과를 공개합니다.'}</p></div>`;
 const metrics=(b={})=>`<dl class="ai-metrics">${[['positive','긍정'],['negative','부정'],['undecided','유보']].map(([k,l])=>`<div><dt>${l}</dt><dd>${pct(b[k])}</dd></div>`).join('')}</dl>`;
 const metadata=entries=>`<dl class="ai-meta">${entries.map(([label,v])=>`<div><dt>${esc(label)}</dt><dd>${esc(value(v))}</dd></div>`).join('')}</dl>`;

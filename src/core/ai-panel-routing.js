@@ -1,5 +1,5 @@
 import {isSuperAdmin} from './membership.js?v=0.0.31.354';
-import {renderAiPanelPublic,renderAiPanelAdmin} from '../views/ai-panel-pages.js?v=0.0.31.406';
+import {renderAiPanelPublic,renderAiPanelAdmin} from '../views/ai-panel-pages.js?v=0.0.31.407';
 export async function loadAiPanelPage({admin=false,params=new URLSearchParams(),session={},client}={}){
  if(admin&&!(session.authenticated&&isSuperAdmin(session.user)&&session.user?.status==='active'))return renderAiPanelAdmin({session});
  const partyView=!admin&&params.get('topic')==='party-support';
