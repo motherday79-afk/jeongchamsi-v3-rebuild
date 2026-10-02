@@ -1,6 +1,6 @@
-import {MOCK_BILL,ballots,tally} from '../data/mock-bill.js?v=0.0.31.408';
+import {MOCK_BILL,ballots,tally} from '../data/mock-bill.js?v=0.0.31.409';
 import {moduleActionIconSvg} from '../ui/service-icons.js?v=0.0.31.394';
-import {renderShareMenu} from '../ui/page-share.js?v=0.0.31.408';
+import {renderShareMenu} from '../ui/page-share.js?v=0.0.31.409';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const b=MOCK_BILL;
 const counts=t=>`<div class="bill-counts"><span class="bill-yes">찬성 <strong>${t.yes}</strong></span><span class="bill-no">반대 <strong>${t.no}</strong></span><span class="bill-abstain">기권 <strong>${t.abstain}</strong></span></div>`;
