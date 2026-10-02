@@ -24,12 +24,12 @@ test('specified search only sums exact selected keywords and preserves unreporte
  assert.equal(result.keywords.find(k=>k.keyword==='부안박지원').status,'unavailable');
  const compact=compactSearchMetrics(result);assert.deepEqual(compact.keywords,result.keywords);assert.equal(compact.confirmedVolume.total,120);
 });
-test('restricted news needs the name and a regional term, and repeated RSS results count once',async()=>{
+test('news keeps broad name matches even when search-volume metrics use a regional profile',async()=>{
  const queries=[],items=['박지원 전북 예산 확보','박지원 해남 정책 발표','군산 경제 소식','군산 박지원 시민 간담회'];
  const rss='<rss><channel>'+items.map((title,i)=>`<item><title>${title}</title><link>https://example.org/${i}</link><pubDate>Wed, 16 Sep 2026 01:00:00 GMT</pubDate><source>연합뉴스</source></item>`).join('')+'</channel></rss>';
  const result=await fetchGoogleNews(person,{collectionProfile,now,fetchImpl:async url=>{queries.push(new URL(url).searchParams.get('q'));return {ok:true,text:async()=>rss};}});
- assert.equal(result.items.length,2);assert.ok(result.items.every(x=>/전북|군산/.test(x.title)));
- assert.ok(queries.every(q=>q.includes('박지원')&&q.includes('전북')&&q.includes('부안')));
+ assert.equal(result.items.length,3);assert.ok(result.items.some(x=>x.title.includes('해남')));
+ assert.ok(queries.every(q=>q.includes('박지원')&&!q.includes('전북')&&!q.includes('부안')));
 });
 test('a collection scope change discards the mixed old news ledger',()=>{
  const date='2026-09-16',previous={scope:'name:박지원',daily:[{date,keys:['wrong-person'],collected:true,count:1}]};
