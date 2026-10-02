@@ -54,3 +54,14 @@ test('audit samples remain bounded in persistent storage',()=>{
  const saved=compactIntelligenceDraft({raw:{news:{items:[],identityAudit:audit}}}).input.news.identityAudit;
  assert.equal(saved.excluded.length,5);assert.equal(saved.homonyms,50);assert.equal(saved.excluded[0].title.length,160);
 });
+test('original captions can rescue a suspected homonym without extra reads for every article',async()=>{
+ const titles=['배우 김민석, 새 드라마 출연','김민석은 새 방안을 논의','김민석 현장 방문','김민석 정책 발표'];
+ const xml='<rss><channel>'+titles.map((title,i)=>`<item><title>${title}</title><link>https://www.khan.co.kr/article/${i}</link><pubDate>Fri, 02 Oct 2026 01:00:00 GMT</pubDate></item>`).join('')+'</channel></rss>';
+ let reads=0;
+ const result=await fetchGoogleNews(person,{now:()=>Date.parse('2026-10-02T10:00:00Z'),inspectOriginalArticles:true,fetchImpl:async()=>({ok:true,text:async()=>xml}),readArticleContext:async()=>{reads++;return {status:'read',body:'',captions:['김민석 더불어민주당 의원이 배우들과 이야기를 나누고 있다.']};}});
+ assert.equal(reads,2);assert.equal(result.items.length,4);assert.equal(result.identityAudit.captionMatches,2);assert.equal(result.identityAudit.originalPages.read,2);
+ const saved=compactIntelligenceDraft({raw:{news:result}}).input.news.identityAudit;
+ assert.equal(saved.originalPages.read,2);assert.equal(saved.captionMatches,2);
+ const conflicting=await fetchGoogleNews(person,{now:()=>Date.parse('2026-10-02T10:00:00Z'),inspectOriginalArticles:true,fetchImpl:async()=>({ok:true,text:async()=>xml}),readArticleContext:async()=>({status:'read',body:'',captions:['배우 김민석, 새 드라마 출연']})});
+ assert.equal(conflicting.items.length,3,'unverified HTML may not create new exclusions');
+});
