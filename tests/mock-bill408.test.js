@@ -1,0 +1,9 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {MOCK_BILL,ballots,tally,validateBill} from '../src/data/mock-bill.js';
+import {renderMockBillHome,renderMockBillPage} from '../src/views/mock-bill.js';
+test('bill sharing reaches metadata handler before SPA fallback',async()=>{const config=JSON.parse(await readFile(new URL('../vercel.json',import.meta.url),'utf8'));const i=config.rewrites.findIndex(r=>r.source==='/mock-bill/:path*');assert.ok(i>=0&&i<config.rewrites.length-1);assert.equal(config.rewrites[i].destination,'/api/share?path=mock-bill/:path*');});
+test('300 unique virtual IDs; party counts, results and fixed vacancy agree',()=>{assert.equal(validateBill(MOCK_BILL),true);const rows=ballots(MOCK_BILL);assert.equal(rows.length,300);assert.equal(new Set(rows.map(r=>r.id)).size,300);assert.equal(rows.find(r=>r.party==='vacant').vote,'abstain');for(const p of MOCK_BILL.parties){assert.equal(rows.filter(r=>r.party===p.id).length,p.seats);}assert.equal(tally(MOCK_BILL).yes+tally(MOCK_BILL).no+tally(MOCK_BILL).abstain,300);});
+test('majority boundary and invalid inputs fail closed',()=>{assert.equal(tally({parties:[{yes:150,no:150,abstain:0}]}).passed,false);assert.equal(tally({parties:[{yes:151,no:149,abstain:0}]}).passed,true);assert.throws(()=>validateBill({...MOCK_BILL,parties:[{...MOCK_BILL.parties[0],yes:999}]}));});
+test('home and detail show author, proposal limits, all parties and source, no individual identities',()=>{const h=renderMockBillHome(),d=renderMockBillPage();assert.match(h,/JCS AI 모의법안 발의/);assert.match(h,/data-layout-route="\/mock-bill/);for(const s of ['5천만원','10조원','5년','김광선','원문','조국혁신당','기본소득당','사회민주당'])assert.ok(d.includes(s),s);assert.doesNotMatch(d,/AI-MP-\d/);assert.match(d,/실제.*표결/);assert.match(d,/기권/);});

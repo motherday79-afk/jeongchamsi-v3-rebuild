@@ -160,6 +160,10 @@
       "destination": "/api/share?path=about/:path*"
     },
     {
+      "source": "/mock-bill/:path*",
+      "destination": "/api/share?path=mock-bill/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

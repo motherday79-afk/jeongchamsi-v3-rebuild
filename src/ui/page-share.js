@@ -1,5 +1,5 @@
 import {shareableUrlForRoute} from '../core/navigation.js?v=0.0.31.377';
-export const SHARE_PAGES={'political-map':'대한민국 정치지도','ai-panel':'JCS 여론조사','political-comic':'정치4컷',now:'나우랭크',person:'정치인 데이터',compare:'정치인 비교분석',shop:'정참시 쇼핑몰',poll:'시티즌 초이스',column:'정참시 칼럼',news:'정참시 뉴스',community:'정뮤니티',itsme:'잇츠미',groups:'정참시 모임',campaigns:'정참시 캠페인',president:'대한민국 대통령','generation-president':'세대별 선택',about:'정참시 소개',points:'정참시 포인트',support:'정참시 응원'};
+export const SHARE_PAGES={'mock-bill':'JCS AI 모의법안 발의','political-map':'대한민국 정치지도','ai-panel':'JCS 여론조사','political-comic':'정치4컷',now:'나우랭크',person:'정치인 데이터',compare:'정치인 비교분석',shop:'정참시 쇼핑몰',poll:'시티즌 초이스',column:'정참시 칼럼',news:'정참시 뉴스',community:'정뮤니티',itsme:'잇츠미',groups:'정참시 모임',campaigns:'정참시 캠페인',president:'대한민국 대통령','generation-president':'세대별 선택',about:'정참시 소개',points:'정참시 포인트',support:'정참시 응원'};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function publicShareRoute(route){
  const u=new URL(route,'https://www.jeongchamsi.com'),parts=u.pathname.split('/').filter(Boolean);
