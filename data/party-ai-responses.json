@@ -1,0 +1,4011 @@
+{
+  "schema": "JCS_PARTY_AI_RESPONSES_V1",
+  "sourceFingerprint": "00d444a8a07c1a6ad34de36338d9891a805206940a6d929f7cbee77f984a3efd",
+  "panelId": "1417c833-a84e-42f5-b521-76d5ce884207",
+  "panelHash": "e5c40b874b69a58c7b7786253050e4c5aafca7c4fb8df51b3ee84c4d8d948729",
+  "sourceRunId": "dc0d8d35-7ac3-4913-ad58-6cbe4bcd4c1d",
+  "responseCount": 1000,
+  "responsesHash": "11ea6a8f274fec3ffd234bca58e854f1f2b9a657fed4b54b500577baf3a6cdff",
+  "responses": [
+    {
+      "profileId": "JCS-AI-0001",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0002",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0003",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0004",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0005",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0006",
+      "partyId": "reform"
+    },
+    {
+      "profileId": "JCS-AI-0007",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0008",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0009",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0010",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0011",
+      "partyId": "undecided"
+    },
+    {
+      "profileId": "JCS-AI-0012",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0013",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0014",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0015",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0016",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0017",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0018",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0019",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0020",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0021",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0022",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0023",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0024",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0025",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0026",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0027",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0028",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0029",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0030",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0031",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0032",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0033",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0034",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0035",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0036",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0037",
+      "partyId": "other"
+    },
+    {
+      "profileId": "JCS-AI-0038",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0039",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0040",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0041",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0042",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0043",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0044",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0045",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0046",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0047",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0048",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0049",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0050",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0051",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0052",
+      "partyId": "other"
+    },
+    {
+      "profileId": "JCS-AI-0053",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0054",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0055",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0056",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0057",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0058",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0059",
+      "partyId": "other"
+    },
+    {
+      "profileId": "JCS-AI-0060",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0061",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0062",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0063",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0064",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0065",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0066",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0067",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0068",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0069",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0070",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0071",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0072",
+      "partyId": "undecided"
+    },
+    {
+      "profileId": "JCS-AI-0073",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0074",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0075",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0076",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0077",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0078",
+      "partyId": "other"
+    },
+    {
+      "profileId": "JCS-AI-0079",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0080",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0081",
+      "partyId": "undecided"
+    },
+    {
+      "profileId": "JCS-AI-0082",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0083",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0084",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0085",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0086",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0087",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0088",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0089",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0090",
+      "partyId": "reform"
+    },
+    {
+      "profileId": "JCS-AI-0091",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0092",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0093",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0094",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0095",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0096",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0097",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0098",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0099",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0100",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0101",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0102",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0103",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0104",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0105",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0106",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0107",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0108",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0109",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0110",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0111",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0112",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0113",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0114",
+      "partyId": "undecided"
+    },
+    {
+      "profileId": "JCS-AI-0115",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0116",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0117",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0118",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0119",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0120",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0121",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0122",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0123",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0124",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0125",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0126",
+      "partyId": "other"
+    },
+    {
+      "profileId": "JCS-AI-0127",
+      "partyId": "other"
+    },
+    {
+      "profileId": "JCS-AI-0128",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0129",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0130",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0131",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0132",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0133",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0134",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0135",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0136",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0137",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0138",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0139",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0140",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0141",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0142",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0143",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0144",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0145",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0146",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0147",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0148",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0149",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0150",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0151",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0152",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0153",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0154",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0155",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0156",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0157",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0158",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0159",
+      "partyId": "reform"
+    },
+    {
+      "profileId": "JCS-AI-0160",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0161",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0162",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0163",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0164",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0165",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0166",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0167",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0168",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0169",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0170",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0171",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0172",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0173",
+      "partyId": "reform"
+    },
+    {
+      "profileId": "JCS-AI-0174",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0175",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0176",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0177",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0178",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0179",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0180",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0181",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0182",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0183",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0184",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0185",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0186",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0187",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0188",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0189",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0190",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0191",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0192",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0193",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0194",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0195",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0196",
+      "partyId": "reform"
+    },
+    {
+      "profileId": "JCS-AI-0197",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0198",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0199",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0200",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0201",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0202",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0203",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0204",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0205",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0206",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0207",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0208",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0209",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0210",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0211",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0212",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0213",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0214",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0215",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0216",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0217",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0218",
+      "partyId": "reform"
+    },
+    {
+      "profileId": "JCS-AI-0219",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0220",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0221",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0222",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0223",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0224",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0225",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0226",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0227",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0228",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0229",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0230",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0231",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0232",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0233",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0234",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0235",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0236",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0237",
+      "partyId": "reform"
+    },
+    {
+      "profileId": "JCS-AI-0238",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0239",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0240",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0241",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0242",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0243",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0244",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0245",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0246",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0247",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0248",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0249",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0250",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0251",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0252",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0253",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0254",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0255",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0256",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0257",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0258",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0259",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0260",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0261",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0262",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0263",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0264",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0265",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0266",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0267",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0268",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0269",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0270",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0271",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0272",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0273",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0274",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0275",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0276",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0277",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0278",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0279",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0280",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0281",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0282",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0283",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0284",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0285",
+      "partyId": "other"
+    },
+    {
+      "profileId": "JCS-AI-0286",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0287",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0288",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0289",
+      "partyId": "progressive"
+    },
+    {
+      "profileId": "JCS-AI-0290",
+      "partyId": "other"
+    },
+    {
+      "profileId": "JCS-AI-0291",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0292",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0293",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0294",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0295",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0296",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0297",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0298",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0299",
+      "partyId": "reform"
+    },
+    {
+      "profileId": "JCS-AI-0300",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0301",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0302",
+      "partyId": "reform"
+    },
+    {
+      "profileId": "JCS-AI-0303",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0304",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0305",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0306",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0307",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0308",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0309",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0310",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0311",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0312",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0313",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0314",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0315",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0316",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0317",
+      "partyId": "progressive"
+    },
+    {
+      "profileId": "JCS-AI-0318",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0319",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0320",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0321",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0322",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0323",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0324",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0325",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0326",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0327",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0328",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0329",
+      "partyId": "other"
+    },
+    {
+      "profileId": "JCS-AI-0330",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0331",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0332",
+      "partyId": "other"
+    },
+    {
+      "profileId": "JCS-AI-0333",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0334",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0335",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0336",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0337",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0338",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0339",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0340",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0341",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0342",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0343",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0344",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0345",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0346",
+      "partyId": "other"
+    },
+    {
+      "profileId": "JCS-AI-0347",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0348",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0349",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0350",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0351",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0352",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0353",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0354",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0355",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0356",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0357",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0358",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0359",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0360",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0361",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0362",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0363",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0364",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0365",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0366",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0367",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0368",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0369",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0370",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0371",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0372",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0373",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0374",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0375",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0376",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0377",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0378",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0379",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0380",
+      "partyId": "undecided"
+    },
+    {
+      "profileId": "JCS-AI-0381",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0382",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0383",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0384",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0385",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0386",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0387",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0388",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0389",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0390",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0391",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0392",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0393",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0394",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0395",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0396",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0397",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0398",
+      "partyId": "undecided"
+    },
+    {
+      "profileId": "JCS-AI-0399",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0400",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0401",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0402",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0403",
+      "partyId": "reform"
+    },
+    {
+      "profileId": "JCS-AI-0404",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0405",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0406",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0407",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0408",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0409",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0410",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0411",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0412",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0413",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0414",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0415",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0416",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0417",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0418",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0419",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0420",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0421",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0422",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0423",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0424",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0425",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0426",
+      "partyId": "undecided"
+    },
+    {
+      "profileId": "JCS-AI-0427",
+      "partyId": "reform"
+    },
+    {
+      "profileId": "JCS-AI-0428",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0429",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0430",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0431",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0432",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0433",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0434",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0435",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0436",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0437",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0438",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0439",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0440",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0441",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0442",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0443",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0444",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0445",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0446",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0447",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0448",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0449",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0450",
+      "partyId": "reform"
+    },
+    {
+      "profileId": "JCS-AI-0451",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0452",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0453",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0454",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0455",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0456",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0457",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0458",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0459",
+      "partyId": "other"
+    },
+    {
+      "profileId": "JCS-AI-0460",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0461",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0462",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0463",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0464",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0465",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0466",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0467",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0468",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0469",
+      "partyId": "undecided"
+    },
+    {
+      "profileId": "JCS-AI-0470",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0471",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0472",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0473",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0474",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0475",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0476",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0477",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0478",
+      "partyId": "progressive"
+    },
+    {
+      "profileId": "JCS-AI-0479",
+      "partyId": "progressive"
+    },
+    {
+      "profileId": "JCS-AI-0480",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0481",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0482",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0483",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0484",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0485",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0486",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0487",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0488",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0489",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0490",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0491",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0492",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0493",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0494",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0495",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0496",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0497",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0498",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0499",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0500",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0501",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0502",
+      "partyId": "reform"
+    },
+    {
+      "profileId": "JCS-AI-0503",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0504",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0505",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0506",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0507",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0508",
+      "partyId": "other"
+    },
+    {
+      "profileId": "JCS-AI-0509",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0510",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0511",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0512",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0513",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0514",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0515",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0516",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0517",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0518",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0519",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0520",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0521",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0522",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0523",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0524",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0525",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0526",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0527",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0528",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0529",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0530",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0531",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0532",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0533",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0534",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0535",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0536",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0537",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0538",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0539",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0540",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0541",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0542",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0543",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0544",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0545",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0546",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0547",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0548",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0549",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0550",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0551",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0552",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0553",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0554",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0555",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0556",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0557",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0558",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0559",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0560",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0561",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0562",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0563",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0564",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0565",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0566",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0567",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0568",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0569",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0570",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0571",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0572",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0573",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0574",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0575",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0576",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0577",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0578",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0579",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0580",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0581",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0582",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0583",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0584",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0585",
+      "partyId": "reform"
+    },
+    {
+      "profileId": "JCS-AI-0586",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0587",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0588",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0589",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0590",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0591",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0592",
+      "partyId": "undecided"
+    },
+    {
+      "profileId": "JCS-AI-0593",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0594",
+      "partyId": "other"
+    },
+    {
+      "profileId": "JCS-AI-0595",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0596",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0597",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0598",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0599",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0600",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0601",
+      "partyId": "progressive"
+    },
+    {
+      "profileId": "JCS-AI-0602",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0603",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0604",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0605",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0606",
+      "partyId": "other"
+    },
+    {
+      "profileId": "JCS-AI-0607",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0608",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0609",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0610",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0611",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0612",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0613",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0614",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0615",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0616",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0617",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0618",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0619",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0620",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0621",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0622",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0623",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0624",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0625",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0626",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0627",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0628",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0629",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0630",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0631",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0632",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0633",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0634",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0635",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0636",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0637",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0638",
+      "partyId": "reform"
+    },
+    {
+      "profileId": "JCS-AI-0639",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0640",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0641",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0642",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0643",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0644",
+      "partyId": "other"
+    },
+    {
+      "profileId": "JCS-AI-0645",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0646",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0647",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0648",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0649",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0650",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0651",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0652",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0653",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0654",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0655",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0656",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0657",
+      "partyId": "reform"
+    },
+    {
+      "profileId": "JCS-AI-0658",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0659",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0660",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0661",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0662",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0663",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0664",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0665",
+      "partyId": "reform"
+    },
+    {
+      "profileId": "JCS-AI-0666",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0667",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0668",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0669",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0670",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0671",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0672",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0673",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0674",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0675",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0676",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0677",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0678",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0679",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0680",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0681",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0682",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0683",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0684",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0685",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0686",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0687",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0688",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0689",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0690",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0691",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0692",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0693",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0694",
+      "partyId": "reform"
+    },
+    {
+      "profileId": "JCS-AI-0695",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0696",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0697",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0698",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0699",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0700",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0701",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0702",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0703",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0704",
+      "partyId": "progressive"
+    },
+    {
+      "profileId": "JCS-AI-0705",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0706",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0707",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0708",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0709",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0710",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0711",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0712",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0713",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0714",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0715",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0716",
+      "partyId": "reform"
+    },
+    {
+      "profileId": "JCS-AI-0717",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0718",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0719",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0720",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0721",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0722",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0723",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0724",
+      "partyId": "other"
+    },
+    {
+      "profileId": "JCS-AI-0725",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0726",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0727",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0728",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0729",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0730",
+      "partyId": "progressive"
+    },
+    {
+      "profileId": "JCS-AI-0731",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0732",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0733",
+      "partyId": "reform"
+    },
+    {
+      "profileId": "JCS-AI-0734",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0735",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0736",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0737",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0738",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0739",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0740",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0741",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0742",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0743",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0744",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0745",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0746",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0747",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0748",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0749",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0750",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0751",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0752",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0753",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0754",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0755",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0756",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0757",
+      "partyId": "reform"
+    },
+    {
+      "profileId": "JCS-AI-0758",
+      "partyId": "undecided"
+    },
+    {
+      "profileId": "JCS-AI-0759",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0760",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0761",
+      "partyId": "undecided"
+    },
+    {
+      "profileId": "JCS-AI-0762",
+      "partyId": "undecided"
+    },
+    {
+      "profileId": "JCS-AI-0763",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0764",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0765",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0766",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0767",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0768",
+      "partyId": "other"
+    },
+    {
+      "profileId": "JCS-AI-0769",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0770",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0771",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0772",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0773",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0774",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0775",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0776",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0777",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0778",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0779",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0780",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0781",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0782",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0783",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0784",
+      "partyId": "reform"
+    },
+    {
+      "profileId": "JCS-AI-0785",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0786",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0787",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0788",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0789",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0790",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0791",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0792",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0793",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0794",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0795",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0796",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0797",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0798",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0799",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0800",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0801",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0802",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0803",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0804",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0805",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0806",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0807",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0808",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0809",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0810",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0811",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0812",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0813",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0814",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0815",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0816",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0817",
+      "partyId": "undecided"
+    },
+    {
+      "profileId": "JCS-AI-0818",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0819",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0820",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0821",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0822",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0823",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0824",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0825",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0826",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0827",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0828",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0829",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0830",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0831",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0832",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0833",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0834",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0835",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0836",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0837",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0838",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0839",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0840",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0841",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0842",
+      "partyId": "progressive"
+    },
+    {
+      "profileId": "JCS-AI-0843",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0844",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0845",
+      "partyId": "reform"
+    },
+    {
+      "profileId": "JCS-AI-0846",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0847",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0848",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0849",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0850",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0851",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0852",
+      "partyId": "undecided"
+    },
+    {
+      "profileId": "JCS-AI-0853",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0854",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0855",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0856",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0857",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0858",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0859",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0860",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0861",
+      "partyId": "progressive"
+    },
+    {
+      "profileId": "JCS-AI-0862",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0863",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0864",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0865",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0866",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0867",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0868",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0869",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0870",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0871",
+      "partyId": "reform"
+    },
+    {
+      "profileId": "JCS-AI-0872",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0873",
+      "partyId": "other"
+    },
+    {
+      "profileId": "JCS-AI-0874",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0875",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0876",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0877",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0878",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0879",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0880",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0881",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0882",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0883",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0884",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0885",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0886",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0887",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0888",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0889",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0890",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0891",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0892",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0893",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0894",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0895",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0896",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0897",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0898",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0899",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0900",
+      "partyId": "other"
+    },
+    {
+      "profileId": "JCS-AI-0901",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0902",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0903",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0904",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0905",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0906",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0907",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0908",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0909",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0910",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0911",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0912",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0913",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0914",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0915",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0916",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0917",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0918",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0919",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0920",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0921",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0922",
+      "partyId": "other"
+    },
+    {
+      "profileId": "JCS-AI-0923",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0924",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0925",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0926",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0927",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0928",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0929",
+      "partyId": "undecided"
+    },
+    {
+      "profileId": "JCS-AI-0930",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0931",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0932",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0933",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0934",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0935",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0936",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0937",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0938",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0939",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0940",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0941",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0942",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0943",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0944",
+      "partyId": "reform"
+    },
+    {
+      "profileId": "JCS-AI-0945",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0946",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0947",
+      "partyId": "rebuilding"
+    },
+    {
+      "profileId": "JCS-AI-0948",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0949",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0950",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0951",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0952",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0953",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0954",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0955",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0956",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0957",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0958",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0959",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0960",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0961",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0962",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0963",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0964",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0965",
+      "partyId": "other"
+    },
+    {
+      "profileId": "JCS-AI-0966",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0967",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0968",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0969",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0970",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0971",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0972",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0973",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0974",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0975",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0976",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0977",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0978",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0979",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0980",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0981",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0982",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0983",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0984",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0985",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0986",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0987",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0988",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0989",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0990",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0991",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0992",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0993",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0994",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0995",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0996",
+      "partyId": "ppp"
+    },
+    {
+      "profileId": "JCS-AI-0997",
+      "partyId": "none"
+    },
+    {
+      "profileId": "JCS-AI-0998",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-0999",
+      "partyId": "democratic"
+    },
+    {
+      "profileId": "JCS-AI-1000",
+      "partyId": "ppp"
+    }
+  ]
+}

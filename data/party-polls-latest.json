@@ -1,0 +1,258 @@
+{
+  "items": [
+    {
+      "id": "nbs-party-fb4fabd34d2ce4be",
+      "topic": "party-support",
+      "institution": "NBS",
+      "sourceUrl": "http://nbsurvey.kr/files?vid=190",
+      "startDate": "2026-09-28",
+      "endDate": "2026-09-30",
+      "responseRate": 18.8,
+      "marginOfError": 3.1,
+      "publishedDate": "2026-10-01",
+      "sampleSize": 1000,
+      "method": "휴대전화 가상번호 · 전화면접조사",
+      "commissioner": "엠브레인퍼블릭·케이스탯리서치·코리아리서치·한국리서치 공동",
+      "title": "NBS 정당 지지도",
+      "question": "현재 지지하거나 더 호감이 가는 정당",
+      "results": {
+        "parties": [
+          {
+            "id": "democratic",
+            "name": "더불어민주당",
+            "value": 35
+          },
+          {
+            "id": "ppp",
+            "name": "국민의힘",
+            "value": 25
+          },
+          {
+            "id": "rebuilding",
+            "name": "조국혁신당",
+            "value": 3
+          },
+          {
+            "id": "reform",
+            "name": "개혁신당",
+            "value": 2
+          },
+          {
+            "id": "progressive",
+            "name": "진보당",
+            "value": 1
+          },
+          {
+            "id": "other",
+            "name": "기타 정당",
+            "value": 2
+          },
+          {
+            "id": "none",
+            "name": "지지 정당 없음",
+            "value": 31
+          },
+          {
+            "id": "undecided",
+            "name": "모름·무응답",
+            "value": 1
+          }
+        ]
+      },
+      "evidence": {
+        "url": "http://nbsurvey.kr/files?vid=190",
+        "pages": [
+          15
+        ],
+        "note": "기관 공식 첨부 통계표의 전체 행. 없음과 모름·무응답을 분리하고 공표 반올림 값을 유지했습니다."
+      },
+      "provenance": {
+        "provider": "nbs",
+        "parserVersion": "official-party-document-v1",
+        "contentHash": "1a34f7885ab17951cc1bcee16b1c1f0a89931cca73be7dc5938751a52ba76934"
+      },
+      "fetchedAt": "2026-10-02T14:06:26.079Z"
+    },
+    {
+      "id": "realmeter-party-e57af8f2c0a2d86a",
+      "topic": "party-support",
+      "institution": "리얼미터",
+      "sourceUrl": "http://www.realmeter.net/%ec%97%90%eb%84%88%ec%a7%80%ea%b2%bd%ec%a0%9c%ec%8b%a0%eb%ac%b8-%eb%a6%ac%ec%96%bc%eb%af%b8%ed%84%b0-9%ec%9b%94-4%ec%a3%bc-%ec%b0%a8-%ec%a3%bc%ea%b0%84-%eb%8f%99%ed%96%a5-%e6%9d%8e-%eb%8c%80-2/",
+      "publishedDate": "2026-09-28",
+      "startDate": "2026-09-22",
+      "endDate": "2026-09-23",
+      "sampleSize": 1005,
+      "marginOfError": 3.1,
+      "responseRate": 3.5,
+      "method": "무선(100%) 자동응답 방식",
+      "commissioner": "에너지경제신문",
+      "title": "리얼미터 정당 지지도",
+      "question": "현재 지지하거나 더 호감이 가는 정당",
+      "results": {
+        "parties": [
+          {
+            "id": "democratic",
+            "name": "더불어민주당",
+            "value": 38.7
+          },
+          {
+            "id": "ppp",
+            "name": "국민의힘",
+            "value": 39.4
+          },
+          {
+            "id": "rebuilding",
+            "name": "조국혁신당",
+            "value": 4
+          },
+          {
+            "id": "progressive",
+            "name": "진보당",
+            "value": 1.4
+          },
+          {
+            "id": "reform",
+            "name": "개혁신당",
+            "value": 2.9
+          },
+          {
+            "id": "other",
+            "name": "기타 정당",
+            "value": 3.3
+          },
+          {
+            "id": "none",
+            "name": "지지 정당 없음",
+            "value": 9.1
+          },
+          {
+            "id": "undecided",
+            "name": "모름·무응답",
+            "value": 1.2
+          }
+        ]
+      },
+      "evidence": {
+        "url": "http://www.realmeter.net/wp-content/uploads/2026/09/%EB%B3%B4%EB%8F%84%EC%9A%A9%EB%A6%AC%EC%96%BC%EB%AF%B8%ED%84%B0%EC%A3%BC%EA%B0%84%ED%86%B5%EA%B3%84%ED%91%9C_26%EB%85%849%EC%9B%944%EC%A3%BC%EC%B0%A8_%EC%B5%9C%EC%A2%85_oa6.pdf#new_tab",
+        "pages": [
+          8,
+          9
+        ],
+        "note": "기관 공식 첨부 통계표의 전체 행. 없음과 모름·무응답을 분리하고 공표 반올림 값을 유지했습니다."
+      },
+      "provenance": {
+        "provider": "realmeter",
+        "parserVersion": "official-party-document-v1",
+        "contentHash": "a116acae91caedb8a1bd42fdff27b0b676ff7f814f840c389fcd7b02389de1f9"
+      },
+      "fetchedAt": "2026-10-02T14:06:26.079Z"
+    },
+    {
+      "id": "gallup-party-24f6497ef56f53f7",
+      "topic": "party-support",
+      "institution": "한국갤럽",
+      "sourceUrl": "https://www.gallup.co.kr/gallupdb/reportContent.asp?seqNo=1659",
+      "publishedDate": "2026-09-18",
+      "startDate": "2026-09-15",
+      "endDate": "2026-09-17",
+      "sampleSize": 1002,
+      "method": "전화조사원 인터뷰(CATI)",
+      "marginOfError": 3.1,
+      "responseRate": 9.8,
+      "commissioner": "한국갤럽 자체 조사",
+      "title": "한국갤럽 정당 지지도",
+      "question": "현재 지지하거나 더 호감이 가는 정당",
+      "results": {
+        "parties": [
+          {
+            "id": "democratic",
+            "name": "더불어민주당",
+            "value": 40
+          },
+          {
+            "id": "ppp",
+            "name": "국민의힘",
+            "value": 27
+          },
+          {
+            "id": "rebuilding",
+            "name": "조국혁신당",
+            "value": 3
+          },
+          {
+            "id": "progressive",
+            "name": "진보당",
+            "value": 1
+          },
+          {
+            "id": "reform",
+            "name": "개혁신당",
+            "value": 3
+          },
+          {
+            "id": "basic-income",
+            "name": "기본소득당",
+            "value": 0.1
+          },
+          {
+            "id": "social-democratic",
+            "name": "사회민주당",
+            "value": 0.1
+          },
+          {
+            "id": "other",
+            "name": "기타 정당",
+            "value": 1
+          },
+          {
+            "id": "none",
+            "name": "지지 정당 없음",
+            "value": 23
+          },
+          {
+            "id": "undecided",
+            "name": "모름·무응답",
+            "value": 2
+          }
+        ]
+      },
+      "evidence": {
+        "url": "https://www.gallup.co.kr/dir/GallupKoreaDaily/GallupKoreaDailyOpinion_676(20260918).pdf",
+        "pages": [
+          13
+        ],
+        "note": "기관 공식 첨부 통계표의 전체 행. 없음과 모름·무응답을 분리하고 공표 반올림 값을 유지했습니다."
+      },
+      "provenance": {
+        "provider": "gallup",
+        "parserVersion": "official-party-document-v1",
+        "contentHash": "e9974060fe65852a8c5b3a8416a2bcc11eb020a4bac208397bada87660ad4f80"
+      },
+      "fetchedAt": "2026-10-02T14:06:26.079Z"
+    }
+  ],
+  "providers": [
+    {
+      "id": "gallup",
+      "institution": "한국갤럽",
+      "state": "success",
+      "checkedAt": "2026-10-02T14:06:26.079Z",
+      "fetchedCount": 1
+    },
+    {
+      "id": "realmeter",
+      "institution": "리얼미터",
+      "state": "success",
+      "checkedAt": "2026-10-02T14:06:26.079Z",
+      "fetchedCount": 1
+    },
+    {
+      "id": "nbs",
+      "institution": "NBS",
+      "state": "success",
+      "checkedAt": "2026-10-02T14:06:26.079Z",
+      "fetchedCount": 1
+    }
+  ],
+  "updatedAt": "2026-10-02T14:06:31.175Z"
+}

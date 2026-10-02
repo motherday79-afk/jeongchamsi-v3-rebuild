@@ -11,9 +11,9 @@ import {renderAdminWorkspace,toggleAdminMenu} from './views/admin-workspace.js?v
 import {setupHomeBannerRotation} from './ui/home-banner-rotation.js?v=0.0.31.380';
 import {isSuperAdmin} from './core/membership.js?v=0.0.31.354';
 import {loadBadgeStatus} from './core/badge-loading.js?v=0.0.31.349';
-import {createAiPanelClient} from './core/ai-panel-client.js?v=0.0.31.194';
-import {loadAiPanelPage} from './core/ai-panel-routing.js?v=0.0.31.394';
-import {bindAiPanelInteractions} from './ui/ai-panel-interactions.js?v=0.0.31.346';
+import {createAiPanelClient} from './core/ai-panel-client.js?v=0.0.31.405';
+import {loadAiPanelPage} from './core/ai-panel-routing.js?v=0.0.31.405';
+import {bindAiPanelInteractions} from './ui/ai-panel-interactions.js?v=0.0.31.405';
 import {bindPersonRefresh,loadMemberRefresh,watchAnalysisAccess} from './ui/person-refresh.js?v=0.0.31.362';
 import { bindRankingWeights, rankingWeightsReady, updateRunningRankingWeights } from './ui/ranking-weights.js?v=0.0.31.174';
 import { createGroupClient } from './core/group-client.js?v=0.0.31.172';
@@ -28,7 +28,7 @@ import { refreshFontScale } from './ui/font-scale.js?v=0.0.31.56';
 import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.400';
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.56';
 import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.394';
-import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.400';
+import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.405';
 import { focusCageCompose, setupHomeCompare, setupPoliticianAutocomplete, setupLayoutInteractions, setupPoliticianPhotoFallback, setupNowCarousel, setupCageCountdown, setupDesktopHomeViewport } from './ui/interactions.js?v=0.0.31.380';
 import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.354';
 import { createContentService, loadNavigationDashboard, loadPersonNavigation } from './core/content.js?v=0.0.31.389';
@@ -225,7 +225,7 @@ async function render({preserveScroll=false,refreshHome=false,freshSession=false
   let body='';
   if(p[0]==='admin'&&!isSuperAdmin(session.user)){body='<section class="module"><h2>최고관리자 전용 페이지입니다</h2><p>현재 회원등급으로는 접근할 수 없습니다.</p><button type="button" class="primary-btn" data-layout-route="/mypage">마이페이지로</button></section>';}
   else if(!p.length){
-    const [memberCount,columns,community,itsmePosts,newsPosts,polls,generation,rankResult,homeBanner,trendingResult,aiPanelResult,aiHumanResult,fortuneData,comicResult]=await Promise.all([
+    const [memberCount,columns,community,itsmePosts,newsPosts,polls,generation,rankResult,homeBanner,trendingResult,aiPanelResult,aiHumanResult,fortuneData,comicResult,partyResult]=await Promise.all([
       auth.memberCount().catch(()=>0),
       content.list('columns').catch(()=>[]),
       content.list('community').catch(()=>[]),
@@ -234,12 +234,12 @@ async function render({preserveScroll=false,refreshHome=false,freshSession=false
       content.readDomain('polls').catch(()=>({items:[]})),
       content.readDomain('generation').catch(()=>({})),
       politicians.rankings().catch(()=>({ok:false,items:[]})),
-      content.homeBanner().catch(()=>null),politicians.trending().catch(()=>({items:[]})),aiPanel.list(),aiPanel.humanPolls(),session.authenticated?auth.fortuneToday().catch(()=>({ok:false,error:'FORTUNE_LOAD_FAILED'})):Promise.resolve({ok:true,needsLogin:true}),comicRequest()
+      content.homeBanner().catch(()=>null),politicians.trending().catch(()=>({items:[]})),aiPanel.list(),aiPanel.humanPolls(),session.authenticated?auth.fortuneToday().catch(()=>({ok:false,error:'FORTUNE_LOAD_FAILED'})):Promise.resolve({ok:true,needsLogin:true}),comicRequest(),aiPanel.partyPolls()
     ]);
     const rank=rankResult?.ok?(Array.isArray(rankResult.items)?rankResult.items:[]).slice(0,100):[];
     const generationIds=(Array.isArray(generation?.candidates)?generation.candidates:[]).slice(0,75),profileIds=[...new Set(generationIds)],profileResult=profileIds.length?await politicians.profiles(profileIds).catch(()=>({items:[]})):{items:[]},resolvedPeople=(profileResult.items||[]).map(item=>({ok:true,item}));
     const peopleById=Object.fromEntries(resolvedPeople.filter(result=>result?.ok&&result.item).map(result=>[result.item.id,result.item])),generationView={...generation,candidatePeople:peopleById,candidateLabels:Object.fromEntries(generationIds.map(id=>[id,peopleById[id]?.name||id]))};
-    const home={...HOME_FIXTURE,comicResult,aiPanelResult:{...aiPanelResult,human:aiHumanResult},fortuneData,trending:trendingResult.items||[],memberCount,columns,community,communityData:content.peekDomain('community')||{items:community},itsmePosts,newsPosts,polls,generation:generationView,rank,homeBanner,recentPoliticians:loadRecentPoliticians(),session,badgeStatus};
+    const home={...HOME_FIXTURE,comicResult,aiPanelResult:{...aiPanelResult,human:aiHumanResult,party:partyResult},fortuneData,trending:trendingResult.items||[],memberCount,columns,community,communityData:content.peekDomain('community')||{items:community},itsmePosts,newsPosts,polls,generation:generationView,rank,homeBanner,recentPoliticians:loadRecentPoliticians(),session,badgeStatus};
     body=`<div class="product-home-wrap">${renderHomeLayout(home)}</div>`;
   }
   else if(p[0]==='political-map')body=renderPoliticalMapPage();

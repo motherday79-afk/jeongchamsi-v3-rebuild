@@ -19,6 +19,7 @@ import {miningRequest} from '../lib/mining-http.js';
 import {createAiPanelService} from '../lib/ai-panel-service.js';
 import {aiPanelRequest} from '../lib/ai-panel-http.js';
 import {createHumanPollService} from '../lib/human-poll-service.js';
+import {createPartyPollService} from '../lib/party-poll-service.js';
 import {createFortuneService} from '../lib/fortune-service.js';
 import {humanPollRequest} from '../lib/human-poll-http.js';
 import { createMediaSpreadService } from '../lib/media-spread-service.js';
@@ -526,6 +527,10 @@ export default async function handler(req,res){
       const result=await miningRequest(req,{service:{...createMiningService({command}),upload:uploadMineAdImage},user:await currentUser(req,command),url});
       if(result.redirect){res.statusCode=303;res.setHeader('Location',result.redirect);res.setHeader('Cache-Control','no-store');res.setHeader('Referrer-Policy','no-referrer');res.end();return;}
       return json(res,result.status,result.data);
+    }
+    if(route==='party-polls'){
+      if(req.method!=='GET')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
+      return json(res,200,await createPartyPollService({command}).list());
     }
     if(route==='ai-panel-human'){
       const result=await humanPollRequest(req,{service:createHumanPollService({command}),user:req.method==='POST'?await currentUser(req,command):null,url});

@@ -1,0 +1,400 @@
+{
+  "state": "ready",
+  "topic": "party-support",
+  "institution": "JCS AI",
+  "id": "jcs-ai-party-00d444a8a07c1a6ad34d",
+  "publishedDate": "2026-10-02",
+  "generatedAt": "2026-10-02T14:14:38.101Z",
+  "checkedAt": "2026-10-02T14:14:38.101Z",
+  "stale": false,
+  "refreshState": "generated",
+  "label": "가상패널 시뮬레이션",
+  "results": {
+    "parties": [
+      {
+        "id": "democratic",
+        "name": "더불어민주당",
+        "value": 36.7
+      },
+      {
+        "id": "ppp",
+        "name": "국민의힘",
+        "value": 31.1
+      },
+      {
+        "id": "rebuilding",
+        "name": "조국혁신당",
+        "value": 3.6
+      },
+      {
+        "id": "reform",
+        "name": "개혁신당",
+        "value": 2.5
+      },
+      {
+        "id": "progressive",
+        "name": "진보당",
+        "value": 0.9
+      },
+      {
+        "id": "other",
+        "name": "기타 정당",
+        "value": 2.2
+      },
+      {
+        "id": "none",
+        "name": "지지 정당 없음",
+        "value": 21.5
+      },
+      {
+        "id": "undecided",
+        "name": "모름·무응답",
+        "value": 1.5
+      }
+    ]
+  },
+  "model": "deterministic-synthetic-panel-v1",
+  "methodology": "공식조사 기반 가상패널 시뮬레이션 · 실제 여론조사 아님. 최근 45일 이내 기관별 최신 정당 지지도에서 소수 정당을 기타로 합치고, 공표 반올림 합계를 100으로 정규화한 뒤 기관별 동일 비중으로 평균했습니다. 필수 범주가 누락된 기관은 제외하며 누락값을 0으로 추정하지 않습니다. 기존 AI 합성패널 ID 1,000개에 SHA-256 기반 고정 난수로 정당 범주를 배정한 규칙 기반 결과입니다. 인구통계·대통령 평가 응답은 사용하지 않았고, 1,000회 LLM 실행이나 독립 조사·통계적 추정을 의미하지 않습니다. API·실시간 모델 호출은 없습니다.",
+  "sourceFingerprint": "00d444a8a07c1a6ad34de36338d9891a805206940a6d929f7cbee77f984a3efd",
+  "sourcePollIds": [
+    "gallup-party-24f6497ef56f53f7",
+    "nbs-party-fb4fabd34d2ce4be",
+    "realmeter-party-e57af8f2c0a2d86a"
+  ],
+  "syntheticPanelSize": 1000,
+  "basis": {
+    "kind": "source-conditioned-synthetic-panel",
+    "version": "deterministic-synthetic-panel-v1",
+    "independentSurvey": false,
+    "liveModelCalls": 0,
+    "weighting": "equal-provider-after-normalizing-published-totals",
+    "assignment": "sha256-first-52-bits-categorical",
+    "sourceCount": 3,
+    "latestSourceDate": "2026-10-01",
+    "excludedSourcePollIds": [],
+    "baseline": [
+      {
+        "id": "democratic",
+        "name": "더불어민주당",
+        "value": 37.87338656021291
+      },
+      {
+        "id": "ppp",
+        "name": "국민의힘",
+        "value": 30.448702594810374
+      },
+      {
+        "id": "rebuilding",
+        "name": "조국혁신당",
+        "value": 3.3313373253493013
+      },
+      {
+        "id": "reform",
+        "name": "개혁신당",
+        "value": 2.631337325349301
+      },
+      {
+        "id": "progressive",
+        "name": "진보당",
+        "value": 1.132667997338656
+      },
+      {
+        "id": "other",
+        "name": "기타 정당",
+        "value": 2.1658682634730537
+      },
+      {
+        "id": "none",
+        "name": "지지 정당 없음",
+        "value": 21.018030605455753
+      },
+      {
+        "id": "undecided",
+        "name": "모름·무응답",
+        "value": 1.3986693280106455
+      }
+    ],
+    "sources": [
+      {
+        "id": "gallup-party-24f6497ef56f53f7",
+        "provider": "gallup",
+        "institution": "한국갤럽",
+        "sourceUrl": "https://www.gallup.co.kr/gallupdb/reportContent.asp?seqNo=1659",
+        "publishedDate": "2026-09-18",
+        "startDate": "2026-09-15",
+        "endDate": "2026-09-17",
+        "method": "전화조사원 인터뷰(CATI)",
+        "parties": [
+          {
+            "id": "basic-income",
+            "value": 0.1
+          },
+          {
+            "id": "democratic",
+            "value": 40
+          },
+          {
+            "id": "none",
+            "value": 23
+          },
+          {
+            "id": "other",
+            "value": 1
+          },
+          {
+            "id": "ppp",
+            "value": 27
+          },
+          {
+            "id": "progressive",
+            "value": 1
+          },
+          {
+            "id": "rebuilding",
+            "value": 3
+          },
+          {
+            "id": "reform",
+            "value": 3
+          },
+          {
+            "id": "social-democratic",
+            "value": 0.1
+          },
+          {
+            "id": "undecided",
+            "value": 2
+          }
+        ],
+        "collapsedPartyIds": [
+          "basic-income",
+          "social-democratic"
+        ],
+        "normalizedParties": [
+          {
+            "id": "democratic",
+            "name": "더불어민주당",
+            "value": 39.920159680638726
+          },
+          {
+            "id": "ppp",
+            "name": "국민의힘",
+            "value": 26.946107784431142
+          },
+          {
+            "id": "rebuilding",
+            "name": "조국혁신당",
+            "value": 2.9940119760479047
+          },
+          {
+            "id": "reform",
+            "name": "개혁신당",
+            "value": 2.9940119760479047
+          },
+          {
+            "id": "progressive",
+            "name": "진보당",
+            "value": 0.9980039920159681
+          },
+          {
+            "id": "other",
+            "name": "기타 정당",
+            "value": 1.1976047904191618
+          },
+          {
+            "id": "none",
+            "name": "지지 정당 없음",
+            "value": 22.954091816367267
+          },
+          {
+            "id": "undecided",
+            "name": "모름·무응답",
+            "value": 1.9960079840319362
+          }
+        ]
+      },
+      {
+        "id": "nbs-party-fb4fabd34d2ce4be",
+        "provider": "nbs",
+        "institution": "NBS",
+        "sourceUrl": "http://nbsurvey.kr/files?vid=190",
+        "publishedDate": "2026-10-01",
+        "startDate": "2026-09-28",
+        "endDate": "2026-09-30",
+        "method": "휴대전화 가상번호 · 전화면접조사",
+        "parties": [
+          {
+            "id": "democratic",
+            "value": 35
+          },
+          {
+            "id": "none",
+            "value": 31
+          },
+          {
+            "id": "other",
+            "value": 2
+          },
+          {
+            "id": "ppp",
+            "value": 25
+          },
+          {
+            "id": "progressive",
+            "value": 1
+          },
+          {
+            "id": "rebuilding",
+            "value": 3
+          },
+          {
+            "id": "reform",
+            "value": 2
+          },
+          {
+            "id": "undecided",
+            "value": 1
+          }
+        ],
+        "collapsedPartyIds": [],
+        "normalizedParties": [
+          {
+            "id": "democratic",
+            "name": "더불어민주당",
+            "value": 35
+          },
+          {
+            "id": "ppp",
+            "name": "국민의힘",
+            "value": 25
+          },
+          {
+            "id": "rebuilding",
+            "name": "조국혁신당",
+            "value": 3
+          },
+          {
+            "id": "reform",
+            "name": "개혁신당",
+            "value": 2
+          },
+          {
+            "id": "progressive",
+            "name": "진보당",
+            "value": 1
+          },
+          {
+            "id": "other",
+            "name": "기타 정당",
+            "value": 2
+          },
+          {
+            "id": "none",
+            "name": "지지 정당 없음",
+            "value": 31
+          },
+          {
+            "id": "undecided",
+            "name": "모름·무응답",
+            "value": 1
+          }
+        ]
+      },
+      {
+        "id": "realmeter-party-e57af8f2c0a2d86a",
+        "provider": "realmeter",
+        "institution": "리얼미터",
+        "sourceUrl": "http://www.realmeter.net/%ec%97%90%eb%84%88%ec%a7%80%ea%b2%bd%ec%a0%9c%ec%8b%a0%eb%ac%b8-%eb%a6%ac%ec%96%bc%eb%af%b8%ed%84%b0-9%ec%9b%94-4%ec%a3%bc-%ec%b0%a8-%ec%a3%bc%ea%b0%84-%eb%8f%99%ed%96%a5-%e6%9d%8e-%eb%8c%80-2/",
+        "publishedDate": "2026-09-28",
+        "startDate": "2026-09-22",
+        "endDate": "2026-09-23",
+        "method": "무선(100%) 자동응답 방식",
+        "parties": [
+          {
+            "id": "democratic",
+            "value": 38.7
+          },
+          {
+            "id": "none",
+            "value": 9.1
+          },
+          {
+            "id": "other",
+            "value": 3.3
+          },
+          {
+            "id": "ppp",
+            "value": 39.4
+          },
+          {
+            "id": "progressive",
+            "value": 1.4
+          },
+          {
+            "id": "rebuilding",
+            "value": 4
+          },
+          {
+            "id": "reform",
+            "value": 2.9
+          },
+          {
+            "id": "undecided",
+            "value": 1.2
+          }
+        ],
+        "collapsedPartyIds": [],
+        "normalizedParties": [
+          {
+            "id": "democratic",
+            "name": "더불어민주당",
+            "value": 38.699999999999996
+          },
+          {
+            "id": "ppp",
+            "name": "국민의힘",
+            "value": 39.39999999999999
+          },
+          {
+            "id": "rebuilding",
+            "name": "조국혁신당",
+            "value": 3.9999999999999996
+          },
+          {
+            "id": "reform",
+            "name": "개혁신당",
+            "value": 2.8999999999999995
+          },
+          {
+            "id": "progressive",
+            "name": "진보당",
+            "value": 1.4
+          },
+          {
+            "id": "other",
+            "name": "기타 정당",
+            "value": 3.2999999999999994
+          },
+          {
+            "id": "none",
+            "name": "지지 정당 없음",
+            "value": 9.099999999999998
+          },
+          {
+            "id": "undecided",
+            "name": "모름·무응답",
+            "value": 1.1999999999999997
+          }
+        ]
+      }
+    ]
+  },
+  "audit": {
+    "panelId": "1417c833-a84e-42f5-b521-76d5ce884207",
+    "panelHash": "e5c40b874b69a58c7b7786253050e4c5aafca7c4fb8df51b3ee84c4d8d948729",
+    "sourceRunId": "dc0d8d35-7ac3-4913-ad58-6cbe4bcd4c1d",
+    "responseCount": 1000,
+    "responsesHash": "11ea6a8f274fec3ffd234bca58e854f1f2b9a657fed4b54b500577baf3a6cdff",
+    "responsesFile": "data/party-ai-responses.json"
+  }
+}

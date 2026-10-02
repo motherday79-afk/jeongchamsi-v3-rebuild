@@ -1,7 +1,7 @@
 // Normal public-site browser navigation; no token synthesis or TLS bypass.
 import {chromium} from 'playwright';
 import {collectDocumentPolls} from '../lib/human-poll-document-collector.js';
-export async function collectNbsInBrowser(){
+export async function collectNbsInBrowser({collector=collectDocumentPolls}={}){
 const browser=await chromium.launch();
 try{
  const context=await browser.newContext(),page=await context.newPage();
@@ -16,9 +16,9 @@ try{
   const response=await context.request.fetch(url.href,{method:options.method||'GET',data:options.body?.toString(),headers:options.body?{'Content-Type':'application/x-www-form-urlencoded'}:undefined,maxRedirects:0,timeout:15000});
   return new Response(await response.body(),{status:response.status(),headers:response.headers()});
  };
- const result=await collectDocumentPolls({fetch:browserFetch,providerIds:['nbs']});
+ const result=await collector({fetch:browserFetch,providerIds:['nbs']});
  console.log('NBS_BROWSER',JSON.stringify(result.providers));
- console.log('NBS_ITEMS',JSON.stringify(result.items.map(p=>({date:p.publishedDate,overall:p.results.overall,ageRows:Object.keys(p.results.age).length,url:p.sourceUrl}))));
+ console.log('NBS_ITEMS',JSON.stringify(result.items.map(p=>({date:p.publishedDate,overall:p.results.overall,ageRows:Object.keys(p.results.age||{}).length,url:p.sourceUrl}))));
  return result;
 }finally{await browser.close();}
 }
