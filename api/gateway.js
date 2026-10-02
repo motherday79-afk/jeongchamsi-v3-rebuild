@@ -1,3 +1,4 @@
+import {revokeLogoutPush} from '../lib/push-logout.js';
 import {randomUUID} from 'node:crypto';
 import {createComicService} from '../lib/political-comic-service.js';
 import {canAccessAdminEndpoint,canWriteEditorial,isSuperAdmin} from '../src/core/membership.js';
@@ -224,7 +225,7 @@ async function handleUser(req,res,route,command,url){
   if(route==='user/login'&&req.method==='POST'){
     const body=bodyOf(req);const user=await authenticateUser(command,body.id,body.password);if(!user)return json(res,401,{ok:false,error:'INVALID_LOGIN'});setSession(res,user);return json(res,200,{ok:true,user});
   }
-  if(route==='user/logout'&&req.method==='POST'){const user=await currentUser(req,command);if(user){await pushService(command).revoke(user.id);await groupPushService(command).revoke(user.id);}clearSession(res);return json(res,200,{ok:true});}
+  if(route==='user/logout'&&req.method==='POST'){const user=await currentUser(req,command);if(user){await revokeLogoutPush(req,user.id,pushService(command),groupPushService(command));}clearSession(res);return json(res,200,{ok:true});}
   if(route==='user/session'&&req.method==='GET'){const user=await referralProfile(command,await currentUser(req,command));return json(res,200,{authenticated:!!user,user:user||null});}
   if(route==='user/profile'&&req.method==='POST'){const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});return json(res,200,await updateProfile(command,user.id,bodyOf(req)));}
   if(route==='user/fortune'){

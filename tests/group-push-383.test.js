@@ -82,3 +82,15 @@ test('highest administrator has byline field inside Cage opinion form, not just 
  const form=html.match(/<form data-stage-form="board"[\s\S]*?<\/form>/)[0];assert.match(form,/name="displayAuthor"/);assert.match(form,/의견 제목/);
  const staff=await cageDetail(item,content,{authenticated:true,user:{id:'staff',role:'admin'}});assert.doesNotMatch(staff.match(/<form data-stage-form="board"[\s\S]*?<\/form>/)[0],/name="displayAuthor"/);
 });
+test('channel-scoped logout revokes only that transport; explicit revoke still removes all',async()=>{
+ const f=fixture();
+ await f.service.register({id:'one'},{token:token('a'),enabled:true});
+ await f.service.register({id:'one'},{token:token('b'),enabled:true});
+ const key=GP.devices('one');f.hashes.get(key).web=JSON.stringify({kind:'web',subscription:{},at:1});
+ await f.service.revoke('one',{kind:'web'});
+ assert.equal(Object.keys(f.hashes.get(key)).length,2);
+ f.hashes.get(key).web=JSON.stringify({kind:'web',subscription:{},at:1});
+ await f.service.revoke('one',{kind:'native'});
+ assert.deepEqual(Object.keys(f.hashes.get(key)),['web']);
+ await f.service.revoke('one');assert.equal(f.hashes.has(key),false);
+});

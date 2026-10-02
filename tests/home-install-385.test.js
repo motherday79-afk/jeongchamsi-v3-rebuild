@@ -11,3 +11,14 @@ test('installation instructions match Safari, Samsung Internet and Chrome',()=>{
 test('My Page puts notification and install actions together with separate accessible controls',()=>{
  const html=renderMyDeviceMenu();assert.match(html,/href="\/notifications"/);assert.match(html,/<button[^>]+data-home-install/);assert.match(html,/홈 화면에 정참시 추가/);assert.doesNotMatch(html,/<a[^>]*>[\s\S]*<button[\s\S]*<\/a>/);
 });
+test('existing update-push APKs retain their native notification settings after web push rollout',()=>{
+ const original=Object.getOwnPropertyDescriptor(globalThis,'navigator');
+ try{
+  for(const version of [345,348,382,383]){
+   Object.defineProperty(globalThis,'navigator',{configurable:true,value:{userAgent:`Android JCSAndroid/1.1.${version}`}});
+   assert.match(renderMyDeviceMenu(),/href="jcs-push:\/\/settings"/,`APK ${version}`);
+  }
+  Object.defineProperty(globalThis,'navigator',{configurable:true,value:{userAgent:'Android Chrome SamsungBrowser'}});
+  assert.match(renderMyDeviceMenu(),/href="\/notifications"/);
+ }finally{if(original)Object.defineProperty(globalThis,'navigator',original);else delete globalThis.navigator;}
+});
