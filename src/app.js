@@ -1,4 +1,4 @@
-import {bindArticleCuration} from './ui/article-curation.js?v=0.0.31.401';
+import {bindArticleCuration} from './ui/article-curation.js?v=0.0.31.402';
 import {renderPoliticalMapPage,mountPoliticalMaps} from './views/political-map.js?v=0.0.31.400';
 import {renderMyDeviceMenu,bindHomeInstall} from './ui/home-install.js?v=0.0.31.398';
 import {renderWebBroadcast,broadcastRequest,bindWebBroadcast} from './ui/web-broadcast.js?v=0.0.31.384';
@@ -36,8 +36,8 @@ import { createPoliticianService } from './core/politicians.js?v=0.0.31.350';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith, isTransientAnalysisRoute } from './core/navigation.js?v=0.0.31.377';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.148';
-import * as views from './views/stage1.js?v=0.0.31.401';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.401';
+import * as views from './views/stage1.js?v=0.0.31.402';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.402';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.364';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident } from './views/participation-pages.js?v=0.0.31.361';
 import { renderPresidentPage } from './views/president.js?v=0.0.31.107';

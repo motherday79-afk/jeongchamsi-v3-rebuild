@@ -1,4 +1,4 @@
-import {canCurateArticles,renderArticleEditor} from '../ui/article-curation.js?v=0.0.31.401';
+import {canCurateArticles,renderArticleEditor} from '../ui/article-curation.js?v=0.0.31.402';
 import {canViewAdminAnalysis,isSuperAdmin} from '../core/membership.js?v=0.0.31.354';
 import {renderRankUpdateNote} from './now-rank-schedule.js?v=341.3';
 import {renderAnalysisAccess,renderMemberRefreshAction,renderMemberRefreshMount} from './person-refresh.js?v=0.0.31.362';
