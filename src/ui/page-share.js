@@ -29,3 +29,15 @@ export function bindPageShare(root){
   }catch{state.textContent='공유하지 못했습니다. 다시 시도해 주세요.';}finally{b.disabled=false;}
  });
 }
+export function placePageShare(root=document){
+ const scope=root.querySelector('#app')||root;
+ for(const entry of scope.querySelectorAll('.page-share-entry')){
+  const menu=entry.querySelector('details');if(!menu){entry.remove();continue;}
+  const heading=scope.querySelector('.jcs-report-head h1,.cb-heading h1,.subpage h1,main h1,h1,.subpage h2,main h2,h2');
+  let host=heading?.closest('header');
+  if(!host&&heading){host=document.createElement('div');heading.before(host);host.append(heading);}
+  host=host||scope.querySelector('main,section');if(!host)continue;
+  host.classList.add('page-share-title');host.append(menu);entry.remove();
+ }
+ for(const menu of scope.querySelectorAll('.comic-share-menu')){const host=menu.parentElement;if(host?.matches('header'))host.classList.add('page-share-title');}
+}
