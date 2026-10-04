@@ -1,5 +1,5 @@
 export const MOCK_BILL={
- id:'financial-recovery-001',number:'001',title:'금융자산 피해회복 특별법',author:'김광선',date:'2026-10-03',documentDate:'2026-08-08',version:2,
+ id:'financial-recovery-001',number:'001',title:'금융자산 피해회복 특별법',author:'김광선',date:'2026-10-03',documentDate:'2026-08-08',version:3,
  summary:'국민이 자신의 자금을 맡기고, 공적 금융역량으로 회복의 기회를 만드는 국민회복계좌를 제안합니다.',
  document:'/assets/bills/financial-recovery-kim.pdf',
  seatSource:'https://bill.modu.help/parties',seatDate:'2026-10-03',
@@ -14,8 +14,8 @@ export const MOCK_BILL={
  ['다음 단계로 무엇을 요청하나요?','관계부처 합동 TF가 60일 이내 피해규모, 법적 협업 범위, 재정추계와 특별법 조문안을 검토하도록 요청합니다.']
  ],
  parties:[
- {id:'democratic',name:'더불어민주당',color:'#2463b4',seats:161,yes:23,no:136,abstain:2,reason:'피해회복이라는 목표에 대한 공감과 별개로, 재정 노출액과 기존 금융정책과의 정합성이 충분히 정리되지 않았다는 우려를 크게 반영했습니다.',support:'현금 보전 대신 자기자금 참여와 전문운용을 연결하는 회복 통로.',concern:'국가보증의 구체적 상한과 피해 인정기간, 다른 피해자와의 형평성.',condition:'국가보증 상한·재원과 소액 피해자 우선 참여 기준을 구체화.'},
- {id:'ppp',name:'국민의힘',color:'#d94854',seats:109,yes:108,no:0,abstain:1,reason:'정부의 투자자 보호 대응을 점검하고 피해회복 대안을 요구하는 동기를 반영했습니다. 공적 부담에 대한 검토를 요구하는 기권 1명을 두었습니다.',support:'정부 대응 점검과 자기책임을 유지하는 피해회복 대안.',concern:'국가의 투자위험 인수와 향후 반복적인 구제 요구.',condition:'보증 한도와 일몰을 엄격히 하고 위험자산 편입 제한을 명문화.'},
+ {id:'democratic',name:'더불어민주당',color:'#2463b4',seats:161,yes:150,no:0,abstain:11,reason:'피해회복이라는 목표에 대한 공감과 별개로, 재정 노출액과 기존 금융정책과의 정합성이 충분히 정리되지 않았다는 우려를 크게 반영했습니다.',support:'현금 보전 대신 자기자금 참여와 전문운용을 연결하는 회복 통로.',concern:'국가보증의 구체적 상한과 피해 인정기간, 다른 피해자와의 형평성.',condition:'국가보증 상한·재원과 소액 피해자 우선 참여 기준을 구체화.'},
+ {id:'ppp',name:'국민의힘',color:'#d94854',seats:109,yes:7,no:102,abstain:0,reason:'정부의 투자자 보호 대응을 점검하고 피해회복 대안을 요구하는 동기를 반영했습니다. 공적 부담에 대한 검토를 요구하는 기권 1명을 두었습니다.',support:'정부 대응 점검과 자기책임을 유지하는 피해회복 대안.',concern:'국가의 투자위험 인수와 향후 반복적인 구제 요구.',condition:'보증 한도와 일몰을 엄격히 하고 위험자산 편입 제한을 명문화.'},
  {id:'rebuilding',name:'조국혁신당',color:'#167caa',seats:12,yes:6,no:3,abstain:3,reason:'금융소비자 보호와 공적 책임의 필요성에 무게를 두되, 피해 구제의 우선순위와 운용 통제장치를 쟁점으로 평가했습니다.',support:'금융소비자의 회복 기회와 공적 운용의 투명성.',concern:'가입자 선정의 공정성과 운용기관에 대한 실효적 감독.',condition:'소액 피해자 보호와 독립 감사·이해충돌 방지 강화.'},
  {id:'progressive',name:'진보당',color:'#c13c75',seats:4,yes:1,no:2,abstain:1,reason:'추가 예탁자금이 없는 피해자와 비투자 취약계층이 혜택에서 제외될 수 있다는 형평성 우려를 크게 반영했습니다.',support:'금융피해자의 생활 회복을 공적 과제로 다루는 방향.',concern:'자기자금이 남은 사람에게 혜택이 집중될 가능성.',condition:'생계 곤란 피해자 지원과 소득·자산별 우선순위 보완.'},
  {id:'reform',name:'개혁신당',color:'#df7930',seats:3,yes:3,no:0,abstain:0,reason:'자기자금 참여와 한시 운영을 통한 피해회복 취지에 3명 모두 찬성하는 시나리오입니다.',support:'손실 검증, 차입금 제외와 제도의 한시성.',concern:'시장손실의 공적 이전과 민간 운용상품과의 경쟁.',condition:'공적 보증을 축소하고 기존 제도 대비 비용·효과를 제시.'},

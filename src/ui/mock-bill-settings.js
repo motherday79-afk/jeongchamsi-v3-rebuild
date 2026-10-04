@@ -1,4 +1,4 @@
-import {MOCK_BILL} from '../data/mock-bill.js?v=0.0.31.410';
+import {MOCK_BILL} from '../data/mock-bill.js?v=0.0.31.416';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export async function loadBillSettings(admin=false){const response=await fetch('/api/v3/'+(admin?'admin/':'')+'mock-bill-settings',{credentials:'same-origin',cache:'no-store'});if(!response.ok)throw Error('LOAD_FAILED');return response.json();}
 export function renderBillSettings(data){return `<form data-bill-settings class="bill-section"><h2>모의법안 소개 문구</h2><label for="bill-introduction">정당별 표결 위에 표시되는 문구</label><textarea id="bill-introduction" name="introduction" maxlength="3000" rows="6" style="display:block;width:100%;box-sizing:border-box;font:inherit;line-height:1.8;padding:16px;margin:16px 0">${esc(data.introduction??MOCK_BILL.methodology)}</textarea><button type="submit" class="bill-document">저장하기</button><p role="status" data-bill-save-status></p></form>`;}

@@ -1,4 +1,4 @@
-import {MOCK_BILL,ballots,tally} from '../data/mock-bill.js?v=0.0.31.411';
+import {MOCK_BILL,ballots,tally} from '../data/mock-bill.js?v=0.0.31.416';
 const colors={yes:'#67dbbd',no:'#ff898b',abstain:'#b8c2d6'};
 const hash=s=>[...s].reduce((n,c)=>(n*31+c.charCodeAt(0))>>>0,2166136261);
 export function chamberSeats(bill=MOCK_BILL){
