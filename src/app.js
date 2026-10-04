@@ -1,9 +1,10 @@
+import {bindPageEditor} from './ui/person-page-editor.js?v=0.0.31.426';
 import {renderVoteEditor,bindBillEditing} from './ui/mock-bill-editing.js?v=0.0.31.424';
 import {mountBillVote} from './ui/bill-chamber.js?v=0.0.31.424';
 import {loadBillSettings,renderBillSettings,bindBillSettings} from './ui/mock-bill-settings.js?v=0.0.31.424';
 import {renderMockBillPage,bindMockBillNavigation} from './views/mock-bill.js?v=0.0.31.424';
 import {bindArticleCuration} from './ui/article-curation.js?v=0.0.31.404';
-import {renderPoliticalMapPage,mountPoliticalMaps} from './views/political-map.js?v=0.0.31.424';
+import {renderPoliticalMapPage,mountPoliticalMaps} from './views/political-map.js?v=0.0.31.426';
 import {renderMyDeviceMenu,bindHomeInstall} from './ui/home-install.js?v=0.0.31.398';
 import {renderWebBroadcast,broadcastRequest,bindWebBroadcast} from './ui/web-broadcast.js?v=0.0.31.384';
 import {renderPageShare,bindPageShare} from './ui/page-share.js?v=0.0.31.424';
@@ -32,8 +33,8 @@ import { refreshFontScale } from './ui/font-scale.js?v=0.0.31.56';
 import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.400';
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.56';
 import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.394';
-import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.424';
-import { focusCageCompose, setupHomeCompare, setupPoliticianAutocomplete, setupLayoutInteractions, setupPoliticianPhotoFallback, setupNowCarousel, setupCageCountdown, setupDesktopHomeViewport } from './ui/interactions.js?v=0.0.31.424';
+import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.426';
+import { focusCageCompose, setupHomeCompare, setupPoliticianAutocomplete, setupLayoutInteractions, setupPoliticianPhotoFallback, setupNowCarousel, setupCageCountdown, setupDesktopHomeViewport } from './ui/interactions.js?v=0.0.31.426';
 import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.354';
 import { createContentService, loadNavigationDashboard, loadPersonNavigation } from './core/content.js?v=0.0.31.389';
 import { createPoliticianService } from './core/politicians.js?v=0.0.31.350';
@@ -41,8 +42,8 @@ import { sharePost, createNavigation, adminRouteState, adminRouteWith, isTransie
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.148';
 import * as views from './views/stage1.js?v=0.0.31.404';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.404';
-import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.424';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.426';
+import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.426';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident } from './views/participation-pages.js?v=0.0.31.361';
 import { renderPresidentPage } from './views/president.js?v=0.0.31.107';
 import { renderSearchPage, hasSearchSnapshot } from './views/search-page.js?v=0.0.31.400';
@@ -363,6 +364,8 @@ async function refreshAiPanelAdmin(operation,result){
 }
 bindHomeInstall(document);
 bindArticleCuration(document);
+bindPageEditor(document);
+document.addEventListener('jcs:person-page-changed',()=>{navigation?.clearCache();void render({preserveScroll:true});});
 document.addEventListener('jcs:article-curation-changed',()=>{navigation?.clearCache();void render({preserveScroll:true});});
 bindWebBroadcast(document);
 bindAiPanelInteractions(document,{client:aiPanel,navigate:target=>navigation.navigate(target),onSaved:async(result,operation)=>refreshAiPanelAdmin(operation,result)});

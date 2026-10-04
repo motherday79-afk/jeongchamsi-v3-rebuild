@@ -1,0 +1,5 @@
+// Estimated regular elections: Public Official Election Act Art.34; KST calendar days.
+export const ELECTIONS={all:{name:'대통령선거',date:'2030-03-27'},assembly:{name:'국회의원 총선거',date:'2028-04-12'},metropolitan:{name:'전국동시지방선거',date:'2030-06-12'},basic:{name:'전국동시지방선거',date:'2030-06-12'}};
+export function electionCountdown(type,now=new Date()){const e=ELECTIONS[type]||ELECTIONS.all,kst=new Date(now.getTime()+9*3600000).toISOString().slice(0,10),days=Math.round((Date.parse(e.date)-Date.parse(kst))/86400000);return {...e,days,label:days>0?'D−'+days:days===0?'D-DAY':'일정 확인 중'};}
+export function renderElectionCountdown(type){const e=electionCountdown(type);return '<div class="pmap-election" data-election-countdown="'+type+'"><span>'+e.name+'</span><strong>'+e.label+'</strong><small>'+e.date.replaceAll('-','.')+' 예정</small></div>';}
+export function updateElectionCountdowns(root){for(const el of root.querySelectorAll('[data-election-countdown]')){const e=electionCountdown(el.dataset.electionCountdown);el.querySelector('strong').textContent=e.label;}}

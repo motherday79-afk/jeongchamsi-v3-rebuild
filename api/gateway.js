@@ -1,3 +1,5 @@
+import {readPageEdits,applyPageEdits,savePageSection} from '../lib/person-page-edits.js';
+import {editorSections,editableFields} from '../src/core/person-page-fields.js';
 import {createMockBillSettings} from '../lib/mock-bill-settings.js';
 import {createArticleCurationService} from '../lib/article-curation.js';
 import {createArticleCandidates} from '../lib/article-candidates.js';
@@ -147,7 +149,7 @@ export async function handlePoliticians(req,res,command,url,intelligence){
   intelligence=intelligence||createIntelligenceService({command});
   const id=String(url.searchParams.get('id')||req.query?.id||'').trim(),query=String(url.searchParams.get('q')||req.query?.q||'').trim(),ranking=String(url.searchParams.get('ranking')||req.query?.ranking||'').trim();
   if(id){
-    const [item,report,user,photos]=await Promise.all([getPolitician(command,id),intelligence.getPublicIntelligence(id),currentUser(req,command),readPoliticianPhotos(command)]);
+    const [item,report,user,photos,pageEdits]=await Promise.all([getPolitician(command,id),intelligence.getPublicIntelligence(id),currentUser(req,command),readPoliticianPhotos(command),readPageEdits(command,id)]);
     if(!item)return json(res,404,{ok:false,error:'POLITICIAN_NOT_FOUND'});
     const accountTier=accessTierForUser(user?.status==='suspended'?null:user),scope=String(url.searchParams.get('view')||req.query?.view||'')==='compare'?'compare':'detail';
     const legacyNews=Array.isArray(report?.news)?report.news.map(row=>({title:row.title,source:row.source,url:row.url,publishedAt:row.publishedAt||row.date})):[];
@@ -156,11 +158,12 @@ export async function handlePoliticians(req,res,command,url,intelligence){
       const profiles=(await Promise.all(POLITICIAN_TYPES.map(type=>readPoliticianType(command,type)))).flat(),byId=new Map(profiles.map(person=>[person.id,person]));
       fullReport={...fullReport,related:fullReport.related.map(row=>{const related=byId.get(row.id)||{};return {...row,party:related.party||'',jurisdiction:related.jurisdiction||'',office:related.office||related.roleLabel||'',photo:photos[row.id]||null};})};
     }
+    const editedPage=applyPageEdits({...item,photo:photos[id]||null},fullReport,pageEdits);fullReport=editedPage.report;
     // Check the member's grant after asynchronous report reads, immediately before projection.
     const analysisAccess=accountTier==='member'?await readPersonAnalysisAccess(command,user,id):null;
     const tier=accountTier==='admin'||analysisAccess?.active?'admin':accountTier;
     const projected={...projectIntelligence(fullReport,tier,scope,user),analysisAccess,...(user?.role==='admin'?{articleCurationEnabled:report?.articleCurationEnabled===true}:{})};
-    return json(res,200,{ok:true,accessTier:tier,analysisAccess,item:{...item,photo:photos[id]||null},intelligence:projected});
+    return json(res,200,{ok:true,accessTier:tier,analysisAccess,item:editedPage.item,intelligence:projected});
   }
   const photos=await readPoliticianPhotos(command);
   if(ranking==='trending'){
@@ -472,6 +475,19 @@ async function handleAdmin(req,res,route,command){
     if(pcEncoded.length+mobileEncoded.length+tabletEncoded.length>4_194_304)return json(res,413,{ok:false,error:'BANNER_PAIR_TOO_LARGE'});
     try{const banner=await createHomeBannerService({command}).save({placement:body.placement||'sidebar',pc:body.pc?{contentType:pc.contentType,bytes:Buffer.from(pcEncoded,'base64')}:null,mobile:body.mobile?{contentType:mobile.contentType,bytes:Buffer.from(mobileEncoded,'base64')}:null,tablet:body.tablet?{contentType:tablet.contentType,bytes:Buffer.from(tabletEncoded,'base64')}:null,targetUrl:body.targetUrl,alt:body.alt},user.id);return json(res,200,{ok:true,banner});}
     catch(error){const code=String(error?.message||'BANNER_UPLOAD_FAILED'),storage=code==='BANNER_STORAGE_NOT_CONFIGURED'||/No blob credentials|BLOB_READ_WRITE_TOKEN|VERCEL_OIDC_TOKEN|BLOB_STORE_ID/i.test(code);return json(res,code==='BANNER_TOO_LARGE'?413:storage?503:400,{ok:false,error:storage?'BANNER_STORAGE_NOT_CONFIGURED':code});}
+  }
+  if(route==='admin/person-page'){
+    const url=new URL(req.url||'/',`https://${req.headers.host||'localhost'}`);
+    if(req.method!=='GET'&&(req.headers.origin!==url.origin||req.headers['sec-fetch-site']==='cross-site'))return json(res,403,{ok:false,error:'ORIGIN_FORBIDDEN'});
+    if(!isSuperAdmin(user))return json(res,403,{ok:false,error:'SUPERADMIN_REQUIRED'});
+    if(!['GET','PATCH'].includes(req.method))return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
+    const input=bodyOf(req),id=String(req.method==='GET'?url.searchParams.get('personId'):input.personId||'');
+    if(!/^[-a-zA-Z0-9_]{1,100}$/.test(id))return json(res,400,{ok:false,error:'INVALID_PERSON'});
+    const [base,report,edits,photos]=await Promise.all([getPolitician(command,id),createIntelligenceService({command}).getPublicIntelligence(id),readPageEdits(command,id),readPoliticianPhotos(command)]);
+    if(!base)return json(res,404,{ok:false,error:'PERSON_NOT_FOUND'});
+    const item={...base,photo:photos[id]||null};
+    if(req.method==='PATCH'){try{return json(res,200,await savePageSection(command,id,input,item,report,user));}catch(e){return json(res,e.message==='EDIT_CONFLICT'?409:400,{ok:false,error:e.message});}}
+    const edited=applyPageEdits(item,report,edits);return json(res,200,{ok:true,sections:editorSections(edited.item,edited.report).map(section=>({id:section.id,title:section.title,revision:edits[section.id]?.revision||0,manual:Object.keys(edits[section.id]?.changes||{}).length>0,fields:editableFields(section.data)}))});
   }
   if(route==='admin/mock-bill-settings'){
     if(!isSuperAdmin(user))return json(res,403,{error:'SUPERADMIN_REQUIRED'});

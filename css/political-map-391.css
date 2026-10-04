@@ -37,3 +37,5 @@
 
 /* Stable hex cartogram with shared regional color bands. */
 .pmap-hex .pmap-boundaries path{stroke:#ffffff9c;stroke-width:.65}.pmap-hex .pmap-boundaries g{cursor:pointer}.pmap-hex .pmap-boundaries g:focus{outline:none;filter:brightness(1.15)}.pmap-hex .pmap-label{font-size:17px;stroke-width:5px;cursor:pointer}.pmap-home .pmap-hex .pmap-label{font-size:20px}.pmap-mini-map:has(.pmap-hex){background:#fafbfe}
+
+.pmap-election{display:flex;align-items:center;gap:10px;padding:8px 18px;color:#263853;background:#f7f9fc;font-size:15px}.pmap-election strong{color:#563189;font-size:21px;margin-left:auto;font-variant-numeric:tabular-nums}.pmap-election small{color:#68758a;font-size:13px}.pmap-page .pmap-election{margin-top:12px;border-radius:10px}.pmap-home .pmap-preview{height:242px}.pmap-home .pmap-mini-map{height:226px}@media(max-width:767px){.pmap-election{padding:8px 12px;gap:7px;font-size:14px}.pmap-election strong{font-size:19px}.pmap-election small{font-size:12px}.pmap-home .pmap-preview{height:auto}.pmap-home .pmap-mini-map{height:187px}}
