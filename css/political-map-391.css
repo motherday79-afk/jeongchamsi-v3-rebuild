@@ -34,3 +34,6 @@
 .pmap-home .pmap-party{padding:5px 0}
 .pmap-home .pmap-flag text{font-size:26px}
 @media(max-width:767px){.pmap-home>.module-header,.political-comic-home>.module-header{padding-bottom:6px}.political-comic-home .comic-home-gallery{padding-top:4px}.pmap-home .pmap-preview{height:auto}.pmap-home .pmap-mini-map{height:225px}}
+
+/* Stable hex cartogram with shared regional color bands. */
+.pmap-hex .pmap-boundaries path{stroke:#ffffff9c;stroke-width:.65}.pmap-hex .pmap-boundaries g{cursor:pointer}.pmap-hex .pmap-boundaries g:focus{outline:none;filter:brightness(1.15)}.pmap-hex .pmap-label{font-size:17px;stroke-width:5px;cursor:pointer}.pmap-home .pmap-hex .pmap-label{font-size:20px}.pmap-mini-map:has(.pmap-hex){background:#fafbfe}
