@@ -1,3 +1,4 @@
+import {ANIMALS,SIGNS,SIGN_DATES,fortuneDay,readFortunePreferences,signFortune} from '../core/fortune-signs.js?v=0.0.31.437';
 import {renderMockBillHome} from '../views/mock-bill.js?v=0.0.31.424';
 import {renderPoliticalMapHome} from '../views/political-map.js?v=0.0.31.436';
 import {renderComicHome} from '../views/political-comic.js?v=0.0.31.431';
@@ -144,13 +145,22 @@ function fortuneProfileForm(session={}){
   </form>`;
 }
 export function renderFortuneCard(data={},session={}){
+ if(!session.authenticated)return renderFortuneReading(data,session);
+ const pref=readFortunePreferences(session.user?.id),day=fortuneDay(),selection=pref[pref.tab],source={data:{...data,...Object.fromEntries(['overall','money','business','relationship'].filter(k=>data[k]).map(k=>[k,{score:data[k].score,title:data[k].title,summary:data[k].summary}]))},session:{authenticated:true,user:{id:session.user?.id,birthYear:session.user?.birthYear}}};
+ const reading=pref.tab==='overall'?data:signFortune(pref.tab,selection,day);
+ const choices=pref.tab==='animal'?ANIMALS:SIGNS;
+ const selector=pref.tab==='overall'?'':'<label class="fortune-sign-picker"><span>'+ (pref.tab==='animal'?'나의 띠':'나의 별자리')+'</span><select data-fortune-sign>'+choices.map((name,i)=>'<option value="'+esc(name)+'" '+(name===selection?'selected':'')+'>'+esc(name+(pref.tab==='star'?' · '+SIGN_DATES[i]:''))+'</option>').join('')+'</select></label>';
+ return '<div class="fortune-widget" data-fortune-widget data-fortune-user="'+esc(session.user?.id||'')+'" data-fortune-day="'+day+'"><nav class="fortune-tabs" aria-label="운세 종류">'+[['overall','종합'],['animal','띠별'],['star','별자리']].map(([tab,label])=>'<button type="button" data-fortune-tab="'+tab+'" aria-pressed="'+(pref.tab===tab)+'">'+label+'</button>').join('')+'</nav>'+selector+renderFortuneReading(reading,session,pref.tab==='overall'?'':pref.tab+':'+selection)+'<template data-fortune-source>'+esc(JSON.stringify(source))+'</template></div>';
+}
+function renderFortuneReading(data={},session={},scope=''){
+
  const base=`<div class="fortune-card-title">${fortuneSpark()}<div><small>DAILY FORTUNE</small><b>오늘의 운세</b></div></div>`;
  if(!session?.authenticated||data?.needsLogin)return `<section class="side-card side-fortune"><div class="fortune-card-head">${base}</div><p class="fortune-empty-copy">로그인하면 오늘의 종합운과 금전·사업·인간관계 흐름을 확인할 수 있어요.</p><button class="fortune-primary fortune-full" type="button" data-layout-route="/login">로그인하고 보기</button></section>`;
  if(data?.ok===false)return `<section class="side-card side-fortune"><div class="fortune-card-head">${base}</div><p class="fortune-empty-copy">오늘의 운세를 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.</p></section>`;
  if(data?.needsProfile)return `<section class="side-card side-fortune"><div class="fortune-card-head">${base}</div><div data-fortune-intro><strong class="fortune-start-title">내 운세 프로필을 완성해보세요</strong><p class="fortune-empty-copy">생년월일을 입력하면 종합·금전·사업·인간관계 운을 확인할 수 있습니다.</p><button class="fortune-primary fortune-full" type="button" data-fortune-toggle aria-expanded="false">운세 시작하기</button></div>${fortuneProfileForm(session)}</section>`;
  const o=data?.overall,m=data?.money,b=data?.business,r=data?.relationship;if(!o||!m||!b||!r)return '';
  const guidance=[['금전',m,'money','✧'],['사업',b,'business','↗'],['관계',r,'relationship','♡']];
- const key=fortuneStateKey(session.user?.id),date=String(data.date||''),state=readFortuneState(key,date);
+ const key=fortuneStateKey(session.user?.id)+(scope?':'+scope:''),date=String(data.date||''),state=readFortuneState(key,date);
  const cards=guidance.map(([label,item,id,icon])=>{
  const opened=state.opened.includes(id),selected=state.selected===id,score=Number(item.score)||0;
  return `<button type="button" class="fortune-flip-card${opened?' is-revealed':''}${selected?' is-selected':''}" data-fortune-reveal="${id}" data-fortune-label="${label}" data-fortune-score="${score}" aria-label="${label} 운세${opened?' '+score+'점':' 카드 열기'}" aria-expanded="${opened}"><span class="fortune-flip-inner"><span class="fortune-card-back" aria-hidden="${opened}"><span class="fortune-card-category">${label}</span><span class="fortune-card-sigil" aria-hidden="true">${icon}</span><span class="fortune-card-invite">열어보기</span></span><span class="fortune-card-front fortune-front-${id}" aria-hidden="${!opened}"><span class="fortune-card-category">${label}</span>${fortuneFrontArt(id)}<span class="fortune-card-score">${score}<small>점</small></span><span class="fortune-card-caption">${esc(item.title||'오늘의 흐름')}</span></span></span></button>`;
