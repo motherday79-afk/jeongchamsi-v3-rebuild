@@ -1,4 +1,4 @@
-import {renderMockBillHome} from '../views/mock-bill.js?v=0.0.31.420';
+import {renderMockBillHome} from '../views/mock-bill.js?v=0.0.31.421';
 import {renderPoliticalMapHome} from '../views/political-map.js?v=0.0.31.400';
 import {renderComicHome} from '../views/political-comic.js?v=0.0.31.394';
 import {fortuneFrontArt} from '../ui/fortune-card-art.js?v=0.0.31.366';

@@ -1,8 +1,8 @@
-import {resolveBill,renderProposalEditor} from '../ui/mock-bill-editing.js?v=0.0.31.420';
-import {renderChamber} from '../ui/bill-chamber.js?v=0.0.31.420';
-import {MOCK_BILL,ballots,tally} from '../data/mock-bill.js?v=0.0.31.420';
+import {resolveBill,renderProposalEditor} from '../ui/mock-bill-editing.js?v=0.0.31.421';
+import {renderChamber} from '../ui/bill-chamber.js?v=0.0.31.421';
+import {MOCK_BILL,ballots,tally} from '../data/mock-bill.js?v=0.0.31.421';
 import {moduleActionIconSvg} from '../ui/service-icons.js?v=0.0.31.394';
-import {renderShareMenu} from '../ui/page-share.js?v=0.0.31.420';
+import {renderShareMenu} from '../ui/page-share.js?v=0.0.31.421';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const b=MOCK_BILL;
 const counts=t=>`<div class="bill-counts"><span class="bill-yes"><img class="bill-vote-plate" src="/assets/bills/plates/yes-414.svg" alt="찬성"><strong>${t.yes}</strong></span><span class="bill-no"><img class="bill-vote-plate" src="/assets/bills/plates/no-414.svg" alt="반대"><strong>${t.no}</strong></span><span class="bill-abstain"><img class="bill-vote-plate" src="/assets/bills/plates/abstain-414.svg" alt="기권"><strong>${t.abstain}</strong></span></div>`;

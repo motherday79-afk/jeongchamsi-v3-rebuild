@@ -1,4 +1,5 @@
-import {MOCK_BILL,ballots,tally} from '../data/mock-bill.js?v=0.0.31.420';
+import {screenContours} from './bill-screen-contours.js?v=0.0.31.421';
+import {MOCK_BILL,ballots,tally} from '../data/mock-bill.js?v=0.0.31.421';
 const colors={yes:'#67dbbd',no:'#ff898b',abstain:'#b8c2d6'};
 const hash=s=>[...s].reduce((n,c)=>(n*31+c.charCodeAt(0))>>>0,2166136261);
 export function chamberSeats(bill=MOCK_BILL){
@@ -6,10 +7,12 @@ export function chamberSeats(bill=MOCK_BILL){
  const ordered=order.flatMap(id=>votes.filter(v=>v.party===id).sort((a,b)=>hash(a.id+'seat')-hash(b.id+'seat')));
  return ordered.map((v,i)=>{const column=Math.floor(i/6),row=i%6,a=Math.PI+(column+.5)/50*Math.PI,r=365-row*35;return {...v,x:420+Math.cos(a)*r,y:320+Math.sin(a)*r*.73,color:bill.parties.find(p=>p.id===v.party).color};});
 }
-export function renderChamber(bill=MOCK_BILL){const all=chamberSeats(bill),dem=all.filter(v=>v.party==='democratic'),ppp=all.filter(v=>v.party==='ppp'),other=all.filter(v=>!['democratic','ppp'].includes(v.party));const points=[
- ['d','171,712 207,716 200,731 165,727'],['d','171,747 201,751 195,769 162,764'],['d','320,779 355,785 349,804 314,798'],['d','347,732 378,737 373,753 341,748'],['d','514,750 550,753 546,770 510,766'],['d','339,690 371,694 366,708 335,704'],['d','252,678 273,683 269,693 248,688'],['d','394,677 416,681 412,691 390,687'],['d','294,650 311,653 308,661 291,658'],['d','115,639 132,644 129,651 112,646'],
- ['o','580,710 608,712 605,725 578,723'],['o','662,683 682,684 681,694 660,693'],['o','854,684 872,683 874,692 856,694'],['o','901,710 923,708 926,720 904,722'],
- ['p','973,748 1000,745 1006,763 976,765'],['p','1190,787 1224,783 1232,805 1195,808'],['p','1390,758 1419,753 1427,773 1395,778'],['p','1359,711 1372,708 1379,720 1365,724'],['p','1264,680 1281,677 1286,687 1269,690'],['p','1193,688 1210,686 1214,698 1197,700'],['p','1100,678 1118,675 1122,685 1104,688'],['p','984,691 1000,689 1005,700 988,702'],['p','1425,637 1444,634 1448,643 1429,646'],['p','1335,607 1348,604 1352,612 1339,615']];const groups={d:dem,o:other,p:ppp},used={d:0,o:0,p:0};return `<svg class="bill-populated-scene" viewBox="0 0 1536 1024" preserveAspectRatio="xMidYMid slice" role="img" aria-label="기존 본회의장 의석에 착석한 가상 인물과 책상 위 태블릿"><image class="bill-scene-rejected" href="/assets/bills/rejected-420.webp" width="1536" height="1024"/><image class="bill-scene-passed" href="/assets/bills/passed-420.webp" width="1536" height="1024"/>${points.map(([group,points])=>{const list=groups[group],n=used[group]++,v=list[Math.floor(n*list.length/(group==='o'?4:10))];return `<polygon data-seat-vote="${v.vote}" data-seat-id="${v.id}" points="${points}" fill="${colors[v.vote]}" style="opacity:0"/>`;}).join('')}</svg><div class="bill-scene-space" aria-hidden="true"></div><div class="bill-chamber-controls"><button type="button" data-bill-action>결과 보기</button></div><p class="bill-live-result" role="status" aria-live="polite">결과 보기를 누르면 표결이 시작됩니다.</p><script type="application/json" data-bill-votes>${JSON.stringify(all.map(v=>({id:v.id,vote:v.vote})))}</script>`;}
+export function renderChamber(bill=MOCK_BILL){
+ const all=chamberSeats(bill),groups={d:all.filter(v=>v.party==='democratic'),p:all.filter(v=>v.party==='ppp'),o:all.filter(v=>!['democratic','ppp'].includes(v.party))};
+ const groupFor=s=>s.x<700?'d':s.x>840?'p':'o',used={d:0,p:0,o:0},counts={d:0,p:0,o:0};screenContours.forEach(s=>counts[groupFor(s)]++);
+ const screens=screenContours.map(s=>{const group=groupFor(s),list=groups[group],v=list[Math.floor(used[group]++*list.length/counts[group])];return '<path d="'+s.path+'" fill="#142228"/><path data-seat-vote="'+v.vote+'" data-seat-id="'+v.id+'" d="'+s.path+'" fill="'+colors[v.vote]+'" style="opacity:0"/>';}).join('');
+ return `<svg class="bill-populated-scene" viewBox="0 0 1536 1024" preserveAspectRatio="xMidYMid slice" role="img" aria-label="높은 뒤쪽 시점의 본회의장, 의석에 앉은 가상 인물과 모니터"><image href="/assets/bills/chamber-421.webp" width="1536" height="1024"/><rect class="bill-scene-result-wash" width="1536" height="1024"/>${screens}</svg><div class="bill-scene-space" aria-hidden="true"></div><div class="bill-chamber-controls"><button type="button" data-bill-action>결과 보기</button></div><p class="bill-live-result" role="status" aria-live="polite">결과 보기를 누르면 표결이 시작됩니다.</p><script type="application/json" data-bill-votes>${JSON.stringify(all.map(v=>({id:v.id,vote:v.vote})))}</script>`;
+}
 const runs=new WeakMap();
 export function playBillVote(hall,{instant=false}={}){
  if(!hall)return;const old=runs.get(hall);if(old)cancelAnimationFrame(old);
