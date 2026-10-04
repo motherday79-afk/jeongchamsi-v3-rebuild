@@ -6,6 +6,9 @@ const items=[{id:'a',name:'수원 의원',type:'assembly',region:'경기',jurisd
 const state={region:'경기',type:'all',party:'all',q:'',limit:24,local:'',district:''};
 test('regional stage retains category, totals and only region people',()=>{
  const html=renderPoliticalMapContent({items},state,false);assert.match(html,/pmap-broadcast/);assert.match(html,/수원 의원/);assert.doesNotMatch(html,/서울 의원/);
+ assert.match(html,/pmap-region-navigator/);assert.match(html,/data-map-region="서울"/);assert.match(html,/data-map-region="경기" aria-pressed="true"/);
+ const next=renderPoliticalMapContent({items},{...state,region:'서울',type:'assembly',local:'',party:'all'},false);
+ assert.match(next,/서울 의원/);assert.doesNotMatch(next,/수원 의원/);assert.match(next,/data-map-type="assembly" aria-pressed="true"/);assert.match(next,/pmap-region-navigator/);
  const basic=renderRegionStage({items},{...state,type:'basic'},()=> '#245cce');assert.doesNotMatch(basic,/수원 의원/);assert.match(basic,/양주 시장/);
 });
 test('local filtering separates similarly named cities and does not assign city-wide constituencies to individual wards',()=>{
