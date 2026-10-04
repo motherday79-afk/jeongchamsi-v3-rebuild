@@ -6,8 +6,16 @@ export function districtMembers(items,district){
  return items.filter(p=>{
   if(normalizeRegion(p)!==district.region)return false;
   if(p.type==='metropolitan')return true;
-  const local=String(p.jurisdiction||'').replace(/^(서울특별시|부산광역시|대구광역시|인천광역시|대전광역시|울산광역시|세종특별자치시|경기도|강원특별자치도|강원도|충청북도|충청남도|전북특별자치도|전라북도|전남광주통합특별시|전라남도|광주광역시|경상북도|경상남도|제주특별자치도)\s*/, '').replace(/\s/g,'');
-  return !!local&&(local.startsWith(district.name)||district.name.startsWith(local)||(local.match(/^.+?시/)?.[0]===district.name));
+  const local=String(p.jurisdiction||'').replace(/^(서울특별시|부산광역시|대구광역시|인천광역시|대전광역시|울산광역시|세종특별자치시|경기도|강원특별자치도|강원도|충청북도|충청남도|전북특별자치도|전라북도|전남광주통합특별시|전라남도|광주광역시|경상북도|경상남도|제주특별자치도)\s*/, '').replace(/^(서울|부산|대구|인천|대전|울산|세종|경기|강원|충북|충남|전북|전남광주|전남|광주|경북|경남|제주)\s+/, '').replace(/\s/g,'');
+  if(p.type!=='assembly')return !!local&&(local===district.name||district.name.startsWith(local)&&local.endsWith('시'));
+  if(district.region==='세종')return true;
+  // Match complete administrative names, including combined constituencies.
+  const hasArea=name=>{let at=local.indexOf(name);while(at>=0){if(at===0||/[시군구]/.test(local[at-1]))return true;at=local.indexOf(name,at+1);}return false;};
+  if(hasArea(district.name))return true;
+  // Constituencies named only by city cannot be assigned to individual wards.
+  // Show that city's combined delegation on its wards instead of inventing boundaries.
+  const city=district.name.match(/^(.+시).+구$/)?.[1];
+  return !!city&&hasArea(city)&&!local.slice(local.indexOf(city)+city.length).replace(/[갑을병정무기]$/,'').includes('구');
  });
 }
 export function renderRegionStage(data,state,color,navigator=''){
@@ -30,7 +38,7 @@ export function renderRegionStage(data,state,color,navigator=''){
  const unit=state.type==='assembly'?'석':'명';
  return `<section class="pmap-broadcast"><header class="pmap-region-heading"><div><span>JCS REGIONAL REPORT</span><h2>${esc(region?.fullName||state.region)}</h2><p>${labels[state.type]} · ${district?esc(district.name):'지역 전체'}</p></div><button type="button" data-map-reset>← 전국 지도</button></header>
  <div class="pmap-scoreboard">${summary.parties.map(p=>`<button type="button" data-map-party="${esc(p.party)}" aria-pressed="${state.party===p.party}" style="--party:${color(p.party)}"><span>${esc(p.party)}</span><strong>${p.count}<small>${unit}</small></strong><em>${(p.share*100).toFixed(1)}%</em></button>`).join('')||'<p>등록된 인물이 없습니다.</p>'}</div>
- <div class="pmap-region-body"><div class="pmap-region-map"><svg data-region-labels="${esc(state.region)}" data-selected-local="${esc(state.local||'')}" viewBox="${box}" aria-label="${esc(state.region)} 행정구역별 정당 구성"> <defs>${defs}</defs>${paths}</svg><p>지역 이름을 눌러 선택하세요 · 행정구역 기준</p></div><aside>${navigator}<div class="pmap-region-total"><span>${district?esc(district.name):'지역 전체'} 등록 현황</span><strong>${summary.total}<small>${unit}</small></strong><p>현원 ${summary.occupied} · 공석 ${summary.vacant}</p></div><label class="pmap-local-select">세부 지역<select data-map-local-select><option value="">지역 전체</option>${districts.map(d=>`<option value="${esc(d.name)}" ${d.name===state.local?'selected':''}>${esc(d.name)}</option>`).join('')}</select></label>${state.party!=='all'?'<button type="button" class="pmap-local-clear" data-map-party="all">정당 선택 해제</button>':''}<p class="pmap-region-help">지도에서 지역을 선택하면<br>해당 지역 인물을 볼 수 있습니다.</p></aside></div>
+ <div class="pmap-region-body"><div class="pmap-region-map"><svg data-region-labels="${esc(state.region)}" data-selected-local="${esc(state.local||'')}" viewBox="${box}" aria-label="${esc(state.region)} 행정구역별 정당 구성"> <defs>${defs}</defs>${paths}</svg><p>지역 이름을 눌러 선택하세요 · 행정구역 기준${state.type==='assembly'?' · 시 단위 선거구는 해당 시 전체로 집계':''}</p></div><aside>${navigator}<div class="pmap-region-total"><span>${district?esc(district.name):'지역 전체'} 등록 현황</span><strong>${summary.total}<small>${unit}</small></strong><p>현원 ${summary.occupied} · 공석 ${summary.vacant}</p></div><label class="pmap-local-select">세부 지역<select data-map-local-select><option value="">지역 전체</option>${districts.map(d=>`<option value="${esc(d.name)}" ${d.name===state.local?'selected':''}>${esc(d.name)}</option>`).join('')}</select></label>${state.party!=='all'?'<button type="button" class="pmap-local-clear" data-map-party="all">정당 선택 해제</button>':''}<p class="pmap-region-help">지도에서 지역을 선택하면<br>해당 지역 인물을 볼 수 있습니다.</p></aside></div>
  <section class="pmap-region-roster"><header><h3>${district?esc(district.name):'지역'} 인물 <span>${people.length}</span></h3><form data-map-search><input name="q" value="${esc(state.q)}" aria-label="이름 또는 지역 검색" placeholder="이름 또는 지역 검색"><button type="submit">검색</button></form></header><div class="pmap-region-people">${people.slice(0,state.limit).map(p=>p.isVacant?`<div class="pmap-person-vacant">공석 · ${esc(p.jurisdiction)}</div>`:`<a href="/person/${encodeURIComponent(p.id)}" data-layout-route="/person/${esc(p.id)}" style="--party:${color(normalizeParty(p.party))}"><span class="pmap-region-avatar" data-region-photo="${esc(p.id)}">${esc(p.name?.slice(0,1))}</span><div><strong>${esc(p.name)}</strong><b>${esc(normalizeParty(p.party))}</b><span>${esc(p.jurisdiction||p.region)}</span><small>${labels[p.type]}</small></div></a>`).join('')||'<p>조건에 맞는 인물이 없습니다.</p>'}</div>${people.length>state.limit?'<button type="button" class="pmap-region-more" data-map-more>인물 더 보기</button>':''}</section></section>`;
 }
 const photos=new Map();

@@ -11,12 +11,20 @@ test('regional stage retains category, totals and only region people',()=>{
  assert.match(next,/서울 의원/);assert.doesNotMatch(next,/수원 의원/);assert.match(next,/data-map-type="assembly" aria-pressed="true"/);assert.match(next,/pmap-region-navigator/);
  const basic=renderRegionStage({items},{...state,type:'basic'},()=> '#245cce');assert.doesNotMatch(basic,/수원 의원/);assert.match(basic,/양주 시장/);
 });
-test('local filtering separates similarly named cities and does not assign city-wide constituencies to individual wards',()=>{
+test('local filtering separates similarly named cities and aggregates city-named constituencies without mixing similarly named cities',()=>{
  assert.deepEqual(districtMembers(items,{region:'경기',name:'양주시'}).map(p=>p.id),['c']);
- assert.deepEqual(districtMembers(items,{region:'경기',name:'수원시장안구'}).map(p=>p.id),['b']);
+ assert.deepEqual(districtMembers(items,{region:'경기',name:'수원시장안구'}).map(p=>p.id),['a','b']);
  const html=renderRegionStage({items},{...state,type:'basic',local:'양주시'},()=> '#245cce');assert.match(html,/양주 시장/);assert.doesNotMatch(html,/남양주 시장/);
 });
 test('party filter narrows people without changing scoreboard totals and names are escaped',()=>{
  const html=renderRegionStage({items:[...items,{id:'x',name:'<script>bad</script>',type:'basic',region:'경기',jurisdiction:'경기도 광주시',party:'국민의힘'}]},{...state,party:'국민의힘'},()=> '#245cce');
  assert.doesNotMatch(html,/수원 의원|<script>/);assert.match(html,/&lt;script&gt;/);assert.match(html,/더불어민주당/);
+});
+
+test('assembly matches abbreviated provinces and all parts of a combined constituency',()=>{
+ const rows=[{id:'seoul',type:'assembly',region:'서울',jurisdiction:'서울 중구성동구갑'},{id:'south',type:'assembly',region:'전남',jurisdiction:'전남 해남군완도군진도군'},{id:'bundang',type:'assembly',region:'경기',jurisdiction:'경기 성남시분당구갑'}];
+ for(const name of ['중구','성동구'])assert.deepEqual(districtMembers(rows,{region:'서울',name}).map(p=>p.id),['seoul']);
+ for(const name of ['해남군','완도군','진도군'])assert.deepEqual(districtMembers(rows,{region:'전남광주',name}).map(p=>p.id),['south']);
+ assert.equal(districtMembers(rows,{region:'경기',name:'성남시중원구'}).length,0);
+ assert.deepEqual(districtMembers(rows,{region:'경기',name:'성남시분당구'}).map(p=>p.id),['bundang']);
 });
