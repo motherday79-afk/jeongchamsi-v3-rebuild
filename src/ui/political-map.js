@@ -32,7 +32,7 @@ export function mapSvg(items,state,compact){
   texts+='<text class="pmap-label" data-map-region="'+esc(r.name)+'" x="'+label[0]+'" y="'+label[1]+'" text-anchor="middle">'+esc(r.name==='전남광주'?'전남·광주':r.name)+'</text>';
  }
  const selected=MAP_REGIONS.find(r=>r.name===state.region),bounds=selected?.bounds;
- const box=!compact&&state.zoom&&bounds?[bounds[0]-25,bounds[1]-25,bounds[2]+50,bounds[3]+50].join(' '):'100 40 395 635';
+ const box=!compact&&state.zoom&&bounds?[bounds[0]-25,bounds[1]-25,bounds[2]+50,bounds[3]+50].join(' '):compact?'90 30 430 670':'100 40 395 635';
  return '<svg viewBox="'+box+'" aria-label="대한민국 '+labels[state.type]+' 정당 구성 육각형 지도" class="pmap-svg pmap-hex"><defs>'+defs+'</defs><g class="pmap-boundaries">'+paths+'</g>'+texts+'</svg>';
 }
 function partyRows(summary,state,compact){const rows=compact?summary.parties.slice(0,3):summary.parties;return rows.map(p=>`<button type="button" data-map-party="${esc(p.party)}" aria-pressed="${state.party===p.party}" class="pmap-party"><i style="--party:${color(p.party)}"></i><span>${esc(p.party)}</span><b>${p.count}<small>${state.type==='assembly'?'석':'명'}</small></b>${compact?'':`<em>${(p.share*100).toFixed(1)}%</em><span class="pmap-party-track"><span style="width:${p.share*100}%;background:${color(p.party)}"></span></span>`}</button>`).join('')||'<p>등록된 정보가 없습니다.</p>';}
