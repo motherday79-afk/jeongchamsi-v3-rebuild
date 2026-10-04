@@ -1,5 +1,5 @@
 import {moduleActionIconSvg} from '../ui/service-icons.js?v=0.0.31.394';
-import {renderShareMenu} from '../ui/page-share.js?v=0.0.31.391';
+import {renderShareMenu} from '../ui/page-share.js?v=0.0.31.427';
 export function renderPoliticalMapHome(){return `<section class="pmap-home" data-political-map="home"><div class="module-header"><div><span class="eyebrow">JCS POLITICAL MAP</span><h2>대한민국 정치지도</h2></div><button class="module-icon-action" type="button" data-layout-route="/political-map" aria-label="대한민국 정치지도 자세히 보기" title="대한민국 정치지도 자세히 보기">${moduleActionIconSvg('politicalMap')}</button></div><div data-pmap-content aria-live="polite"><p class="pmap-loading">정당별 정치지형을 불러오는 중입니다.</p></div></section>`;}
 export function renderPoliticalMapPage(){return `<section class="pmap-page" data-political-map="detail"><header><div><p class="pmap-eyebrow">JCS POLITICAL ATLAS</p><h1>대한민국 정치지도</h1><p>지역을 선택하고, 정당별 구성과 인물을 함께 살펴보세요.</p></div>${renderShareMenu('/political-map')}</header><div data-pmap-content aria-live="polite"><p class="pmap-loading">정치인 정보를 불러오는 중입니다.</p></div></section>`;}
 const waiting=new WeakSet();
