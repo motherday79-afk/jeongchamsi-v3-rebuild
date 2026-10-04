@@ -474,8 +474,9 @@ async function handleAdmin(req,res,route,command){
     catch(error){const code=String(error?.message||'BANNER_UPLOAD_FAILED'),storage=code==='BANNER_STORAGE_NOT_CONFIGURED'||/No blob credentials|BLOB_READ_WRITE_TOKEN|VERCEL_OIDC_TOKEN|BLOB_STORE_ID/i.test(code);return json(res,code==='BANNER_TOO_LARGE'?413:storage?503:400,{ok:false,error:storage?'BANNER_STORAGE_NOT_CONFIGURED':code});}
   }
   if(route==='admin/mock-bill-settings'){
+    if(!isSuperAdmin(user))return json(res,403,{error:'SUPERADMIN_REQUIRED'});
     if(req.method==='GET')return json(res,200,await createMockBillSettings({command}).get());
-    if(req.method==='PATCH'){try{return json(res,200,await createMockBillSettings({command}).save(bodyOf(req)));}catch(error){if(error.message==='INVALID_INTRODUCTION')return json(res,400,{error:error.message});throw error;}}
+    if(req.method==='PATCH'){try{return json(res,200,await createMockBillSettings({command}).save(bodyOf(req)));}catch(error){if(['INVALID_INTRODUCTION','INVALID_VOTES','INVALID_PROPOSAL','INVALID_INPUT'].includes(error.message))return json(res,400,{error:error.message});throw error;}}
     return json(res,405,{error:'METHOD_NOT_ALLOWED'});
   }
   if(route==='admin/footer-info'&&req.method==='GET')return json(res,200,{ok:true,info:await createSiteSettingsService({command}).get()});
