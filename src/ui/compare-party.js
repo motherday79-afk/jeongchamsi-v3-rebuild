@@ -1,0 +1,3 @@
+const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+export function compareParty(party=''){const p=String(party);if(/민주당/.test(p))return {color:'#176ce5',flag:'democratic'};if(/국민의힘/.test(p))return {color:'#ec344b',flag:'peoplepower'};return {color:({'조국혁신당':'#2570a9','개혁신당':'#ed792b','진보당':'#b72d62','기본소득당':'#168d82','사회민주당':'#dc7740'})[p]||'#6e819b',flag:p==='무소속'?'independent':''};}
+export function compareFlag(party){const {flag}=compareParty(party);return flag?'<img class="election-flag" src="/assets/banners/generation-'+flag+'-137.webp" alt="'+esc(party)+' 깃발">':'<span class="election-party-pennant">'+esc(party||'소속 미등록')+'</span>';}

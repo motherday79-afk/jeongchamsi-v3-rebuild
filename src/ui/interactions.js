@@ -1,3 +1,4 @@
+import {compareParty,compareFlag} from './compare-party.js?v=0.0.31.423';
 import {setupHomeBannerRotation} from './home-banner-rotation.js?v=0.0.31.380';
 import { renderPrescriptionReport } from '../views/prescription-visuals.js?v=0.0.31.56';
 import { refreshFontScale, setupFontScaleControl } from './font-scale.js?v=0.0.31.56';
@@ -232,7 +233,7 @@ export function setupHomeCompare(root=document){
   const ids=()=>slots.map(slot=>slot.querySelector('[data-home-compare-id]').value);
   homeCompareBound.set(form,()=>motion.resume(ids()));
   const update=()=>{button.disabled=!homeCompareRoute(ids());const feature=form.querySelector('[data-home-compare-feature]');if(feature)feature.disabled=button.disabled;state.textContent=button.disabled?'비교할 정치인 두 명을 선택해 주세요.':'두 정치인의 비교를 시작할 수 있습니다.';};
-  const clear=slot=>{motion.clear(slots.indexOf(slot));slot.querySelector('[data-home-compare-id]').value='';slot.querySelector('[data-home-compare-preview]').innerHTML='<button type="button" class="home-compare-avatar" data-home-compare-change data-home-compare-open aria-label="정치인 선택"><span aria-hidden="true">＋</span></button><div><b>정치인을 선택하세요</b><small>검색 결과에서 선택</small></div>';};
+  const clear=slot=>{slot.classList.remove('election-selected');slot.style.removeProperty('--candidate');motion.clear(slots.indexOf(slot));slot.querySelector('[data-home-compare-id]').value='';slot.querySelector('[data-home-compare-preview]').innerHTML='<button type="button" class="home-compare-avatar" data-home-compare-change data-home-compare-open aria-label="정치인 선택"><span aria-hidden="true">＋</span></button><div><b>정치인을 선택하세요</b><small>검색 결과에서 선택</small></div>';};
   const showSearch=(slot,open)=>{const panel=slot.querySelector('[data-home-compare-search-panel]');panel.hidden=!open;for(const control of slot.querySelectorAll('[data-home-compare-change]'))control.setAttribute('aria-expanded',String(open));};
   form.addEventListener('click',event=>{
    const change=event.target.closest('[data-home-compare-change]');if(!change)return;
@@ -247,7 +248,8 @@ export function setupHomeCompare(root=document){
    slot.querySelector('[data-home-compare-id]').value=String(item.id||'');
    const input=slot.querySelector('[data-home-compare-search]');input.setAttribute('value',input.value);
    const src=String(item.photo?.url||item.photo?.localPath||'');
-   slot.querySelector('[data-home-compare-preview]').innerHTML=`<span class="home-compare-avatar" data-politician-avatar><span class="politician-photo-initial">${esc(String(item.name||'?').slice(0,1))}</span>${src?`<img data-politician-photo src="${esc(src)}" alt="" style="object-position:${esc(item.photo?.focus||'50% 28%')}">`:''}</span><div><b>${esc(item.name)}</b><small>${esc([item.party,item.jurisdiction||item.office||item.roleLabel].filter(Boolean).join(' · '))}</small></div>`;setupPoliticianPhotoFallback(slot);const panel=slot.querySelector('[data-home-compare-search-panel]');if(panel)panel.hidden=true;slot.querySelector('[data-home-compare-change]')?.setAttribute('aria-expanded','false');update();motion.select(slots.indexOf(slot),item.id);
+   slot.classList.add('election-selected');slot.style.setProperty('--candidate',compareParty(item.party).color);
+   slot.querySelector('[data-home-compare-preview]').innerHTML=`${compareFlag(item.party)}<span class="home-compare-avatar" data-politician-avatar><span class="politician-photo-initial">${esc(String(item.name||'?').slice(0,1))}</span>${src?`<img data-politician-photo src="${esc(src)}" alt="" style="object-position:${esc(item.photo?.focus||'50% 28%')}">`:''}</span><div><b>${esc(item.name)}</b><small>${esc([item.party,item.jurisdiction||item.office||item.roleLabel].filter(Boolean).join(' · '))}</small></div>`;setupPoliticianPhotoFallback(slot);const panel=slot.querySelector('[data-home-compare-search-panel]');if(panel)panel.hidden=true;slot.querySelector('[data-home-compare-change]')?.setAttribute('aria-expanded','false');update();motion.select(slots.indexOf(slot),item.id);
   });
   form.addEventListener('submit',event=>{event.preventDefault();const route=homeCompareRoute(ids());if(!route){update();return;}window.dispatchEvent(new CustomEvent('jcs:layout-route',{detail:{route}}));});update();
  }

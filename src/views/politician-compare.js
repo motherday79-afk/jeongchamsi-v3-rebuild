@@ -1,5 +1,5 @@
 import {canViewAdminAnalysis} from '../core/membership.js?v=0.0.31.354';
-import {renderComparisonBoard} from './comparison-board.js?v=0.0.31.364';
+import {renderComparisonBoard} from './comparison-board.js?v=0.0.31.423';
 import { renderAnalysisAccess } from './person-refresh.js?v=0.0.31.362';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));

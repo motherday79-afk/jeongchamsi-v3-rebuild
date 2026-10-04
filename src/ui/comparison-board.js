@@ -1,5 +1,6 @@
 export function bindComparisonBoard(root){
  if(!root||root.__comparisonBoardBound)return;root.__comparisonBoardBound=true;
+ root.addEventListener('change',event=>{const select=event.target.closest('[data-election-metric]');if(!select)return;select.closest('[data-board-panel]').querySelectorAll('[data-election-view]').forEach(view=>{view.hidden=view.dataset.electionView!==select.value;});});
  function select(button){
   const board=button.closest('[data-compare-board]'),id=button.dataset.boardTab;if(!board)return;
   board.querySelectorAll('[data-board-tab]').forEach(tab=>{const active=tab===button;tab.setAttribute('aria-selected',String(active));tab.tabIndex=active?0:-1;});
