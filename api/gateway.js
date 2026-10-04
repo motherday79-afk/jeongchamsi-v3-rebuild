@@ -636,6 +636,7 @@ export default async function handler(req,res){
         if(req.method!=='POST')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
         if(!isSuperAdmin(user))return json(res,403,{ok:false,error:'ADMIN_REQUIRED'});
         const body=bodyOf(req);
+        if(body.operation==='delete')return json(res,200,await service.remove(body.id,body.updatedAt,user));
         if(body.operation==='upload-image'){
           const valid=validatePoliticianPhoto({contentType:body.contentType,bytes:Buffer.from(String(body.base64||''),'base64')});
           if(!politicianPhotoStorageStatus().configured)return json(res,503,{ok:false,error:'PHOTO_STORAGE_NOT_CONFIGURED'});

@@ -3,6 +3,8 @@ export async function comicRequest(options={},admin=false){
 }
 const errors={EDIT_CONFLICT:'다른 작업으로 회차가 변경됐습니다. 페이지를 새로고침한 후 수정해 주세요.',ADMIN_REQUIRED:'최고관리자로 로그인해 주세요.',IMAGE_REQUIRED:'이미지 주소를 확인해 주세요.',SOURCE_REQUIRED:'출처를 이름 | https://주소 형식으로 입력해 주세요.',NETWORK_ERROR:'연결에 실패했습니다. 잠시 후 다시 시도해 주세요.'};
 export function bindComicEditor(root,{onSaved}={}){
+ root.addEventListener('click',async event=>{const button=event.target.closest('[data-comic-delete]');if(!button||button.disabled)return;if(!confirm('이 회차를 삭제하시겠습니까?'))return;button.disabled=true;const result=await comicRequest({method:'POST',body:JSON.stringify({operation:'delete',id:button.dataset.comicDelete,updatedAt:button.dataset.comicRevision})});if(result.ok)window.dispatchEvent(new CustomEvent('jcs:layout-route',{detail:{route:'/political-comic'}}));else{button.disabled=false;alert(errors[result.error]||'삭제하지 못했습니다. 다시 시도해 주세요.');}});
+
  root.addEventListener('change',async event=>{
   const input=event.target.closest('[data-comic-upload]');if(!input)return;
   const file=input.files?.[0],form=input.closest('form'),status=form.querySelector('[data-comic-status]'),submit=form.querySelector('[type="submit"]');if(!file)return;const target=input.dataset.comicUpload||'image';

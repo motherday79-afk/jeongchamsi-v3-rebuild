@@ -234,13 +234,14 @@ export function setupHomeCompare(root=document){
   homeCompareBound.set(form,()=>motion.resume(ids()));
   const update=()=>{const ready=!!homeCompareRoute(ids());if(button)button.disabled=!ready;state.textContent=ready?'비교 화면으로 이동합니다.':'';};
   const clear=slot=>{slot.classList.remove('election-selected');slot.style.removeProperty('--candidate');motion.clear(slots.indexOf(slot));slot.querySelector('[data-home-compare-id]').value='';slot.querySelector('[data-home-compare-preview]').innerHTML='<button type="button" class="ec-add" data-home-compare-change data-home-compare-open aria-label="정치인 선택"><span aria-hidden="true">＋</span></button>';};
-  const showSearch=(slot,open)=>{const panel=slot.querySelector('[data-home-compare-search-panel]');panel.hidden=!open;for(const control of slot.querySelectorAll('[data-home-compare-change]'))control.setAttribute('aria-expanded',String(open));};
+  const showSearch=(slot,open)=>{const panel=slot.querySelector('[data-home-compare-search-panel]');panel.hidden=!open;slot.classList.toggle('is-searching',open);for(const control of slot.querySelectorAll('[data-home-compare-change]'))control.setAttribute('aria-expanded',String(open));};
   form.addEventListener('click',event=>{
    const change=event.target.closest('[data-home-compare-change]');if(!change)return;
    const slot=change.closest('[data-home-compare-slot]'),panel=slot.querySelector('[data-home-compare-search-panel]'),open=change.hasAttribute?.('data-home-compare-open')||panel.hidden;
    for(const peer of slots)showSearch(peer,peer===slot&&open);
    if(open){const input=panel.querySelector('[data-home-compare-search]');input.focus();input.select();}
   });
+  form.addEventListener('keydown',event=>{if(event.key==='Escape')for(const slot of slots)showSearch(slot,false);});
   form.addEventListener('input',event=>{const input=event.target.closest('[data-home-compare-search]');if(!input)return;clear(input.closest('[data-home-compare-slot]'));input.setAttribute('value',input.value);update();});
   form.addEventListener('jcs:politician-selected',event=>{
    const slot=event.target.closest('[data-home-compare-slot]'),item=event.detail?.item;if(!slot||!item)return;

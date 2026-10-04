@@ -1,4 +1,4 @@
-import {renderShareMenu} from '../ui/page-share.js?v=0.0.31.429';
+import {renderShareMenu} from '../ui/page-share.js?v=0.0.31.431';
 import {moduleActionIconSvg} from '../ui/service-icons.js?v=0.0.31.394';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const safe=v=>/^\/assets\/[a-zA-Z0-9_./-]+$/.test(v||'')||/^https:\/\//.test(v||'')?esc(v):'';
@@ -10,12 +10,12 @@ export function renderComicHome(result={}){
  const rows=(result.items||[]).slice(0,3);
  return '<section class="political-comic-home" id="political-comic"><div class="module-header"><div><span class="eyebrow">JCS POLITICAL TOON</span><h2>정치4컷</h2></div><button class="module-icon-action" type="button" data-layout-route="/political-comic" aria-label="정치4컷 전체 회차" title="정치4컷 전체 회차">'+moduleActionIconSvg('comic')+'<span class="sr-only">정치4컷 전체 회차</span></button>'+'</div><div class="comic-home-gallery">'+rows.map(p=>link('/political-comic/'+encodeURIComponent(p.id),'<h2 class="comic-home-title"><span>EP.'+issue(p)+'</span> '+esc(p.title)+'</h2><div class="comic-home-picture">'+image(p)+'</div>','comic-home-thumbnail')).join('')+'</div></section>';
 }
-export function renderComicPage(result={},id=''){
+export function renderComicPage(result={},id='',canManage=false){
  const list=result.items||[],p=list.find(p=>p.id===id);
  if(id&&!p)return '<section class="comic-page"><h1>회차를 찾을 수 없습니다.</h1>'+link('/political-comic','목록으로 돌아가기')+'</section>';
  if(!id)return '<section class="comic-page comic-library"><nav>'+link('/','← 정참시 메인')+'</nav><header class="comic-page-heading">'+brand+renderShareMenu('/political-comic')+'</header><div class="comic-archive">'+list.map(p=>link('/political-comic/'+encodeURIComponent(p.id),'<div class="comic-cover">'+image(p)+'</div><div><span class="comic-kicker">EP. '+issue(p)+' · '+esc(p.date)+'</span><h2>'+esc(p.title)+'</h2></div>','comic-archive-card')).join('')+'</div></section>';
  const panels=p.panels.map((panel,i)=>'<figure><div class="comic-panel-art comic-panel-'+i+'" role="img" aria-label="'+esc(panel.title+'. '+panel.text)+'"><img src="'+safe(p.image)+'" alt="" loading="lazy" decoding="async"></div></figure>').join('');
- return '<article class="comic-page comic-reader"><nav>'+link('/political-comic','← 전체 회차')+'<span>에피소드 '+issue(p)+'</span></nav><header class="comic-page-heading"><h1>'+esc(p.title)+'</h1><span class="comic-kicker">'+esc(p.date)+'</span>'+renderShareMenu('/political-comic/'+encodeURIComponent(p.id))+'</header><div class="comic-panels comic-manuscript '+(p.format==='comic'?'comic-square':'')+'">'+panels+'</div></article>';
+ return '<article class="comic-page comic-reader"><nav>'+link('/political-comic','← 전체 회차')+'<span>에피소드 '+issue(p)+'</span></nav><header class="comic-page-heading"><h1>'+esc(p.title)+'</h1><span class="comic-kicker">'+esc(p.date)+'</span>'+renderShareMenu('/political-comic/'+encodeURIComponent(p.id),canManage?'<a href="/admin/political-comic?id='+encodeURIComponent(p.id)+'" data-layout-route="/admin/political-comic?id='+encodeURIComponent(p.id)+'"><svg viewBox="0 0 24 24"><path d="m16 3 5 5-13 13H3v-5L16 3ZM13 6l5 5"/></svg>수정</a><button type="button" class="jc-danger" data-comic-delete="'+esc(p.id)+'" data-comic-revision="'+esc(p.updatedAt||'')+'"><svg viewBox="0 0 24 24"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/></svg>삭제</button>':'')+'</header><div class="comic-panels comic-manuscript '+(p.format==='comic'?'comic-square':'')+'">'+panels+'</div></article>';
 
 }
 export function renderComicAdmin(result={},id=''){
