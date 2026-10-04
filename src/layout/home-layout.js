@@ -1,5 +1,5 @@
 import {renderMockBillHome} from '../views/mock-bill.js?v=0.0.31.424';
-import {renderPoliticalMapHome} from '../views/political-map.js?v=0.0.31.432';
+import {renderPoliticalMapHome} from '../views/political-map.js?v=0.0.31.433';
 import {renderComicHome} from '../views/political-comic.js?v=0.0.31.431';
 import {fortuneFrontArt} from '../ui/fortune-card-art.js?v=0.0.31.366';
 import {fortuneStateKey,readFortuneState} from '../core/fortune-card-state.js?v=0.0.31.363';
