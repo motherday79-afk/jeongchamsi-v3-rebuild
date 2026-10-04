@@ -1,4 +1,4 @@
-import {bindPageEditor} from './ui/person-page-editor.js?v=0.0.31.429';
+import {bindPageEditor} from './ui/person-page-editor.js?v=0.0.31.430';
 import {renderVoteEditor,bindBillEditing} from './ui/mock-bill-editing.js?v=0.0.31.424';
 import {mountBillVote} from './ui/bill-chamber.js?v=0.0.31.424';
 import {loadBillSettings,renderBillSettings,bindBillSettings} from './ui/mock-bill-settings.js?v=0.0.31.424';
@@ -37,18 +37,18 @@ import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerPro
 import { focusCageCompose, setupHomeCompare, setupPoliticianAutocomplete, setupLayoutInteractions, setupPoliticianPhotoFallback, setupNowCarousel, setupCageCountdown, setupDesktopHomeViewport } from './ui/interactions.js?v=0.0.31.427';
 import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.354';
 import { createContentService, loadNavigationDashboard, loadPersonNavigation } from './core/content.js?v=0.0.31.389';
-import { createPoliticianService } from './core/politicians.js?v=0.0.31.429';
+import { createPoliticianService } from './core/politicians.js?v=0.0.31.430';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith, isTransientAnalysisRoute } from './core/navigation.js?v=0.0.31.377';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.148';
 import * as views from './views/stage1.js?v=0.0.31.404';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.429';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.430';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.426';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident } from './views/participation-pages.js?v=0.0.31.361';
 import { renderPresidentPage } from './views/president.js?v=0.0.31.107';
 import { renderSearchPage, hasSearchSnapshot } from './views/search-page.js?v=0.0.31.400';
 import { loadSearchDiscovery } from './views/search-discovery.js?v=0.0.31.400';
-import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.31.429';
+import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.31.430';
 import {regionLocalityOptions,resolveRegionLocality} from './data/korean-regions.js?v=0.0.31.351';
 import {activityFormPayload,activityRequestId,settleActivityRequest,rememberActivityFeedback,rememberSubmissionFeedback,showActivityFeedback,hydrateActivityHints,bindActivityPoints,authoringResult} from './ui/activity-points.js?v=0.0.31.178';
 import {bindFortuneInteractions} from './ui/fortune-interactions.js?v=0.0.31.427';
