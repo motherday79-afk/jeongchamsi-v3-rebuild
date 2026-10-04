@@ -1,0 +1,42 @@
+import {MAP_REGIONS,MAP_DISTRICTS} from '../data/political-map-geometry.js?v=0.0.31.391';
+import {politicalMapSummary,normalizeRegion,normalizeParty} from '../core/political-map-model.js?v=0.0.31.391';
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const labels={all:'전체',assembly:'국회의원',metropolitan:'광역단체장',basic:'기초단체장'};
+export function districtMembers(items,district){
+ return items.filter(p=>{
+  if(normalizeRegion(p)!==district.region)return false;
+  if(p.type==='metropolitan')return true;
+  const local=String(p.jurisdiction||'').replace(/^(서울특별시|부산광역시|대구광역시|인천광역시|대전광역시|울산광역시|세종특별자치시|경기도|강원특별자치도|강원도|충청북도|충청남도|전북특별자치도|전라북도|전남광주통합특별시|전라남도|광주광역시|경상북도|경상남도|제주특별자치도)\s*/, '').replace(/\s/g,'');
+  return !!local&&(local.startsWith(district.name)||district.name.startsWith(local)||(local.match(/^.+?시/)?.[0]===district.name));
+ });
+}
+export function renderRegionStage(data,state,color){
+ const region=MAP_REGIONS.find(r=>r.name===state.region);
+ const regional=politicalMapSummary(data.items,{type:state.type,region:state.region});
+ const districts=MAP_DISTRICTS.filter(d=>d.region===state.region);
+ const district=districts.find(d=>d.name===state.local);
+ const localItems=district?districtMembers(regional.items,district):regional.items;
+ const summary=politicalMapSummary(localItems);
+ const people=localItems.filter(p=>(state.party==='all'||(p.isVacant?'공석':normalizeParty(p.party))===state.party)&&(!state.district||state.district===p.id)&&(!state.q||(p.name+' '+p.jurisdiction).includes(state.q)));
+ let defs='',paths='';
+ const shapes=districts.length?districts:region?[region]:[];
+ for(const [i,d] of shapes.entries()){
+  const stats=d.region?politicalMapSummary(districtMembers(regional.items,d)):regional;
+  const id='pmap-local-'+i;let offset=0;
+  defs+='<linearGradient id="'+id+'">'+stats.parties.map(p=>{const start=offset;offset+=p.share*100;const paint=state.party!=='all'&&state.party!==p.party?'#526075':color(p.party);return '<stop offset="'+start+'%" stop-color="'+paint+'"/><stop offset="'+offset+'%" stop-color="'+paint+'"/>';}).join('')+'</linearGradient>';
+  paths+='<path d="'+d.d+'" fill="'+(stats.total?'url(#'+id+')':'#475469')+'" data-map-local="'+esc(d.name)+'" role="button" tabindex="0" aria-label="'+esc(d.name+' · '+stats.total+'명')+'" class="'+(state.local===d.name?'is-selected':'')+'"><title>'+esc(d.name+' · '+stats.parties.map(p=>p.party+' '+p.count+'명').join(', '))+'</title></path>';
+ }
+ const b=region?.bounds,box=b?[b[0]-4,b[1]-4,b[2]+8,b[3]+8].join(' '):'0 0 600 700';
+ const unit=state.type==='assembly'?'석':'명';
+ return `<section class="pmap-broadcast"><header class="pmap-region-heading"><div><span>JCS REGIONAL REPORT</span><h2>${esc(region?.fullName||state.region)}</h2><p>${labels[state.type]} · ${district?esc(district.name):'지역 전체'}</p></div><button type="button" data-map-reset>← 전국 지도</button></header>
+ <div class="pmap-scoreboard">${summary.parties.map(p=>`<button type="button" data-map-party="${esc(p.party)}" aria-pressed="${state.party===p.party}" style="--party:${color(p.party)}"><span>${esc(p.party)}</span><strong>${p.count}<small>${unit}</small></strong><em>${(p.share*100).toFixed(1)}%</em></button>`).join('')||'<p>등록된 인물이 없습니다.</p>'}</div>
+ <div class="pmap-region-body"><div class="pmap-region-map"><svg viewBox="${box}" aria-label="${esc(state.region)} 행정구역별 정당 구성"> <defs>${defs}</defs>${paths}</svg><p>행정구역 기준 · 정참시 등록 인물 현황</p></div><aside><div class="pmap-region-total"><span>${district?esc(district.name):'지역 전체'} 등록 현황</span><strong>${summary.total}<small>${unit}</small></strong><p>현원 ${summary.occupied} · 공석 ${summary.vacant}</p></div><label class="pmap-local-select">세부 지역<select data-map-local-select><option value="">지역 전체</option>${districts.map(d=>`<option value="${esc(d.name)}" ${d.name===state.local?'selected':''}>${esc(d.name)}</option>`).join('')}</select></label>${state.party!=='all'?'<button type="button" class="pmap-local-clear" data-map-party="all">정당 선택 해제</button>':''}<p class="pmap-region-help">지도에서 지역을 선택하면<br>해당 지역 인물을 볼 수 있습니다.</p></aside></div>
+ <section class="pmap-region-roster"><header><h3>${district?esc(district.name):'지역'} 인물 <span>${people.length}</span></h3><form data-map-search><input name="q" value="${esc(state.q)}" aria-label="이름 또는 지역 검색" placeholder="이름 또는 지역 검색"><button type="submit">검색</button></form></header><div class="pmap-region-people">${people.slice(0,state.limit).map(p=>p.isVacant?`<div class="pmap-person-vacant">공석 · ${esc(p.jurisdiction)}</div>`:`<a href="/person/${encodeURIComponent(p.id)}" data-layout-route="/person/${esc(p.id)}" style="--party:${color(normalizeParty(p.party))}"><span class="pmap-region-avatar" data-region-photo="${esc(p.id)}">${esc(p.name?.slice(0,1))}</span><div><strong>${esc(p.name)}</strong><b>${esc(normalizeParty(p.party))}</b><span>${esc(p.jurisdiction||p.region)}</span><small>${labels[p.type]}</small></div></a>`).join('')||'<p>조건에 맞는 인물이 없습니다.</p>'}</div>${people.length>state.limit?'<button type="button" class="pmap-region-more" data-map-more>인물 더 보기</button>':''}</section></section>`;
+}
+const photos=new Map();
+export async function loadRegionPhotos(root){
+ const nodes=[...root.querySelectorAll('[data-region-photo]')];if(!nodes.length)return;
+ const ids=[...new Set(nodes.map(n=>n.dataset.regionPhoto))].filter(id=>!photos.has(id));
+ if(ids.length)try{for(let i=0;i<ids.length;i+=100){const response=await fetch('/api/v3/politicians?ids='+encodeURIComponent(ids.slice(i,i+100).join(',')),{credentials:'same-origin'});const data=await response.json();if(!response.ok||!data.ok)return;for(const p of data.items||[])photos.set(p.id,p.photo?.url||p.photo?.localPath||'');}}catch{return;}
+ for(const node of nodes){const url=photos.get(node.dataset.regionPhoto);if(!url||!node.isConnected||!(/^(https:\/\/|\/(?!\/))/.test(url)))continue;const image=document.createElement('img');image.src=url;image.alt='';image.loading='lazy';image.addEventListener('error',()=>image.remove(),{once:true});node.append(image);}
+}
