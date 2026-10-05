@@ -3,3 +3,5 @@
 
 .dr-path-number{display:block;font-size:32px;margin:10px 0}.dr-path-number small{font-size:14px}.dr-issue-days{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.dr-issue-days span{display:grid;text-align:center;gap:5px;min-width:40px}.dr-issue-days b{font-size:22px}.dr-issue-days small{font-size:14px}
 .dr-report .dr-hero h3,.dr-report .dr-hero .dr-stat{color:#fff!important}.dr-report .dr-hero .dr-headline p{color:#e1e9f4!important}
+
+.dr-evidence>summary{font-size:18px;font-weight:700;cursor:pointer;padding:14px 0;color:#173e69}.dr-context{padding:14px 22px}.dr-assessment p{font-size:18px}.dr-report .dr-asof{font-size:14px}.dr-scenes .dr-context strong{font-size:18px}

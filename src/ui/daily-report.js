@@ -1,4 +1,4 @@
-import {renderDailyReportBody,renderReportComparison} from '../views/daily-report.js?v=0.0.31.444';
+import {renderDailyReportBody,renderReportComparison} from '../views/daily-report.js?v=0.0.31.445';
 export function bindDailyReports(root=document){
  if(root.__dailyReportsBound)return;root.__dailyReportsBound=true;
  async function load(widget,period='24H',date=''){
