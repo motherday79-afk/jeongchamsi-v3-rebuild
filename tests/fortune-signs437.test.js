@@ -16,6 +16,11 @@ test('preferences survive reload and are isolated per account',()=>{
 });
 test('sign tab shows only three cards, selected sign and separate reveal storage',()=>{
  saveFortunePreferences('sign-render',{tab:'animal',animal:'용띠',star:'사자자리'});
- const html=renderFortuneCard({needsProfile:true},{authenticated:true,user:{id:'sign-render'}});
- assert.equal((html.match(/data-fortune-reveal=/g)||[]).length,3);assert.match(html,/data-fortune-tab="animal" aria-pressed="true"/);assert.match(html,/value="용띠" selected/);assert.match(html,/:animal:용띠/);assert.doesNotMatch(html,/data-fortune-profile-form/);
+ const html=renderFortuneCard({signs:{animal:'말띠',star:'천칭자리'}},{authenticated:true,user:{id:'sign-render'}});
+ assert.equal((html.match(/data-fortune-reveal=/g)||[]).length,3);assert.match(html,/data-fortune-tab="animal" aria-pressed="true"/);assert.match(html,/<strong>말띠<\/strong>/);assert.match(html,/:animal:말띠/);assert.doesNotMatch(html,/data-fortune-sign|<select/);
+ const missing=renderFortuneCard({needsProfile:true},{authenticated:true,user:{id:'sign-render'}});
+ assert.match(missing,/data-fortune-profile-form/);assert.doesNotMatch(missing,/data-fortune-reveal=/);
+ saveFortunePreferences('sign-render',{tab:'star',star:'사자자리'});
+ const star=renderFortuneCard({signs:{animal:'말띠',star:'천칭자리'}},{authenticated:true,user:{id:'sign-render'}});
+ assert.match(star,/<strong>천칭자리<\/strong>/);assert.doesNotMatch(star,/data-fortune-sign|<select/);
 });

@@ -1,8 +1,8 @@
 import {readFortuneState,revealFortune,saveFortuneState} from '../core/fortune-card-state.js?v=0.0.31.363';
-import {fortuneDay,readFortunePreferences,saveFortunePreferences,ANIMALS,SIGNS} from '../core/fortune-signs.js?v=0.0.31.437';
+import {fortuneDay,readFortunePreferences,saveFortunePreferences} from '../core/fortune-signs.js?v=0.0.31.437';
 export function bindFortuneInteractions(root,{auth,onSaved=()=>{}}={}){
  if(!root||root.__jcsFortuneBound)return;root.__jcsFortuneBound=true;
- const replace=async(widget,fresh)=>{const template=widget.querySelector('[data-fortune-source]');if(!template)return;let source;try{source=JSON.parse(template.content.textContent);}catch{return;}const {renderFortuneCard}=await import('../layout/home-layout.js?v=0.0.31.437');if(widget.isConnected)widget.outerHTML=renderFortuneCard(fresh||source.data,source.session);};
+ const replace=async(widget,fresh)=>{const template=widget.querySelector('[data-fortune-source]');if(!template)return;let source;try{source=JSON.parse(template.content.textContent);}catch{return;}const {renderFortuneCard}=await import('../layout/home-layout.js?v=0.0.31.442');if(widget.isConnected)widget.outerHTML=renderFortuneCard(fresh||source.data,source.session);};
  const refreshing=new WeakSet();
  const refreshDay=async()=>{for(const widget of root.querySelectorAll?.('[data-fortune-widget]')||[]){if(widget.dataset.fortuneDay===fortuneDay()||refreshing.has(widget))continue;refreshing.add(widget);try{const result=await auth?.fortuneToday?.();await replace(widget,result?.ok?result:undefined);}catch{/* Retry when the connection returns. */}finally{refreshing.delete(widget);}}};
  const timer=setInterval(()=>void refreshDay(),60000);timer.unref?.();
@@ -31,7 +31,6 @@ export function bindFortuneInteractions(root,{auth,onSaved=()=>{}}={}){
   if(cancel){event.preventDefault();const card=cancel.closest('.side-fortune'),form=card?.querySelector('[data-fortune-profile-form]'),intro=card?.querySelector('[data-fortune-intro]'),toggle=card?.querySelector('[data-fortune-toggle]');if(form)form.hidden=true;if(intro)intro.hidden=false;if(toggle)toggle.setAttribute('aria-expanded','false');}
  });
  root.addEventListener('change',event=>{
-  if(event.target.matches('[data-fortune-sign]')){const widget=event.target.closest('[data-fortune-widget]');if(!widget)return;const id=widget.dataset.fortuneUser,pref=readFortunePreferences(id),choices=pref.tab==='animal'?ANIMALS:SIGNS;if(!choices.includes(event.target.value))return;saveFortunePreferences(id,{...pref,[pref.tab]:event.target.value});void replace(widget);return;}
   const form=event.target.closest('[data-fortune-profile-form]');if(!form)return;
   if(event.target.name==='calendarType'){const leap=form.querySelector('[data-fortune-leap]');if(leap)leap.hidden=event.target.value!=='lunar';}
   if(event.target.matches('[data-fortune-time-unknown]')){const time=form.querySelector('[data-fortune-birth-time]');if(time){time.disabled=event.target.checked;if(event.target.checked)time.value='';}}

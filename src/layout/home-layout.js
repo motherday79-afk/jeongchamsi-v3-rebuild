@@ -1,4 +1,4 @@
-import {ANIMALS,SIGNS,SIGN_DATES,fortuneDay,readFortunePreferences,signFortune} from '../core/fortune-signs.js?v=0.0.31.437';
+import {fortuneDay,readFortunePreferences,signFortune} from '../core/fortune-signs.js?v=0.0.31.437';
 import {renderMockBillHome} from '../views/mock-bill.js?v=0.0.31.424';
 import {renderPoliticalMapHome} from '../views/political-map.js?v=0.0.31.436';
 import {renderComicHome} from '../views/political-comic.js?v=0.0.31.431';
@@ -146,10 +146,9 @@ function fortuneProfileForm(session={}){
 }
 export function renderFortuneCard(data={},session={}){
  if(!session.authenticated)return renderFortuneReading(data,session);
- const pref=readFortunePreferences(session.user?.id),day=fortuneDay(),selection=pref[pref.tab],source={data:{...data,...Object.fromEntries(['overall','money','business','relationship'].filter(k=>data[k]).map(k=>[k,{score:data[k].score,title:data[k].title,summary:data[k].summary}]))},session:{authenticated:true,user:{id:session.user?.id,birthYear:session.user?.birthYear}}};
- const reading=pref.tab==='overall'?data:signFortune(pref.tab,selection,day);
- const choices=pref.tab==='animal'?ANIMALS:SIGNS;
- const selector=pref.tab==='overall'?'':'<label class="fortune-sign-picker"><span>'+ (pref.tab==='animal'?'나의 띠':'나의 별자리')+'</span><select data-fortune-sign>'+choices.map((name,i)=>'<option value="'+esc(name)+'" '+(name===selection?'selected':'')+'>'+esc(name+(pref.tab==='star'?' · '+SIGN_DATES[i]:''))+'</option>').join('')+'</select></label>';
+ const pref=readFortunePreferences(session.user?.id),day=fortuneDay(),selection=data.signs?.[pref.tab],source={data:{...data,...Object.fromEntries(['overall','money','business','relationship'].filter(k=>data[k]).map(k=>[k,{score:data[k].score,title:data[k].title,summary:data[k].summary}]))},session:{authenticated:true,user:{id:session.user?.id,birthYear:session.user?.birthYear}}};
+ const reading=pref.tab==='overall'||!selection||data.needsProfile||data.ok===false?data:signFortune(pref.tab,selection,day);
+ const selector=pref.tab==='overall'||!selection||data.needsProfile||data.ok===false?'':'<div class="fortune-sign-picker"><span>'+ (pref.tab==='animal'?'나의 띠':'나의 별자리')+'</span><strong>'+esc(selection)+'</strong></div>';
  return '<div class="fortune-widget" data-fortune-widget data-fortune-user="'+esc(session.user?.id||'')+'" data-fortune-day="'+day+'"><nav class="fortune-tabs" aria-label="운세 종류">'+[['overall','종합'],['animal','띠별'],['star','별자리']].map(([tab,label])=>'<button type="button" data-fortune-tab="'+tab+'" aria-pressed="'+(pref.tab===tab)+'">'+label+'</button>').join('')+'</nav>'+selector+renderFortuneReading(reading,session,pref.tab==='overall'?'':pref.tab+':'+selection)+'<template data-fortune-source>'+esc(JSON.stringify(source))+'</template></div>';
 }
 function renderFortuneReading(data={},session={},scope=''){
