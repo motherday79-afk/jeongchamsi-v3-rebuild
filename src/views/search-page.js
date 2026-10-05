@@ -1,4 +1,4 @@
-import {renderMediaSpread,spreadEsc as esc,spreadRoute} from './media-spread-view.js?v=0.0.31.150';
+import {renderMediaSpread,spreadEsc as esc,spreadRoute} from './media-spread-view.js?v=0.0.31.439';
 import {renderSearchDiscovery} from './search-discovery.js?v=0.0.31.400';
 const snapshots=new WeakMap();
 const keyOf=params=>JSON.stringify([params.query,params.personId||'',params.publisher||'',params.period==='cumulative'?'cumulative':'latest']);
@@ -16,7 +16,7 @@ async function matchingPosts(query,content){
 }
 export async function renderSearchPage({query='',page=1,personId='',publisher='',period='latest',politicians,content}={}){
  const term=String(query||'').trim(),params={query:term,personId,publisher,period:period==='cumulative'?'cumulative':'latest',page};
- const hero=`<header class="spread-intro"><span class="spread-kicker">JCS SPREAD</span><h1>정참 시선</h1><p>정치인을 검색하고, 언론이 누구를 어떻게 다루는지 살펴보세요.</p></header>`;
+ const hero=`<header class="spread-intro"><span class="spread-kicker">JCS SPREAD</span><h1>정참시 스프레드</h1><p>정치인이나 정당을 검색하면 기사 수, 검색량, 언론사별 보도를 볼 수 있습니다.</p></header>`;
  if(!term)return `<main class="subpage search-page jcs-spread">${hero}${renderSearchDiscovery(term)}</main>`;
  try{
   const data=await searchSnapshot(params,politicians,content);

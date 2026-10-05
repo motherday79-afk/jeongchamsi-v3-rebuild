@@ -74,18 +74,18 @@ test('a tied midpoint axis gets precise middle wording instead of an unearned hi
  const newsMiddleSearchHigh=analyze(sameNews,'p4',people.slice(0,4));
  assert.equal(newsMiddleSearchHigh.category,'balanced');assert.equal(newsMiddleSearchHigh.target.x,50);assert.equal(newsMiddleSearchHigh.target.y,100);
  assert.equal(newsMiddleSearchHigh.target.newsRank,1);assert.equal(newsMiddleSearchHigh.target.newsTied,true);assert.equal(newsMiddleSearchHigh.target.searchRank,1);
- assert.equal(newsMiddleSearchHigh.headline,'보도는 비교군의 중간에 있고 검색은 중간보다 높은 위치입니다');
+ assert.equal(newsMiddleSearchHigh.headline,'기사 수는 중간 순위이고, 검색량 순위는 중간보다 높은 위치입니다');
  assert.doesNotMatch(newsMiddleSearchHigh.headline,/모두에서 두드러지는/);
 
  const sameSearch=people.slice(0,4).map((person,index)=>draft(person,(index+1)*10,100));
  const newsHighSearchMiddle=analyze(sameSearch,'p4',people.slice(0,4));
  assert.equal(newsHighSearchMiddle.category,'balanced');assert.equal(newsHighSearchMiddle.target.x,100);assert.equal(newsHighSearchMiddle.target.y,50);
  assert.equal(newsHighSearchMiddle.target.newsRank,1);assert.equal(newsHighSearchMiddle.target.searchRank,1);assert.equal(newsHighSearchMiddle.target.searchTied,true);
- assert.equal(newsHighSearchMiddle.headline,'검색은 비교군의 중간에 있고 보도는 중간보다 높은 위치입니다');
+ assert.equal(newsHighSearchMiddle.headline,'검색량은 중간 순위이고, 기사 수 순위는 중간보다 높은 위치입니다');
  assert.doesNotMatch(newsHighSearchMiddle.headline,/모두에서 두드러지는/);
 
  const newsMiddleSearchLow=analyze(sameNews,'p1',people.slice(0,4));
  assert.equal(newsMiddleSearchLow.category,'balanced');assert.equal(newsMiddleSearchLow.target.x,50);assert.equal(newsMiddleSearchLow.target.y,0);
- assert.equal(newsMiddleSearchLow.headline,'보도는 비교군의 중간에 있고 검색은 중간보다 낮은 위치입니다');
+ assert.equal(newsMiddleSearchLow.headline,'기사 수는 중간 순위이고, 검색량 순위는 중간보다 낮은 위치입니다');
  assert.doesNotMatch(newsMiddleSearchLow.headline,/모두 비교군의 중간보다 낮은/);
 });

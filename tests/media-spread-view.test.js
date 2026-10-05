@@ -8,7 +8,7 @@ const index=buildMediaIndex(profiles.map(person=>({id:person.id,input:{collected
 function setup(){let calls=0,boardCalls=0;const politicians={mediaSpread:async input=>{calls++;return analyzeMediaIndex(index,{...input,now:at});},searchAll:async()=>({ok:true,items:profiles,total:2})},content={list:async()=>{boardCalls++;return [];},readDomain:async()=>({})};return {politicians,content,counts:()=>({calls,boardCalls})};}
 test('politician search renders JCS SPREAD, profile detail, publisher selection and the two periods without irrelevant empty boards',async()=>{
  const s=setup(),html=await renderSearchPage({...s,query:'김민석'});
- assert.match(html,/JCS SPREAD/);assert.match(html,/정참 시선/);assert.match(html,/상세보기/);assert.match(html,/\/person\/assembly-001/);assert.match(html,/최신순/);assert.match(html,/누적순/);assert.match(html,/연합뉴스/);assert(!html.includes('관련 결과가 없습니다'));assert(!html.includes('24H'));assert.equal(s.counts().boardCalls,0);
+ assert.match(html,/JCS SPREAD/);assert.match(html,/정참시 스프레드/);assert.match(html,/상세보기/);assert.match(html,/\/person\/assembly-001/);assert.match(html,/최근 7일/);assert.match(html,/최근 30일/);assert.match(html,/연합뉴스/);assert(!html.includes('관련 결과가 없습니다'));assert(!html.includes('24H'));assert.equal(s.counts().boardCalls,0);
 });
 test('filters keep the politician and publisher and cached requests do not repeat; another politician uses the same view',async()=>{
  const s=setup(),params={...s,query:'다른시장',personId:'basic-002',publisher:'연합뉴스',period:'cumulative'};
@@ -25,10 +25,10 @@ test('searched-person monthly position appears between the profile and existing 
  const people=Array.from({length:4},(_,i)=>({id:`person-${i}`,name:`인물${i}`,type:'assembly',party:'정당'}));
  const monthly=buildMediaIndex(people.map((person,i)=>({id:person.id,input:{collectedAt:new Date(at).toISOString(),searchAds:{volume:{pc:100+i*100,mobile:900+i*900}},news:{periodCounts:[{label:'30D',value:40-i*10}],coverage:[{date:'2026-09-12',collected:true}],items:[{title:person.name+' 주거 정책 협약',source:'연합뉴스',publishedAt:'2026-09-11T10:00:00Z',url:`https://news.example/${i}`}]}}})),people);
  const html=await renderSearchPage({query:people[0].name,content:{},politicians:{mediaSpread:async params=>analyzeMediaIndex(monthly,{...params,now:at})}});
- assert.match(html,/인물0의 월간/);assert.match(html,/1,000/);
+ assert.match(html,/인물0 월간/);assert.match(html,/1,000/);
  const profile=html.indexOf('class="spread-target"'),attention=html.indexOf('class="attention-panel'),controls=html.indexOf('class="spread-toolbar"'),directory=html.indexOf('class="spread-directory"');
  assert.ok(profile>=0&&attention>profile&&controls>attention&&directory>controls);
- assert.match(html,/최신순/);assert.match(html,/누적순/);assert.match(html,/연합뉴스/);
+ assert.match(html,/최근 7일/);assert.match(html,/최근 30일/);assert.match(html,/연합뉴스/);
 });
 
 test('names and spaced party names open SPREAD directly',async()=>{

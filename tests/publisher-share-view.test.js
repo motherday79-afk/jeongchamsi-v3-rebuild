@@ -14,14 +14,14 @@ test('publisher share appears inside publisher focus with two labeled bars, exac
  const detail=html.indexOf('class="spread-publisher-detail"'),share=html.indexOf('class="publisher-share"'),existingAnalysis=html.indexOf('class="spread-analysis-grid"');
  assert.ok(detail>=0&&share>detail&&existingAnalysis>share,'share belongs within publisher detail ahead of the existing analysis');
  const block=html.slice(share,existingAnalysis);
- assert.match(block,/보도 비중의 차이/);
- assert.match(block,/다른 언론 합산/);
+ assert.match(block,/언론사별 기사 비중 비교/);
+ assert.match(block,/다른 언론사 전체/);
  assert.match(block,/20\s*\/\s*100건/);
  assert.match(block,/10\s*\/\s*200건/);
  assert.match(block,/20%/);assert.match(block,/5%/);assert.match(block,/15%p/);assert.match(block,/4배/);
  assert.match(block,/1개 언론사/);
  assert.match(block,/aria-label="연합뉴스[^"\n]*20%/);
- assert.match(block,/aria-label="다른 언론 합산[^"\n]*5%/);
+ assert.match(block,/aria-label="다른 언론사 전체[^"\n]*5%/);
  assert.match(block,/width:20%/);assert.match(block,/width:5%/);
 });
 
@@ -57,7 +57,7 @@ test('small samples show counts and percentages with a note while zero baseline 
  const result=analyzeMediaIndex(index,{personId:'target',publisher:'연합뉴스',now});
  const html=renderPublisherShare(result.selected.shareComparison);
  assert.match(html,/1\s*\/\s*1건/);assert.match(html,/0\s*\/\s*1건/);assert.match(html,/100%/);assert.match(html,/>0%</);
- assert.match(html,/적은 수집 표본/);
+ assert.match(html,/수집 기사가 적습니다/);
  assert.doesNotMatch(html,/publisher-share-ratio|Infinity|NaN/);
 });
 

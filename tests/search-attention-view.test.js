@@ -11,7 +11,7 @@ const ready={
     newsRank:2,searchRank:3,newsTied:true,searchTied:false,x:100,y:0
   },
   category:'search',
-  headline:'보도 순위보다 검색 순위가 앞선 관심 흐름입니다.',
+  headline:'기사 수 순위보다 검색량 순위가 앞선 관심 흐름입니다.',
   cohort:{label:'국회의원',size:6,from:'2026-09-10T16:00:00.000Z',to:'2026-09-12T16:00:00.000Z',partial:false},
   points:[
     {id:'assembly-002',name:'동료 의원',newsCount:28,searchCount:7600,newsRank:3,searchRank:4,x:48,y:62},
@@ -28,24 +28,24 @@ test('returns no markup when attention data is absent',()=>{
 
 test('renders the selected person first with actual monthly metrics, ranks, dates, and an accessible position chart',()=>{
   const html=renderSearchAttention(ready);
-  assert.match(html,/월간 관심도/);
-  assert.match(html,/보도 순위보다 검색 순위가 앞선 관심 흐름입니다/);
+  assert.match(html,/월간지표/);
+  assert.match(html,/기사 수 순위보다 검색량 순위가 앞선 관심 흐름입니다/);
   assert.match(html,/12,840/);
   assert.match(html,/12,840<em[^>]*>회<\/em>/);
   assert.match(html,/37/);
   assert.match(html,/37<em[^>]*>건<\/em>/);
   assert.match(html,/공동 2위/);
-  assert.match(html,/검색 순위[^<]*3위/);
+  assert.match(html,/검색량 순위[^<]*3위/);
   assert.match(html,/2026\.09\.12/);
   assert.match(html,/2026\.09\.13/);
   assert.match(html,/수집 기준일 2026\.09\.11 – 2026\.09\.13/);
   assert.match(html,/<svg[^>]*role="img"[^>]*aria-labelledby=/);
-  assert.match(html,/가로축은 보도 순위의 상대 위치/);
-  assert.match(html,/세로축은 검색 순위의 상대 위치/);
-  assert.match(html,/>보도 순위 위치 →<\/text>/);
-  assert.match(html,/>검색 순위 위치 →<\/text>/);
-  assert.match(html,/<text x="58" y="39">검색 쪽<\/text>/);
-  assert.match(html,/<text x="382" y="180" text-anchor="end">보도 쪽<\/text>/);
+  assert.match(html,/가로축은 기사 수 순위의 상대 위치/);
+  assert.match(html,/세로축은 검색량 순위의 상대 위치/);
+  assert.match(html,/>기사 수 순위 위치 →<\/text>/);
+  assert.match(html,/>검색량 순위 위치 →<\/text>/);
+  assert.match(html,/<text x="58" y="39">검색 상위<\/text>/);
+  assert.match(html,/<text x="382" y="180" text-anchor="end">기사 상위<\/text>/);
   assert.match(html,/data-attention-point="target"/);
   assert.match(html,/>김민석<\/text>/);
 });
@@ -100,8 +100,8 @@ test('gives every related card a search destination and a direct compare destina
   assert.match(html,/href="\/compare\?ids=assembly-001%2Cassembly-002&amp;run=1"/);
   assert.match(html,/동료 의원 검색 결과 보기/);
   assert.match(html,/김민석과 비교하기/);
-  assert.match(html,/보도 순위<\/dt><dd>공동 3위/);
-  assert.match(html,/검색 순위<\/dt><dd>4위/);
+  assert.match(html,/기사 수 순위<\/dt><dd>공동 3위/);
+  assert.match(html,/검색량 순위<\/dt><dd>4위/);
 });
 
 test('explains that metric counts and plotted rank positions have different bases',()=>{
@@ -115,7 +115,7 @@ test('explains that metric counts and plotted rank positions have different base
   assert.match(html,/합성 점수가 아닙니다/);
   assert.match(html,/수집 시각이 대상과 각각 48시간 이내/);
   assert.match(html,/키워드 검색 횟수이며 검색한 사람 수가 아닙니다/);
-  assert.match(html,/포털 경유 등 원언론사 미확인 기사도 포함/);
+  assert.match(html,/포털 경유 등 작성 언론사 미확인 기사도 포함/);
   assert.match(html,/언론사별 분석에서는 제외/);
   assert.match(html,/의미가 불명확한 0과 범위 검색량은 비교에서 제외/);
   assert.match(html,/지지나 반대를 뜻하지 않습니다/);

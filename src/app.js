@@ -46,7 +46,7 @@ import { renderPoliticianDirectory, renderPoliticianDetail } from './views/polit
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.426';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident } from './views/participation-pages.js?v=0.0.31.361';
 import { renderPresidentPage } from './views/president.js?v=0.0.31.107';
-import { renderSearchPage, hasSearchSnapshot } from './views/search-page.js?v=0.0.31.400';
+import { renderSearchPage, hasSearchSnapshot } from './views/search-page.js?v=0.0.31.439';
 import { loadSearchDiscovery } from './views/search-discovery.js?v=0.0.31.400';
 import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.31.430';
 import {regionLocalityOptions,resolveRegionLocality} from './data/korean-regions.js?v=0.0.31.351';
