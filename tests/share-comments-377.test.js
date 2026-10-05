@@ -9,7 +9,7 @@ test('public share cards use per-episode images and section art without exposing
  const source={readComics:async()=>({items:[...COMIC_EPISODES,{id:'secret',title:'비밀',image:'/assets/secret.webp',published:false}]})};
  for(const p of COMIC_EPISODES){const m=await buildShareMetadata('/political-comic/'+p.id,source);assert.equal(m.title,p.title);assert.ok(m.image.endsWith(p.image));assert.ok(m.url.endsWith('/'+p.id));assert.match(renderShareDocument(m,'<head></head>'),/og:image/);}
  const hidden=await buildShareMetadata('/political-comic/secret',source);assert.doesNotMatch(JSON.stringify(hidden),/비밀|secret.webp/);
- const poll=await buildShareMetadata('/ai-panel',source);assert.match(poll.image,/jcs-survey-377.png$/);assert.match(poll.title,/여론조사/);
+ const poll=await buildShareMetadata('/ai-panel',source);assert.match(poll.image,/jcs-survey-441.png$/);assert.match(poll.title,/여론조사/);
  const home=renderComicHome({items:COMIC_EPISODES});assert.match(home,/module-icon-action/);assert.doesNotMatch(home,/전체 회차 보기 ↗/);
 });
 test('sharing preserves exact episode URL, supports copy fallback and blocks private screens',async()=>{
