@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {summarizeReport,renderDailyReportBody,renderReportComparison} from '../src/views/daily-report.js';
-test('summary is one conclusion with one strength and focus, not nine sections',()=>{
+test('summary keeps one highlight per topic without full repeated sections',()=>{
  const record={topics:[{id:'07',score:80},{id:'03',score:30},{id:'06',score:20}]};
  assert.match(summarizeReport(record).sentence,/언론 보도.*지역 기반/);
- const html=renderDailyReportBody(record);assert.equal((html.match(/class="dr-stat"/g)||[]).length,3);assert.doesNotMatch(html,/dr-scenes|dr-context|dr-visual/);
+ const html=renderDailyReportBody(record);assert.equal((html.match(/data-summary-topic=/g)||[]).length,9);assert.doesNotMatch(html,/dr-scenes|dr-context|dr-visual/);
 });
 test('high risk is a concern, never rewarded as a strength',()=>{
  const result=summarizeReport({topics:[{id:'01',score:60},{id:'06',score:90},{id:'09',score:40}]});

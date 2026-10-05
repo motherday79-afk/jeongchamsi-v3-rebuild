@@ -11,9 +11,9 @@ import {handlePoliticians} from '../api/gateway.js';
 import {TARGET_KEYS} from '../lib/migration-service.js';
 const person=profiles[0];
 function record(){return makeDailyReport(person,projectIntelligence(buildIntelligenceDraft(person,rawFor(person)),'admin'),'2026-09-16T12:00:00Z');}
-test('report retains nine graphics, all explanations, no prescriptions or private raw input',()=>{
+test('report stores nine topics but renders only nine concise highlights',()=>{
  const r=record();assert.equal(r.topics.length,9);assert.equal(r.raw,undefined);assert.equal(r.prescriptions,undefined);
- const html=renderDailyReportBody(r);assert.doesNotMatch(html,/dr-scene|dr-podium|dr-cohorts/);assert.equal((html.match(/class="dr-stat"/g)||[]).length,3);assert.ok(html.includes('<details class="dr-evidence">'));assert.doesNotMatch(html,/\[object Object\]|undefined|NaN/);
+ const html=renderDailyReportBody(r);assert.doesNotMatch(html,/dr-scene|dr-podium|dr-cohorts/);assert.equal((html.match(/data-summary-topic=/g)||[]).length,9);assert.ok(html.includes('<details class="dr-evidence">'));assert.doesNotMatch(html,/\[object Object\]|undefined|NaN/);
  r.name='<script>alert(1)</script>';assert.doesNotMatch(renderDailyReportBody(r),/<script>/);
 });
 test('unpublished records remain invisible; exact dates, missing history and schema changes are handled',async()=>{
