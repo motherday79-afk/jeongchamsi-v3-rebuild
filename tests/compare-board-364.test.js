@@ -7,13 +7,13 @@ const service={getForCompare:async id=>({ok:true,item:people.find(p=>p.id===id),
 test('results use a focused comparison board with aligned metrics and detail links',async()=>{
  const html=await renderPoliticianCompare(service,'/compare?ids=p0,p1&run=1',{user:{id:'admin',role:'admin'}});
  assert.match(html,/data-compare-board/);assert.match(html,/role="tablist"/);assert.match(html,/<table/);
- assert.match(html,/data-board-panel="overview"/);assert.match(html,/data-board-panel="diagnosis" hidden/);
+ assert.match(html,/data-board-panel="rank"/);assert.match(html,/data-board-panel="diagnosis"[^>]* hidden/);
  assert.match(html,/href="\/person\/p0"/);assert.doesNotMatch(html,/jcs-compare-person-cell|COMPETITOR RESPONSE PLAYBOOK|전략 처방/);
- assert.match(html,/자료 없음/);assert.match(html,/20<small>p/);
+ assert.match(html,/자료 없음/);assert.match(html,/data-compare-chart="diagnosis"/);
 });
 test('four people have aligned table column headers and results load only after request',async()=>{
  const html=await renderPoliticianCompare(service,'/compare?ids=p0,p1,p2,p3&run=1',{user:{id:'staff',role:'admin'}});
- assert.match(html,/--board-count:4/);assert.equal((html.match(/data-board-person=/g)||[]).length,16);
+ assert.match(html,/--board-count:4/);assert.equal((html.match(/data-board-person=/g)||[]).length,4);
  const waiting=await renderPoliticianCompare(service,'/compare?ids=p0,p1',{user:{id:'admin',role:'admin'}});
  assert.doesNotMatch(waiting,/data-compare-board/);
 });
