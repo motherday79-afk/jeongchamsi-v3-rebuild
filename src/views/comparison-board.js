@@ -1,4 +1,4 @@
-import {comparisonPeople,comparisonChart,comparisonDates} from './comparison-charts.js?v=0.0.31.449';
+import {comparisonPeople,comparisonChart,comparisonDates} from './comparison-charts.js?v=0.0.31.451';
 const list=v=>Array.isArray(v)?v:[];
 const dateOf=v=>/^\d{4}-\d{2}-\d{2}/.test(String(v||''))?String(v).slice(0,10):'';
 export const metricNumber=v=>v===null||v===undefined||v===''||typeof v==='boolean'||!Number.isFinite(Number(v))?null:Number(v);
@@ -39,6 +39,6 @@ export function renderComparisonBoard(entries,{role='public',accessMarkup=''}={}
  <header class="cb-heading"><div><span class="cb-kicker">JCS COMPARE</span><h1>정치인 비교분석</h1></div><span class="cb-access">${entries.length}명 비교</span></header>${accessMarkup}
  ${comparisonPeople(entries)}
  <nav class="cb-tabs election-tabs" role="tablist" aria-label="비교 항목">${panels.map(([id,label],i)=>`<button role="tab" id="cb-tab-${id}" data-board-tab="${id}" aria-selected="${!i}" aria-controls="cb-panel-${id}" tabindex="${i?-1:0}">${label}</button>`).join('')}</nav>
- ${panels.map(([id,label,note],i)=>`<section id="cb-panel-${id}" data-board-panel="${id}" role="tabpanel" aria-labelledby="cb-tab-${id}"${i?' hidden':''}><div class="cx-panel-heading"><div><h2>${label}</h2><p>${note}</p></div><span class="cx-swipe">좌우로 넘겨 비교</span></div>${comparisonChart(id,entries,rows)}${comparisonDates(entries,id)}</section>`).join('')}
+ ${panels.map(([id,label,note],i)=>`<section id="cb-panel-${id}" data-board-panel="${id}" role="tabpanel" aria-labelledby="cb-tab-${id}"${i?' hidden':''}><div class="cx-panel-heading"><div><h2>${label}</h2><p>${note}</p></div><span class="cx-swipe">옆으로 넘겨 항목 보기</span></div>${comparisonChart(id,entries,rows)}${comparisonDates(entries,id)}</section>`).join('')}
  <footer class="cb-method"><p>JCS 분석지수는 정참시 분석값입니다. 검색량·보도량·활동 수치는 집계 범위와 기준일에 따라 해석해 주세요.</p></footer></section>`;
 }

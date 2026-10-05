@@ -1,4 +1,4 @@
-import {renderRegionStage,loadRegionPhotos} from './political-map-region.js?v=0.0.31.450';
+import {renderRegionStage,loadRegionPhotos} from './political-map-region.js?v=0.0.31.451';
 import {districtCity} from './political-map-labels.js?v=0.0.31.450';
 import {renderElectionCountdown,updateElectionCountdowns} from './election-countdown.js?v=0.0.31.426';
 import {politicalMapSummary,normalizeRegion,normalizeParty,POLITICAL_MAP_REGIONS} from '../core/political-map-model.js?v=0.0.31.391';

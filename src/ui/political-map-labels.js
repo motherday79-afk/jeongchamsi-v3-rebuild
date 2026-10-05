@@ -83,3 +83,18 @@ export function minimumRegionLabelZoom(groups,box){
  }
  return 3;
 }
+// On phones the map fits first. Dense place names appear progressively on zoom;
+// the complete list of named buttons remains available below the map.
+export function mobileRegionLabels(groups,box,width,height,selected=''){
+ const [vx,vy,vw,vh]=box,scale=Math.min(width/vw,height/vh),ox=(width-vw*scale)/2,oy=(height-vh*scale)/2,placed=[];
+ const order=[...groups].sort((a,b)=>(b.name===selected)-(a.name===selected)||a.bounds[2]*a.bounds[3]-b.bounds[2]*b.bounds[3]);
+ for(const g of order){
+  const w=g.label.length*REGION_LABEL_FONT+4,h=22,ax=(g.center[0]-vx)*scale+ox,ay=(g.center[1]-vy)*scale+oy;
+  const candidates=[{x:ax,y:ay}];
+  for(let dy=-40;dy<=40;dy+=5)for(let dx=-40;dx<=40;dx+=5)candidates.push({x:ax+dx,y:ay+dy});
+  candidates.sort((a,b)=>(a.x-ax)**2+(a.y-ay)**2-((b.x-ax)**2+(b.y-ay)**2));
+  const c=candidates.find(p=>p.x-w/2>=2&&p.x+w/2<=width-2&&p.y-h/2>=2&&p.y+h/2<=height-2&&inGroup((p.x-ox)/scale+vx,(p.y-oy)/scale+vy,g)&&placed.every(r=>!labelOverlap({...p,w,h},r)));
+  if(c)placed.push({...g,...c,w,h,inside:true});
+ }
+ return placed;
+}

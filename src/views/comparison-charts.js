@@ -74,17 +74,19 @@ function searchChart(entries){
 }
 
 function mediaChart(entries){
- const {rows,points,maxX,maxY}=mediaData(entries),left=82,top=52,width=596,height=266;
+ const {rows,points,maxX,maxY}=mediaData(entries);
+ const plot=compact=>{const left=82,top=compact?70:52,width=596,height=compact?340:266;
  const x=v=>left+v/maxX*width,y=v=>top+height-v/maxY*height;
- const ticks=max=>{const step=Math.max(1,Math.ceil(max/4));return [...new Set([0,step,step*2,step*3,max].filter(n=>n<=max))].sort((a,b)=>a-b);};
- const svg=`<svg class="cx-scatter" viewBox="0 0 760 400" role="img" aria-label="가로축 기사 수, 세로축 보도 매체 수. 인물별 정확한 수치는 아래 표에 표시됩니다.">
-  <text x="18" y="24" class="cx-axis-title">보도 매체 · 개</text>
+ const ticks=max=>{if(compact)return [0,max];const step=Math.max(1,Math.ceil(max/4));return [...new Set([0,step,step*2,step*3,max].filter(n=>n<=max))].sort((a,b)=>a-b);};
+ const svg=`<svg class="cx-scatter ${compact?'cx-scatter-mobile':'cx-scatter-desktop'}" viewBox="0 0 760 ${compact?510:400}" role="img" aria-label="가로축 기사 수, 세로축 보도 매체 수. 인물별 정확한 수치는 아래 표에 표시됩니다.">
+  <text x="18" y="${compact?36:24}" class="cx-axis-title">보도 매체 · 개</text>
   ${ticks(maxY).map(t=>`<path class="cx-grid-line" d="M${left} ${y(t)}H${left+width}"/><text class="cx-axis-number" x="${left-15}" y="${y(t)+5}" text-anchor="end">${fmt(t)}</text>`).join('')}
   ${ticks(maxX).map(t=>`<path class="cx-grid-line" d="M${x(t)} ${top}V${top+height}"/><text class="cx-axis-number" x="${x(t)}" y="${top+height+32}" text-anchor="middle">${fmt(t)}</text>`).join('')}
   <path class="cx-axis-line" d="M${left} ${top}V${top+height}H${left+width}"/>
-  <text class="cx-axis-title" x="${left+width}" y="389" text-anchor="end">집계 기사 · 건</text>
-  ${points.map(p=>{const text=p.indices.map(i=>i+1).join('·'),paint=p.indices.length===1?color(p.indices[0]):'#ecf4ff';return `<g transform="translate(${x(p.articles)} ${y(p.sources)})"><title>${esc(p.indices.map(i=>entries[i].item.name).join(', '))}: 기사 ${fmt(p.articles)}건 · 매체 ${fmt(p.sources)}개</title><circle r="${p.indices.length>2?32:p.indices.length>1?26:22}" fill="${paint}" stroke="#071523" stroke-width="3"/><text class="cx-dot-number" text-anchor="middle" dominant-baseline="central">${text}</text></g>`;}).join('')}
- </svg>`;
+  <text class="cx-axis-title" x="${left+width}" y="${compact?490:389}" text-anchor="end">집계 기사 · 건</text>
+  ${points.map(p=>{const text=p.indices.map(i=>i+1).join('·'),paint=p.indices.length===1?color(p.indices[0]):'#ecf4ff';return `<g transform="translate(${x(p.articles)} ${y(p.sources)})"><title>${esc(p.indices.map(i=>entries[i].item.name).join(', '))}: 기사 ${fmt(p.articles)}건 · 매체 ${fmt(p.sources)}개</title><circle r="${compact?(p.indices.length>2?56:40):(p.indices.length>2?32:p.indices.length>1?26:22)}" fill="${paint}" stroke="#071523" stroke-width="3"/><text class="cx-dot-number" text-anchor="middle" dominant-baseline="central">${text}</text></g>`;}).join('')}
+ </svg>`;return svg;};
+ const svg=plot(false)+plot(true);
  return `<div data-compare-chart="media" class="cx-media">${scroller('기사 수와 매체 수 분포',svg)}<div class="cx-media-values">${rows.map((r,i)=>`<article style="--ink:${color(i)}">${label(entries[i],i)}<dl><div><dt>집계 기사</dt><dd>${r.articles===null?'자료 없음':`<b>${fmt(r.articles)}</b>건`}</dd></div><div><dt>보도 매체</dt><dd>${r.sources===null?'자료 없음':`<b>${fmt(r.sources)}</b>개`}</dd></div></dl></article>`).join('')}</div>${points.some(p=>p.indices.length>1)?'<p class="cx-chart-note">두 수치가 같은 인물은 한 점에 번호를 함께 표시합니다.</p>':''}</div>`;
 }
 

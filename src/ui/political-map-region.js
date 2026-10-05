@@ -1,6 +1,6 @@
 import {MAP_REGIONS,MAP_DISTRICTS} from '../data/political-map-geometry.js?v=0.0.31.391';
 import {politicalMapSummary,normalizeRegion,normalizeParty} from '../core/political-map-model.js?v=0.0.31.391';
-import {districtCity,districtLabelGroups,layoutRegionLabels,minimumRegionLabelZoom,REGION_LABEL_FONT} from './political-map-labels.js?v=0.0.31.450';
+import {districtCity,districtLabelGroups,layoutRegionLabels,mobileRegionLabels,minimumRegionLabelZoom,REGION_LABEL_FONT} from './political-map-labels.js?v=0.0.31.451';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const labels={all:'전체',assembly:'국회의원',metropolitan:'광역단체장',basic:'기초단체장'};
 export function districtMembers(items,district){
@@ -40,7 +40,8 @@ export function renderRegionStage(data,state,color,navigator=''){
  }
  const b=cityGroup?.bounds||region?.bounds,box=b?[b[0]-4,b[1]-4,b[2]+8,b[3]+8].join(' '):'0 0 600 700';
  const selectedName=district?.name||cityGroup?.name||'지역 전체';
- const mapMarkup=`<div class="pmap-region-map pmap-readable-map"><div class="pmap-map-controls"><div>${cityGroup?`<button type="button" data-map-city-back>← ${esc(state.region)} 전체</button><strong>${esc(cityGroup.name)}</strong>`:'<strong>시·군·구 지도</strong>'}</div><div role="group" aria-label="지도 확대 축소"><button type="button" data-map-detail-zoom="out" aria-label="지도 축소">−</button><button type="button" data-map-detail-zoom="reset">기본</button><button type="button" data-map-detail-zoom="in" aria-label="지도 확대">+</button></div></div><div class="pmap-region-viewport" tabindex="0" role="region" aria-label="${esc(state.region)} 지도 · 좌우와 위아래로 이동 가능"><svg data-region-labels="${esc(state.region)}" data-label-city="${esc(cityGroup?.name||'')}" data-selected-local="${esc(state.local||'')}" viewBox="${box}" aria-label="${esc(state.region+' '+(cityGroup?.name||''))} 행정구역별 정당 구성"><defs>${defs}</defs>${paths}</svg></div><p>${cityGroup?'구 이름을 눌러 해당 지역 인물을 보세요.':'시·군 이름을 누르세요. 구가 있는 도시는 확대됩니다.'}<span>작은 화면에서는 지도를 밀어서 이동할 수 있습니다.</span></p></div>`;
+ const placeButtons='<div class="pmap-mobile-places" role="group" aria-label="지역 이름으로 선택">'+districtLabelGroups(districts,cityGroup?.name||'').map(g=>`<button type="button" ${g.city?'data-map-city':'data-map-local'}="${esc(g.name)}" aria-pressed="${state.local===g.name}">${esc(g.label)}</button>`).join('')+'</div>';
+ const mapMarkup=`<div class="pmap-region-map pmap-readable-map"><div class="pmap-map-controls"><div>${cityGroup?`<button type="button" data-map-city-back>← ${esc(state.region)} 전체</button><strong>${esc(cityGroup.name)}</strong>`:'<strong>시·군·구 지도</strong>'}</div><div role="group" aria-label="지도 확대 축소"><button type="button" data-map-detail-zoom="out" aria-label="지도 축소">−</button><button type="button" data-map-detail-zoom="reset">기본</button><button type="button" data-map-detail-zoom="in" aria-label="지도 확대">+</button></div></div><div class="pmap-region-viewport" tabindex="0" role="region" aria-label="${esc(state.region)} 지도 · 좌우와 위아래로 이동 가능"><svg data-region-labels="${esc(state.region)}" data-label-city="${esc(cityGroup?.name||'')}" data-selected-local="${esc(state.local||'')}" viewBox="${box}" aria-label="${esc(state.region+' '+(cityGroup?.name||''))} 행정구역별 정당 구성"><defs>${defs}</defs>${paths}</svg></div><p>${cityGroup?'구 이름을 눌러 해당 지역 인물을 보세요.':'시·군 이름을 누르세요. 구가 있는 도시는 확대됩니다.'}<span>확대하면 더 많은 지명이 보입니다. 아래 이름으로도 선택할 수 있습니다.</span></p>${placeButtons}</div>`;
  const unit=state.type==='assembly'?'석':'명';
  return `<section class="pmap-broadcast"><header class="pmap-region-heading"><div><span>JCS REGIONAL REPORT</span><h2>${esc(region?.fullName||state.region)}</h2><p>${labels[state.type]} · ${esc(selectedName)}</p></div><button type="button" data-map-reset>← 전국 지도</button></header>
  <div class="pmap-scoreboard">${summary.parties.map(p=>`<button type="button" data-map-party="${esc(p.party)}" aria-pressed="${state.party===p.party}" style="--party:${color(p.party)}"><span>${esc(p.party)}</span><strong>${p.count}<small>${unit}</small></strong><em>${(p.share*100).toFixed(1)}%</em></button>`).join('')||'<p>등록된 인물이 없습니다.</p>'}</div>
@@ -54,14 +55,16 @@ function mountDistrictLabels(root){
  const svg=root.querySelector('[data-region-labels]');if(!svg)return;
  const viewport=svg.closest('.pmap-region-viewport'),map=svg.closest('.pmap-readable-map');
  const groups=districtLabelGroups(MAP_DISTRICTS.filter(d=>d.region===svg.dataset.regionLabels),svg.dataset.labelCity||'');
- const initialBox=svg.getAttribute('viewBox').split(' ').map(Number),minimumZoom=minimumRegionLabelZoom(groups,initialBox);
+ const initialBox=svg.getAttribute('viewBox').split(' ').map(Number);
+ const isMobile=()=>globalThis.matchMedia?.('(max-width: 767px)').matches;
+ let mobile=isMobile(),minimumZoom=mobile?1:minimumRegionLabelZoom(groups,initialBox);
  let zoom=minimumZoom,lastRows=[];
  map.style.setProperty('--region-zoom',zoom);
  const draw=()=>{
   const {width,height}=svg.getBoundingClientRect();if(!width||!height)return;
   const box=svg.getAttribute('viewBox').split(' ').map(Number),[vx,vy,vw,vh]=box,scale=Math.min(width/vw,height/vh),ox=(width-vw*scale)/2,oy=(height-vh*scale)/2;
   let group=svg.querySelector('.pmap-direct-names');if(!group){group=document.createElementNS('http://www.w3.org/2000/svg','g');group.setAttribute('class','pmap-direct-names');svg.append(group);}
-  lastRows=layoutRegionLabels(groups,box,width,height);
+  lastRows=mobile?mobileRegionLabels(groups,box,width,height,svg.dataset.selectedLocal):layoutRegionLabels(groups,box,width,height);
   group.innerHTML=lastRows.map(r=>{
    const x=(r.x-ox)/scale+vx,y=(r.y-oy)/scale+vy,action=r.city?'data-map-city':'data-map-local';
    return '<g '+action+'="'+esc(r.name)+'" tabindex="0" role="button" aria-label="'+esc(r.name+(r.city?' 확대':' 선택'))+'" aria-pressed="'+(svg.dataset.selectedLocal===r.name)+'"><text x="'+x+'" y="'+y+'" text-anchor="middle" dominant-baseline="central" style="font-size:'+REGION_LABEL_FONT/scale+'px;stroke-width:'+3.5/scale+'px">'+esc(r.label)+'</text></g>';
@@ -69,7 +72,7 @@ function mountDistrictLabels(root){
  };
  for(const button of map.querySelectorAll('[data-map-detail-zoom]'))button.addEventListener('click',()=>{
   const before=zoom,cx=(viewport.scrollLeft+viewport.clientWidth/2)/svg.clientWidth,cy=(viewport.scrollTop+viewport.clientHeight/2)/svg.clientHeight;
-  zoom=button.dataset.mapDetailZoom==='reset'?minimumZoom:Math.max(minimumZoom,Math.min(minimumZoom+1.5,zoom+(button.dataset.mapDetailZoom==='in'?.5:-.5)));
+  zoom=button.dataset.mapDetailZoom==='reset'?minimumZoom:Math.max(minimumZoom,Math.min(mobile?4:minimumZoom+1.5,zoom+(button.dataset.mapDetailZoom==='in'?.5:-.5)));
   if(zoom===before)return;
   map.style.setProperty('--region-zoom',zoom);
   viewport.scrollLeft=cx*svg.clientWidth-viewport.clientWidth/2;viewport.scrollTop=cy*svg.clientHeight-viewport.clientHeight/2;
@@ -77,7 +80,7 @@ function mountDistrictLabels(root){
  });
  draw();viewport.scrollLeft=Math.max(0,(svg.clientWidth-viewport.clientWidth)/2);
  if(minimumZoom>1&&lastRows.length){viewport.scrollLeft=lastRows.reduce((n,r)=>n+r.x,0)/lastRows.length-viewport.clientWidth/2;viewport.scrollTop=lastRows.reduce((n,r)=>n+r.y,0)/lastRows.length-viewport.clientHeight/2;}
- if(globalThis.ResizeObserver){const observer=new ResizeObserver(()=>{if(!svg.isConnected){observer.disconnect();return;}draw();});observer.observe(svg);labelObservers.set(root,observer);}
+ if(globalThis.ResizeObserver){const observer=new ResizeObserver(()=>{if(!svg.isConnected){observer.disconnect();return;}if(mobile!==isMobile()){mobile=isMobile();minimumZoom=mobile?1:minimumRegionLabelZoom(groups,initialBox);zoom=minimumZoom;map.style.setProperty('--region-zoom',zoom);viewport.scrollLeft=0;viewport.scrollTop=0;}draw();});observer.observe(svg);labelObservers.set(root,observer);}
 }
 export async function loadRegionPhotos(root){
  mountDistrictLabels(root);
