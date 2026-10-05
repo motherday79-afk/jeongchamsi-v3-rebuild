@@ -1,3 +1,5 @@
+import {readDailyHistory} from '../lib/daily-report-store.js';
+import {makeDailyReport} from '../src/core/daily-report.js';
 import {canEditPersonPage} from '../src/core/person-edit-permissions.js';
 import {setPersonEditPermission} from '../lib/person-edit-permissions.js';
 import {readPageEdits,applyPageEdits,savePageSection,readPageHistory} from '../lib/person-page-edits.js';
@@ -166,6 +168,12 @@ export async function handlePoliticians(req,res,command,url,intelligence){
     const pageEditing=scope==='detail'&&canEditPersonPage(user,id);
     const tier=accountTier==='admin'||analysisAccess?.active||pageEditing?'admin':accountTier;
     const projected={...projectIntelligence(fullReport,tier,scope,user),analysisAccess,canEditPage:pageEditing,...(user?.role==='admin'?{articleCurationEnabled:report?.articleCurationEnabled===true}:{})};
+    if(tier==='admin'&&scope==='detail')projected.reportAsOf=fullReport.raw?.collectedAt||'';
+    if(url.searchParams.get('reportHistory')==='1'){
+      if(tier!=='admin'||scope!=='detail')return json(res,403,{ok:false,error:'REPORT_ACCESS_REQUIRED'});
+      try{return json(res,200,await readDailyHistory(command,id,makeDailyReport(editedPage.item,projected),url.searchParams.get('reportDate')||''));}
+      catch(error){if(error.message==='DAILY_REPORT_DATE_INVALID')return json(res,400,{ok:false,error:error.message});throw error;}
+    }
     return json(res,200,{ok:true,accessTier:tier,analysisAccess,item:editedPage.item,intelligence:projected});
   }
   const photos=await readPoliticianPhotos(command);
