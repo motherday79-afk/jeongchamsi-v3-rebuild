@@ -1,4 +1,4 @@
-import {renderDailyReport} from './daily-report.js?v=0.0.31.445';
+import {renderDailyReport} from './daily-report.js?v=0.0.31.446';
 import {beginInlineFields,inlineField,finishInlineFields,inlineAlias,inlineAttributes} from '../ui/inline-field-markup.js?v=0.0.31.429';
 import {renderPageEditor} from '../ui/person-page-editor.js?v=0.0.31.440';
 import {canViewAdminAnalysis,isSuperAdmin} from '../core/membership.js?v=0.0.31.354';

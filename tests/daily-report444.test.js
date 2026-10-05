@@ -13,7 +13,7 @@ const person=profiles[0];
 function record(){return makeDailyReport(person,projectIntelligence(buildIntelligenceDraft(person,rawFor(person)),'admin'),'2026-09-16T12:00:00Z');}
 test('report retains nine graphics, all explanations, no prescriptions or private raw input',()=>{
  const r=record();assert.equal(r.topics.length,9);assert.equal(r.raw,undefined);assert.equal(r.prescriptions,undefined);
- const html=renderDailyReportBody(r);for(let i=1;i<=9;i++)assert.ok(html.includes('dr-scene-0'+i));assert.doesNotMatch(html,/\[object Object\]|undefined|NaN/);
+ const html=renderDailyReportBody(r);assert.doesNotMatch(html,/dr-scene|dr-podium|dr-cohorts/);assert.equal((html.match(/class="dr-stat"/g)||[]).length,3);assert.ok(html.includes('<details class="dr-evidence">'));assert.doesNotMatch(html,/\[object Object\]|undefined|NaN/);
  r.name='<script>alert(1)</script>';assert.doesNotMatch(renderDailyReportBody(r),/<script>/);
 });
 test('unpublished records remain invisible; exact dates, missing history and schema changes are handled',async()=>{
