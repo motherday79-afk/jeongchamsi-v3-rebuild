@@ -1,4 +1,5 @@
-import {bindPageEditor} from './ui/person-page-editor.js?v=0.0.31.430';
+import {bindPersonEditPermissions} from './ui/person-edit-permissions.js?v=0.0.31.440';
+import {bindPageEditor} from './ui/person-page-editor.js?v=0.0.31.440';
 import {renderVoteEditor,bindBillEditing} from './ui/mock-bill-editing.js?v=0.0.31.424';
 import {mountBillVote} from './ui/bill-chamber.js?v=0.0.31.424';
 import {loadBillSettings,renderBillSettings,bindBillSettings} from './ui/mock-bill-settings.js?v=0.0.31.424';
@@ -41,8 +42,8 @@ import { createPoliticianService } from './core/politicians.js?v=0.0.31.430';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith, isTransientAnalysisRoute } from './core/navigation.js?v=0.0.31.377';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.148';
-import * as views from './views/stage1.js?v=0.0.31.404';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.430';
+import * as views from './views/stage1.js?v=0.0.31.440';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.440';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.426';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident } from './views/participation-pages.js?v=0.0.31.361';
 import { renderPresidentPage } from './views/president.js?v=0.0.31.107';
@@ -365,6 +366,7 @@ async function refreshAiPanelAdmin(operation,result){
 bindHomeInstall(document);
 bindArticleCuration(document);
 bindPageEditor(document);
+bindPersonEditPermissions(document);
 document.addEventListener('jcs:person-page-changed',()=>{navigation?.clearCache();void render({preserveScroll:true});});
 document.addEventListener('jcs:article-curation-changed',()=>{navigation?.clearCache();void render({preserveScroll:true});});
 bindWebBroadcast(document);

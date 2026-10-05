@@ -1,4 +1,6 @@
-import {readPageEdits,applyPageEdits,savePageSection} from '../lib/person-page-edits.js';
+import {canEditPersonPage} from '../src/core/person-edit-permissions.js';
+import {setPersonEditPermission} from '../lib/person-edit-permissions.js';
+import {readPageEdits,applyPageEdits,savePageSection,readPageHistory} from '../lib/person-page-edits.js';
 import {editorSections,editableFields} from '../src/core/person-page-fields.js';
 import {createMockBillSettings} from '../lib/mock-bill-settings.js';
 import {createArticleCurationService} from '../lib/article-curation.js';
@@ -161,8 +163,9 @@ export async function handlePoliticians(req,res,command,url,intelligence){
     const editedPage=applyPageEdits({...item,photo:photos[id]||null},fullReport,pageEdits);fullReport=editedPage.report;
     // Check the member's grant after asynchronous report reads, immediately before projection.
     const analysisAccess=accountTier==='member'?await readPersonAnalysisAccess(command,user,id):null;
-    const tier=accountTier==='admin'||analysisAccess?.active?'admin':accountTier;
-    const projected={...projectIntelligence(fullReport,tier,scope,user),analysisAccess,...(user?.role==='admin'?{articleCurationEnabled:report?.articleCurationEnabled===true}:{})};
+    const pageEditing=scope==='detail'&&canEditPersonPage(user,id);
+    const tier=accountTier==='admin'||analysisAccess?.active||pageEditing?'admin':accountTier;
+    const projected={...projectIntelligence(fullReport,tier,scope,user),analysisAccess,canEditPage:pageEditing,...(user?.role==='admin'?{articleCurationEnabled:report?.articleCurationEnabled===true}:{})};
     return json(res,200,{ok:true,accessTier:tier,analysisAccess,item:editedPage.item,intelligence:projected});
   }
   const photos=await readPoliticianPhotos(command);
@@ -402,7 +405,7 @@ export async function dispatchAdminIntelligence(route,method,service,input={},co
 }
 
 async function handleAdmin(req,res,route,command){
-  const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});if(!canAccessAdminEndpoint(user,route))return json(res,403,{ok:false,error:'SUPERADMIN_REQUIRED'});
+  const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});if(route!=='admin/person-page'&&!canAccessAdminEndpoint(user,route))return json(res,403,{ok:false,error:'SUPERADMIN_REQUIRED'});
   const adminPoliticians=createAdminPoliticianService({command,profilesProvider:()=>allPoliticianProfiles(command)});
 
   if(route==='admin/participation'&&req.method==='GET'){
@@ -425,6 +428,13 @@ async function handleAdmin(req,res,route,command){
     if(result.status<300&&action)try{await adminPoliticians.log(user.id,action,input.personId||'',{method:req.method,...(action==='RANKING_WEIGHTS_UPDATE'?{news:input.news,search:input.search}:{} )});}catch(error){console.error('[admin-audit]',{action,code:String(error?.code||error?.message||'AUDIT_WRITE_FAILED')});}
     if(result.status<300&&route.startsWith('admin/intelligence/publish/'))await enqueueCompletionPush();
     return json(res,result.status,result.body);
+  }
+  if(route==='admin/person-edit-permissions'){
+    const url=new URL(req.url,'https://'+req.headers.host);
+    if(req.method!=='PATCH')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
+    if(req.headers.origin!==url.origin||req.headers['sec-fetch-site']==='cross-site')return json(res,403,{ok:false,error:'ORIGIN_FORBIDDEN'});
+    try{return json(res,200,await setPersonEditPermission(command,bodyOf(req),user.id,id=>getPolitician(command,id)));}
+    catch(e){return json(res,e.message==='FORBIDDEN'?403:e.message==='MEMBERS_CHANGED_RETRY'?409:400,{ok:false,error:e.message});}
   }
   if(route==='admin/users'&&req.method==='GET'){
     const users=await listUsers(command),service=createBadgeService(command);
@@ -479,15 +489,24 @@ async function handleAdmin(req,res,route,command){
   if(route==='admin/person-page'){
     const url=new URL(req.url||'/',`https://${req.headers.host||'localhost'}`);
     if(req.method!=='GET'&&(req.headers.origin!==url.origin||req.headers['sec-fetch-site']==='cross-site'))return json(res,403,{ok:false,error:'ORIGIN_FORBIDDEN'});
-    if(!isSuperAdmin(user))return json(res,403,{ok:false,error:'SUPERADMIN_REQUIRED'});
     if(!['GET','PATCH'].includes(req.method))return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
     const input=bodyOf(req),id=String(req.method==='GET'?url.searchParams.get('personId'):input.personId||'');
     if(!/^[-a-zA-Z0-9_]{1,100}$/.test(id))return json(res,400,{ok:false,error:'INVALID_PERSON'});
+    if(!canEditPersonPage(user,id))return json(res,403,{ok:false,error:'PERSON_EDIT_FORBIDDEN'});
+    if((input.section==='prescriptions'||input.operation==='restore'||url.searchParams.has('history'))&&!isSuperAdmin(user))return json(res,403,{ok:false,error:'SUPERADMIN_REQUIRED'});
+    if(req.method==='GET'&&url.searchParams.has('history'))return json(res,200,{ok:true,history:await readPageHistory(command,id)});
     const [base,report,edits,photos]=await Promise.all([getPolitician(command,id),createIntelligenceService({command}).getPublicIntelligence(id),readPageEdits(command,id),readPoliticianPhotos(command)]);
     if(!base)return json(res,404,{ok:false,error:'PERSON_NOT_FOUND'});
     const item={...base,photo:photos[id]||null};
-    if(req.method==='PATCH'){try{return json(res,200,await savePageSection(command,id,input,item,report,user));}catch(e){return json(res,e.message==='EDIT_CONFLICT'?409:400,{ok:false,error:e.message});}}
-    const edited=applyPageEdits(item,report,edits);return json(res,200,{ok:true,sections:editorSections(edited.item,edited.report).map(section=>({id:section.id,title:section.title,revision:edits[section.id]?.revision||0,manual:Object.keys(edits[section.id]?.changes||{}).length>0,fields:editableFields(section.data)}))});
+    if(req.method==='PATCH'){try{
+      let change={...input,replace:false};
+      if(input.operation==='restore'){
+        const entry=(await readPageHistory(command,id)).find(row=>row.id===input.historyId);
+        if(!entry)throw Error('HISTORY_NOT_FOUND');
+        change={section:entry.section,revision:input.revision,changes:entry.before?.changes||{},replace:true};
+      }
+      return json(res,200,await savePageSection(command,id,change,item,report,user));}catch(e){return json(res,e.message==='EDIT_CONFLICT'?409:400,{ok:false,error:e.message});}}
+    const edited=applyPageEdits(item,report,edits);return json(res,200,{ok:true,sections:editorSections(edited.item,edited.report).filter(section=>section.id!=='prescriptions'||isSuperAdmin(user)).map(section=>({id:section.id,title:section.title,revision:edits[section.id]?.revision||0,manual:Object.keys(edits[section.id]?.changes||{}).length>0,fields:editableFields(section.data)}))});
   }
   if(route==='admin/mock-bill-settings'){
     if(!isSuperAdmin(user))return json(res,403,{error:'SUPERADMIN_REQUIRED'});
