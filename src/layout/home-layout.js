@@ -1,6 +1,6 @@
 import {fortuneSignArt} from '../ui/fortune-sign-art.js?v=0.0.31.454';
 import {fortuneDay,readFortunePreferences,signFortune} from '../core/fortune-signs.js?v=0.0.31.437';
-import {renderMockBillHome} from '../views/mock-bill.js?v=0.0.31.457';
+import {renderMockBillHome} from '../views/mock-bill.js?v=0.0.31.458';
 import {renderPoliticalMapHome} from '../views/political-map.js?v=0.0.31.436';
 import {renderComicHome} from '../views/political-comic.js?v=0.0.31.431';
 import {fortuneFrontArt} from '../ui/fortune-card-art.js?v=0.0.31.366';

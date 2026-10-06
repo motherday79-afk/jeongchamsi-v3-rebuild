@@ -1,25 +1,19 @@
-/* Home-only editorial treatment, matching the proposal and citizen modules. */
-.product-home-wrap .bill-home{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:20px;box-shadow:none}
+/* Compact home teaser: vote results belong inside the assembly. */
+.product-home-wrap .bill-home{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:16px 20px;box-shadow:none;height:auto;min-height:0}
+.product-home-wrap .bill-home .module-header{margin-bottom:12px!important}
 .product-home-wrap .bill-home .eyebrow{color:#9499a0;font-size:10px;letter-spacing:1.5px}
-.product-home-wrap .bill-home .module-header h2{color:#282e35;font-size:20px}
-.product-home-wrap .bill-home .bill-home-body{display:grid;grid-template-columns:160px minmax(0,1fr);align-items:stretch;gap:22px;padding:0;background:#fff;border-radius:0;color:#303640;text-decoration:none}
-.product-home-wrap .bill-home-illustration{display:block;width:100%;height:200px;object-fit:cover;border-radius:8px}
-.product-home-wrap .bill-home .bill-home-copy{display:flex;flex-direction:column;min-width:0;padding:2px 0}
+.product-home-wrap .bill-home .module-header h2{color:#282e35;font-size:19px}
+.product-home-wrap .bill-home .bill-home-body{display:grid;grid-template-columns:120px minmax(0,1fr);align-items:center;gap:18px;padding:0;background:#fff;border-radius:0;color:#303640;text-decoration:none}
+.product-home-wrap .bill-home-illustration{display:block;width:120px;height:136px;object-fit:cover;border-radius:8px}
+.product-home-wrap .bill-home .bill-home-copy{display:block;min-width:0;padding:0}
 .product-home-wrap .bill-home .bill-number{font-size:11px;line-height:1.5;color:#92969d}
-.product-home-wrap .bill-home .bill-home-copy h3{font-size:20px;line-height:1.5;letter-spacing:-.6px;color:#30343c;margin:6px 0}
-.product-home-wrap .bill-home .bill-home-copy>p{font-size:13px;line-height:1.65;color:#81868e;margin:0}
-.product-home-wrap .bill-home-tally{margin:15px 0 12px}
-.product-home-wrap .bill-home-tally-label{display:block;color:#999da4;font-size:10px;line-height:1.5;margin-bottom:7px}
-.product-home-wrap .bill-home-meter{display:flex;gap:2px;height:5px;overflow:hidden;border-radius:3px;background:#f1f3f4}
-.product-home-wrap .bill-home-meter i{display:block;height:100%}
-.product-home-wrap .bill-home-meter .is-yes{background:#6da595}.product-home-wrap .bill-home-meter .is-no{background:#ce959b}.product-home-wrap .bill-home-meter .is-abstain{background:#b8bec6}
-.product-home-wrap .bill-home-numbers{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:7px;font-size:11px;color:#8b9097;line-height:1.5}
-.product-home-wrap .bill-home-numbers b{font-weight:650;margin-left:4px;color:#515963;font-variant-numeric:tabular-nums}
-.product-home-wrap .bill-home-entry{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;padding-top:10px;margin-top:auto;border-top:1px solid #eceef1}
+.product-home-wrap .bill-home .bill-home-copy h3{font-size:20px;line-height:1.45;letter-spacing:-.6px;color:#30343c;margin:5px 0}
+.product-home-wrap .bill-home .bill-home-copy>p{font-size:13px;line-height:1.6;color:#81868e;margin:0}
+.product-home-wrap .bill-home-entry{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px 12px;padding-top:9px;margin-top:12px;border-top:1px solid #eceef1}
 .product-home-wrap .bill-home-entry small{font-size:10px;line-height:1.5;color:#989da4}
 .product-home-wrap .bill-home-entry strong{margin-left:auto;color:#6d597c;font-size:12px;line-height:1.6;font-weight:650}
 .product-home-wrap .bill-home-entry strong:after{content:' →';margin-left:4px;font-size:16px;font-weight:400}
 .product-home-wrap .bill-home-body:focus-visible{outline:2px solid #8d7e9b;outline-offset:5px;border-radius:8px}
 .product-home-wrap .bill-home-body:hover .bill-home-entry strong{color:#40364b}
-@media(max-width:700px){.product-home-wrap .bill-home{padding:16px}.product-home-wrap .bill-home .bill-home-body{grid-template-columns:110px minmax(0,1fr);gap:14px}.product-home-wrap .bill-home-illustration{height:100%;min-height:170px;max-height:230px}.product-home-wrap .bill-home .bill-home-copy h3{font-size:17px}.product-home-wrap .bill-home .bill-home-copy>p{font-size:12px}.product-home-wrap .bill-home-tally{margin:12px 0}.product-home-wrap .bill-home-numbers{gap:4px 10px}.product-home-wrap .bill-home-entry small{font-size:9px}}
-@media(max-width:380px){.product-home-wrap .bill-home .bill-home-body{grid-template-columns:88px minmax(0,1fr);gap:12px}.product-home-wrap .bill-home .bill-home-copy h3{font-size:16px}.product-home-wrap .bill-home-numbers{gap:4px 8px;font-size:10px}}
+@media(max-width:700px){.product-home-wrap .bill-home{padding:16px}.product-home-wrap .bill-home .bill-home-body{grid-template-columns:96px minmax(0,1fr);gap:14px}.product-home-wrap .bill-home-illustration{width:96px;height:132px}.product-home-wrap .bill-home .bill-home-copy h3{font-size:17px}.product-home-wrap .bill-home .bill-home-copy>p{font-size:12px}.product-home-wrap .bill-home-entry{margin-top:9px;padding-top:8px}.product-home-wrap .bill-home-entry small{font-size:9px}}
+@media(max-width:380px){.product-home-wrap .bill-home .bill-home-body{grid-template-columns:80px minmax(0,1fr);gap:12px}.product-home-wrap .bill-home-illustration{width:80px;height:124px}.product-home-wrap .bill-home .bill-home-copy h3{font-size:16px}}
