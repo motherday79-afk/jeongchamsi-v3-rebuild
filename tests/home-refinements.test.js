@@ -13,11 +13,11 @@ test('support bridge keeps two equal whole-half links with native decorative SVG
  assert.doesNotMatch(html,/<img\b|support-purple-gold-156\.webp/);
 });
 
-test('158 banner styling is white, 80px high, and split into equal halves',()=>{
+test('support banner uses brand colors and equal whole-half links',()=>{
  const css=fs.readFileSync(new URL('../css/home-refinements-158.css',import.meta.url),'utf8');
  assert.match(css,/\.side-support-bridge\s*\{[^}]*grid-template-columns\s*:\s*minmax\(0,1fr\)\s+minmax\(0,1fr\)/s);
- assert.match(css,/\.side-support-bridge\s*\{[^}]*height\s*:\s*80px/s);
- assert.match(css,/\.side-support-bridge\s*\{[^}]*background\s*:\s*#fff(?:fff)?\b/s);
+ assert.match(css,/\.side-support-bridge\s*\{[^}]*height\s*:\s*104px/s);
+ assert.match(css,/\.side-support-bridge\s*\{[^}]*background\s*:\s*#43205f\b/s);
  assert.match(css,/\.support-bridge-link\s*\{[^}]*height\s*:\s*100%/s);
  assert.match(css,/--support-purple\s*:\s*#753bbd/i);
  assert.match(css,/--support-gold\s*:/i);
