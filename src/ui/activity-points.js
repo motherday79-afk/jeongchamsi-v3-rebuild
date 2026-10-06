@@ -1,4 +1,4 @@
-import {renderActivityHint,renderActivityReceipt} from '../views/activity-points.js?v=0.0.31.178';
+import {renderActivityHint,renderActivityReceipt} from '../views/activity-points.js?v=0.0.31.462';
 
 const integer=(value,fallback=0)=>{const parsed=Number(value);return Number.isSafeInteger(parsed)?parsed:fallback;};
 const storageDefault=()=>globalThis.sessionStorage;

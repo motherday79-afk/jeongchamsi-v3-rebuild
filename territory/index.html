@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f8faf6">
+  <meta name="description" content="정당과 함께 영향력을 쌓고 청와대와 국회를 차지하는 주간 정치 전략 게임, 정참시 정치 쟁탈전.">
+  <title>정치 쟁탈전 · 정참시</title>
+  <link rel="stylesheet" href="/territory/style.css?v=0.0.31.462">
+  <script type="module" src="/territory/app.js?v=0.0.31.462"></script>
+</head>
+<body>
+  <header class="site-header"><a class="brand" href="/" aria-label="정참시 홈"><span class="brand-mark">정</span>정참시 <span class="brand-sub">PLAY</span></a><nav aria-label="서비스 메뉴"><a href="/points">포인트 충전</a><a href="/points?view=activity">활동으로 적립</a><button class="help-trigger" id="help-open" type="button">게임 방법</button></nav></header>
+  <main>
+    <section class="hero"><div><div class="eyebrow"><span class="live-dot"></span> WEEKLY STRATEGY GAME</div><h1>우리 정당의 영향력으로,<br><span>대한민국의 중심을 차지하다.</span></h1><p>정참시 정치 쟁탈전 <span class="hero-divider">/</span> 함께 쌓는 영향력, 매주 새로운 승부</p></div><div class="round-card"><span class="micro-label">이번 라운드 종료까지</span><strong id="round-clock">연결 중</strong><span id="round-date">매주 새롭게 시작하는 쟁탈전</span></div></section>
+    <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+    <div id="unknown" class="unknown" role="alert" hidden><div><strong>요청 결과를 아직 확인하지 못했어요.</strong><p>중복 사용을 막기 위해 다른 행동을 잠시 멈췄어요. 같은 요청으로 결과를 확인해 주세요.</p></div><button type="button" id="retry-operation">결과 확인 재시도</button><button type="button" id="refresh-state">현황 새로고침</button></div>
+    <section id="player-panel" class="player-panel" aria-label="내 참여 현황"><p class="loading">현재 게임 정보를 불러오고 있어요.</p></section>
+    <section class="battle-section" aria-labelledby="battle-title"><div class="section-heading"><div><span class="eyebrow">THE BATTLEGROUND</span><h2 id="battle-title">두 곳의 중심, 하나의 전략</h2></div><span class="sync-label" id="sync-label">실시간 현황 연결 중</span></div><div class="territory-grid" id="territories"><div class="empty-state">청와대와 국회의 현황을 불러오는 중입니다.</div></div></section>
+    <section class="office-section" aria-labelledby="office-title"><div class="section-heading"><div><span class="eyebrow">BUILD TOGETHER</span><h2 id="office-title">함께 키우는 우리 당 사무소</h2></div><span class="section-note">같은 정당의 모든 참가자에게 적용</span></div><div id="offices" class="office-grid"><p class="empty-state">정당별 사무소 정보를 불러오는 중입니다.</p></div></section>
+    <section class="history-section" aria-labelledby="history-title"><div class="section-heading"><div><span class="eyebrow">LIVE ACTIVITY</span><h2 id="history-title">지금, 쟁탈전에서는</h2></div><button id="refresh-button" class="quiet-button" type="button">새로고침</button></div><ol id="history" class="history-list"><li class="empty-state">기록을 불러오는 중입니다.</li></ol></section>
+    <footer class="footer"><strong>정참시 정치 쟁탈전</strong><p>이곳의 영향력과 점령은 게임 내 기록이며, 실제 정치 지지율이나 선거 결과와 관계없습니다.</p><a href="/">정참시 홈</a></footer>
+  </main>
+  <dialog id="help-dialog" aria-labelledby="help-title"><div class="dialog-heading"><span class="eyebrow">HOW TO PLAY</span><button type="button" id="help-close" class="close-button" aria-label="게임 방법 닫기">닫기</button></div><h2 id="help-title">영향력을 모으고,<br>중심을 지켜 주세요.</h2><ol class="rules-list"><li><strong>이번 주 함께할 정당 선택</strong><p>참여는 무료입니다. 선택한 정당은 이번 주 라운드가 끝날 때까지 변경할 수 없어요.</p></li><li><strong>전략적인 정치 행동</strong><p>행동 1회에 20 JCS 포인트와 활동력 10을 사용합니다. 활동력은 최대 100, 5분마다 1씩 회복됩니다. 상대 영토에서는 공세를, 우리 영토에서는 수비를 펼쳐요.</p></li><li><strong>5분 동안 우위를 유지</strong><p>영향력 600 이상, 다음 정당보다 100 이상 앞선 상태를 5분간 유지하면 점령합니다. 점령 후에는 10분간 보호됩니다.</p></li><li><strong>함께 사무소 성장</strong><p>표시된 포인트를 사용해 우리 당의 공용 사무소를 강화할 수 있어요. 효과와 비용을 확인한 뒤 직접 선택해 주세요.</p></li><li><strong>매주 다시 시작하는 경쟁</strong><p>매주 월요일 00:00(한국시간)에 새 라운드가 시작됩니다. 영토 영향력과 점령, 사무소 레벨, 개인 기여 기록은 초기화되며 정당을 새로 선택합니다. 화면 조회와 자동 새로고침에는 포인트가 사용되지 않아요.</p></li></ol><p class="rules-note">사용한 포인트는 게임 참여 비용이며 점령 보상으로 환급되지 않습니다.</p></dialog>
+</body>
+</html>

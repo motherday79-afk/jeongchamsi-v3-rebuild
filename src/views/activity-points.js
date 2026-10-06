@@ -29,6 +29,7 @@ export function renderActivityReceipt(receipt={}){
 export function ledgerPresentation(row={}){
  if(row.type==='charge')return {label:'포인트 충전',detail:`${number(row.amount)}원 · 보너스 ${number(Number(row.points||0)-Number(row.amount||0))}P`};
  if(row.type==='person-refresh')return {label:`정치인 갱신${row.personName?' · '+String(row.personName):''}`,detail:''};
+ if(row.type==='territory')return {label:row.action==='upgrade'?'정치 쟁탈전 · 정당 사무실 강화':'정치 쟁탈전 · 정치 행동',detail:''};
  if(row.type==='cage')return {label:'케이지 개설',detail:''};
  if(row.type==='activity')return {label:`${kindLabel(row.kind)} 활동 적립`,detail:`${number(row.earned)}P 인정 · ${number(row.credited)}P 지급${Number(row.offset)?` · ${number(row.offset)}P 상계`:''}`};
  if(row.type==='activity-revoke')return {label:'활동 적립 회수',detail:`${number(row.earned)}P 인정분 · ${number(row.recovered)}P 회수${Number(row.debtAdded)?` · 추가 상계 ${number(row.debtAdded)}P`:''}${row.reason?` · ${String(row.reason)}`:''}`};

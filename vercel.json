@@ -77,11 +77,11 @@
     },
     {
       "source": "/mine",
-      "destination": "/mine/index.html"
+      "destination": "/territory/index.html"
     },
     {
       "source": "/mine/ad",
-      "destination": "/mine/index.html"
+      "destination": "/territory/index.html"
     },
     {
       "source": "/api/v3/:path*",

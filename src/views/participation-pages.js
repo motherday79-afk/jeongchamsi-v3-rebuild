@@ -1,6 +1,6 @@
 import { GENERATION_AGES, generationAgeGroup, hasGenerationVote, participationDisplay, demoLabel } from '../core/participation-model.js?v=0.0.31.79';
 export { generationAgeGroup } from '../core/participation-model.js?v=0.0.31.79';
-import {renderActivityAdmin,renderActivitySummary,ledgerPresentation} from './activity-points.js?v=0.0.31.178';
+import {renderActivityAdmin,renderActivitySummary,ledgerPresentation} from './activity-points.js?v=0.0.31.462';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const queryOf=route=>new URLSearchParams(String(route||'').split('?')[1]||'');
