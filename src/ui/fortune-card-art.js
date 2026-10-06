@@ -1,5 +1,3 @@
-// Editorial card illustrations share the bright homepage image direction.
-export function fortuneFrontArt(category){
- if(!['money','business','relationship'].includes(category))return '';
- return '<span class="fortune-front-art" data-fortune-art="'+category+'" aria-hidden="true"><img src="/assets/fortune/'+category+'-460.webp" alt="" width="480" height="480" loading="lazy" decoding="async"></span>';
-}
+// Both sides use the same category-specific scene.
+export function fortuneArtPath(category){return ['money','business','relationship'].includes(category)?'/assets/fortune/'+category+'-'+(category==='money'?'460':'461')+'.webp':'';}
+export function fortuneFrontArt(category){const src=fortuneArtPath(category);return src?'<span class="fortune-front-art" data-fortune-art="'+category+'" aria-hidden="true"><img src="'+src+'" alt="" width="480" height="480" loading="lazy" decoding="async"></span>':'';}

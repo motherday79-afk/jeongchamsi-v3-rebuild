@@ -16,3 +16,13 @@
 .product-home-wrap .side-fortune .fortune-flip-card:focus-visible{outline:2px solid #7d9d8b;outline-offset:3px}
 .product-home-wrap .side-fortune .fortune-deck-hint{margin-top:13px;color:#939b95}
 @media(max-width:380px){.product-home-wrap .side-fortune .fortune-deck{gap:6px}.product-home-wrap .side-fortune .fortune-flip-card{height:222px}.product-home-wrap .side-fortune .fortune-front-art{height:100px}.product-home-wrap .side-fortune .fortune-card-front .fortune-card-caption{padding-left:4px;padding-right:4px;font-size:10px}}
+
+/* Compact cards: identity is visible before and after revealing. */
+.product-home-wrap .side-fortune .fortune-flip-card{height:160px}
+.product-home-wrap .side-fortune .fortune-card-category{position:absolute;z-index:3;left:6px;top:6px;padding:3px 7px;background:#ffffffed;border-radius:4px;font-size:11px;line-height:16px;box-shadow:0 1px 4px #22382f0a}
+.product-home-wrap .side-fortune .fortune-card-back-art{flex:none;height:100%;width:100%;object-fit:cover}
+.product-home-wrap .side-fortune .fortune-card-invite{position:absolute;left:7px;right:7px;bottom:7px;padding:5px 3px;background:#fffffff0;border-radius:5px;color:#53655a;font-size:10px;line-height:16px}
+.product-home-wrap .side-fortune .fortune-front-art{height:94px}
+.product-home-wrap .side-fortune .fortune-card-front .fortune-card-score{margin:3px 0 1px;font-size:21px;line-height:25px}
+.product-home-wrap .side-fortune .fortune-card-front .fortune-card-caption{padding:0 4px 4px;font-size:10px;line-height:14px}
+@media(max-width:380px){.product-home-wrap .side-fortune .fortune-flip-card{height:160px}.product-home-wrap .side-fortune .fortune-front-art{height:94px}}

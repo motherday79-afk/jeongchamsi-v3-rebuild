@@ -2,7 +2,7 @@ import {readFortuneState,revealFortune,saveFortuneState} from '../core/fortune-c
 import {fortuneDay,readFortunePreferences,saveFortunePreferences} from '../core/fortune-signs.js?v=0.0.31.437';
 export function bindFortuneInteractions(root,{auth,onSaved=()=>{}}={}){
  if(!root||root.__jcsFortuneBound)return;root.__jcsFortuneBound=true;
- const replace=async(widget,fresh)=>{const template=widget.querySelector('[data-fortune-source]');if(!template)return;let source;try{source=JSON.parse(template.content.textContent);}catch{return;}const {renderFortuneCard}=await import('../layout/home-layout.js?v=0.0.31.460');if(widget.isConnected)widget.outerHTML=renderFortuneCard(fresh||source.data,source.session);};
+ const replace=async(widget,fresh)=>{const template=widget.querySelector('[data-fortune-source]');if(!template)return;let source;try{source=JSON.parse(template.content.textContent);}catch{return;}const {renderFortuneCard}=await import('../layout/home-layout.js?v=0.0.31.461');if(widget.isConnected)widget.outerHTML=renderFortuneCard(fresh||source.data,source.session);};
  const refreshing=new WeakSet();
  const refreshDay=async()=>{for(const widget of root.querySelectorAll?.('[data-fortune-widget]')||[]){if(widget.dataset.fortuneDay===fortuneDay()||refreshing.has(widget))continue;refreshing.add(widget);try{const result=await auth?.fortuneToday?.();await replace(widget,result?.ok?result:undefined);}catch{/* Retry when the connection returns. */}finally{refreshing.delete(widget);}}};
  const timer=setInterval(()=>void refreshDay(),60000);timer.unref?.();
