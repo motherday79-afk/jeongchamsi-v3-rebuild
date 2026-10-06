@@ -53,3 +53,14 @@
 .product-home-wrap #poll .citizen-choice-footer>strong:after{content:'→';margin-left:7px;font-size:18px;font-weight:400}
 .product-home-wrap #poll.citizen-choice-banner:hover{filter:none}
 .product-home-wrap #poll.citizen-choice-banner:hover .citizen-choice-footer>strong{background:none;color:#44354e}
+/* One colorful editorial illustration, with the poll on the white surface beside it. */
+.product-home-wrap #poll.citizen-choice-banner .citizen-choice-content{gap:18px;justify-content:flex-start}
+.product-home-wrap #poll .citizen-choice-heading{padding-right:0;min-height:0}
+.product-home-wrap #poll .citizen-choice-body{display:grid;grid-template-columns:minmax(0,128px) minmax(0,1fr);gap:18px;align-items:stretch}
+.product-home-wrap #poll .citizen-choice-illustration{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;border-radius:8px}
+.product-home-wrap #poll .citizen-choice-details{display:flex;flex-direction:column;min-width:0;gap:12px}
+.product-home-wrap #poll .citizen-choice-topic{margin-top:0}
+.product-home-wrap #poll .citizen-choice-topic p{font-size:15px;line-height:1.65;-webkit-line-clamp:4;word-break:keep-all;overflow-wrap:anywhere}
+.product-home-wrap #poll .citizen-choice-footer{margin-top:auto;padding-top:10px;flex-wrap:wrap;gap:3px 8px}
+.product-home-wrap #poll .citizen-choice-footer>strong{margin-left:auto;font-size:12px}
+@media(max-width:380px){.product-home-wrap #poll.citizen-choice-banner .citizen-choice-content{padding:18px}.product-home-wrap #poll .citizen-choice-body{grid-template-columns:minmax(0,100px) minmax(0,1fr);gap:12px}.product-home-wrap #poll .citizen-choice-topic p{font-size:14px}.product-home-wrap #poll .citizen-choice-illustration{height:100%;min-height:145px}}
