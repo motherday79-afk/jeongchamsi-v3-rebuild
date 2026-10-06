@@ -1,5 +1,5 @@
 import { campaignUrl } from '../core/campaign-model.js?v=0.0.31.159';
-import { setupPoliticianAutocomplete } from './interactions.js?v=0.0.31.431';
+import { setupPoliticianAutocomplete } from './interactions.js?v=0.0.31.453';
 
 const roots=new WeakSet();
 const uploads=new WeakMap();

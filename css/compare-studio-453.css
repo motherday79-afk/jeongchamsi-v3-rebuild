@@ -1,0 +1,31 @@
+/* A shared, neutral broadcast set for the home politician picker. */
+.product-home-wrap #compare:has(.ec-home){position:relative;isolation:isolate;border:1px solid #34414f;border-radius:16px;background:radial-gradient(ellipse at 50% 0%,#26384a 0,transparent 65%),#101820;box-shadow:0 8px 22px #0d172019;color:#f5f7fa}
+.product-home-wrap #compare .module-header{position:relative;z-index:2;padding-bottom:12px;border:0;background:transparent}
+.product-home-wrap #compare .module-header h2{color:#f4f7fa}
+.product-home-wrap #compare .module-header .eyebrow{color:#aabac8;letter-spacing:2px}
+.product-home-wrap #compare .module-icon-action{color:#e5edf4;background:#ffffff0b;border-color:#ffffff26}
+.product-home-wrap #compare .ec-home{position:relative;isolation:isolate;background:transparent;color:#e5edf4;padding:0 22px 12px;gap:0}
+.product-home-wrap #compare .ec-home:before{content:"";position:absolute;inset:20px 0 0;z-index:-1;pointer-events:none;background:linear-gradient(110deg,transparent 18%,#e5f3ff08 18.2%,transparent 38%),linear-gradient(250deg,transparent 18%,#e5f3ff08 18.2%,transparent 38%),repeating-linear-gradient(90deg,transparent 0,transparent calc(12.5% - 1px),#e4efff08 calc(12.5% - 1px),#e4efff08 12.5%);border-top:1px solid #d8e9f21c}
+.product-home-wrap #compare .ec-studio-caption{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0 0 9px;font-size:10px;letter-spacing:1.6px;line-height:18px;color:#9eafbe}
+.product-home-wrap #compare .ec-studio-caption span:last-child{font-size:11px;letter-spacing:0;color:#bac8d4}
+.product-home-wrap #compare .ec-slots{gap:42px;padding:0 24px 12px;isolation:isolate}
+.product-home-wrap #compare .ec-slots:before{content:"";position:absolute;z-index:-1;left:-22px;right:-22px;bottom:0;height:60px;border-top:1px solid #becfdf38;border-radius:50% 50% 0 0/24% 24% 0 0;background:radial-gradient(ellipse at 25% 5%,#d1e8ff20,transparent 35%),radial-gradient(ellipse at 75% 5%,#d1e8ff20,transparent 35%),linear-gradient(#34414f66,#121c27);box-shadow:inset 0 2px 0 #edf6ff12}
+.product-home-wrap #compare .ec-slots:after{content:"VS";position:absolute;left:50%;top:44%;translate:-50% -50%;color:#91a2b1;font-size:18px;font-weight:300;letter-spacing:3px;pointer-events:none}
+.product-home-wrap #compare .ec-slot,.product-home-wrap #compare .ec-slot.election-selected{border:0;border-radius:0;background:radial-gradient(ellipse at 50% 0,#e5f4ff1c,transparent 68%);padding:0;box-shadow:none}
+.product-home-wrap #compare .ec-slot:before{content:"";position:absolute;top:0;left:22%;right:22%;height:3px;border-radius:50%;background:#e9f5ff;box-shadow:0 2px 12px #d3eaff99,0 18px 38px 12px #d3eaff12;pointer-events:none}
+.product-home-wrap #compare .ec-slot:after{content:"";position:absolute;z-index:0;bottom:0;left:8%;right:8%;height:78px;clip-path:polygon(0 0,100% 0,90% 100%,10% 100%);border-top:3px solid #b9c9d6;background:linear-gradient(90deg,#64768855,#263544dd 8%,#455564dd 50%,#253340ee 92%,#96aabb66);box-shadow:inset 0 1px 0 #ffffff77;pointer-events:none}
+.product-home-wrap #compare .ec-clip{z-index:1;border-radius:4px;overflow:hidden}
+.product-home-wrap #compare .ec-person{transform:none!important;opacity:1!important}
+.product-home-wrap #compare .ec-add,.product-home-wrap #compare .ec-picked{position:relative;flex-direction:column;justify-content:flex-start;gap:0;padding:15px 8px 0;border-radius:5px;color:#e9f0f6;background:transparent}
+.product-home-wrap #compare .ec-add>span:first-child{display:grid;place-items:center;width:50px;height:50px;margin-top:14px;border:1px solid #dbeaf04d;border-radius:50%;background:#d7e7f509;color:#dce8f2;font-size:32px;font-weight:300;line-height:1}
+.product-home-wrap #compare .ec-add .ec-select-label{position:absolute;left:8px;right:8px;bottom:30px;font-size:14px;font-weight:650;line-height:1.5;letter-spacing:-.3px;color:#e6edf4}
+.product-home-wrap #compare .ec-add:hover,.product-home-wrap #compare .ec-picked:hover{background:linear-gradient(#ffffff08,transparent);color:#fff}
+.product-home-wrap #compare .ec-add:hover>span:first-child{border-color:#eaf6ff;background:#d7e7f51a}
+.product-home-wrap #compare .ec-add:focus-visible,.product-home-wrap #compare .ec-picked:focus-visible{outline:2px solid #e8f4ff;outline-offset:-3px}
+.product-home-wrap #compare .ec-picked .ec-avatar{flex:none;width:84px;height:96px;border:1px solid #b1c4d03d;border-radius:6px 6px 0 0;background:#263644;color:#ecf3f9;font-size:32px;box-shadow:0 5px 20px #030a1240;mask-image:linear-gradient(#000 80%,transparent)}
+.product-home-wrap #compare .ec-picked>span:last-child{position:absolute;left:12%;right:12%;bottom:16px;text-align:center}
+.product-home-wrap #compare .ec-picked b{color:#f7f9fc;font-size:20px;line-height:1.4;letter-spacing:-.5px}
+.product-home-wrap #compare .ec-picked small{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:#c2d0dc;font-size:11px;line-height:1.5;margin-top:3px}
+.product-home-wrap #compare .ec-studio-note{flex:none;position:relative;margin:6px 0 0;text-align:center;color:#9fafbd;font-size:11px;line-height:18px;letter-spacing:-.2px}
+.product-home-wrap #compare .ec-slot:has(.ec-search:not([hidden])){z-index:5}
+@media(max-width:767px){.product-home-wrap #compare .ec-home{padding:0 12px 10px}.product-home-wrap #compare .ec-slots{padding:0 0 12px;gap:26px}.product-home-wrap #compare .ec-slots:before{left:-12px;right:-12px}.product-home-wrap #compare .ec-slots:after{font-size:13px;letter-spacing:1px}.product-home-wrap #compare .ec-studio-caption{letter-spacing:1px;font-size:9px}.product-home-wrap #compare .ec-studio-caption span:last-child{font-size:10px}.product-home-wrap #compare .ec-add .ec-select-label{left:2px;right:2px;font-size:12px}.product-home-wrap #compare .ec-picked b{font-size:18px}.product-home-wrap #compare .ec-picked .ec-avatar{width:74px;height:90px}.product-home-wrap #compare .ec-slot:after{left:3%;right:3%}.product-home-wrap #compare .ec-picked>span:last-child{left:7%;right:7%}.product-home-wrap #compare .ec-studio-note{font-size:10px}}

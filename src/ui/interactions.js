@@ -233,7 +233,7 @@ export function setupHomeCompare(root=document){
   const ids=()=>slots.map(slot=>slot.querySelector('[data-home-compare-id]').value);
   homeCompareBound.set(form,()=>motion.resume(ids()));
   const update=()=>{const ready=!!homeCompareRoute(ids());if(button)button.disabled=!ready;state.textContent=ready?'비교 화면으로 이동합니다.':'';};
-  const clear=slot=>{slot.classList.remove('election-selected');slot.style.removeProperty('--candidate');motion.clear(slots.indexOf(slot));slot.querySelector('[data-home-compare-id]').value='';slot.querySelector('[data-home-compare-preview]').innerHTML='<button type="button" class="ec-add" data-home-compare-change data-home-compare-open aria-label="정치인 선택"><span aria-hidden="true">＋</span></button>';};
+  const clear=slot=>{slot.classList.remove('election-selected');slot.style.removeProperty('--candidate');motion.clear(slots.indexOf(slot));slot.querySelector('[data-home-compare-id]').value='';slot.querySelector('[data-home-compare-preview]').innerHTML='<button type="button" class="ec-add" data-home-compare-change data-home-compare-open aria-label="정치인 선택"><span aria-hidden="true">＋</span><span class="ec-select-label">비교할 정치인 선택</span></button>';};
   const showSearch=(slot,open)=>{const panel=slot.querySelector('[data-home-compare-search-panel]');panel.hidden=!open;slot.classList.toggle('is-searching',open);for(const control of slot.querySelectorAll('[data-home-compare-change]'))control.setAttribute('aria-expanded',String(open));};
   form.addEventListener('click',event=>{
    const change=event.target.closest('[data-home-compare-change]');if(!change)return;
