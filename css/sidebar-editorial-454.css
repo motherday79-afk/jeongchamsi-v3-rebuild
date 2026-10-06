@@ -1,0 +1,55 @@
+/* White editorial surfaces; color belongs to small accents. */
+.product-home-wrap .fortune-widget{background:#fff;border:1px solid #e5e7eb;border-radius:14px;box-shadow:none}
+.product-home-wrap .side-fortune,.product-home-wrap .side-fortune.fortune-ritual{background:#fff!important;border-color:#e5e7eb!important;color:#252a31;box-shadow:none;padding:18px!important}
+.product-home-wrap .fortune-widget>.side-fortune{border:0!important}
+.product-home-wrap .side-fortune:before,.product-home-wrap .fortune-card-aura{display:none}
+.product-home-wrap .fortune-tabs{padding:4px 14px 0;gap:14px;background:#fff;border-bottom:1px solid #eceef1}
+.product-home-wrap .fortune-tabs button{padding:12px 2px;border:0;border-bottom:2px solid transparent;border-radius:0;background:none;color:#81858d;font-size:14px}
+.product-home-wrap .fortune-tabs button[aria-pressed=true]{background:none;border-color:#80638d;color:#303039}
+.product-home-wrap .fortune-tabs button:focus-visible{outline:2px solid #80638d;outline-offset:-2px}
+.product-home-wrap .side-fortune .fortune-card-title small{color:#8b8e96;font-size:9px;letter-spacing:1.6px}
+.product-home-wrap .side-fortune .fortune-card-title b{color:#24282f;font-size:18px}
+.product-home-wrap .side-fortune .fortune-spark{background:#fff;border:1px solid #eee9df;color:#ac905c;box-shadow:none;border-radius:9px}
+.product-home-wrap .side-fortune .fortune-card-head time{background:none;color:#8b8f96;border:0;padding:4px 0;font-size:11px}
+.product-home-wrap .side-fortune .fortune-hero{grid-template-columns:minmax(0,1fr);padding:0 0 16px;border-bottom:1px solid #eceef1}
+.product-home-wrap .side-fortune .fortune-day-mark{display:none}
+.product-home-wrap .side-fortune .fortune-hero>div small{color:#92734e;font-size:11px;letter-spacing:0}
+.product-home-wrap .side-fortune .fortune-hero h3{color:#30343b;font-size:17px;line-height:1.5}
+.product-home-wrap .side-fortune .fortune-hero p{color:#727780;font-size:14px;line-height:1.75}
+.product-home-wrap .fortune-deck-hint{color:#858992;font-size:11px}
+.product-home-wrap .fortune-card-back,.product-home-wrap .fortune-card-front{background:#fff;border:1px solid #e4e1e8;box-shadow:0 2px 7px #24202c06;--face-ink:#80658e;--face-glow:transparent}
+.product-home-wrap .fortune-card-front:before,.product-home-wrap .fortune-card-front:after{display:none}
+.product-home-wrap .fortune-card-back .fortune-card-category,.product-home-wrap .fortune-card-front .fortune-card-category{color:#48414f;text-shadow:none;font-size:14px;letter-spacing:0}
+.product-home-wrap .fortune-card-sigil{border-color:#e3dbe8;outline-color:#f1edf4;color:#94769e;text-shadow:none}
+.product-home-wrap .fortune-card-invite{color:#92909a;font-size:11px}
+.product-home-wrap .fortune-card-front .fortune-card-score{color:#343840;text-shadow:none}
+.product-home-wrap .fortune-card-front .fortune-card-caption{color:#787680;text-shadow:none;font-size:12px}
+.product-home-wrap .fortune-flip-card.is-selected .fortune-card-front{border-color:#b39bbd;box-shadow:0 0 0 1px #b39bbd33}
+.product-home-wrap .fortune-flip-card:focus-visible{outline:2px solid #80638d;outline-offset:3px}
+.product-home-wrap .fortune-flip-card:hover{filter:none}
+.product-home-wrap .fortune-front-art{filter:none}
+.product-home-wrap .fortune-primary{background:#fff;border-color:#d7cadd;color:#765c85}
+.product-home-wrap .fortune-primary:hover{background:#faf8fc}
+.product-home-wrap .fortune-sign-reading{padding-top:20px!important}
+.product-home-wrap .fortune-sign-visual{display:flex;align-items:center;gap:17px;margin:0 0 18px}
+.product-home-wrap .fortune-sign-art{display:block;flex:none;width:96px;height:96px;color:#7c6a89}
+.product-home-wrap .fortune-sign-identity small{display:block;font-size:11px;color:#979aa0;letter-spacing:.3px;margin-bottom:6px}
+.product-home-wrap .fortune-sign-identity h3{font-size:22px;font-weight:750;line-height:1.35;color:#2d3138;margin:0}
+.product-home-wrap .fortune-sign-copy{padding-top:16px;border-top:1px solid #eceef1}
+.product-home-wrap .fortune-sign-copy h4{margin:0 0 7px;font-size:16px;line-height:1.5;color:#383b43}
+.product-home-wrap .fortune-sign-copy p{margin:0;font-size:14px;line-height:1.85;color:#737780;word-break:keep-all;overflow-wrap:anywhere}
+.product-home-wrap .home-balanced-layout #poll.citizen-choice-banner{background:#fff;color:#2d3138!important;border:1px solid #e5e7eb!important;border-radius:14px;box-shadow:none;height:auto!important;min-height:280px!important}
+.product-home-wrap #poll.citizen-choice-banner:before{display:none}
+.product-home-wrap #poll.citizen-choice-banner .citizen-choice-content{padding:22px;gap:18px}
+.product-home-wrap #poll .citizen-choice-heading{position:relative;padding-right:74px;min-height:62px}
+.product-home-wrap #poll .citizen-choice-heading>span{color:#999da4;font-size:10px;letter-spacing:1.5px}
+.product-home-wrap #poll .citizen-choice-heading h2{color:#292d35;font-size:25px;text-shadow:none;letter-spacing:-1px;margin-top:6px}
+.product-home-wrap #poll .citizen-choice-art{position:absolute;right:0;top:0;width:62px;height:62px;color:#8c7798}
+.product-home-wrap #poll .citizen-choice-status{background:#faf9fc;border:1px solid #ece7ef;color:#8a7197;border-radius:4px;font-size:11px;padding:3px 7px}
+.product-home-wrap #poll .citizen-choice-topic p{color:#424650;text-shadow:none;font-size:17px;font-weight:650;line-height:1.65;margin-top:9px;-webkit-line-clamp:3}
+.product-home-wrap #poll .citizen-choice-footer{padding-top:16px;border-top:1px solid #eceef1}
+.product-home-wrap #poll .citizen-choice-footer>span{color:#90949c;font-size:12px;font-weight:400}
+.product-home-wrap #poll .citizen-choice-footer>strong{background:none;color:#6f577f;border-radius:0;padding:5px 0;font-size:13px;min-height:32px}
+.product-home-wrap #poll .citizen-choice-footer>strong:after{content:'→';margin-left:7px;font-size:18px;font-weight:400}
+.product-home-wrap #poll.citizen-choice-banner:hover{filter:none}
+.product-home-wrap #poll.citizen-choice-banner:hover .citizen-choice-footer>strong{background:none;color:#44354e}
