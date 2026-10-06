@@ -1,0 +1,18 @@
+/* Colorful editorial pictures, white reading surfaces, existing reveal interaction. */
+.product-home-wrap .side-fortune .fortune-deck{gap:9px}
+.product-home-wrap .side-fortune .fortune-flip-card{height:232px;border-radius:10px;color:#343c43}
+.product-home-wrap .side-fortune .fortune-card-back,.product-home-wrap .side-fortune .fortune-card-front{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;padding:0;gap:0;background:#fff;border:1px solid #e2e7e5;border-radius:10px;box-shadow:0 3px 10px #273f3510;overflow:hidden}
+.product-home-wrap .side-fortune .fortune-card-back:before,.product-home-wrap .side-fortune .fortune-card-back:after,.product-home-wrap .side-fortune .fortune-card-front:before,.product-home-wrap .side-fortune .fortune-card-front:after{display:none}
+.product-home-wrap .side-fortune .fortune-card-category{flex:none;display:block;padding:9px 4px 8px;text-align:center;font-size:13px;line-height:18px;letter-spacing:0;color:#49534f;text-shadow:none;background:#fff}
+.product-home-wrap .side-fortune .fortune-card-back-art{display:block;flex:1;min-height:0;width:100%;object-fit:cover;object-position:center}
+.product-home-wrap .side-fortune .fortune-card-invite{flex:none;display:block;padding:12px 3px;text-align:center;background:#fff;color:#76827b;font-size:11px;line-height:18px}
+.product-home-wrap .side-fortune .fortune-card-invite:after{content:' ↗';margin-left:3px;color:#a5afa7}
+.product-home-wrap .side-fortune .fortune-front-art{display:block;flex:none;width:100%;height:112px;max-width:none;filter:none;overflow:hidden}
+.product-home-wrap .side-fortune .fortune-front-art img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+.product-home-wrap .side-fortune .fortune-card-front .fortune-card-score{flex:none;display:block;margin:8px 0 2px;text-align:center;color:#34433c;font-size:25px;line-height:30px;text-shadow:none}
+.product-home-wrap .side-fortune .fortune-card-score small{font-size:11px;color:#89948e;margin-left:3px}
+.product-home-wrap .side-fortune .fortune-card-front .fortune-card-caption{display:block;padding:0 6px 8px;color:#7b847f;font-size:11px;line-height:1.45;text-shadow:none;text-align:center;word-break:keep-all;overflow-wrap:anywhere;letter-spacing:-.3px}
+.product-home-wrap .side-fortune .fortune-flip-card.is-selected .fortune-card-front{border-color:#a1b6a9;box-shadow:0 0 0 1px #a1b6a933,0 4px 12px #273f3510}
+.product-home-wrap .side-fortune .fortune-flip-card:focus-visible{outline:2px solid #7d9d8b;outline-offset:3px}
+.product-home-wrap .side-fortune .fortune-deck-hint{margin-top:13px;color:#939b95}
+@media(max-width:380px){.product-home-wrap .side-fortune .fortune-deck{gap:6px}.product-home-wrap .side-fortune .fortune-flip-card{height:222px}.product-home-wrap .side-fortune .fortune-front-art{height:100px}.product-home-wrap .side-fortune .fortune-card-front .fortune-card-caption{padding-left:4px;padding-right:4px;font-size:10px}}
