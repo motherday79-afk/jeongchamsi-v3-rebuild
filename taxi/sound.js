@@ -1,4 +1,5 @@
-import {playTaxiEffect} from './effects.js?v=0.0.31.469';
+import {playTaxiEffect} from './effects.js?v=0.0.31.473';
+import {createTaxiRain} from './rain.js?v=0.0.31.473';
 import {DialogueReader} from './dialogue-reader.js?v=0.0.31.470';
 // Prerecorded anonymous narration; rain is synthesized locally and never records the microphone.
 export class TaxiSound {
@@ -19,14 +20,7 @@ export class TaxiSound {
       const Context=window.AudioContext||window.webkitAudioContext;if(Context){
         this.ctx=new Context();const c=this.ctx;
         this.rainGain=c.createGain();this.rainGain.gain.value=0;this.rainGain.connect(c.destination);
-        // A long seamless noise bed plus irregular, short roof/window droplets.
-        const bed=c.createBuffer(2,c.sampleRate*12,c.sampleRate);
-        for(let ch=0;ch<2;ch++){const a=bed.getChannelData(ch);let brown=0;for(let i=0;i<a.length;i++){brown=(brown+.035*(Math.random()*2-1))/1.025;a[i]=brown;}}
-        const source=c.createBufferSource();source.buffer=bed;source.loop=true;
-        const filter=c.createBiquadFilter();filter.type='lowpass';filter.frequency.value=4300;source.connect(filter);filter.connect(this.rainGain);source.start();
-        const drops=c.createBuffer(2,c.sampleRate*13,c.sampleRate);
-        for(let ch=0;ch<2;ch++){const a=drops.getChannelData(ch);for(let start=0;start<a.length;start+=Math.floor(c.sampleRate*(.018+Math.random()*.14))){const length=Math.floor(c.sampleRate*.027);const amp=.09+Math.random()*.18;for(let i=0;i<length&&start+i<a.length;i++)a[start+i]+=(Math.random()*2-1)*amp*Math.exp(-i/(length*.14));}}
-        const patter=c.createBufferSource();patter.buffer=drops;patter.loop=true;const roof=c.createBiquadFilter();roof.type='lowpass';roof.frequency.value=2600;patter.connect(roof);roof.connect(this.rainGain);patter.start();
+        this.rainSource=createTaxiRain(c,this.rainGain);
       }
     }
     if(this.ctx?.state==='suspended')void this.ctx.resume().catch(()=>{});

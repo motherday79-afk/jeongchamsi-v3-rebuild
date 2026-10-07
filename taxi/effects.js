@@ -1,4 +1,4 @@
-// Short, quiet mechanical sounds synthesized locally; no downloaded sound effects.
+// Synthesized door latch, panel impact and braking; no recording required.
 export function playTaxiEffect(ctx,kind){
  const nodes=[];const base=ctx.currentTime+.025;
  function noise(offset,length,frequency,volume,q=1){
@@ -14,7 +14,9 @@ export function playTaxiEffect(ctx,kind){
  }
  const door=kind==='exit'?.5:0;
  if(kind==='exit'){noise(0,.4,1050,.065,2);tone(.03,.29,830,410,.018);noise(.12,.3,260,.06);}
- noise(door,.075,2400,.15,1.3);noise(door+.07,.25,550,.075,.7);tone(door+.1,.17,260,150,.02);
- tone(door+.68,.2,115,46,.22);noise(door+.68,.14,650,.2,.8);noise(door+.76,.055,2200,.07,1.5);
+ noise(door,.09,2100,.42,1.1);noise(door+.045,.075,1150,.26,.9);
+ noise(door+.10,.28,680,.17,.7);tone(door+.12,.16,310,170,.07);
+ tone(door+.68,.23,150,65,.34);noise(door+.68,.19,780,.48,.8);
+ noise(door+.70,.08,1750,.30,1.1);noise(door+.79,.065,2400,.22,1.3);
  return ()=>{for(const node of nodes)try{node.stop();}catch{}};
 }
