@@ -1,7 +1,9 @@
 import {playTaxiEffect} from './effects.js?v=0.0.31.469';
+import {DialogueReader} from './dialogue-reader.js?v=0.0.31.470';
 // Prerecorded anonymous narration; rain is synthesized locally and never records the microphone.
 export class TaxiSound {
   constructor(){
+    this.reader=new DialogueReader();
     this.voice=new Audio();this.voice.preload='auto';this.voice.volume=.92;
     this.rainOn=true;this.voiceOn=true;this.effectsOn=true;this.exitUntil=0;this.key='';this.phase='story';this.finished=false;this.elapsed=0;this.last=performance.now();
     try{const p=JSON.parse(localStorage.getItem('jcs-taxi-sound')||'null');if(p){this.rainOn=p.rain!==false;this.voiceOn=p.voice!==false;this.effectsOn=p.effects!==false;}}catch{}
@@ -57,6 +59,8 @@ export class TaxiSound {
     if(this.rainGain){const talking=playing&&this.voiceOn&&!this.voice.paused&&!this.finished;const gain=!document.hidden&&this.rainOn&&this.unlocked?(playing?(talking?.42:.95):.28):0;this.rainGain.gain.setTargetAtTime(gain,this.ctx.currentTime,.45);}
     const gentle=document.querySelector('#gentle-line');if(gentle){gentle.hidden=!this.showComfort;gentle.textContent=this.beat?.comfort?.text||'';}
     if(!this.failed)this.status(playing&&this.voiceOn&&!this.finished?'승객의 이야기를 듣는 중':'빗소리와 함께, 편하게 선택하세요.');
+    this.reader.setBeat(this.beat);
+    this.reader.update({seconds:this.voice.currentTime,following:playing&&this.voiceOn&&!this.finished&&!this.failed&&!this.voice.paused,comfort:this.phase==='comfort'});
     this.buttons();
   }
 }
