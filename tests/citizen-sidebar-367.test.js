@@ -8,10 +8,10 @@ test('banner styles have one owner and outrank the historical poll ID background
  assert.match(css,/\.product-home-wrap \.home-balanced-layout #poll\.citizen-choice-banner\{[^}]*citizen-choice-369\.webp/);
  assert.doesNotMatch(fs.readFileSync(new URL('../css/comic-citizen-369.css',import.meta.url),'utf8'),/citizen-choice/);
 });
-test('citizen choice appears once at the end of the sidebar after the territory game',()=>{
+test('citizen choice appears once at the end of the sidebar after the taxi game',()=>{
  const html=renderHomeLayout(base),main=html.split('<main class="main-column">')[1].split('</main>')[0],side=html.split('<aside class="side-column">')[1].split('</aside>')[0];
  assert.doesNotMatch(main,/id="poll"/);assert.equal((html.match(/citizen-choice-banner/g)||[]).length,1);
- assert.ok(side.indexOf('citizen-choice-banner')>side.indexOf('territory-home-banner'));assert.match(side,/8표 참여/);assert.match(side,/href="\/poll\?pollId=poll-1"/);
+ assert.ok(side.indexOf('citizen-choice-banner')>side.indexOf('taxi-home-banner'));assert.match(side,/8표 참여/);assert.match(side,/href="\/poll\?pollId=poll-1"/);
 });
 test('closed and unpublished polls are not promoted as active votes',()=>{
  const html=renderHomeLayout({...base,polls:{items:[{id:'hidden',published:false,question:'HIDDEN'},{id:'closed',closedAt:'2026-10-01',question:'CLOSED'}]}});

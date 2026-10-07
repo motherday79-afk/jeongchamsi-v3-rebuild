@@ -20,8 +20,8 @@ import {webBroadcastService} from '../lib/web-broadcast-runtime.js';
 import {pushService,enqueueCompletionPush} from '../lib/push-runtime.js';
 import {firebaseConfigured} from '../lib/push-fcm.js';
 import {withRankingMutation} from '../lib/now-rank-schedule.js';
-import {createTerritoryService} from '../lib/territory-service.js';
-import {territoryRequest} from '../lib/territory-http.js';
+import {createTaxiService} from '../lib/taxi-service.js';
+import {taxiRequest} from '../lib/taxi-http.js';
 import {createAiPanelService} from '../lib/ai-panel-service.js';
 import {aiPanelRequest} from '../lib/ai-panel-http.js';
 import {createHumanPollService} from '../lib/human-poll-service.js';
@@ -543,7 +543,7 @@ export default async function handler(req,res){
   const removedBody=bodyOf(req);
   if(route==='admin/keyword-rules'||(['content','admin/participation'].includes(route)&&['academy','nationalEvaluation'].includes(url.searchParams.get('domain')||req.query?.domain||removedBody.domain))||(route==='politicians'&&url.searchParams.has('keywords'))||(route==='action'&&(removedBody.action==='academy-apply'||String(removedBody.payload?.scope||'').startsWith('national:')||['academy','nationalEvaluation'].includes(removedBody.payload?.domain))))return json(res,410,{ok:false,error:'FEATURE_REMOVED'});
   try{
-    if(route==='mine'||route.startsWith('mine/')||route==='polimable'||route.startsWith('polimable/')||route==='polimarble'||route.startsWith('polimarble/'))return json(res,410,{ok:false,error:'FEATURE_REMOVED'});
+    if(route==='territory'||route.startsWith('territory/')||route==='mine'||route.startsWith('mine/')||route==='polimable'||route.startsWith('polimable/')||route==='polimarble'||route.startsWith('polimarble/'))return json(res,410,{ok:false,error:'FEATURE_REMOVED'});
     if(route.startsWith('migration/'))return handleMigration(req,res,route);
     const command=rebuildRedisCommand();
     if(route==='push/message'){
@@ -572,8 +572,8 @@ export default async function handler(req,res){
       const body=bodyOf(req);if(Buffer.byteLength(JSON.stringify(body))>8192)return json(res,413,{ok:false,error:'PUSH_INPUT_INVALID'});
       try{if(body.groups===true)await groupPushService(command).register(user,body);else if(!isSuperAdmin(user))return json(res,403,{ok:false,error:'PUSH_APP_UPDATE_REQUIRED'});if(isSuperAdmin(user))await pushService(command).register(user,body);return json(res,200,{ok:true,enabled:body.enabled});}catch(error){return json(res,400,{ok:false,error:'PUSH_INPUT_INVALID'});}
     }
-    if(route==='territory'){
-      const result=await territoryRequest(req,{service:createTerritoryService({command}),user:await currentUser(req,command),url});
+    if(route==='taxi'){
+      const result=await taxiRequest(req,{service:createTaxiService({command}),user:await currentUser(req,command),url});
       return json(res,result.status,result.body);
     }
     if(route==='mock-bill-settings'&&req.method==='GET')return json(res,200,await createMockBillSettings({command}).get());

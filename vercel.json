@@ -77,11 +77,11 @@
     },
     {
       "source": "/mine",
-      "destination": "/territory/index.html"
+      "destination": "/taxi/index.html"
     },
     {
       "source": "/mine/ad",
-      "destination": "/territory/index.html"
+      "destination": "/taxi/index.html"
     },
     {
       "source": "/api/v3/:path*",
@@ -203,6 +203,16 @@
     {
       "source": "/keywords/:path*",
       "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/territory/:path*",
+      "destination": "/mine",
+      "permanent": false
+    },
+    {
+      "source": "/lib/taxi-passengers.js",
+      "destination": "/mine",
       "permanent": false
     }
   ]

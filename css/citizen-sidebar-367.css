@@ -1,7 +1,7 @@
 /* One owner for the Citizen's Choice sidebar banner. Keep the legacy #poll anchor,
    but explicitly scope it so historical main-poll styles cannot erase the artwork. */
 .product-home-wrap .home-balanced-layout{--home-entry-height:280px}
-.product-home-wrap .home-balanced-layout :is(.territory-home-banner,.citizen-choice-banner){width:100%;height:var(--home-entry-height)!important;min-height:var(--home-entry-height)!important;box-sizing:border-box;flex-shrink:0}
+.product-home-wrap .home-balanced-layout :is(.taxi-home-banner,.citizen-choice-banner){width:100%;height:var(--home-entry-height)!important;min-height:var(--home-entry-height)!important;box-sizing:border-box;flex-shrink:0}
 .product-home-wrap .home-balanced-layout #poll.citizen-choice-banner{position:relative;display:block;overflow:hidden;isolation:isolate;margin:0;padding:0;border:1px solid #9e7bb9!important;border-radius:17px;background:#281338 url('/assets/banners/citizen-choice-369.webp') center/cover no-repeat;color:#fff!important;text-decoration:none;box-shadow:0 8px 25px #38204d22;order:180}
 #poll.citizen-choice-banner::before{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(0deg,#251232f5 0%,#251232b8 36%,transparent 76%)}
 #poll.citizen-choice-banner .citizen-choice-content{position:relative;z-index:1;display:flex;flex-direction:column;justify-content:space-between;height:100%;box-sizing:border-box;padding:22px;gap:12px}
