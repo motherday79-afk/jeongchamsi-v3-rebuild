@@ -1,3 +1,4 @@
+import {TaxiSound} from './sound.js?v=0.0.31.466';
 const API = '/api/v3/taxi';
 const TOKEN_KEY = 'jcs-real-taxi-session-v1';
 const PENDING_KEY = 'jcs-real-taxi-pending-v1';
@@ -18,6 +19,9 @@ let boardUntil = 0;
 let contentSignature = '';
 let journalSelected = null;
 const photoCache = new Map();
+const sound = new TaxiSound();
+const distance = ride => Math.floor(num(ride.distanceMeters ?? num(ride.activeMs)*.008));
+const meters = value => Math.floor(num(value)).toLocaleString('ko-KR')+' m';
 try { token = localStorage.getItem(TOKEN_KEY) || ''; pending = JSON.parse(sessionStorage.getItem(PENDING_KEY) || 'null'); if (pending && !['start','listen','like','dropoff','finish','pause','resume','heartbeat'].includes(pending.action)) pending = null; } catch { /* Keep the session and pending request in memory if storage is blocked. */ }
 function savePending() { try { if (pending) sessionStorage.setItem(PENDING_KEY,JSON.stringify(pending)); else sessionStorage.removeItem(PENDING_KEY); } catch { /* The live request retains its original id. */ } }
 function notice(message) { $('#notice').hidden = !message; $('#notice').textContent = message; }
@@ -27,7 +31,7 @@ function accept(data) {
   state = data;
   receivedAt = performance.now();
   if (data.sessionToken) { token = data.sessionToken; try { localStorage.setItem(TOKEN_KEY,token); } catch { /* Play remains available for this page session. */ } }
-  if (state.ride?.status === 'active' && previousRide !== state.ride.id) boardUntil = performance.now()+1000;
+  if (state.ride?.status === 'active' && previousRide !== state.ride.id) boardUntil = performance.now()+num(state.ride.boardingRemainingMs);
   if (state.ride?.status === 'active' && (document.hidden || $('#help-dialog').open || $('#journal-dialog').open)) { localPaused = true; pauseWanted = true; }
   if (state.ride?.paused || state.ride?.status !== 'active') localPaused = true;
   render();
@@ -116,13 +120,13 @@ async function hydratePhotos() {
 function revealMarkup(ride,journal = false) {
   const person = ride.passenger || {};
   const photo = person.photoUrl ? safeUrl(person.photoUrl) : '';
-  return `<div class="reveal"><span class="reveal-kicker">${journal ? 'JCS REAL TAXI · RIDE RECORD' : 'JCS REAL TAXI · THE PASSENGER WAS…'}</span><div class="reveal-heading">${photo ? `<img class="portrait" src="${esc(photo)}" alt="${esc(person.name)}" loading="lazy">` : `<div class="portrait portrait-placeholder" data-photo-person="${esc(person.personId)}" data-photo-name="${esc(person.name)}" aria-hidden="true">${esc((person.name || '?').slice(0,1))}</div>`}<div><span class="speaker-label">오늘 함께한 승객</span><h2>${esc(person.name || '승객')}</h2><p>${esc(person.partyLabel)}</p></div></div><div class="reveal-stats"><span>${ride.firstRide ? '첫 번째 동승' : `${num(ride.visitNumber)}번째 동승`}</span><span>함께한 시간 약 ${duration(ride.activeMs)}</span><span>${num(ride.heardCount)} / ${num(ride.totalBeats)}개 이야기</span></div><p class="reveal-note">${ride.finishReason === 'dropoff' ? '도중에 내려준 손님이었어요.' : '마지막 이야기까지 함께했어요.'} 대화는 실제 기록을 대화체로 요약한 것이며 직접 인용이 아닙니다. 아래에서 각 이야기의 날짜와 맥락, 원문을 확인해 보세요.</p>${sourcesMarkup(ride)}${journal ? '' : '<div class="choice-row"><button type="button" class="button main-button" data-action="start">다음 손님 태우기</button><button type="button" class="button" data-open-journal>운행 일지 보기</button></div>'}</div>`;
+  return `<div class="reveal"><span class="reveal-kicker">${journal ? 'JCS REAL TAXI · RIDE RECORD' : 'JCS REAL TAXI · THE PASSENGER WAS…'}</span><div class="reveal-heading">${photo ? `<img class="portrait" src="${esc(photo)}" alt="${esc(person.name)}" loading="lazy">` : `<div class="portrait portrait-placeholder" data-photo-person="${esc(person.personId)}" data-photo-name="${esc(person.name)}" aria-hidden="true">${esc((person.name || '?').slice(0,1))}</div>`}<div><span class="speaker-label">오늘 함께한 승객</span><h2>${esc(person.name || '승객')}</h2><p>${esc(person.partyLabel)}</p></div></div><div class="reveal-stats"><span>${ride.firstRide ? '첫 번째 동승' : `${num(ride.visitNumber)}번째 동승`}</span><span class="distance-result">함께 달린 거리 ${meters(distance(ride))}</span><span>동승 시간 약 ${duration(ride.activeMs)}</span><span>${num(ride.heardCount)} / ${num(ride.totalBeats)}개 이야기</span></div><p class="reveal-note">${ride.finishReason === 'dropoff' ? '도중에 내려준 손님이었어요.' : '마지막 이야기까지 함께했어요.'} 대화는 실제 기록을 대화체로 요약한 것이며 직접 인용이 아닙니다. 아래에서 각 이야기의 날짜와 맥락, 원문을 확인해 보세요.</p>${sourcesMarkup(ride)}${journal ? '' : '<div class="choice-row"><button type="button" class="button main-button" data-action="start">다음 손님 태우기</button><button type="button" class="button" data-open-journal>운행 일지 보기</button></div>'}</div>`;
 }
 function activeMarkup(ride) {
-  if (localPaused || ride.paused || document.hidden) return `<div class="paused-card"><div class="speech-balloon"><span class="speaker-label">잠시 정차 중</span><h2>이야기는 여기서<br>기다리고 있어요.</h2><p>화면을 떠난 동안은 동승 시간이 흐르지 않아요.<br>준비되면 직접 운행을 이어가 주세요.</p></div><div class="choice-row"><button type="button" class="button main-button" data-action="resume">운행 이어가기</button><button type="button" class="button drop-button" data-action="dropoff">여기서 내려주기</button></div></div>`;
+  if (localPaused || ride.paused || document.hidden) return `<div class="paused-card"><div class="speech-balloon"><span class="speaker-label">잠시 정차 중</span><h2>이야기는 여기서<br>기다리고 있어요.</h2><p>화면을 떠난 동안은 주행 거리가 늘지 않아요.<br>준비되면 직접 운행을 이어가 주세요.</p></div><div class="choice-row"><button type="button" class="button main-button" data-action="resume">운행 이어가기</button><button type="button" class="button drop-button" data-action="dropoff">여기서 내려주기</button></div></div>`;
   const last = num(ride.beatIndex)+1 >= num(ride.totalBeats);
   const liked = ride.likedBeatIndexes?.includes(ride.beatIndex);
-  return `<div class="speech-balloon"><span class="speaker-label">이름 모를 승객 · 이야기 ${num(ride.beatIndex)+1}</span><p class="beat-text">${esc(ride.beat?.text)}</p></div><div class="choice-row"><button type="button" class="button main-button" data-action="${last ? 'finish' : 'listen'}">${last ? '운행 마치기' : '계속 듣기'}</button><button type="button" class="button like-button" data-action="like" ${liked ? 'data-liked="true"' : ''}>${liked ? '공감했어요' : '공감하기'}</button><button type="button" class="button drop-button" data-action="dropoff">내려주기</button></div><button type="button" class="pause-button" data-action="pause">잠시 정차</button>`;
+  return `<div class="speech-balloon"><span class="speaker-label">이름 모를 승객 · 이야기 ${num(ride.beatIndex)+1}</span><p class="beat-text">${esc(ride.beat?.text)}</p>${ride.beat?.comfort ? '<p class="gentle-line" id="gentle-line" hidden></p>' : ''}</div><div class="choice-row"><button type="button" class="button main-button" data-action="${last ? 'finish' : 'listen'}">${last ? '운행 마치기' : '계속 듣기'}</button><button type="button" class="button like-button" data-action="like" ${liked ? 'data-liked="true"' : ''}>${liked ? '공감했어요' : '공감하기'}</button><button type="button" class="button drop-button" data-action="dropoff">내려주기</button></div><button type="button" class="pause-button" data-action="pause">잠시 정차</button>`;
 }
 function render() {
   if (!state) { controls(); return; }
@@ -155,22 +159,29 @@ function tick() {
   $('#scene').classList.toggle('has-passenger',ride?.status === 'active');
   $('#scene-status').textContent = moving ? '이름 모를 손님과 달리는 중' : ride?.status === 'active' ? performance.now() < boardUntil ? '손님이 택시에 타고 있어요' : '이야기를 잠시 멈춘 정류장' : ride ? '손님이 내린 뒤, 남은 이야기' : '잠시 쉬어 가는 정류장';
   const estimate = moving ? Math.min(20000,performance.now()-receivedAt) : 0;
-  $('#ride-clock').textContent = `${ride ? '약 ' : ''}${duration(num(ride?.activeMs)+estimate)}`;
+  const drivingEstimate = moving ? Math.max(0,estimate-num(ride?.boardingRemainingMs)) : 0;
+  $('#ride-distance').textContent = Math.floor((ride ? distance(ride) : 0)+drivingEstimate*.008).toLocaleString('en-US',{minimumIntegerDigits:6});
+  $('#meter-state').textContent = moving ? '운행 중' : '정차';
+  sound.update(ride,!!moving && (!pending || ['heartbeat','like'].includes(pending.action)));
+  document.getElementById('voice-replay').disabled = !moving;
 }
 function renderJournal() {
   const history = state?.history || [];
-  $('#journal-content').innerHTML = `<p class="journal-label">JCS 리얼택시 · 나만의 최근 ${history.length}회 운행 기록<br>동승 시간은 활동 중에 확인된 대략적인 읽기 시간입니다.</p>${history.length ? history.map((ride) => `<button type="button" class="journal-item" data-journal-id="${esc(ride.id)}"><span><strong>${esc(ride.passenger?.name)}</strong><small>${esc(ride.passenger?.partyLabel)} · ${ride.firstRide ? '첫 동승' : `${num(ride.visitNumber)}번째 동승`}</small></span><span><strong>${num(ride.heardCount)}개 · 약 ${duration(ride.activeMs)}</strong><small>${esc(new Date(num(ride.endedAt)).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}))}</small></span></button>`).join('') : '<p class="journal-empty">아직 운행 기록이 없어요.<br>첫 손님을 내려주면 정체와 출처가 이곳에 남습니다.</p>'}${journalSelected && history.some((ride) => ride.id === journalSelected) ? `<div class="journal-result">${revealMarkup(history.find((ride) => ride.id === journalSelected),true)}</div>` : ''}`;
+  $('#journal-content').innerHTML = `<p class="journal-label">JCS 리얼택시 · 나만의 최근 ${history.length}회 운행 기록<br>동승 거리는 모든 승객에게 같은 가상 속도(시속 28.8km)를 적용한 기록입니다.</p>${history.length ? history.map((ride) => `<button type="button" class="journal-item" data-journal-id="${esc(ride.id)}"><span><strong>${esc(ride.passenger?.name)}</strong><small>${esc(ride.passenger?.partyLabel)} · ${ride.firstRide ? '첫 동승' : `${num(ride.visitNumber)}번째 동승`}</small></span><span><strong>${meters(distance(ride))} · ${num(ride.heardCount)}개</strong><small>${esc(new Date(num(ride.endedAt)).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}))}</small></span></button>`).join('') : '<p class="journal-empty">아직 운행 기록이 없어요.<br>첫 손님을 내려주면 정체와 출처가 이곳에 남습니다.</p>'}${journalSelected && history.some((ride) => ride.id === journalSelected) ? `<div class="journal-result">${revealMarkup(history.find((ride) => ride.id === journalSelected),true)}</div>` : ''}`;
   void hydratePhotos();
 }
 function pauseLocally() { localPaused = true; pauseWanted = true; render(); void flushPause(); }
 function openDialog(id) { if (state?.ride?.status === 'active') pauseLocally(); if (id === 'journal-dialog') renderJournal(); $(`#${id}`).showModal(); }
 document.addEventListener('click',(event) => {
   const actionButton = event.target.closest('[data-action]');
-  if (actionButton && !actionButton.disabled) { const action = actionButton.dataset.action; if (action === 'pause') { pauseLocally(); return; } void act(action); }
+  if (actionButton && !actionButton.disabled) { const action = actionButton.dataset.action; sound.unlock(); if (action === 'pause') { pauseLocally(); return; } void act(action); }
   const closeButton = event.target.closest('[data-close]'); if (closeButton) $(`#${closeButton.dataset.close}`).close();
   if (event.target.closest('[data-open-journal]')) openDialog('journal-dialog');
   const journalButton = event.target.closest('[data-journal-id]'); if (journalButton) { journalSelected = journalSelected === journalButton.dataset.journalId ? null : journalButton.dataset.journalId; renderJournal(); }
 });
+$('#rain-toggle').addEventListener('click',()=>sound.toggle('rain'));
+$('#voice-toggle').addEventListener('click',()=>sound.toggle('voice'));
+$('#voice-replay').addEventListener('click',()=>sound.replay());
 $('#help-open').addEventListener('click',() => openDialog('help-dialog'));
 $('#journal-open').addEventListener('click',() => openDialog('journal-dialog'));
 $('#start-button').addEventListener('click',() => void refresh());

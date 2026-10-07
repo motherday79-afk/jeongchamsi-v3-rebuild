@@ -214,6 +214,11 @@
       "source": "/lib/taxi-passengers.js",
       "destination": "/mine",
       "permanent": false
+    },
+    {
+      "source": "/lib/taxi-audio.js",
+      "destination": "/mine",
+      "permanent": false
     }
   ]
 }

@@ -1,0 +1,24 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {TaxiSound} from '../taxi/sound.js';
+import {TAXI_PASSENGERS} from '../lib/taxi-passengers.js';
+import {beatAudio,taxiVoice} from '../lib/taxi-audio.js';
+test('every dialogue and comfort has a prerecorded MP3; voices match the curated passenger roster',()=>{
+ const women=new Set(['나경원','김선민','이소영','용혜인']);
+ for(const p of TAXI_PASSENGERS){assert.equal(taxiVoice(p),women.has(p.name)?'ko-KR-SunHiNeural':'ko-KR-InJoonNeural');for(let i=0;i<p.beats.length;i++){const b=beatAudio(p,i);for(const url of [b.audioUrl,b.comfort?.audioUrl].filter(Boolean)){const buffer=fs.readFileSync(new URL('..'+url,import.meta.url));assert.ok(buffer.length>1000);assert.ok(buffer.subarray(0,3).toString()==='ID3'||buffer[0]===255);}}}
+});
+test('narration advances to comfort once, pauses and cancels at passenger/beat changes',async()=>{
+ const nodes=new Map();const node=id=>{if(!nodes.has(id))nodes.set(id,{textContent:'',hidden:true,setAttribute(){}});return nodes.get(id);};
+ globalThis.document={hidden:false,querySelector:node,getElementById:node};
+ globalThis.localStorage={getItem:()=>null,setItem(){}};
+ globalThis.Audio=class {paused=true;src='';handlers={};addEventListener(k,fn){this.handlers[k]=fn;}load(){}pause(){this.paused=true;}async play(){this.paused=false;}};
+ const s=new TaxiSound();s.unlocked=true;
+ const ride={id:'one',status:'active',beatIndex:0,beat:{text:'첫 이야기',audioUrl:'/first.mp3',comfort:{text:'천천히 선택해 주세요.',audioUrl:'/gentle.mp3'}}};
+ s.update(ride,true);await Promise.resolve();assert.equal(s.voice.paused,false);
+ s.update(ride,false);assert.equal(s.voice.paused,true);
+ s.update(ride,true);await Promise.resolve();s.voice.handlers.ended();assert.equal(s.voice.src,'/gentle.mp3');assert.equal(s.showComfort,true);
+ s.voice.handlers.ended();s.update(ride,true);assert.equal(s.finished,true);
+ s.update({...ride,beatIndex:1,beat:{text:'다음',audioUrl:'/second.mp3'}},true);await Promise.resolve();assert.equal(s.showComfort,false);assert.equal(s.voice.src,'/second.mp3');
+ s.update({status:'completed'},false);assert.equal(s.voice.paused,true);assert.equal(s.beat,null);
+});

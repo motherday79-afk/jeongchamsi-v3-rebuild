@@ -4,6 +4,15 @@ import {createTaxiService,TAXI_CAS_LUA} from '../lib/taxi-service.js';
 import {taxiRequest} from '../lib/taxi-http.js';
 
 const passengers=['a','b','c'].map(id=>({id,personId:'person-'+id,name:'Name '+id,partyLabel:'Party '+id,photoUrl:'https://example.com/'+id+'.jpg',beats:[0,1,2,3,4].map(index=>({id:id+index,text:'익명 대화 '+index,type:'paraphrase',context:'출처 맥락',sources:[{title:'원문',url:'https://example.com/source/'+id+index,date:'2026-01-01'}]}))}));
+test('distance excludes boarding and paused time, audio stays anonymous',async()=>{
+ const f=setup();let s=await f.service.mutate(f.user,f.body('start',0));
+ assert.equal(s.ride.distanceMeters,0);assert.match(s.ride.beat.audioUrl,/\/audio\/[a-f0-9]{32}\.mp3$/);assert.ok(s.ride.beat.comfort.text);
+ f.tick(1000);s=await f.service.mutate(f.user,f.body('heartbeat',s.version));assert.equal(s.ride.distanceMeters,0);
+ f.tick(10000);s=await f.service.mutate(f.user,f.body('pause',s.version));assert.equal(s.ride.distanceMeters,80);
+ f.tick(60000);s=await f.service.mutate(f.user,f.body('resume',s.version));assert.equal(s.ride.distanceMeters,80);
+ f.tick(1000);s=await f.service.mutate(f.user,f.body('listen',s.version));assert.equal(s.ride.distanceMeters,88);assert.equal(s.ride.beat.comfort,undefined);
+ s=await f.service.mutate(f.user,f.body('dropoff',s.version));assert.equal(s.history[0].distanceMeters,88);
+});
 function setup(){
   const db=new Map(),keys=[];let at=100000,seq=0;
   const command=async args=>{if(args[0]==='GET'){keys.push(args[1]);return db.get(args[1])??null;}assert.equal(args[0],'EVAL');assert.equal(args[1],TAXI_CAS_LUA);const [, , ,key,old,value]=args;if((db.get(key)??'')!==old)return 0;db.set(key,value);return 1;};
