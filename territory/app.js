@@ -165,7 +165,7 @@ function updateButtons() {
         const count = (state.participants || []).filter(p => p.territoryId === selectedTerritory && p.partyId === state.player?.partyId && p.mode === move?.mode).length;
         disabled ||= !move || !presence || count < number(move?.minParticipants) || number(state.player?.balance) < number(move?.points) || number(state.player?.energy) < number(move?.energy);
       }
-      if (action === 'act') disabled ||= number(state?.player?.balance) < number(rules().actionPoints) || number(state?.player?.energy) < number(rules().actionEnergy);
+      if (action === 'act') disabled ||= (roster().length > 0 && roster().every(locked)) || number(state?.player?.balance) < number(rules().actionPoints) || number(state?.player?.energy) < number(rules().actionEnergy);
       if (action === 'upgrade') disabled ||= button.dataset.maxed === 'true' || number(state?.player?.balance) < number(button.dataset.cost);
     }
     button.disabled = disabled;
