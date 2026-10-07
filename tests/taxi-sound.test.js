@@ -37,3 +37,17 @@ test('narration advances to comfort once, pauses and cancels at passenger/beat c
  s.update({...ride,beatIndex:1,beat:{text:'다음',audioUrl:'/second.mp3'}},true);await Promise.resolve();assert.equal(s.showComfort,false);assert.equal(s.voice.src,'/second.mp3');
  s.update({status:'completed'},false);assert.equal(s.voice.paused,true);assert.equal(s.beat,null);
 });
+
+test('rain stays audible while choosing or stopped, recovers interruption, and respects mute and hidden page',async()=>{
+ globalThis.document={hidden:false};
+ const gains=[];let resumes=0;
+ const s=Object.create(TaxiSound.prototype);
+ Object.assign(s,{rainOn:true,unlocked:true,ctx:{state:'running',currentTime:1,resume:async()=>{resumes++;}},rainGain:{gain:{setTargetAtTime:v=>gains.push(v)}}});
+ s.updateRain(false);assert.equal(gains.at(-1),.95);
+ s.updateRain(true);assert.equal(gains.at(-1),.42);
+ s.updateRain(false);assert.equal(gains.at(-1),.95);
+ s.ctx.state='interrupted';s.updateRain(false);await Promise.resolve();assert.equal(resumes,1);
+ s.rainOn=false;s.updateRain(false);assert.equal(gains.at(-1),0);
+ s.rainOn=true;document.hidden=true;s.updateRain(false);assert.equal(gains.at(-1),0);assert.equal(resumes,1);
+ document.hidden=false;
+});

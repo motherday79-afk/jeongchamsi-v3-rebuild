@@ -42,6 +42,17 @@ export class TaxiSound {
   load(url){this.voice.pause();this.voice.src=url;this.voice.load();this.failed=false;this.starting=false;}
   next(){if(!this.beat||!this.key)return;if(this.phase==='story'&&this.beat.comfort){this.phase='comfort';this.showComfort=true;this.load(this.beat.comfort.audioUrl);}else this.finished=true;}
   replay(){this.unlock();if(!this.beat)return;this.phase='story';this.finished=false;this.elapsed=0;this.showComfort=false;this.voiceOn=true;this.load(this.beat.audioUrl);this.save();}
+  updateRain(talking){
+    if(!this.rainGain)return;
+    // Ambience belongs to the visible taxi scene, including quiet decision time.
+    const audible=!document.hidden&&this.rainOn&&this.unlocked;
+    this.rainGain.gain.setTargetAtTime(audible?(talking?.42:.95):0,this.ctx.currentTime,.45);
+    const now=performance.now();
+    if(audible&&['suspended','interrupted'].includes(this.ctx.state)&&!this.rainResuming&&now>=(this.rainResumeAfter||0)){
+      this.rainResuming=true;this.rainResumeAfter=now+5000;
+      void this.ctx.resume().catch(()=>{}).finally(()=>{this.rainResuming=false;});
+    }
+  }
   update(ride,playing){
     const at=performance.now(),delta=Math.min(500,at-this.last);this.last=at;
     if(document.hidden)this.stopEffects();
@@ -56,7 +67,7 @@ export class TaxiSound {
         void this.voice.play().then(()=>{this.starting=false;if(current!==this.key||!this.playing||!this.voiceOn)this.voice.pause();}).catch(()=>{this.starting=false;if(current===this.key){this.failed=true;this.status('대사 음성을 들으려면 다시 듣기를 눌러 주세요.');}});
       }
     }
-    if(this.rainGain){const talking=playing&&this.voiceOn&&!this.voice.paused&&!this.finished;const gain=!document.hidden&&this.rainOn&&this.unlocked?(playing?(talking?.42:.95):.28):0;this.rainGain.gain.setTargetAtTime(gain,this.ctx.currentTime,.45);}
+    this.updateRain(playing&&this.voiceOn&&!this.voice.paused&&!this.finished&&!this.failed);
     const gentle=document.querySelector('#gentle-line');if(gentle){gentle.hidden=!this.showComfort;gentle.textContent=this.beat?.comfort?.text||'';}
     if(!this.failed)this.status(playing&&this.voiceOn&&!this.finished?'승객의 이야기를 듣는 중':'빗소리와 함께, 편하게 선택하세요.');
     this.reader.setBeat(this.beat);
