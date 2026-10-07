@@ -1,4 +1,4 @@
-import { PlazaScene, avatarMarkup } from './scene.js?v=0.0.31.463';
+import { PlazaScene, avatarMarkup } from './scene.js?v=0.0.31.464';
 const API = '/api/v3/territory';
 const OPERATION_KEY = 'jcs-territory-pending-v1';
 const $ = (selector) => document.querySelector(selector);
@@ -16,11 +16,22 @@ let lastSync = 0;
 let readSequence = 0;
 let selectedTerritory = 'bluehouse';
 let selectedMode = 'solo';
-let selectedAppearance = '';
+const selectedUnits = new Set();
+let rosterInitialized = false;
 let selectedPerson = '';
 const modeNames = {solo:'1인 시위',rally:'함께 집회',vigil:'상징 단식',support:'응원 방문',petition:'공동 발의'};
-const modeHints = {solo:'내 피켓으로 · 분당 +4',rally:'분당 +4 · 3명부터 +8',vigil:'5분 약속 · 분당 +6',support:'동료가 있을 때 · 분당 +6',petition:'법안을 준비해요 · 분당 +4'};
-const scene = new PlazaScene($('#plaza-scene'),(id) => { selectedPerson = id; renderPerson(); });
+const modeHints = {solo:'각 유닛 분당 +4',rally:'각 유닛 분당 +4 · 3기부터 +8',vigil:'5분 약속 · 각 유닛 분당 +6',support:'동료 유닛과 · 분당 +6',petition:'각 유닛 분당 +4'};
+const roster = () => state?.player?.units || [];
+const unitId = unit => unit.unitId || unit.id;
+const locked = unit => now() < number(unit.presence?.committedUntil || unit.committedUntil);
+const picked = () => roster().filter(unit => selectedUnits.has(unitId(unit)));
+const deployable = all => (all ? roster() : picked()).filter(unit => !locked(unit));
+const scene = new PlazaScene($('#plaza-scene'),(id) => {
+  selectedPerson = id;
+  const person = state?.participants?.find(p => p.id === id);
+  if (person?.ownerId === state?.player?.ownerId) { selectedUnits.clear(); selectedUnits.add(person.unitId); renderDock(); updateButtons(); }
+  renderPerson();
+});
 try { const saved = JSON.parse(sessionStorage.getItem(OPERATION_KEY) || 'null'); if (saved && ['join','act','upgrade','deploy','leave','collective'].includes(saved.action) && typeof saved.requestId === 'string') pending = saved; } catch { /* Storage is optional; a live request is still kept in memory. */ }
 const now = () => Date.now() + offset;
 const party = (id) => state?.parties?.find((item) => item.id === id);
@@ -46,6 +57,7 @@ function accept(data) {
   if (!data || data.ok !== true || !data.round || !Array.isArray(data.territories) || !Array.isArray(data.parties)) throw new Error('INVALID_RESPONSE');
   const previousRound = state?.round?.id;
   state = data;
+  if (!rosterInitialized && roster().length) { roster().forEach(unit => selectedUnits.add(unitId(unit))); rosterInitialized = true; }
   offset = Number.isFinite(Number(data.serverNow)) ? Number(data.serverNow) - Date.now() : 0;
   lastSync = Date.now();
   if (previousRound && previousRound !== data.round.id) { selectedParty = ''; notice('새로운 주간 라운드가 시작됐어요. 이번 주 함께할 정당을 다시 선택해 주세요.'); }
@@ -53,7 +65,7 @@ function accept(data) {
 }
 function playerMarkup() {
   const player = state.player;
-  if (!player) return '<div><div class="player-heading">우리 정당의 다음 한 수, 함께할까요?</div><p class="player-description">로그인하면 정당 선택과 정치 활동에 참여할 수 있어요. 관전은 누구나 가능합니다.</p></div><a class="primary-button" href="/login?return=/territory/">로그인하고 참여</a>';
+  if (!player) return '<div><div class="player-heading">우리 정당의 다음 한 수, 함께할까요?</div><p class="player-description">로그인하면 정당 선택과 정치 활동에 참여할 수 있어요. 관전은 누구나 가능합니다.</p></div><a class="primary-button" href="/login?return=/mine">로그인하고 참여</a>';
   const stats = `<div class="player-stats"><div class="stat"><span class="stat-label">보유 JCS 포인트</span><strong>${format(player.balance)} <small>P</small></strong></div><div class="stat"><span class="stat-label">정치 활동력</span><strong>${format(player.energy)} <small>/ ${format(rules().maxEnergy)}</small></strong><div class="energy-track"><i style="width:${Math.min(100,number(player.energy)/number(rules().maxEnergy)*100)}%"></i></div><small class="stat-label" id="energy-clock"></small></div><div class="stat"><span class="stat-label">직접 행동 기여</span><strong>${format(player.contribution)}</strong></div><a class="primary-button" href="/points">포인트 충전</a></div>`;
   if (!player.partyId) return `<div class="party-join"><div class="party-join-heading"><div><div class="player-heading">이번 주, 어느 정당과 함께할까요?</div><p class="player-description">참여는 무료 · 선택한 정당은 라운드 종료까지 변경할 수 없어요.</p></div><span class="player-description">보유 포인트 <strong>${format(player.balance)} P</strong></span></div><form id="join-form"><div class="party-options">${state.parties.map((item) => `<label class="party-choice" style="--party:${color(item.color)}"><input type="radio" name="party" value="${escape(item.id)}" data-focus="party-${escape(item.id)}" ${selectedParty === item.id ? 'checked' : ''} required><span class="party-dot"></span>${escape(item.name)}</label>`).join('')}</div><button type="submit" class="primary-button join-submit" data-operation="join" data-focus="join">선택한 정당으로 이번 주 참여</button></form></div>`;
   const mine = party(player.partyId);
@@ -99,26 +111,25 @@ function renderPerson() {
   const target = $('#person-detail');
   target.hidden = !person;
   if (!person) return;
-  target.innerHTML = `<button type="button" data-close-person aria-label="참가자 정보 닫기">닫기</button><strong>${escape(person.nickname || '시민')}${person.id === state.player?.participantId ? ' · 내 시민' : ''}</strong> · ${escape(party(person.partyId)?.name || '')}<br>${escape(modeNames[person.mode] || '광장 활동')} · ${escape(modeHints[person.mode] || '')} · ${timeLeft(person.expiresAt)} 남음`;
+  target.innerHTML = `<button type="button" data-close-person aria-label="참가자 정보 닫기">닫기</button><strong>${escape(person.nickname || '시민')}${person.ownerId === state.player?.ownerId ? ' · 내 유닛 '+person.unitId : ''}</strong> · ${escape(party(person.partyId)?.name || '')}<br>${escape(modeNames[person.mode] || '광장 활동')} · ${escape(modeHints[person.mode] || '')} · ${timeLeft(person.expiresAt)} 남음`;
 }
 function renderDock() {
-  const current = state.player?.presence;
-  const chosen = selectedAppearance || state.player?.appearance || 'citizen1';
+  const units = roster(), selected = picked(), available = deployable(false), allAvailable = deployable(true);
+  const cost = number(rules().deployEnergy || 1);
   const modes = state.plazaModes?.length ? state.plazaModes : Object.keys(modeNames).map(id => ({id,name:modeNames[id]}));
-  const eligible = !!state.player?.partyId;
-  focusedRender($('#action-dock'), `<div class="dock-top"><div><h3>${current ? '광장에 나온 내 시민' : '오늘은 어떤 목소리를 낼까요?'}</h3><p>${!state.player ? '로그인하고 정당을 선택하면 내 시민으로 함께할 수 있어요.' : !eligible ? '아래에서 이번 주 함께할 정당을 먼저 선택해 주세요.' : '시민의 모습과 활동을 고른 뒤 광장에 배치하세요.'}</p></div><div class="appearance-picker" role="group" aria-label="시민 캐릭터 선택">${Array.from({length:6},(_,i) => `<button type="button" class="appearance-choice" data-appearance="citizen${i+1}" data-focus="appearance-${i+1}" aria-label="시민 ${i+1} 선택" aria-pressed="${chosen === 'citizen'+(i+1)}">${avatarMarkup('citizen'+(i+1))}</button>`).join('')}</div></div><div class="mode-options" role="group" aria-label="광장 활동 선택">${modes.map(mode => `<button type="button" class="mode-choice" data-mode="${escape(mode.id)}" data-focus="mode-${escape(mode.id)}" aria-pressed="${selectedMode === mode.id}" title="${escape(mode.description || '')}"><span class="mode-symbol" aria-hidden="true">${{solo:'▧',rally:'⚑',vigil:'☕',support:'♡',petition:'▤'}[mode.id] || '●'}</span><strong>${escape(modeNames[mode.id] || mode.name)}</strong><small>${escape(modeHints[mode.id] || mode.description)}</small></button>`).join('')}</div><div class="dock-actions"><button type="button" class="primary-button" data-operation="deploy" data-focus="deploy">${current ? '선택한 활동으로 다시 배치' : '내 시민 광장에 배치'} · 0 P + 활동력 ${format(rules().deployEnergy)}</button>${current ? '<button type="button" class="leave-button" data-operation="leave" data-focus="leave">광장에서 나오기 · 무료</button>' : !state.player ? '<a class="leave-button" href="/login?return=/territory/">로그인</a>' : ''}<span id="presence-clock" class="presence-caption"></span></div><div class="collective-row">${(state.collectiveMoves || []).map(move => {
+  focusedRender($('#action-dock'), `<div class="dock-top"><div><h3>내 미니미 부대 · ${units.length || 18}기</h3><p>${!state.player ? '로그인하고 정당을 선택하면 18기를 함께 지휘할 수 있어요.' : !state.player.partyId ? '아래에서 이번 주 함께할 정당을 먼저 선택해 주세요.' : '6가지 모습 × 각 3기 = 내 유닛 18기. 개별 또는 여러 기를 선택해 동시에 배치하세요.'}</p></div></div><div class="roster-toolbar"><button type="button" data-select-units="all">18기 전체 선택</button><button type="button" data-select-units="none">선택 해제</button><strong>선택 ${selected.length}기 · 배치 가능 ${available.length}기</strong></div><div class="unit-roster" role="group" aria-label="내 미니미 18기 선택">${units.map((unit,i) => `<button type="button" class="unit-choice" data-unit="${escape(unitId(unit))}" data-focus="unit-${escape(unitId(unit))}" aria-pressed="${selectedUnits.has(unitId(unit))}">${avatarMarkup(unit.appearance)}<strong>#${i+1}</strong><small>${unit.presence ? escape(state.territories.find(t => t.id === unit.presence.territoryId)?.name || '')+' · '+escape(modeNames[unit.presence.mode]) : '배치 대기'}</small><span>${locked(unit) ? '🔒 전환 대기 · 회수 가능' : unit.presence ? '배치 중 · 전환 가능' : '준비 완료'}</span></button>`).join('')}</div><div class="mode-options" role="group" aria-label="선택 유닛 활동">${modes.map(mode => `<button type="button" class="mode-choice" data-mode="${escape(mode.id)}" data-focus="mode-${escape(mode.id)}" aria-pressed="${selectedMode === mode.id}"><strong>${escape(modeNames[mode.id] || mode.name)}</strong><small>${escape(modeHints[mode.id])}</small></button>`).join('')}</div><div class="dock-actions"><button type="button" class="primary-button" data-operation="deploy" data-focus="deploy">선택 ${available.length}기 배치 · 0 P + 활동력 ${format(available.length*cost)}</button><button type="button" class="primary-button" data-operation="deploy" data-all="true" data-focus="deploy-all">전체 ${allAvailable.length}기 배치 · 0 P + 활동력 ${format(allAvailable.length*cost)}</button><button type="button" class="leave-button" data-operation="leave" data-focus="leave">선택 유닛 회수 · 무료</button><button type="button" class="leave-button" data-operation="leave" data-all="true" data-focus="leave-all">전체 회수 · 무료</button><span id="presence-clock" class="presence-caption"></span></div><p class="dock-note">배치·재배치 비용은 1기당 0 P + 활동력 ${cost}. 18기 전체는 활동력 ${18*cost}. 자리 지키는 유닛 ${units.filter(locked).length}기는 배치에서 자동 제외되며 무료 회수는 언제든 가능해요.</p><div class="collective-row">${(state.collectiveMoves || []).map(move => {
     const count = (state.participants || []).filter(p => p.territoryId === selectedTerritory && p.partyId === state.player?.partyId && p.mode === move.mode).length;
-    return `<button type="button" class="collective-button" data-operation="collective" data-move="${escape(move.id)}" data-focus="collective-${escape(move.id)}">${escape(move.name)} · ${format(move.points)} P + 활동력 ${format(move.energy)}<small>우리 정당 ${escape(modeNames[move.mode])} ${count} / ${format(move.minParticipants)}명 · 같은 활동으로 배치 후 진행</small></button>`;
-  }).join('')}</div><p class="dock-note">${selectedMode === 'vigil' ? '상징 단식은 5분간 앉아서 자리를 지키는 농성 행동이에요. 이후 분당 +4 · 언제든 무료 퇴장 가능.' : selectedMode === 'support' ? '같은 광장에 우리 정당 동료가 있어야 응원할 수 있어요. 동료가 있는 동안 영향력을 쌓아요.' : '배치 후 10분간 유지 · 매분 영향력 반영 · 다시 배치하면 활동력 5 사용'} 화면을 닫아도 남은 시간 동안 활동해요.</p>`);
+    return `<button type="button" class="collective-button" data-operation="collective" data-move="${escape(move.id)}" data-focus="collective-${escape(move.id)}">${escape(move.name)} · ${format(move.points)} P + 활동력 ${format(move.energy)}<small>우리 정당 ${escape(modeNames[move.mode])} ${count} / ${format(move.minParticipants)}기 · 한 지휘자의 여러 유닛도 합산</small></button>`;
+  }).join('')}</div><p class="dock-note">${selectedMode === 'vigil' ? '상징 단식은 유닛별 5분 약속이에요. 다른 유닛은 계속 조작할 수 있어요.' : selectedMode === 'support' ? '같은 광장의 우리 정당 다른 유닛과 함께 응원해요.' : '각 유닛은 배치 후 10분간 활동하며 매분 영향력을 쌓아요.'} 화면을 닫아도 남은 시간 동안 활동해요.</p>`);
 }
 function renderPlaza() {
-  focusedRender($('#location-tabs'), state.territories.map(t => `<button type="button" role="tab" aria-selected="${t.id === selectedTerritory}" aria-controls="plaza-scene" data-location="${escape(t.id)}" data-focus="location-${escape(t.id)}">${escape(t.name)}<small>${(state.participants || []).filter(p => p.territoryId === t.id).length}명</small></button>`).join(''));
+  focusedRender($('#location-tabs'), state.territories.map(t => `<button type="button" role="tab" aria-selected="${t.id === selectedTerritory}" aria-controls="plaza-scene" data-location="${escape(t.id)}" data-focus="location-${escape(t.id)}">${escape(t.name)}<small>${(state.participants || []).filter(p => p.territoryId === t.id).length}기</small></button>`).join(''));
   const territory = state.territories.find(t => t.id === selectedTerritory) || state.territories[0];
   if (!territory) return;
   selectedTerritory = territory.id;
   const owner = party(territory.ownerPartyId);
   $('#plaza-name').textContent = `${territory.name} 앞 광장`;
-  $('#plaza-meta').innerHTML = `<strong>지금 함께 ${state.participants?.filter(p => p.territoryId === territory.id).length || 0}명</strong><span class="owner-badge" style="--party:${color(owner?.color)}">${owner ? escape(owner.name)+' 점령 중' : '첫 점령을 기다리는 중'}</span>`;
+  $('#plaza-meta').innerHTML = `<strong>지금 함께 ${state.participants?.filter(p => p.territoryId === territory.id).length || 0}기 · 지휘자 ${new Set((state.participants || []).filter(p => p.territoryId === territory.id).map(p => p.ownerId)).size}명</strong><span class="owner-badge" style="--party:${color(owner?.color)}">${owner ? escape(owner.name)+' 점령 중' : '첫 점령을 기다리는 중'}</span>`;
   $('#plaza-status').innerHTML = '<span id="plaza-status-clock"></span><span>실제 배치된 시민 · 자동 갱신</span>';
   scene.update(state,selectedTerritory);
   renderDock();
@@ -140,20 +151,19 @@ function updateButtons() {
     const action = button.dataset.operation;
     let disabled = blocked;
     if (action === 'join') disabled ||= !selectedParty || !state?.player || !!state.player.partyId;
-    else if (action === 'leave') disabled ||= !state?.player?.presence;
+    else if (action === 'leave') disabled ||= !(button.dataset.all === 'true' ? roster() : picked()).some(unit => unit.presence);
     else {
       disabled ||= !state?.player?.partyId || now() < number(state?.player?.cooldownUntil);
-      const committed = now() < number(state?.player?.presence?.committedUntil);
-      if (['act','deploy','collective'].includes(action)) disabled ||= committed;
       if (action === 'deploy') {
-        disabled ||= number(state?.player?.energy) < number(rules().deployEnergy);
-        if (selectedMode === 'support') disabled ||= !(state?.participants || []).some(p => p.territoryId === selectedTerritory && p.partyId === state.player?.partyId && p.id !== state.player?.participantId);
+        const units = deployable(button.dataset.all === 'true');
+        disabled ||= !units.length || number(state?.player?.energy) < units.length * number(rules().deployEnergy || 1);
+        if (selectedMode === 'support') disabled ||= !(state?.participants || []).some(p => p.territoryId === selectedTerritory && p.partyId === state.player?.partyId && !units.some(unit => p.ownerId === state.player?.ownerId && p.unitId === unitId(unit))) && units.length < 2;
       }
       if (action === 'collective') {
         const move = state.collectiveMoves?.find(m => m.id === button.dataset.move);
-        const presence = state.player?.presence;
+        const presence = roster().some(unit => !locked(unit) && unit.presence?.territoryId === selectedTerritory && unit.presence?.mode === move?.mode);
         const count = (state.participants || []).filter(p => p.territoryId === selectedTerritory && p.partyId === state.player?.partyId && p.mode === move?.mode).length;
-        disabled ||= !move || presence?.territoryId !== selectedTerritory || presence?.mode !== move?.mode || count < number(move?.minParticipants) || number(state.player?.balance) < number(move?.points) || number(state.player?.energy) < number(move?.energy);
+        disabled ||= !move || !presence || count < number(move?.minParticipants) || number(state.player?.balance) < number(move?.points) || number(state.player?.energy) < number(move?.energy);
       }
       if (action === 'act') disabled ||= number(state?.player?.balance) < number(rules().actionPoints) || number(state?.player?.energy) < number(rules().actionEnergy);
       if (action === 'upgrade') disabled ||= button.dataset.maxed === 'true' || number(state?.player?.balance) < number(button.dataset.cost);
@@ -161,7 +171,7 @@ function updateButtons() {
     button.disabled = disabled;
   });
   document.querySelectorAll('#join-form input').forEach((input) => { input.disabled = busy || !!pending; });
-  document.querySelectorAll('[data-appearance],[data-mode]').forEach(button => { button.disabled = busy || !!pending; });
+  document.querySelectorAll('[data-unit],[data-select-units],[data-mode]').forEach(button => { button.disabled = busy || !!pending; });
 }
 function tick() {
   if (!state) return;
@@ -180,8 +190,7 @@ function tick() {
   }
   if ($('#energy-clock')) $('#energy-clock').textContent = state.player.nextEnergyAt ? `다음 +1 ${timeLeft(state.player.nextEnergyAt)}` : '활동력 충전 완료';
   if ($('#cooldown-clock')) $('#cooldown-clock').textContent = number(state.player.cooldownUntil) > now() ? `다음 활동까지 ${timeLeft(state.player.cooldownUntil)}` : '지금 정치 활동에 참여할 수 있어요.';
-  const presence = state.player?.presence;
-  if ($('#presence-clock')) $('#presence-clock').textContent = presence ? `${modeNames[presence.mode] || '광장 활동'} · ${now() >= presence.expiresAt ? '종료 확인 중' : timeLeft(presence.expiresAt) + ' 남음'}${now() < number(presence.committedUntil) ? ' · 자리 지키기 ' + timeLeft(presence.committedUntil) : ''}` : '광장에 배치하면 10분 동안 활동해요.';
+  if ($('#presence-clock')) $('#presence-clock').textContent = `내 부대 ${roster().filter(unit => unit.presence).length} / ${roster().length || 18}기 배치 중 · 선택 ${picked().length}기`;
   if ($('#plaza-status-clock')) {
     const territory = state.territories.find(t => t.id === selectedTerritory);
     const source = [...document.querySelectorAll('[data-territory-clock]')].find(el => el.dataset.territoryClock === selectedTerritory);
@@ -190,7 +199,7 @@ function tick() {
   updateButtons();
 }
 const errors = {
-  INVALID_MODE:'광장 활동을 다시 선택해 주세요.',INVALID_APPEARANCE:'캐릭터 모습을 다시 선택해 주세요.',PLAZA_FULL:'지금 광장에 참가자가 가득 찼어요. 잠시 후 다시 참여해 주세요.',SUPPORT_REQUIRED:'응원할 우리 정당 동료가 먼저 이 광장에 있어야 해요.',VIGIL_COMMITTED:'자리를 지키는 약속이 진행 중이에요. 시간이 끝나면 전환하거나 지금 무료로 나올 수 있어요.',COLLECTIVE_REQUIRED:'같은 광장에 같은 정당의 해당 활동 참가자가 3명 이상 필요해요.',
+  INVALID_MODE:'광장 활동을 다시 선택해 주세요.',INVALID_APPEARANCE:'캐릭터 모습을 다시 선택해 주세요.',PLAZA_FULL:'지금 광장에 참가자가 가득 찼어요. 잠시 후 다시 참여해 주세요.',SUPPORT_REQUIRED:'응원할 우리 정당 동료가 먼저 이 광장에 있어야 해요.',VIGIL_COMMITTED:'자리를 지키는 약속이 진행 중이에요. 시간이 끝나면 전환하거나 지금 무료로 나올 수 있어요.',COLLECTIVE_REQUIRED:'같은 광장에 같은 정당의 해당 활동 유닛이 3기 이상 필요해요.',
   LOGIN_REQUIRED:'로그인이 필요해요. 로그인 후 다시 참여해 주세요.',ACCOUNT_INACTIVE:'현재 계정은 참여할 수 없는 상태입니다.',ORIGIN_INVALID:'요청을 확인할 수 없어요. 이 페이지를 새로고침해 주세요.',ROLE_REQUIRED:'영토의 주인이 바뀌었어요. 갱신된 행동 메뉴를 확인해 주세요.',ROUND_CHANGED:'새 라운드가 시작됐어요. 이번 주 참여 정당을 다시 선택해 주세요.',PARTY_LOCKED:'이번 주 참여 정당은 변경할 수 없어요.',JOIN_REQUIRED:'먼저 이번 주 함께할 정당을 선택해 주세요.',REQUEST_ID_REUSED:'요청 정보가 일치하지 않아 처리하지 않았어요. 현황을 확인해 주세요.',OFFICE_MAX:'이미 최고 레벨인 사무소입니다.',PRICE_CHANGED:'다른 참가자가 사무소를 강화해 비용이 바뀌었어요. 새 가격을 확인한 뒤 다시 선택해 주세요.',CONFLICT:'다른 참가자의 활동과 겹쳤어요. 최신 현황을 확인한 뒤 다시 선택해 주세요.',INSUFFICIENT_POINTS:'JCS 포인트가 부족해요. 충전하거나 활동으로 적립해 주세요.',COOLDOWN:'이전 활동 후 잠시 기다려 주세요.',INSUFFICIENT_ENERGY:'정치 활동력이 부족해요. 활동력은 5분마다 1씩 회복됩니다.',STORAGE_UNAVAILABLE:'현재 서버에 연결할 수 없어요. 잠시 후 다시 확인해 주세요.'
 };
 async function request(body) {
@@ -235,8 +244,9 @@ async function submit(body, retry = false) {
     } else {
       accept(data);
       const action = pending.action;
+      const affected = pending.unitIds?.length || 0;
       pending = null; persist();
-      const messages = {join:'이번 주 함께할 정당을 선택했어요. 캐릭터를 광장에 보내 보세요.',deploy:'내 시민이 광장에 도착했어요. 0 P · 활동력 5 사용',leave:'광장에서 나왔어요. 편할 때 다시 함께해요.',collective:`함께한 정치 활동을 반영했어요. ${format(data.result?.points)} P 사용`,upgrade:`우리 당 사무소를 강화했어요. ${format(data.result?.points)} P 사용`};
+      const messages = {join:'이번 주 함께할 정당을 선택했어요. 캐릭터를 광장에 보내 보세요.',deploy:`${affected}기를 광장에 배치했어요. 0 P · 활동력 ${affected * number(rules().deployEnergy || 1)} 사용`,leave:'광장에서 나왔어요. 편할 때 다시 함께해요.',collective:`함께한 정치 활동을 반영했어요. ${format(data.result?.points)} P 사용`,upgrade:`우리 당 사무소를 강화했어요. ${format(data.result?.points)} P 사용`};
       notice(messages[action] || `정치 활동을 반영했어요. ${format(data.result?.points ?? rules().actionPoints)} P 사용`);
     }
   } catch { notice('서버 응답이 끊겨 결과를 확인 중이에요. 아래에서 같은 요청의 결과를 재확인할 수 있어요.',true); }
@@ -247,8 +257,10 @@ document.addEventListener('submit',(event) => { if (event.target.id === 'join-fo
 document.addEventListener('click',(event) => {
   const tab = event.target.closest('[data-location]');
   if (tab && state) { selectedTerritory = tab.dataset.location; selectedPerson = ''; renderPlaza(); tick(); return; }
-  const appearance = event.target.closest('[data-appearance]');
-  if (appearance && !appearance.disabled) { selectedAppearance = appearance.dataset.appearance; renderDock(); updateButtons(); return; }
+  const selection = event.target.closest('[data-select-units]');
+  if (selection && !selection.disabled) { selectedUnits.clear(); if (selection.dataset.selectUnits === 'all') roster().forEach(unit => selectedUnits.add(unitId(unit))); renderDock(); updateButtons(); return; }
+  const unit = event.target.closest('[data-unit]');
+  if (unit && !unit.disabled) { if (selectedUnits.has(unit.dataset.unit)) selectedUnits.delete(unit.dataset.unit); else selectedUnits.add(unit.dataset.unit); renderDock(); updateButtons(); return; }
   const mode = event.target.closest('[data-mode]');
   if (mode && !mode.disabled) { selectedMode = mode.dataset.mode; renderDock(); updateButtons(); return; }
   if (event.target.closest('[data-close-person]')) { selectedPerson = ''; renderPerson(); return; }
@@ -256,8 +268,8 @@ document.addEventListener('click',(event) => {
   if (!button || button.disabled || !state) return;
   if (button.dataset.operation === 'act') void submit({action:'act',territoryId:button.dataset.territory,moveId:button.dataset.move});
   if (button.dataset.operation === 'upgrade') void submit({action:'upgrade',officeId:button.dataset.office,expectedPoints:Number(button.dataset.cost)});
-  if (button.dataset.operation === 'deploy') void submit({action:'deploy',territoryId:selectedTerritory,mode:selectedMode,appearance:selectedAppearance || state.player?.appearance || 'citizen1'});
-  if (button.dataset.operation === 'leave') void submit({action:'leave'});
+  if (button.dataset.operation === 'deploy') void submit({action:'deploy',territoryId:selectedTerritory,mode:selectedMode,unitIds:deployable(button.dataset.all === 'true').map(unitId)});
+  if (button.dataset.operation === 'leave') void submit({action:'leave',unitIds:(button.dataset.all === 'true' ? roster() : picked()).filter(unit => unit.presence).map(unitId)});
   if (button.dataset.operation === 'collective') void submit({action:'collective',territoryId:selectedTerritory,moveId:button.dataset.move});
 });
 $('#retry-operation').addEventListener('click',() => void submit(null,true));

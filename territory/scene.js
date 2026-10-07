@@ -1,6 +1,6 @@
 // Persistent scene nodes keep each real participant's animation alive across polls.
 const modes = {solo:'1인 시위',rally:'함께 집회',vigil:'상징 단식',support:'응원 방문',petition:'공동 발의'};
-const zones = {solo:[12,60],rally:[38,65],vigil:[73,60],support:[24,85],petition:[62,83]};
+const roleNames = {defender:'건물 앞 수비',attacker:'원거리 공성',contesting:'점령 도전'};
 const palettes = ['#ef806f','#5ca2de','#78b98b','#e4ae52','#79bbc7','#e79db7'];
 let spriteReady = false;
 const sprite = new Image();
@@ -18,7 +18,7 @@ export class PlazaScene {
     this.initialized = false;
     this.territoryId = '';
     this.onSelect = onSelect;
-    root.innerHTML = '<div class="scene-sky"><span class="cloud cloud-one"></span><span class="cloud cloud-two"></span></div><img class="scene-building" alt="" width="680" height="420"><div class="plaza-ground"></div><div class="scene-zone zone-solo">시민의 목소리</div><div class="scene-zone zone-rally">함께하는 집회</div><div class="scene-zone zone-vigil">조용한 연대</div><div class="scene-zone zone-petition">정책 제안대</div><div class="podium" aria-hidden="true"><span>시민 기자회견</span><i></i></div><div class="bill-table" aria-hidden="true">공동 법안 <span>▤</span></div><div class="scene-people"></div><div class="scene-empty">아직 광장에 나온 시민이 없어요.<br>첫 발걸음을 남겨 주세요.</div><div class="scene-event" role="status" aria-live="polite"></div>';
+    root.innerHTML = '<div class="scene-sky"><span class="cloud cloud-one"></span><span class="cloud cloud-two"></span></div><img class="scene-building" alt="" width="680" height="420"><div class="plaza-ground"></div><div class="formation-label defense-label"></div><div class="formation-label attack-label"></div><div class="siege-gap">건물 앞 수비선 ↔ 원거리 공성선</div><div class="party-flags"></div><div class="scene-people"></div><div class="scene-empty">아직 광장에 나온 시민이 없어요.<br>첫 발걸음을 남겨 주세요.</div><div class="scene-event" role="status" aria-live="polite"></div>';
     root.addEventListener('click',(event) => {
       const actor = event.target.closest('[data-person]');
       if (actor) this.onSelect(actor.dataset.person);
@@ -33,23 +33,30 @@ export class PlazaScene {
     if (image.getAttribute('src') !== url) image.src = url;
     image.alt = `${state.territories.find(t => t.id === territoryId)?.name || ''} 앞 시민 광장`;
     this.root.querySelector('.scene-empty').hidden = people.length > 0;
+    const territory = state.territories.find(t => t.id === territoryId);
+    const owner = state.parties.find(p => p.id === territory?.ownerPartyId);
+    const roleOf = p => !territory?.ownerPartyId ? 'contesting' : p.partyId === territory.ownerPartyId ? 'defender' : 'attacker';
+    this.root.querySelector('.defense-label').textContent = owner ? `${owner.name} · 건물 앞 수비` : '중립 건물 · 첫 점령 대기';
+    this.root.querySelector('.attack-label').textContent = owner ? '공격 부대 · 원거리 집결선' : '점령 도전 부대 · 집결선';
+    const flags = this.root.querySelector('.party-flags');
+    flags.replaceChildren();
+    for (const team of state.parties.filter(team => people.some(p => p.partyId === team.id))) {
+      const flag = document.createElement('span');
+      flag.textContent = `⚑ ${team.name} ${people.filter(p => p.partyId === team.id).length}기`;
+      flag.style.setProperty('--party', /^#[0-9a-f]{6}$/i.test(team.color) ? team.color : '#58a78b');
+      flags.append(flag);
+    }
+    // Own squad always renders in full. Other deployed units share the remaining scene budget.
+    const own = people.filter(p => p.ownerId === state.player?.ownerId);
+    const others = people.filter(p => p.ownerId !== state.player?.ownerId);
+    const visible = [...own,...others.slice(0,Math.max(0,100-own.length))];
     const grouped = {};
-    for (const person of people) {
-      (grouped[person.mode] ||= []).push(person);
-    }
-    for (const [mode,group] of Object.entries(grouped)) {
-      group.sort((a,b) => Number(b.id === state.player?.participantId) - Number(a.id === state.player?.participantId) || a.id.localeCompare(b.id));
-      const cap = 8;
-      let overflow = this.root.querySelector(`[data-overflow="${mode}"]`);
-      if (!overflow) { overflow = document.createElement('span'); overflow.className = 'crowd-overflow'; overflow.dataset.overflow = mode; this.root.append(overflow); }
-      overflow.hidden = group.length <= cap;
-      overflow.textContent = `+${Math.max(0,group.length-cap)}명 함께`;
-      overflow.style.left = `${zones[mode]?.[0] || 50}%`;
-      overflow.style.top = `${Math.min(94,(zones[mode]?.[1] || 60)+10)}%`;
-      grouped[mode] = group.slice(0,cap);
-    }
-    this.root.querySelectorAll('[data-overflow]').forEach(node => { if (!grouped[node.dataset.overflow]) node.hidden = true; });
-    const visible = Object.values(grouped).flat();
+    for (const person of visible) (grouped[roleOf(person)] ||= []).push(person);
+    for (const group of Object.values(grouped)) group.sort((a,b) => Number(b.ownerId === state.player?.ownerId) - Number(a.ownerId === state.player?.ownerId) || a.id.localeCompare(b.id,undefined,{numeric:true}));
+    let overflow = this.root.querySelector('.crowd-overflow');
+    if (!overflow) { overflow = document.createElement('span'); overflow.className = 'crowd-overflow'; this.root.append(overflow); }
+    overflow.hidden = people.length <= visible.length;
+    overflow.textContent = `추가 ${people.length-visible.length}기 활동 중 · 총 ${people.length}기`;
     const ids = new Set(visible.map(p => p.id));
     for (const [id,node] of this.nodes) if (!ids.has(id)) { node.remove(); this.nodes.delete(id); }
     for (const person of visible) {
@@ -57,26 +64,33 @@ export class PlazaScene {
       if (!node) { node = document.createElement('button'); node.type = 'button'; node.dataset.person = person.id; this.root.querySelector('.scene-people').append(node); this.nodes.set(person.id,node); }
       const team = state.parties.find(p => p.id === person.partyId);
       node.dataset.party = person.partyId;
-      const group = grouped[person.mode];
+      const role = roleOf(person);
+      const group = grouped[role];
       const index = group.indexOf(person);
-      const [x,y] = zones[person.mode] || zones.solo;
-      const mine = person.id === state.player?.participantId;
-      const key = `${person.mode}|${person.appearance}|${person.nickname}|${mine}`;
+      const mine = person.ownerId === state.player?.ownerId;
+      const key = `${person.mode}|${person.appearance}|${person.nickname}|${mine}|${role}`;
       if (node.dataset.key !== key) {
         node.dataset.key = key;
-        node.className = `scene-person mode-${person.mode}${mine ? ' is-mine' : ''}`;
+        node.className = `scene-person role-${role} mode-${person.mode}${mine ? ' is-mine' : ''}`;
         node.innerHTML = '<span class="actor-prop"></span>' + avatarMarkup(person.appearance) + '<span class="actor-name"></span>';
-        node.querySelector('.actor-name').textContent = `${mine ? '나 · ' : ''}${person.nickname || '시민'}`;
-        node.querySelector('.actor-prop').textContent = {solo:'우리의 목소리',rally:'함께 바꿔요',vigil:'상징 단식',support:'응원해요!',petition:'공동 발의'}[person.mode] || '';
+        node.querySelector('.actor-name').textContent = `${mine ? '#' + person.unitId.replace('unit','') : person.nickname || '시민'}`;
+        node.querySelector('.actor-prop').textContent = {solo:'시위',rally:'집회',vigil:'단식',support:'응원',petition:'발의'}[person.mode] || '';
       }
-      node.setAttribute('aria-label',`${mine ? '내 캐릭터, ' : ''}${person.nickname || '시민'}, ${team?.name || ''}, ${modes[person.mode] || ''}`);
+      node.setAttribute('aria-label',`${mine ? '내 '+person.unitId+', ' : ''}${roleNames[role]}, ${person.nickname || '시민'}, ${team?.name || ''}, ${modes[person.mode] || ''}`);
       node.title = `${person.nickname || '시민'} · ${team?.name || ''} · ${modes[person.mode] || ''}`;
       node.style.setProperty('--party',/^#[0-9a-f]{6}$/i.test(team?.color) ? team.color : '#58a78b');
-      // Fill each activity zone in rows; no invented citizens or crowd multipliers.
-      const columns = Math.min(3,Math.max(2,Math.ceil(Math.sqrt(group.length))));
-      node.style.left = `${Math.min(92,x + (index % columns - (columns-1)/2) * 6)}%`;
-      node.style.top = `${Math.min(91,y + Math.floor(index/columns)*5)}%`;
-      node.style.zIndex = String(Math.round(y + Math.floor(index/columns)*3));
+      // Six columns keep all 18 own units legible as three rows, on either side.
+      const ownCount = group.filter(p => p.ownerId === state.player?.ownerId).length;
+      const localIndex = mine ? index : index-ownCount;
+      const columns = mine ? 6 : 12;
+      const rows = Math.ceil((mine ? ownCount : group.length-ownCount)/columns);
+      const startY = role === 'defender' ? 42 : 75;
+      const endY = role === 'defender' ? 54 : 89;
+      const x = mine ? 18+(localIndex%columns)*12.8 : 6+(localIndex%columns)*8;
+      const y = startY+(rows > 1 ? Math.floor(localIndex/columns)/(rows-1)*(endY-startY) : 5)+(mine ? 0 : 1.7);
+      node.style.left = `${x}%`;
+      node.style.top = `${y}%`;
+      node.style.zIndex = String(Math.round(y*2)+(mine ? 20 : 0));
       node.style.setProperty('--phase',`${-(index%7)*.41}s`);
     }
     for (const log of [...(state.logs || [])].reverse()) {

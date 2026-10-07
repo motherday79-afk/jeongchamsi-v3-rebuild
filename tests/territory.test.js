@@ -26,7 +26,7 @@ test('plaza presence is private, expires and settles each minute once',async()=>
   const f=fixture();await f.service.mutate(user,f.input('join',{partyId:'democratic'}));
   const body=f.input('deploy',{territoryId:'assembly',mode:'solo',appearance:'citizen3'},'deploy_00000001');
   const responses=await Promise.all([f.service.mutate(user,body),f.service.mutate(user,body)]);
-  assert.equal(responses[0].player.energy,95);assert.equal(responses[0].participants.length,1);
+  assert.equal(responses[0].player.energy,99);assert.equal(responses[0].participants.length,1);
   assert.equal(responses[0].player.presence.appearance,'citizen3');
   assert.notEqual(responses[0].participants[0].id,user.id);
   assert.equal(JSON.stringify(responses[0].participants).includes('userId'),false);
@@ -39,8 +39,8 @@ test('vigil commitment blocks actions but leaving is always free',async()=>{
   const f=fixture();f.fund();await f.service.mutate(user,f.input('join',{partyId:'democratic'}));
   await f.service.mutate(user,f.input('deploy',{territoryId:'assembly',mode:'vigil',appearance:'citizen1'},'deploy_00000001'));
   f.tick(10000);
-  await assert.rejects(f.service.mutate(user,f.input('act',{territoryId:'assembly',moveId:'bill'},'acting_00000001')),/VIGIL_COMMITTED/);
-  await assert.rejects(f.service.mutate(user,f.input('deploy',{territoryId:'bluehouse',mode:'solo',appearance:'citizen2'},'deploy_00000002')),/VIGIL_COMMITTED/);
+  await assert.rejects(f.service.mutate(user,f.input('act',{territoryId:'assembly',moveId:'bill',unitIds:['unit1']},'acting_00000001')),/VIGIL_COMMITTED/);
+  await assert.rejects(f.service.mutate(user,f.input('deploy',{territoryId:'bluehouse',mode:'solo',unitIds:['unit1']},'deploy_00000002')),/VIGIL_COMMITTED/);
   const left=await f.service.mutate(user,f.input('leave',{},'leaving_0000001'));assert.equal(left.participants.length,0);assert.equal(left.player.balance,1000);
   f.tick(60000);assert.equal((await f.service.get()).territories[1].scores.democratic,0);
 });
@@ -56,7 +56,7 @@ test('collective counts real co-located mode members and concurrent retries spen
   const responses=await Promise.all([f.service.mutate(user,body),f.service.mutate(user,body)]);
   assert.equal(responses.filter(r=>r.result.replayed).length,1);
   assert.equal(responses[0].result.participantCount,3);assert.equal(responses[0].territories[1].scores.democratic,104);
-  assert.equal(f.read(TERRITORY_KEYS.wallet(user.id)).balance,980);assert.equal(f.read(TERRITORY_KEYS.actor(user.id)).energy,85);
+  assert.equal(f.read(TERRITORY_KEYS.wallet(user.id)).balance,980);assert.equal(f.read(TERRITORY_KEYS.actor(user.id)).energy,89);
   await f.service.mutate(users[2],f.input('leave',{},'leaving_0000001'));
   f.tick(10000);
   await assert.rejects(f.service.mutate(user,f.input('collective',{territoryId:'assembly',moveId:'conference'},'collective_00002')),/COLLECTIVE_REQUIRED/);
@@ -86,20 +86,77 @@ test('passive threshold starts hold at actual influence minute and never crosses
   f.tick(7*86400000);view=await f.service.get(user);assert.equal(view.participants.length,0);assert.equal(view.territories[0].scores.democratic,0);assert.equal(view.player.presence,null);
 });
 
-test('deploy lifecycle respects cooldown, energy, one presence, bounds and appearance validation',async()=>{
+test('deploy lifecycle respects cooldown, energy, fixed appearance slots and global bounds',async()=>{
   const f=fixture();await f.service.mutate(user,f.input('join',{partyId:'democratic'}));
   const deploy=(id,fields={})=>f.input('deploy',{territoryId:'assembly',mode:'solo',appearance:'citizen1',...fields},id);
   await assert.rejects(f.service.mutate(user,deploy('deploy_00000001',{appearance:'citizen7'})),/INVALID_APPEARANCE/);
+  await assert.rejects(f.service.mutate(user,deploy('deploy_00000001',{appearance:['citizen1']})),/INVALID_INPUT/);
   await f.service.mutate(user,deploy('deploy_00000001'));
   await f.service.mutate(user,f.input('leave',{},'leaving_0000001'));
   await assert.rejects(f.service.mutate(user,deploy('deploy_00000002')),/COOLDOWN/);
   f.tick(10000);await f.service.mutate(user,deploy('deploy_00000002'));
   f.tick(10000);const moved=await f.service.mutate(user,deploy('deploy_00000003',{territoryId:'bluehouse',appearance:'citizen5'}));
-  assert.equal(moved.participants.length,1);assert.equal(moved.player.energy,85);assert.equal(moved.player.appearance,'citizen5');
+  assert.equal(moved.participants.length,2);assert.equal(moved.player.energy,97);assert.equal(moved.player.appearance,'citizen5');
   f.tick(10000);const actor=f.read(TERRITORY_KEYS.actor(user.id));actor.energy=0;f.data.set(TERRITORY_KEYS.actor(user.id),JSON.stringify(actor));
   await assert.rejects(f.service.mutate(user,deploy('deploy_00000004')),/INSUFFICIENT_ENERGY/);
-  const game=f.read(TERRITORY_KEYS.game);game.participants=Array.from({length:200},(_,i)=>({...game.participants[0],id:'opaque'+i}));f.data.set(TERRITORY_KEYS.game,JSON.stringify(game));
+  const game=f.read(TERRITORY_KEYS.game);game.participants=Array.from({length:1000},(_,i)=>({...game.participants[0],id:'opaque'+i,ownerId:'other'+i}));f.data.set(TERRITORY_KEYS.game,JSON.stringify(game));
   await assert.rejects(f.service.mutate(user,deploy('deploy_00000005')),/PLAZA_FULL/);
+});
+
+test('entire fixed roster deploys atomically with owner isolation and subset recall',async()=>{
+  const f=fixture(),other={...user,id:'other'},unitIds=Array.from({length:18},(_,i)=>`unit${i+1}`);
+  await f.service.mutate(user,f.input('join',{partyId:'democratic'}));
+  let view=await f.service.mutate(user,f.input('deploy',{territoryId:'assembly',mode:'rally',unitIds},'squad_deploy_01'));
+  assert.equal(view.player.energy,82);assert.equal(view.player.units.length,18);assert.equal(view.unitCount,18);assert.equal(view.commanderCount,1);
+  assert.deepEqual(view.player.units.map(u=>u.appearance),unitIds.map((_,i)=>`citizen${Math.floor(i/3)+1}`));
+  await f.service.mutate(other,f.input('join',{partyId:'ppp'}));
+  await f.service.mutate(other,f.input('deploy',{territoryId:'assembly',mode:'solo',unitIds:['unit1']},'squad_deploy_01'));
+  view=await f.service.mutate(other,f.input('leave',{unitIds:['unit1']},'squad_leave_01'));
+  assert.equal(view.participants.length,18);assert.equal(view.player.presences.length,0);
+  const before=[...f.data];
+  await assert.rejects(f.service.mutate(user,f.input('leave',{unitIds:['unit19']},'squad_leave_02')),/INVALID_UNIT/);assert.deepEqual([...f.data],before);
+  view=await f.service.mutate(user,f.input('leave',{unitIds:['unit1','unit3']},'squad_leave_03'));
+  assert.equal(view.participants.length,16);assert.equal(view.player.units[0].presence,null);assert.ok(view.player.units[1].presence);
+});
+
+test('same commander rally units qualify and duplicate selection consumes energy only once',async()=>{
+  const f=fixture();f.fund();await f.service.mutate(user,f.input('join',{partyId:'democratic'}));
+  const view=await f.service.mutate(user,f.input('deploy',{territoryId:'assembly',mode:'rally',unitIds:['unit1','unit1','unit2','unit3']},'squad_deploy_01'));
+  assert.equal(view.player.energy,97);assert.equal(view.participants.length,3);
+  f.tick(60000);assert.equal((await f.service.get()).territories[1].scores.democratic,24);
+  const result=(await f.service.mutate(user,f.input('collective',{territoryId:'assembly',moveId:'conference'},'squad_collect01'))).result;
+  assert.equal(result.unitCount,3);assert.equal(result.commanderCount,1);
+});
+
+test('insufficient batch energy and capacity reject without any state changes',async()=>{
+  const f=fixture();await f.service.mutate(user,f.input('join',{partyId:'democratic'}));
+  const actor=f.read(TERRITORY_KEYS.actor(user.id));actor.energy=1;f.data.set(TERRITORY_KEYS.actor(user.id),JSON.stringify(actor));
+  const input=f.input('deploy',{territoryId:'assembly',mode:'solo',unitIds:['unit1','unit2']},'squad_deploy_01');
+  let before=[...f.data];await assert.rejects(f.service.mutate(user,input),/INSUFFICIENT_ENERGY/);assert.deepEqual([...f.data],before);
+  actor.energy=100;f.data.set(TERRITORY_KEYS.actor(user.id),JSON.stringify(actor));
+  const game=f.read(TERRITORY_KEYS.game);game.participants=Array.from({length:999},(_,i)=>({id:`owner${i}:unit1`,ownerId:`owner${i}`,unitId:'unit1',appearance:'citizen1',partyId:'ppp',territoryId:'assembly',mode:'solo',joinedAt:START,expiresAt:START+600000,nextTickAt:START+60000}));
+  f.data.set(TERRITORY_KEYS.game,JSON.stringify(game));before=[...f.data];await assert.rejects(f.service.mutate(user,input),/PLAZA_FULL/);assert.deepEqual([...f.data],before);
+});
+
+test('legacy presence migration preserves timers, actor balances and immutable appearance slot',async()=>{
+  const f=fixture();f.fund();await f.service.mutate(user,f.input('join',{partyId:'democratic'}));
+  const actor=f.read(TERRITORY_KEYS.actor(user.id)),game=f.read(TERRITORY_KEYS.game);
+  game.participants=[{id:actor.participantId,appearance:'citizen4',partyId:'democratic',territoryId:'assembly',mode:'solo',joinedAt:START,expiresAt:START+600000,nextTickAt:START+60000}];f.data.set(TERRITORY_KEYS.game,JSON.stringify(game));
+  f.tick(60000);const view=await f.service.get(user);assert.equal(view.player.units[9].presence.unitId,'unit10');assert.equal(view.player.energy,100);assert.equal(view.player.balance,1000);assert.equal(view.territories[1].scores.democratic,4);
+  assert.equal(f.read(TERRITORY_KEYS.game).participants[0].nextTickAt,START+120000);
+});
+
+test('vigil locks only selected units and public formation tracks ownership changes',async()=>{
+  const f=fixture();f.fund();await f.service.mutate(user,f.input('join',{partyId:'democratic'}));
+  await f.service.mutate(user,f.input('deploy',{territoryId:'assembly',mode:'vigil',unitIds:['unit1']},'squad_deploy_01'));
+  f.tick(10000);let view=await f.service.mutate(user,f.input('deploy',{territoryId:'assembly',mode:'rally',unitIds:['unit2','unit3','unit4']},'squad_deploy_02'));
+  assert.equal(view.player.units[0].ready,false);assert.equal(view.player.units[1].ready,true);assert.equal(view.participants[0].role,'contesting');
+  f.tick(10000);await f.service.mutate(user,f.input('act',{territoryId:'assembly',moveId:'bill',unitIds:['unit2']},'squad_action_01'));
+  f.tick(10000);await f.service.mutate(user,f.input('collective',{territoryId:'assembly',moveId:'conference'},'squad_collect01'));
+  const game=f.read(TERRITORY_KEYS.game);game.territories[1].ownerPartyId='democratic';f.data.set(TERRITORY_KEYS.game,JSON.stringify(game));
+  assert.ok((await f.service.get()).participants.every(p=>p.role==='defender'));
+  game.territories[1].ownerPartyId='ppp';f.data.set(TERRITORY_KEYS.game,JSON.stringify(game));assert.ok((await f.service.get()).participants.every(p=>p.role==='attacker'));
+  view=await f.service.mutate(user,f.input('leave',{unitIds:['unit1']},'squad_leave_01'));assert.equal(view.participants.length,3);
 });
 
 test('vigil completes commitment and collective insufficient points is atomic',async()=>{
