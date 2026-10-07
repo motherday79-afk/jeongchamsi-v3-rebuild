@@ -21,6 +21,98 @@ function fixture(){
   const read=k=>JSON.parse(data.get(k)||'null');
   return {data,writes,service,input,fund,read,tick:n=>{at+=n;},get at(){return at;}};
 }
+
+test('plaza presence is private, expires and settles each minute once',async()=>{
+  const f=fixture();await f.service.mutate(user,f.input('join',{partyId:'democratic'}));
+  const body=f.input('deploy',{territoryId:'assembly',mode:'solo',appearance:'citizen3'},'deploy_00000001');
+  const responses=await Promise.all([f.service.mutate(user,body),f.service.mutate(user,body)]);
+  assert.equal(responses[0].player.energy,95);assert.equal(responses[0].participants.length,1);
+  assert.equal(responses[0].player.presence.appearance,'citizen3');
+  assert.notEqual(responses[0].participants[0].id,user.id);
+  assert.equal(JSON.stringify(responses[0].participants).includes('userId'),false);
+  f.tick(60000);assert.equal((await f.service.get()).territories[1].scores.democratic,4);
+  assert.equal((await f.service.get()).territories[1].scores.democratic,4);
+  f.tick(600000);const expired=await f.service.get(user);assert.equal(expired.participants.length,0);assert.equal(expired.territories[1].scores.democratic,40);
+});
+
+test('vigil commitment blocks actions but leaving is always free',async()=>{
+  const f=fixture();f.fund();await f.service.mutate(user,f.input('join',{partyId:'democratic'}));
+  await f.service.mutate(user,f.input('deploy',{territoryId:'assembly',mode:'vigil',appearance:'citizen1'},'deploy_00000001'));
+  f.tick(10000);
+  await assert.rejects(f.service.mutate(user,f.input('act',{territoryId:'assembly',moveId:'bill'},'acting_00000001')),/VIGIL_COMMITTED/);
+  await assert.rejects(f.service.mutate(user,f.input('deploy',{territoryId:'bluehouse',mode:'solo',appearance:'citizen2'},'deploy_00000002')),/VIGIL_COMMITTED/);
+  const left=await f.service.mutate(user,f.input('leave',{},'leaving_0000001'));assert.equal(left.participants.length,0);assert.equal(left.player.balance,1000);
+  f.tick(60000);assert.equal((await f.service.get()).territories[1].scores.democratic,0);
+});
+
+test('collective counts real co-located mode members and concurrent retries spend once',async()=>{
+  const f=fixture();const users=[user,{...user,id:'u2'},{...user,id:'u3'}];f.fund();
+  for(const member of users){
+    await f.service.mutate(member,f.input('join',{partyId:'democratic'}));
+    await f.service.mutate(member,f.input('deploy',{territoryId:'assembly',mode:'rally',appearance:'citizen1'},'deploy_00000001'));
+  }
+  f.tick(60000);assert.equal((await f.service.get()).territories[1].scores.democratic,24);
+  const body=f.input('collective',{territoryId:'assembly',moveId:'conference'},'collective_00001');
+  const responses=await Promise.all([f.service.mutate(user,body),f.service.mutate(user,body)]);
+  assert.equal(responses.filter(r=>r.result.replayed).length,1);
+  assert.equal(responses[0].result.participantCount,3);assert.equal(responses[0].territories[1].scores.democratic,104);
+  assert.equal(f.read(TERRITORY_KEYS.wallet(user.id)).balance,980);assert.equal(f.read(TERRITORY_KEYS.actor(user.id)).energy,85);
+  await f.service.mutate(users[2],f.input('leave',{},'leaving_0000001'));
+  f.tick(10000);
+  await assert.rejects(f.service.mutate(user,f.input('collective',{territoryId:'assembly',moveId:'conference'},'collective_00002')),/COLLECTIVE_REQUIRED/);
+  await assert.rejects(f.service.mutate(user,f.input('collective',{territoryId:'assembly',moveId:'jointBill'},'collective_00003')),/COLLECTIVE_REQUIRED/);
+});
+
+test('support requires a teammate, stops contributing after teammate leaves, and rejects claims',async()=>{
+  const f=fixture(),other={...user,id:'u2'};
+  await f.service.mutate(user,f.input('join',{partyId:'democratic'}));
+  const support=f.input('deploy',{territoryId:'assembly',mode:'support',appearance:'citizen6'},'deploy_00000001');
+  await assert.rejects(f.service.mutate(user,support),/SUPPORT_REQUIRED/);
+  await f.service.mutate(other,f.input('join',{partyId:'democratic'}));
+  await f.service.mutate(other,f.input('deploy',{territoryId:'assembly',mode:'solo',appearance:'citizen4'},'deploy_00000001'));
+  await f.service.mutate(user,support);f.tick(60000);
+  assert.equal((await f.service.get()).territories[1].scores.democratic,10);
+  await f.service.mutate(other,f.input('leave',{},'leaving_0000001'));f.tick(60000);
+  assert.equal((await f.service.get()).territories[1].scores.democratic,10);
+  await assert.rejects(f.service.mutate(user,{...support,requestId:'deploy_00000002',participantCount:30}),/INVALID_INPUT/);
+});
+
+test('passive threshold starts hold at actual influence minute and never crosses round',async()=>{
+  const f=fixture();await f.service.mutate(user,f.input('join',{partyId:'democratic'}));
+  await f.service.mutate(user,f.input('deploy',{territoryId:'bluehouse',mode:'solo',appearance:'citizen2'},'deploy_00000001'));
+  const game=f.read(TERRITORY_KEYS.game);game.territories[0].scores.democratic=596;f.data.set(TERRITORY_KEYS.game,JSON.stringify(game));
+  f.tick(300000);let view=await f.service.get();assert.equal(view.territories[0].ownerPartyId,null);assert.equal(view.territories[0].holdStartedAt,START+60000);
+  f.tick(60000);view=await f.service.get();assert.equal(view.territories[0].ownerPartyId,'democratic');
+  f.tick(7*86400000);view=await f.service.get(user);assert.equal(view.participants.length,0);assert.equal(view.territories[0].scores.democratic,0);assert.equal(view.player.presence,null);
+});
+
+test('deploy lifecycle respects cooldown, energy, one presence, bounds and appearance validation',async()=>{
+  const f=fixture();await f.service.mutate(user,f.input('join',{partyId:'democratic'}));
+  const deploy=(id,fields={})=>f.input('deploy',{territoryId:'assembly',mode:'solo',appearance:'citizen1',...fields},id);
+  await assert.rejects(f.service.mutate(user,deploy('deploy_00000001',{appearance:'citizen7'})),/INVALID_APPEARANCE/);
+  await f.service.mutate(user,deploy('deploy_00000001'));
+  await f.service.mutate(user,f.input('leave',{},'leaving_0000001'));
+  await assert.rejects(f.service.mutate(user,deploy('deploy_00000002')),/COOLDOWN/);
+  f.tick(10000);await f.service.mutate(user,deploy('deploy_00000002'));
+  f.tick(10000);const moved=await f.service.mutate(user,deploy('deploy_00000003',{territoryId:'bluehouse',appearance:'citizen5'}));
+  assert.equal(moved.participants.length,1);assert.equal(moved.player.energy,85);assert.equal(moved.player.appearance,'citizen5');
+  f.tick(10000);const actor=f.read(TERRITORY_KEYS.actor(user.id));actor.energy=0;f.data.set(TERRITORY_KEYS.actor(user.id),JSON.stringify(actor));
+  await assert.rejects(f.service.mutate(user,deploy('deploy_00000004')),/INSUFFICIENT_ENERGY/);
+  const game=f.read(TERRITORY_KEYS.game);game.participants=Array.from({length:200},(_,i)=>({...game.participants[0],id:'opaque'+i}));f.data.set(TERRITORY_KEYS.game,JSON.stringify(game));
+  await assert.rejects(f.service.mutate(user,deploy('deploy_00000005')),/PLAZA_FULL/);
+});
+
+test('vigil completes commitment and collective insufficient points is atomic',async()=>{
+  const f=fixture();await f.service.mutate(user,f.input('join',{partyId:'democratic'}));
+  await f.service.mutate(user,f.input('deploy',{territoryId:'assembly',mode:'vigil',appearance:'citizen1'},'deploy_00000001'));
+  f.tick(300000);const view=await f.service.get(user);assert.equal(view.territories[1].scores.democratic,30);
+  await f.service.mutate(user,f.input('deploy',{territoryId:'assembly',mode:'petition',appearance:'citizen1'},'deploy_00000002'));
+  for(const id of ['u2','u3']){const member={...user,id};await f.service.mutate(member,f.input('join',{partyId:'democratic'}));await f.service.mutate(member,f.input('deploy',{territoryId:'assembly',mode:'petition',appearance:'citizen1'},'deploy_00000001'));}
+  f.tick(10000);const before=[...f.data];
+  const body=f.input('collective',{territoryId:'assembly',moveId:'jointBill'},'collective_00001');
+  await assert.rejects(f.service.mutate(user,body),/INSUFFICIENT_POINTS/);assert.deepEqual([...f.data],before);
+  f.fund();assert.equal((await f.service.mutate(user,body)).result.influence,80);
+});
 test('KST Monday rounds and passive energy reset',()=>{
   assert.equal(territoryRound(Date.parse('2026-10-04T14:59:59Z')).id,'2026-09-28');
   assert.equal(territoryRound(Date.parse('2026-10-04T15:00:00Z')).id,'2026-10-05');

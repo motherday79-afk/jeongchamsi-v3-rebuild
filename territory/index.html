@@ -1,26 +1,26 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#f8faf6">
-  <meta name="description" content="정당과 함께 영향력을 쌓고 청와대와 국회를 차지하는 주간 정치 전략 게임, 정참시 정치 쟁탈전.">
-  <title>정치 쟁탈전 · 정참시</title>
-  <link rel="stylesheet" href="/territory/style.css?v=0.0.31.462">
-  <script type="module" src="/territory/app.js?v=0.0.31.462"></script>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#ffffff">
+<meta name="description" content="청와대와 국회 앞 광장에서 우리 정당과 함께하는 시민 참여 게임.">
+<title>정치 쟁탈전 · 시민 광장</title>
+<link rel="stylesheet" href="/territory/style.css?v=0.0.31.463"><script type="module" src="/territory/app.js?v=0.0.31.463"></script>
 </head>
 <body>
-  <header class="site-header"><a class="brand" href="/" aria-label="정참시 홈"><span class="brand-mark">정</span>정참시 <span class="brand-sub">PLAY</span></a><nav aria-label="서비스 메뉴"><a href="/points">포인트 충전</a><a href="/points?view=activity">활동으로 적립</a><button class="help-trigger" id="help-open" type="button">게임 방법</button></nav></header>
-  <main>
-    <section class="hero"><div><div class="eyebrow"><span class="live-dot"></span> WEEKLY STRATEGY GAME</div><h1>우리 정당의 영향력으로,<br><span>대한민국의 중심을 차지하다.</span></h1><p>정참시 정치 쟁탈전 <span class="hero-divider">/</span> 함께 쌓는 영향력, 매주 새로운 승부</p></div><div class="round-card"><span class="micro-label">이번 라운드 종료까지</span><strong id="round-clock">연결 중</strong><span id="round-date">매주 새롭게 시작하는 쟁탈전</span></div></section>
-    <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
-    <div id="unknown" class="unknown" role="alert" hidden><div><strong>요청 결과를 아직 확인하지 못했어요.</strong><p>중복 사용을 막기 위해 다른 행동을 잠시 멈췄어요. 같은 요청으로 결과를 확인해 주세요.</p></div><button type="button" id="retry-operation">결과 확인 재시도</button><button type="button" id="refresh-state">현황 새로고침</button></div>
-    <section id="player-panel" class="player-panel" aria-label="내 참여 현황"><p class="loading">현재 게임 정보를 불러오고 있어요.</p></section>
-    <section class="battle-section" aria-labelledby="battle-title"><div class="section-heading"><div><span class="eyebrow">THE BATTLEGROUND</span><h2 id="battle-title">두 곳의 중심, 하나의 전략</h2></div><span class="sync-label" id="sync-label">실시간 현황 연결 중</span></div><div class="territory-grid" id="territories"><div class="empty-state">청와대와 국회의 현황을 불러오는 중입니다.</div></div></section>
-    <section class="office-section" aria-labelledby="office-title"><div class="section-heading"><div><span class="eyebrow">BUILD TOGETHER</span><h2 id="office-title">함께 키우는 우리 당 사무소</h2></div><span class="section-note">같은 정당의 모든 참가자에게 적용</span></div><div id="offices" class="office-grid"><p class="empty-state">정당별 사무소 정보를 불러오는 중입니다.</p></div></section>
-    <section class="history-section" aria-labelledby="history-title"><div class="section-heading"><div><span class="eyebrow">LIVE ACTIVITY</span><h2 id="history-title">지금, 쟁탈전에서는</h2></div><button id="refresh-button" class="quiet-button" type="button">새로고침</button></div><ol id="history" class="history-list"><li class="empty-state">기록을 불러오는 중입니다.</li></ol></section>
-    <footer class="footer"><strong>정참시 정치 쟁탈전</strong><p>이곳의 영향력과 점령은 게임 내 기록이며, 실제 정치 지지율이나 선거 결과와 관계없습니다.</p><a href="/">정참시 홈</a></footer>
-  </main>
-  <dialog id="help-dialog" aria-labelledby="help-title"><div class="dialog-heading"><span class="eyebrow">HOW TO PLAY</span><button type="button" id="help-close" class="close-button" aria-label="게임 방법 닫기">닫기</button></div><h2 id="help-title">영향력을 모으고,<br>중심을 지켜 주세요.</h2><ol class="rules-list"><li><strong>이번 주 함께할 정당 선택</strong><p>참여는 무료입니다. 선택한 정당은 이번 주 라운드가 끝날 때까지 변경할 수 없어요.</p></li><li><strong>전략적인 정치 행동</strong><p>행동 1회에 20 JCS 포인트와 활동력 10을 사용합니다. 활동력은 최대 100, 5분마다 1씩 회복됩니다. 상대 영토에서는 공세를, 우리 영토에서는 수비를 펼쳐요.</p></li><li><strong>5분 동안 우위를 유지</strong><p>영향력 600 이상, 다음 정당보다 100 이상 앞선 상태를 5분간 유지하면 점령합니다. 점령 후에는 10분간 보호됩니다.</p></li><li><strong>함께 사무소 성장</strong><p>표시된 포인트를 사용해 우리 당의 공용 사무소를 강화할 수 있어요. 효과와 비용을 확인한 뒤 직접 선택해 주세요.</p></li><li><strong>매주 다시 시작하는 경쟁</strong><p>매주 월요일 00:00(한국시간)에 새 라운드가 시작됩니다. 영토 영향력과 점령, 사무소 레벨, 개인 기여 기록은 초기화되며 정당을 새로 선택합니다. 화면 조회와 자동 새로고침에는 포인트가 사용되지 않아요.</p></li></ol><p class="rules-note">사용한 포인트는 게임 참여 비용이며 점령 보상으로 환급되지 않습니다.</p></dialog>
-</body>
-</html>
+<header class="site-header"><a class="brand" href="/" aria-label="정참시 홈"><span class="brand-mark">정</span>정참시 <span class="brand-sub">PLAY</span></a><nav aria-label="서비스 메뉴"><a href="/points">포인트</a><button class="help-trigger" id="help-open" type="button">게임 방법</button></nav></header>
+<main>
+<section class="hero"><div><div class="eyebrow"><span class="live-dot"></span> TOGETHER IN THE PLAZA</div><h1>작은 시민들이 모여,<br><span>커다란 변화를 만들어요.</span></h1><p>정치 쟁탈전 · 우리 정당과 함께하는 시민 광장</p></div><div class="round-card"><span class="micro-label">이번 주 광장이 닫히기까지</span><strong id="round-clock">연결 중</strong><span id="round-date">매주 월요일, 새로운 시작</span></div></section>
+<div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+<div id="unknown" class="unknown" role="alert" hidden><div><strong>요청 결과를 아직 확인하지 못했어요.</strong><p>중복 사용을 막기 위해 같은 요청으로 결과를 확인합니다.</p></div><button type="button" id="retry-operation">결과 확인 재시도</button><button type="button" id="refresh-state">현황 새로고침</button></div>
+<section class="battle-section" aria-label="시민 광장">
+<div class="plaza-toolbar"><div id="location-tabs" class="location-tabs" role="tablist" aria-label="광장 선택"></div><span class="sync-label" id="sync-label">광장 연결 중</span></div>
+<div class="plaza-frame"><div class="plaza-heading"><div><span class="eyebrow">OUR LITTLE CIVIC SQUARE</span><h2 id="plaza-name">시민 광장</h2></div><div id="plaza-meta" class="plaza-meta"></div></div><div id="plaza-scene" class="plaza-scene" aria-label="실제 참가자들이 활동하는 광장"></div><div id="plaza-status" class="plaza-status"></div><div id="person-detail" class="person-detail" hidden></div></div>
+<div id="action-dock" class="action-dock" aria-label="내 캐릭터와 광장 활동"><p class="loading">참여 정보를 불러오고 있어요.</p></div>
+</section>
+<section id="player-panel" class="player-panel" aria-label="내 참여 현황"><p class="loading">게임 정보를 불러오고 있어요.</p></section>
+<details class="strategy-drawer"><summary>정당 영향력과 전략 <span>점령 현황 · 정치 행동 · 사무소</span></summary><div class="drawer-body"><div class="territory-grid" id="territories"></div><section class="office-section" aria-labelledby="office-title"><div class="section-heading"><div><span class="eyebrow">BUILD TOGETHER</span><h2 id="office-title">함께 키우는 정당 사무소</h2></div><span class="section-note">같은 정당 모두에게 적용</span></div><div id="offices" class="office-grid"></div></section></div></details>
+<details class="history-section"><summary>광장 소식 <span>최근 참여와 점령 기록</span></summary><div class="section-heading"><p class="section-note">실제 참가자의 활동 기록입니다.</p><button id="refresh-button" class="quiet-button" type="button">새로고침</button></div><ol id="history" class="history-list"></ol></details>
+<footer class="footer"><strong>정참시 정치 쟁탈전</strong><p>게임 속 광장의 영향력은 실제 정치 지지율이나 선거 결과와 관계없습니다.</p><a href="/">정참시 홈</a></footer>
+</main>
+<dialog id="help-dialog" aria-labelledby="help-title"><div class="dialog-heading"><span class="eyebrow">HOW TO PLAY</span><button type="button" id="help-close" class="close-button" aria-label="게임 방법 닫기">닫기</button></div><h2 id="help-title">내 작은 시민을<br>광장으로 보내 보세요.</h2><ol class="rules-list"><li><strong>정당과 시민 캐릭터 선택</strong><p>정당 선택은 무료이고 이번 주 동안 유지돼요. 청와대 또는 국회 광장을 고르고 시민의 모습을 선택하세요.</p></li><li><strong>광장 배치 · 0 P + 활동력 5</strong><p>1인 시위, 함께 집회, 상징 단식, 응원 방문, 공동 발의 중 하나를 선택해요. 배치는 10분간 유지되며 매분 영향력을 쌓습니다. 다시 배치할 때도 활동력 5를 사용해요.</p></li><li><strong>함께하면 더 큰 목소리</strong><p>같은 정당 집회 참가자 3명이 모이면 집회 효과가 커져요. 같은 정당·활동의 실제 참가자 3명부터 기자회견이나 공동 법안을 진행할 수 있어요. 각 20 P + 활동력 10이 필요합니다. 응원은 같은 광장에 우리 정당 동료가 있어야 가능해요.</p></li><li><strong>5분간 상징 단식</strong><p>캐릭터가 5분간 자리를 지키는 농성 행동입니다. 5분 약속 중에는 다른 활동으로 전환할 수 없지만, 언제든 무료로 광장에서 나올 수 있어요.</p></li><li><strong>영향력을 모아 점령</strong><p>영향력 600 이상, 2위보다 100 이상 앞선 상태를 5분 유지하면 점령하고 10분간 보호돼요. 전략 메뉴에서 정치 행동(20 P + 활동력 10), 사무소 강화(표시 비용)를 할 수 있어요. 활동력은 최대 100, 5분마다 1 회복됩니다. 활동 후 재사용 대기는 10초예요.</p></li><li><strong>매주 새로운 시작</strong><p>월요일 00:00 한국시간에 정당 선택과 게임 기록이 초기화됩니다. 조회, 새로고침, 광장 퇴장에는 비용이 없어요.</p></li></ol><p class="rules-note">광장에는 실제 배치된 참가자만 표시돼요. 사용 포인트는 게임 참여 비용이며 점령 보상으로 환급되지 않습니다.</p></dialog>
+</body></html>
