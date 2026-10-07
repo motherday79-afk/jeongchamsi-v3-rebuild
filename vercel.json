@@ -60,18 +60,6 @@
   ],
   "rewrites": [
     {
-      "source": "/taxi",
-      "destination": "/api/gateway?path=taxi-page"
-    },
-    {
-      "source": "/taxi/",
-      "destination": "/api/gateway?path=taxi-page"
-    },
-    {
-      "source": "/taxi/index.html",
-      "destination": "/api/gateway?path=taxi-page"
-    },
-    {
       "source": "/mine/",
       "destination": "/api/gateway?path=taxi-page"
     },
@@ -233,6 +221,21 @@
     },
     {
       "source": "/lib/taxi-audio.js",
+      "destination": "/mine",
+      "permanent": false
+    },
+    {
+      "source": "/taxi",
+      "destination": "/mine",
+      "permanent": false
+    },
+    {
+      "source": "/taxi/",
+      "destination": "/mine",
+      "permanent": false
+    },
+    {
+      "source": "/taxi/index.html",
       "destination": "/mine",
       "permanent": false
     }
