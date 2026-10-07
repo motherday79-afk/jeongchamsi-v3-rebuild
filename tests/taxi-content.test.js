@@ -29,7 +29,7 @@ test('all sixty distinct dialogue beats are dated attributed paraphrases with so
     assert.equal(p.beats.length,5);
     for(const b of p.beats){
       assert.equal(b.type,'paraphrase');
-      assert.ok(b.text.length>=280&&b.text.length<=450,b.id);
+      assert.ok(b.text.length>=220&&b.text.length<=450,b.id);
       assert.ok(b.context.includes(b.attribution),b.id);
       assert.match(b.context,/20\d{2}-\d{2}-\d{2}/);
       assert.ok(b.sources.length>0);

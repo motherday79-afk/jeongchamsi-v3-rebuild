@@ -8,3 +8,10 @@
 - User retains visual/audio/play QA. Implementation checks cover server distance, anonymity, audio asset integrity and narration state transitions.
 
 Generation helpers: verification/taxi466-audio.mjs and verification/taxi466-generate.py (local tooling only; not runtime dependencies).
+
+## Conversational narration update (471)
+
+- Approved greeting recordings are retained. First-story courtesy and final-story closing each have four variations per generic voice, about the length of a greeting.
+- Sixty story recordings use -2% speech rate with 140 ms sentence pauses and 280 ms transitions after questions or before topic changes. Sentence timestamps include these pauses so automatic scrolling stays synchronized.
+- Repetitive explanatory caveats were reduced in dialogue; source attribution and the reconstruction notice remain. Final remarks are staged game dialogue, not political quotations.
+- Listening and gameplay acceptance remain with the user.
