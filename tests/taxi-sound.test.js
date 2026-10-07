@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {TaxiSound} from '../taxi/sound.js';
 import {TAXI_PASSENGERS} from '../lib/taxi-passengers.js';
-import {beatAudio,taxiVoice} from '../lib/taxi-audio.js';
+import {beatAudio,taxiVoice,greetingAudio,GREETING_LINES} from '../lib/taxi-audio.js';
+test('every intro voice is present for both genders',()=>{for(const p of [TAXI_PASSENGERS[0],TAXI_PASSENGERS[1]])for(let i=0;i<GREETING_LINES.length;i++)assert.ok(fs.statSync(new URL('..'+greetingAudio(p,i).audioUrl,import.meta.url)).size>1000);});
 test('every dialogue and comfort has a prerecorded MP3; voices match the curated passenger roster',()=>{
  const women=new Set(['나경원','김선민','이소영','용혜인']);
  for(const p of TAXI_PASSENGERS){assert.equal(taxiVoice(p),women.has(p.name)?'ko-KR-SunHiNeural':'ko-KR-InJoonNeural');for(let i=0;i<p.beats.length;i++){const b=beatAudio(p,i);for(const url of [b.audioUrl,b.comfort?.audioUrl].filter(Boolean)){const buffer=fs.readFileSync(new URL('..'+url,import.meta.url));assert.ok(buffer.length>1000);assert.ok(buffer.subarray(0,3).toString()==='ID3'||buffer[0]===255);}}}

@@ -6,7 +6,7 @@ import {taxiRequest} from '../lib/taxi-http.js';
 const passengers=['a','b','c'].map(id=>({id,personId:'person-'+id,name:'Name '+id,partyLabel:'Party '+id,photoUrl:'https://example.com/'+id+'.jpg',beats:[0,1,2,3,4].map(index=>({id:id+index,text:'익명 대화 '+index,type:'paraphrase',context:'출처 맥락',sources:[{title:'원문',url:'https://example.com/source/'+id+index,date:'2026-01-01'}]}))}));
 test('distance excludes boarding and paused time, audio stays anonymous',async()=>{
  const f=setup();let s=await f.service.mutate(f.user,f.body('start',0));
- assert.equal(s.ride.distanceMeters,0);assert.match(s.ride.beat.audioUrl,/\/audio\/[a-f0-9]{32}\.mp3$/);assert.ok(s.ride.beat.comfort.text);
+ assert.equal(s.ride.distanceMeters,0);assert.match(s.ride.beat.audioUrl,/\/audio\/[a-f0-9]{32}\.mp3$/);assert.equal(s.ride.phase,'intro');s=await f.service.mutate(f.user,f.body('begin',s.version));assert.ok(s.ride.beat.comfort.text);
  f.tick(1000);s=await f.service.mutate(f.user,f.body('heartbeat',s.version));assert.equal(s.ride.distanceMeters,0);
  f.tick(10000);s=await f.service.mutate(f.user,f.body('pause',s.version));assert.equal(s.ride.distanceMeters,80);
  f.tick(60000);s=await f.service.mutate(f.user,f.body('resume',s.version));assert.equal(s.ride.distanceMeters,80);
@@ -21,18 +21,27 @@ function setup(){
   const body=(action,version)=>({action,expectedVersion:version,requestId:'request_'+String(++seq).padStart(12,'0')});
   return {service,user,db,keys,body,tick:n=>{at+=n;}};
 }
+test('intro withholds policy content until consent; leaving during greeting records zero heard',async()=>{
+ const f=setup();let s=await f.service.mutate(f.user,f.body('start',0));
+ assert.equal(s.ride.phase,'intro');assert.equal(s.ride.heardCount,0);assert.equal(s.ride.beat.type,'game_intro');assert.doesNotMatch(s.ride.beat.text,/익명 대화/);
+ for(const action of ['listen','like','finish'])await assert.rejects(f.service.mutate(f.user,f.body(action,s.version)),/INTRO_REQUIRED/);
+ s=await f.service.mutate(f.user,f.body('dropoff',s.version));assert.equal(s.history[0].heardCount,0);
+ s=await f.service.mutate(f.user,f.body('start',s.version));s=await f.service.mutate(f.user,f.body('begin',s.version));
+ assert.equal(s.ride.phase,'story');assert.equal(s.ride.heardCount,1);assert.equal(s.ride.beat.text,'익명 대화 0');
+ await assert.rejects(f.service.mutate(f.user,f.body('begin',s.version)),/STORY_STARTED/);
+});
 test('guest bootstrap is opaque, identity withheld and histories isolated',async()=>{
   const f=setup(),a=await f.service.get(),b=await f.service.get();assert.match(a.sessionToken,/^[a-f0-9]{64}$/);assert.notEqual(a.sessionToken,b.sessionToken);assert.equal(f.db.size,0);
-  const active=await f.service.mutate(null,f.body('start',0),a.sessionToken);assert.equal(active.ride.heardCount,1);assert.equal(active.ride.passenger,undefined);assert.equal(active.ride.beat.sources,undefined);assert.equal(active.ride.firstRide,undefined);
+  const active=await f.service.mutate(null,f.body('start',0),a.sessionToken);assert.equal(active.ride.heardCount,0);assert.equal(active.ride.passenger,undefined);assert.equal(active.ride.beat.sources,undefined);assert.equal(active.ride.firstRide,undefined);
   const raw=JSON.stringify(active);for(const secret of ['person-','Name ','Party ','source/','photoUrl','passengerId'])assert.equal(raw.includes(secret),false);
   assert.equal((await f.service.get(null,b.sessionToken)).ride,null);
   await assert.rejects(f.service.mutate(null,f.body('start',0)),/INVALID_SESSION/);
   assert.equal(f.keys.some(k=>k.includes(a.sessionToken)),false);
 });
 test('same request concurrency advances once; altered or stale commands fail',async()=>{
-  const f=setup(),start=await f.service.mutate(f.user,f.body('start',0)),body=f.body('listen',start.version);
+  const f=setup(),start=await f.service.mutate(f.user,f.body('start',0)),body=f.body('begin',start.version);
   const results=await Promise.all([f.service.mutate(f.user,body),f.service.mutate(f.user,body)]);
-  assert.equal(results[0].ride.heardCount,2);assert.equal(results[1].ride.heardCount,2);assert.equal(results.filter(r=>r.result.replayed).length,1);
+  assert.equal(results[0].ride.heardCount,1);assert.equal(results[1].ride.heardCount,1);assert.equal(results.filter(r=>r.result.replayed).length,1);
   await assert.rejects(f.service.mutate(f.user,{...body,action:'like'}),/REQUEST_ID_REUSED/);
   await assert.rejects(f.service.mutate(f.user,f.body('listen',1)),/VERSION_CHANGED/);
 });
@@ -42,11 +51,11 @@ test('server credits capped active intervals; pause and GET cannot accrue time',
   f.tick(1000000);s=await f.service.mutate(f.user,f.body('pause',s.version));assert.equal(s.ride.activeMs,35000);
   f.tick(1000000);assert.equal((await f.service.get(f.user)).ride.activeMs,35000);
   s=await f.service.mutate(f.user,f.body('resume',s.version));assert.equal(s.ride.activeMs,35000);
-  f.tick(5000);s=await f.service.mutate(f.user,f.body('listen',s.version));assert.equal(s.ride.activeMs,40000);
+  f.tick(5000);s=await f.service.mutate(f.user,f.body('begin',s.version));assert.equal(s.ride.activeMs,40000);
   await assert.rejects(f.service.mutate(f.user,{...f.body('heartbeat',s.version),elapsed:999999}),/INVALID_INPUT/);
 });
 test('likes never advance and are unique, final listen reveals sources and journal',async()=>{
-  const f=setup();let s=await f.service.mutate(f.user,f.body('start',0));s=await f.service.mutate(f.user,f.body('like',s.version));assert.equal(s.ride.heardCount,1);assert.deepEqual(s.ride.likedBeatIndexes,[0]);
+  const f=setup();let s=await f.service.mutate(f.user,f.body('start',0));s=await f.service.mutate(f.user,f.body('begin',s.version));s=await f.service.mutate(f.user,f.body('like',s.version));assert.equal(s.ride.heardCount,1);assert.deepEqual(s.ride.likedBeatIndexes,[0]);
   await assert.rejects(f.service.mutate(f.user,f.body('like',s.version)),/ALREADY_LIKED/);
   await assert.rejects(f.service.mutate(f.user,f.body('finish',s.version)),/NOT_LAST_BEAT/);
   for(let i=0;i<5;i++)s=await f.service.mutate(f.user,f.body('listen',s.version));
@@ -64,7 +73,7 @@ test('resume after an undelivered pause does not count the hidden interval',asyn
 test('deck exhausts without repeats, repeat count survives and journals are private',async()=>{
   const f=setup();let s=await f.service.get(f.user);const ids=[];
   for(let i=0;i<4;i++){s=await f.service.mutate(f.user,f.body('start',s.version));s=await f.service.mutate(f.user,f.body('dropoff',s.version));ids.push(s.ride.passenger.id);assert.equal(s.ride.firstRide,i<3);}
-  assert.equal(new Set(ids.slice(0,3)).size,3);assert.equal(s.ride.visitNumber,2);assert.equal(s.ride.heardCount,1);
+  assert.equal(new Set(ids.slice(0,3)).size,3);assert.equal(s.ride.visitNumber,2);assert.equal(s.ride.heardCount,0);
   assert.equal((await f.service.get({id:'other',status:'active'})).history.length,0);
   assert.equal(f.keys.some(k=>k.includes('wallet')||k.includes('private-account')),false);
 });

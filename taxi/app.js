@@ -1,5 +1,6 @@
-import {formatDistance} from './distance.js?v=0.0.31.467';
-import {TaxiSound} from './sound.js?v=0.0.31.467';
+import {bindTaxiFullscreen} from './fullscreen.js?v=0.0.31.469';
+import {formatDistance} from './distance.js?v=0.0.31.469';
+import {TaxiSound} from './sound.js?v=0.0.31.469';
 const API = '/api/v3/taxi';
 const TOKEN_KEY = 'jcs-real-taxi-session-v1';
 const PENDING_KEY = 'jcs-real-taxi-pending-v1';
@@ -23,7 +24,7 @@ const photoCache = new Map();
 const sound = new TaxiSound();
 const distance = ride => Math.floor(num(ride.distanceMeters ?? num(ride.activeMs)*.008));
 const meters = value => {const d=formatDistance(value);return d.value+d.unit;};
-try { token = localStorage.getItem(TOKEN_KEY) || ''; pending = JSON.parse(sessionStorage.getItem(PENDING_KEY) || 'null'); if (pending && !['start','listen','like','dropoff','finish','pause','resume','heartbeat','reset'].includes(pending.action)) pending = null; } catch { /* Keep the session and pending request in memory if storage is blocked. */ }
+try { token = localStorage.getItem(TOKEN_KEY) || ''; pending = JSON.parse(sessionStorage.getItem(PENDING_KEY) || 'null'); if (pending && !['start','begin','listen','like','dropoff','finish','pause','resume','heartbeat','reset'].includes(pending.action)) pending = null; } catch { /* Keep the session and pending request in memory if storage is blocked. */ }
 function savePending() { try { if (pending) sessionStorage.setItem(PENDING_KEY,JSON.stringify(pending)); else sessionStorage.removeItem(PENDING_KEY); } catch { /* The live request retains its original id. */ } }
 function notice(message) { $('#notice').hidden = !message; $('#notice').textContent = message; }
 function accept(data) {
@@ -46,7 +47,7 @@ async function request(body,keepalive = false) {
     return {response,data};
   } finally { clearTimeout(timeout); }
 }
-const messages = {VERSION_CHANGED:'다른 화면에서 운행 기록이 바뀌었어요. 현재 이야기를 확인한 뒤 다시 선택해 주세요.',REQUEST_ID_REUSED:'요청 정보를 확인할 수 없어요. 현재 운행을 다시 확인합니다.',RIDE_ACTIVE:'이미 동승 중인 손님이 있어요.',NO_ACTIVE_RIDE:'진행 중인 운행이 없어요.',ALREADY_LIKED:'이미 공감한 이야기예요.',NOT_LAST_BEAT:'마지막 이야기까지 들은 뒤 운행을 마칠 수 있어요.',RIDE_PAUSED:'운행이 잠시 멈췄어요. 직접 이어가기를 눌러 주세요.',INVALID_SESSION:'운행 연결을 확인하지 못했어요. 페이지를 새로고침해 주세요.',ACCOUNT_INACTIVE:'현재 계정으로는 운행할 수 없어요.',ORIGIN_INVALID:'이 페이지에서 요청을 확인할 수 없어요. 새로고침 후 다시 시도해 주세요.',CONTENT_UNAVAILABLE:'승객의 이야기를 준비하고 있어요. 잠시 뒤 다시 확인해 주세요.',STORAGE_UNAVAILABLE:'운행 기록에 연결할 수 없어요. 잠시 뒤 다시 확인해 주세요.'};
+const messages = {INTRO_REQUIRED:'먼저 손님의 이야기를 들어볼지 선택해 주세요.',STORY_STARTED:'이야기가 이미 시작됐어요.',VERSION_CHANGED:'다른 화면에서 운행 기록이 바뀌었어요. 현재 이야기를 확인한 뒤 다시 선택해 주세요.',REQUEST_ID_REUSED:'요청 정보를 확인할 수 없어요. 현재 운행을 다시 확인합니다.',RIDE_ACTIVE:'이미 동승 중인 손님이 있어요.',NO_ACTIVE_RIDE:'진행 중인 운행이 없어요.',ALREADY_LIKED:'이미 공감한 이야기예요.',NOT_LAST_BEAT:'마지막 이야기까지 들은 뒤 운행을 마칠 수 있어요.',RIDE_PAUSED:'운행이 잠시 멈췄어요. 직접 이어가기를 눌러 주세요.',INVALID_SESSION:'운행 연결을 확인하지 못했어요. 페이지를 새로고침해 주세요.',ACCOUNT_INACTIVE:'현재 계정으로는 운행할 수 없어요.',ORIGIN_INVALID:'이 페이지에서 요청을 확인할 수 없어요. 새로고침 후 다시 시도해 주세요.',CONTENT_UNAVAILABLE:'승객의 이야기를 준비하고 있어요. 잠시 뒤 다시 확인해 주세요.',STORAGE_UNAVAILABLE:'운행 기록에 연결할 수 없어요. 잠시 뒤 다시 확인해 주세요.'};
 async function refresh() {
   if (busy || syncing) return;
   syncing = true;
@@ -80,6 +81,9 @@ async function act(action,{retry = false,keepalive = false} = {}) {
       if (['start','resume'].includes(operation) && !document.hidden && !pauseWanted) localPaused = false;
       if (operation === 'reset') { localPaused=true; pauseWanted=false; journalSelected=null; boardUntil=0; }
       if (operation === 'pause') { localPaused = true; pauseWanted = false; }
+      if(operation==='start' && data.ride?.id!==state?.ride?.id) sound.effect('board');
+      if(state?.ride?.status==='active' && data.ride?.status==='completed') sound.effect('exit');
+      if(operation==='reset') sound.stopEffects();
       accept(data);
       pending = null; savePending();
       if (operation === 'like') notice('이 이야기에 공감을 기록했어요. 계속 듣기를 누르면 다음 이야기로 넘어갑니다.');
@@ -128,6 +132,7 @@ function revealMarkup(ride,journal = false) {
 }
 function activeMarkup(ride) {
   if (localPaused || ride.paused || document.hidden) return `<div class="paused-card"><div class="speech-balloon"><span class="speaker-label">잠시 정차 중</span><h2>이야기는 여기서<br>기다리고 있어요.</h2><p>화면을 떠난 동안은 주행 거리가 늘지 않아요.<br>준비되면 직접 운행을 이어가 주세요.</p></div><div class="choice-row"><button type="button" class="button main-button" data-action="resume">운행 이어가기</button><button type="button" class="button drop-button" data-action="dropoff">여기서 내려주기</button></div></div>`;
+  if(ride.phase==='intro') return `<div class="speech-balloon"><span class="speaker-label">처음 만난 손님 · 인사</span><p class="beat-text">${esc(ride.beat?.text)}</p><p class="intro-note">손님과의 인사는 게임 연출입니다. 준비되면 이야기를 들어주세요.</p></div><div class="choice-row"><button type="button" class="button main-button" data-action="begin">이야기 들어보기</button><button type="button" class="button drop-button" data-action="dropoff">내려주기</button></div><button type="button" class="pause-button" data-action="pause">잠시 정차</button>`;
   const last = num(ride.beatIndex)+1 >= num(ride.totalBeats);
   const liked = ride.likedBeatIndexes?.includes(ride.beatIndex);
   return `<div class="speech-balloon"><span class="speaker-label">이름 모를 승객 · 이야기 ${num(ride.beatIndex)+1}</span><p class="beat-text">${esc(ride.beat?.text)}</p>${ride.beat?.comfort ? '<p class="gentle-line" id="gentle-line" hidden></p>' : ''}</div><div class="choice-row"><button type="button" class="button main-button" data-action="${last ? 'finish' : 'listen'}">${last ? '운행 마치기' : '계속 듣기'}</button><button type="button" class="button like-button" data-action="like" ${liked ? 'data-liked="true"' : ''}>${liked ? '공감했어요' : '공감하기'}</button><button type="button" class="button drop-button" data-action="dropoff">내려주기</button></div><button type="button" class="pause-button" data-action="pause">잠시 정차</button>`;
@@ -136,7 +141,7 @@ function render() {
   if (!state) { controls(); return; }
   const ride = state.ride;
   const active = ride?.status === 'active';
-  const signature = JSON.stringify([ride?.id,ride?.status,ride?.beatIndex,ride?.likedBeatIndexes,ride?.paused,localPaused,active && document.hidden]);
+  const signature = JSON.stringify([ride?.id,ride?.status,ride?.phase,ride?.beatIndex,ride?.likedBeatIndexes,ride?.paused,localPaused,active && document.hidden]);
   if (signature !== contentSignature) {
     const actionFocused = $('#content').contains(document.activeElement) ? document.activeElement.dataset.action : null;
     if (!ride) $('#content').innerHTML = '<div class="speech-balloon"><span class="speaker-label">JCS 리얼택시 · 오늘의 운행</span><h2>이름은 잠시,<br>이야기부터 들어볼까요?</h2><p>익명의 승객이 건네는 다섯 가지 이야기.<br>얼마나 듣고, 언제 내려줄지는 당신의 선택입니다.</p></div><div class="choice-row"><button type="button" class="button main-button" data-action="start">첫 손님 태우기</button></div>';
@@ -144,13 +149,14 @@ function render() {
     contentSignature = signature;
     if (actionFocused) [...$('#content').querySelectorAll('[data-action]')].find((item) => item.dataset.action === actionFocused)?.focus({preventScroll:true});
   }
-  $('#chapter-label').textContent = active ? `동승 중 · ${num(ride.beatIndex)+1}번째 이야기` : ride ? '이야기 끝에서 만난 얼굴' : '첫 번째 손님을 기다리며';
+  $('#chapter-label').textContent = active ? ride.phase==='intro' ? '손님과 첫인사를 나누며' : `동승 중 · ${num(ride.beatIndex)+1}번째 이야기` : ride ? '이야기 끝에서 만난 얼굴' : '첫 번째 손님을 기다리며';
   $('#beat-count').textContent = ride ? `${num(ride.heardCount)} / ${num(ride.totalBeats)}개 이야기` : '이야기를 기다리는 중';
+  $('.record-label').textContent = ride?.phase==='intro'&&active ? '승차 인사 · 게임 연출' : '실제 기록을 대화체로 요약';
   if ($('#journal-dialog').open) renderJournal();
   tick(); controls(); void hydratePhotos();
 }
 function controls() {
-  const blocked = busy || syncing || !!pending || pauseWanted;
+  const blocked = busy || syncing || !!pending || pauseWanted || performance.now()<sound.exitUntil;
   document.querySelectorAll('[data-action]').forEach((button) => { button.disabled = blocked || button.dataset.liked === 'true' || document.hidden; });
   $('#recovery').hidden = !pending || busy;
   $('#retry-button').disabled = busy || syncing;
@@ -161,8 +167,10 @@ function tick() {
   const moving = ride?.status === 'active' && !ride.paused && !localPaused && !document.hidden && (!pending || ['heartbeat','like','listen'].includes(pending.action)) && performance.now() >= boardUntil;
   $('#scene').classList.toggle('is-driving',!!moving);
   $('#scene').classList.toggle('is-stopped',!moving);
-  $('#scene').classList.toggle('has-passenger',ride?.status === 'active');
-  $('#scene-status').textContent = moving ? '이름 모를 손님과 달리는 중' : ride?.status === 'active' ? performance.now() < boardUntil ? '손님이 택시에 타고 있어요' : '이야기를 잠시 멈춘 정류장' : ride ? '손님이 내린 뒤, 남은 이야기' : '잠시 쉬어 가는 정류장';
+  const leaving=performance.now()<sound.exitUntil;
+  $('#scene').classList.toggle('has-passenger',ride?.status === 'active'||leaving);
+  $('#scene').classList.toggle('is-leaving',leaving);
+  $('#scene-status').textContent = leaving ? '천천히 정차하고, 손님을 내려주는 중' : moving ? '이름 모를 손님과 달리는 중' : ride?.status === 'active' ? performance.now() < boardUntil ? '손님이 택시에 타고 있어요' : '이야기를 잠시 멈춘 정류장' : ride ? '손님이 내린 뒤, 남은 이야기' : '잠시 쉬어 가는 정류장';
   const estimate = moving ? Math.min(20000,performance.now()-receivedAt) : 0;
   const drivingEstimate = moving ? Math.max(0,estimate-num(ride?.boardingRemainingMs)) : 0;
   const meter=formatDistance((ride ? distance(ride) : 0)+drivingEstimate*.008);
@@ -171,13 +179,14 @@ function tick() {
   $('#meter-state').textContent = moving ? '운행 중' : '정차';
   sound.update(ride,!!moving && (!pending || ['heartbeat','like'].includes(pending.action)));
   document.getElementById('voice-replay').disabled = !moving;
+  controls();
 }
 function renderJournal() {
   const history = state?.history || [];
   $('#journal-content').innerHTML = `<p class="journal-label">JCS 리얼택시 · 나만의 최근 ${history.length}회 운행 기록<br>동승 거리는 모든 승객에게 같은 가상 속도(시속 28.8km)를 적용한 기록입니다.</p>${history.length ? history.map((ride) => `<button type="button" class="journal-item" data-journal-id="${esc(ride.id)}"><span><strong>${esc(ride.passenger?.name)}</strong><small>${esc(ride.passenger?.partyLabel)} · ${ride.firstRide ? '첫 동승' : `${num(ride.visitNumber)}번째 동승`}</small></span><span><strong>${meters(distance(ride))} · ${num(ride.heardCount)}개</strong><small>${esc(new Date(num(ride.endedAt)).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}))}</small></span></button>`).join('') : '<p class="journal-empty">아직 운행 기록이 없어요.<br>첫 손님을 내려주면 정체와 출처가 이곳에 남습니다.</p>'}${journalSelected && history.some((ride) => ride.id === journalSelected) ? `<div class="journal-result">${revealMarkup(history.find((ride) => ride.id === journalSelected),true)}</div>` : ''}`;
   void hydratePhotos();
 }
-function pauseLocally() { localPaused = true; pauseWanted = true; render(); void flushPause(); }
+function pauseLocally() { sound.stopEffects(); localPaused = true; pauseWanted = true; render(); void flushPause(); }
 function openDialog(id) { if (state?.ride?.status === 'active') pauseLocally(); if (id === 'journal-dialog') renderJournal(); $(`#${id}`).showModal(); }
 document.addEventListener('click',(event) => {
   const actionButton = event.target.closest('[data-action]');
@@ -187,6 +196,7 @@ document.addEventListener('click',(event) => {
   const journalButton = event.target.closest('[data-journal-id]'); if (journalButton) { journalSelected = journalSelected === journalButton.dataset.journalId ? null : journalButton.dataset.journalId; renderJournal(); }
 });
 $('#ride-reset').addEventListener('click',()=>{ if (!state || busy || pending) return; if (!window.confirm('내 현재 운행과 운행일지를 모두 초기화할까요? 승객 순서도 새로 섞이며, 다른 계정의 기록은 유지됩니다.')) return; sound.voice.pause(); void act('reset'); });
+$('#effects-toggle').addEventListener('click',()=>sound.toggle('effects'));
 $('#rain-toggle').addEventListener('click',()=>sound.toggle('rain'));
 $('#voice-toggle').addEventListener('click',()=>sound.toggle('voice'));
 $('#voice-replay').addEventListener('click',()=>sound.replay());
@@ -199,5 +209,6 @@ window.addEventListener('pagehide',() => { if (state?.ride?.status === 'active')
 window.addEventListener('online',() => { localPaused = true; render(); void refresh(); });
 setInterval(() => { if (!document.hidden && state?.ride?.status === 'active' && !localPaused && !state.ride.paused && !pending && !busy && !syncing) void act('heartbeat'); },15000);
 setInterval(tick,250);
+bindTaxiFullscreen();
 controls();
 void refresh();
