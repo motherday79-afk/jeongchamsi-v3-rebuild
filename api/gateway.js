@@ -22,6 +22,7 @@ import {firebaseConfigured} from '../lib/push-fcm.js';
 import {withRankingMutation} from '../lib/now-rank-schedule.js';
 import {createTaxiService} from '../lib/taxi-service.js';
 import {taxiRequest} from '../lib/taxi-http.js';
+import {taxiPage} from '../lib/taxi-page.js';
 import {createAiPanelService} from '../lib/ai-panel-service.js';
 import {aiPanelRequest} from '../lib/ai-panel-http.js';
 import {createHumanPollService} from '../lib/human-poll-service.js';
@@ -571,6 +572,9 @@ export default async function handler(req,res){
       if(req.headers.origin!==url.origin||req.headers['sec-fetch-site']==='cross-site')return json(res,403,{ok:false,error:'PUSH_ORIGIN_INVALID'});
       const body=bodyOf(req);if(Buffer.byteLength(JSON.stringify(body))>8192)return json(res,413,{ok:false,error:'PUSH_INPUT_INVALID'});
       try{if(body.groups===true)await groupPushService(command).register(user,body);else if(!isSuperAdmin(user))return json(res,403,{ok:false,error:'PUSH_APP_UPDATE_REQUIRED'});if(isSuperAdmin(user))await pushService(command).register(user,body);return json(res,200,{ok:true,enabled:body.enabled});}catch(error){return json(res,400,{ok:false,error:'PUSH_INPUT_INVALID'});}
+    }
+    if(route==='taxi-page'){
+      const page=taxiPage(await currentUser(req,command));res.statusCode=page.status;res.setHeader('Content-Type','text/html; charset=utf-8');res.setHeader('Cache-Control','private, no-store');res.setHeader('Vary','Cookie');return res.end(page.html);
     }
     if(route==='taxi'){
       const result=await taxiRequest(req,{service:createTaxiService({command}),user:await currentUser(req,command),url});

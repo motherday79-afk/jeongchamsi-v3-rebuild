@@ -1,4 +1,5 @@
-import {TaxiSound} from './sound.js?v=0.0.31.466';
+import {formatDistance} from './distance.js?v=0.0.31.467';
+import {TaxiSound} from './sound.js?v=0.0.31.467';
 const API = '/api/v3/taxi';
 const TOKEN_KEY = 'jcs-real-taxi-session-v1';
 const PENDING_KEY = 'jcs-real-taxi-pending-v1';
@@ -21,8 +22,8 @@ let journalSelected = null;
 const photoCache = new Map();
 const sound = new TaxiSound();
 const distance = ride => Math.floor(num(ride.distanceMeters ?? num(ride.activeMs)*.008));
-const meters = value => Math.floor(num(value)).toLocaleString('ko-KR')+' m';
-try { token = localStorage.getItem(TOKEN_KEY) || ''; pending = JSON.parse(sessionStorage.getItem(PENDING_KEY) || 'null'); if (pending && !['start','listen','like','dropoff','finish','pause','resume','heartbeat'].includes(pending.action)) pending = null; } catch { /* Keep the session and pending request in memory if storage is blocked. */ }
+const meters = value => {const d=formatDistance(value);return d.value+d.unit;};
+try { token = localStorage.getItem(TOKEN_KEY) || ''; pending = JSON.parse(sessionStorage.getItem(PENDING_KEY) || 'null'); if (pending && !['start','listen','like','dropoff','finish','pause','resume','heartbeat','reset'].includes(pending.action)) pending = null; } catch { /* Keep the session and pending request in memory if storage is blocked. */ }
 function savePending() { try { if (pending) sessionStorage.setItem(PENDING_KEY,JSON.stringify(pending)); else sessionStorage.removeItem(PENDING_KEY); } catch { /* The live request retains its original id. */ } }
 function notice(message) { $('#notice').hidden = !message; $('#notice').textContent = message; }
 function accept(data) {
@@ -52,6 +53,7 @@ async function refresh() {
   controls();
   try {
     const {response,data} = await request();
+    if (['LOGIN_REQUIRED','TAXI_ADMIN_REQUIRED'].includes(data.error)) { location.replace('/mine'); return; }
     if (!response.ok || !data.ok) throw new Error(data.error || 'LOAD_FAILED');
     accept(data);
     if (state.ride?.status === 'active' && localPaused && !state.ride.paused) pauseWanted = true;
@@ -68,6 +70,7 @@ async function act(action,{retry = false,keepalive = false} = {}) {
   let refreshAfter = false;
   try {
     const {response,data} = await request(pending,keepalive);
+    if (['LOGIN_REQUIRED','TAXI_ADMIN_REQUIRED'].includes(data.error)) { state=null; pending=null; savePending(); sound.update(null,false); location.replace('/mine'); return; }
     if (response.status >= 500 || typeof data?.ok !== 'boolean') throw new Error('UNKNOWN_RESULT');
     if (!response.ok || !data.ok) {
       pending = null; savePending();
@@ -75,6 +78,7 @@ async function act(action,{retry = false,keepalive = false} = {}) {
       localPaused = true; pauseWanted = true; refreshAfter = true;
     } else {
       if (['start','resume'].includes(operation) && !document.hidden && !pauseWanted) localPaused = false;
+      if (operation === 'reset') { localPaused=true; pauseWanted=false; journalSelected=null; boardUntil=0; }
       if (operation === 'pause') { localPaused = true; pauseWanted = false; }
       accept(data);
       pending = null; savePending();
@@ -150,6 +154,7 @@ function controls() {
   document.querySelectorAll('[data-action]').forEach((button) => { button.disabled = blocked || button.dataset.liked === 'true' || document.hidden; });
   $('#recovery').hidden = !pending || busy;
   $('#retry-button').disabled = busy || syncing;
+  $('#ride-reset').disabled = blocked || !state || document.hidden;
 }
 function tick() {
   const ride = state?.ride;
@@ -160,7 +165,9 @@ function tick() {
   $('#scene-status').textContent = moving ? '이름 모를 손님과 달리는 중' : ride?.status === 'active' ? performance.now() < boardUntil ? '손님이 택시에 타고 있어요' : '이야기를 잠시 멈춘 정류장' : ride ? '손님이 내린 뒤, 남은 이야기' : '잠시 쉬어 가는 정류장';
   const estimate = moving ? Math.min(20000,performance.now()-receivedAt) : 0;
   const drivingEstimate = moving ? Math.max(0,estimate-num(ride?.boardingRemainingMs)) : 0;
-  $('#ride-distance').textContent = Math.floor((ride ? distance(ride) : 0)+drivingEstimate*.008).toLocaleString('en-US',{minimumIntegerDigits:6});
+  const meter=formatDistance((ride ? distance(ride) : 0)+drivingEstimate*.008);
+  $('#ride-distance').textContent = meter.value;
+  $('#distance-unit').textContent = meter.unit;
   $('#meter-state').textContent = moving ? '운행 중' : '정차';
   sound.update(ride,!!moving && (!pending || ['heartbeat','like'].includes(pending.action)));
   document.getElementById('voice-replay').disabled = !moving;
@@ -179,6 +186,7 @@ document.addEventListener('click',(event) => {
   if (event.target.closest('[data-open-journal]')) openDialog('journal-dialog');
   const journalButton = event.target.closest('[data-journal-id]'); if (journalButton) { journalSelected = journalSelected === journalButton.dataset.journalId ? null : journalButton.dataset.journalId; renderJournal(); }
 });
+$('#ride-reset').addEventListener('click',()=>{ if (!state || busy || pending) return; if (!window.confirm('내 현재 운행과 운행일지를 모두 초기화할까요? 승객 순서도 새로 섞이며, 다른 계정의 기록은 유지됩니다.')) return; sound.voice.pause(); void act('reset'); });
 $('#rain-toggle').addEventListener('click',()=>sound.toggle('rain'));
 $('#voice-toggle').addEventListener('click',()=>sound.toggle('voice'));
 $('#voice-replay').addEventListener('click',()=>sound.replay());

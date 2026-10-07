@@ -17,7 +17,7 @@ function setup(){
   const db=new Map(),keys=[];let at=100000,seq=0;
   const command=async args=>{if(args[0]==='GET'){keys.push(args[1]);return db.get(args[1])??null;}assert.equal(args[0],'EVAL');assert.equal(args[1],TAXI_CAS_LUA);const [, , ,key,old,value]=args;if((db.get(key)??'')!==old)return 0;db.set(key,value);return 1;};
   const service=createTaxiService({command,now:()=>at,random:()=>0.5,passengers});
-  const user={id:'private-account',status:'active'};
+  const user={id:'private-account',role:'admin',membershipTier:'admin',status:'active'};
   const body=(action,version)=>({action,expectedVersion:version,requestId:'request_'+String(++seq).padStart(12,'0')});
   return {service,user,db,keys,body,tick:n=>{at+=n;}};
 }
@@ -81,5 +81,22 @@ test('HTTP blocks foreign or missing origins, malformed input and inactive accou
   for(const h of [{},{origin:'http://example.com'},{...headers,'sec-fetch-site':'cross-site'}])assert.equal((await taxiRequest({method:'POST',headers:h,body},{service:f.service,user:f.user,url})).status,403);
   assert.equal((await taxiRequest({method:'POST',headers,body:'{'},{service:f.service,user:f.user,url})).status,400);
   assert.equal((await taxiRequest({method:'POST',headers,body},{service:f.service,user:{...f.user,status:'suspended'},url})).status,403);
-  assert.equal((await taxiRequest({method:'GET'},{service:f.service,url})).status,200);
+  assert.equal((await taxiRequest({method:'GET'},{service:f.service,url})).status,401);
+});
+test('taxi API admits only active administrators and owners on reads and writes',async()=>{
+ const f=setup(),url=new URL('https://example.com/api/v3/taxi');
+ for(const method of ['GET','POST'])for(const [user,status] of [[null,401],[{id:'member',role:'member',status:'active'},403],[{id:'p',role:'platinum',status:'active'},403],[{...f.user,status:'suspended'},403],[f.user,200],[{...f.user,id:'owner',membershipTier:'superadmin'},200]]){
+  const result=await taxiRequest({method,headers:{origin:url.origin},body:f.body('reset',0)},{service:{get:async()=>({ok:true}),mutate:async()=>({ok:true})},user,url});assert.equal(result.status,status);
+ }
+});
+test('reset clears only own ride, deck, visits and history; retries and stale requests cannot resurrect rides',async()=>{
+ const f=setup();let s=await f.service.mutate(f.user,f.body('start',0));s=await f.service.mutate(f.user,f.body('dropoff',s.version));
+ const other={...f.user,id:'other-admin'};const o=await f.service.mutate(other,f.body('start',0));
+ s=await f.service.mutate(f.user,f.body('start',s.version));const stale=f.body('listen',s.version),reset=f.body('reset',s.version);
+ s=await f.service.mutate(f.user,reset);assert.equal(s.ride,null);assert.deepEqual(s.history,[]);
+ const replay=await f.service.mutate(f.user,reset);assert.equal(replay.version,s.version);assert.equal(replay.result.replayed,true);
+ await assert.rejects(f.service.mutate(f.user,stale),/VERSION_CHANGED/);
+ assert.equal((await f.service.get(other)).ride.id,o.ride.id);
+ s=await f.service.mutate(f.user,f.body('start',s.version));assert.equal(s.ride.distanceMeters,0);
+ s=await f.service.mutate(f.user,f.body('dropoff',s.version));assert.equal(s.ride.firstRide,true);
 });

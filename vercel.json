@@ -60,6 +60,22 @@
   ],
   "rewrites": [
     {
+      "source": "/taxi",
+      "destination": "/api/gateway?path=taxi-page"
+    },
+    {
+      "source": "/taxi/",
+      "destination": "/api/gateway?path=taxi-page"
+    },
+    {
+      "source": "/taxi/index.html",
+      "destination": "/api/gateway?path=taxi-page"
+    },
+    {
+      "source": "/mine/",
+      "destination": "/api/gateway?path=taxi-page"
+    },
+    {
       "source": "/political-map/:path*",
       "destination": "/api/share?path=political-map/:path*"
     },
@@ -77,11 +93,11 @@
     },
     {
       "source": "/mine",
-      "destination": "/taxi/index.html"
+      "destination": "/api/gateway?path=taxi-page"
     },
     {
       "source": "/mine/ad",
-      "destination": "/taxi/index.html"
+      "destination": "/api/gateway?path=taxi-page"
     },
     {
       "source": "/api/v3/:path*",
