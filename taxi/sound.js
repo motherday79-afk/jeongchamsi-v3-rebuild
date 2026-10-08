@@ -47,7 +47,7 @@ export class TaxiSound {
     if(!this.rainGain)return;
     // Ambience belongs to the visible taxi scene, including quiet decision time.
     const audible=!document.hidden&&this.rainOn&&this.unlocked;
-    this.rainGain.gain.setTargetAtTime(audible?(talking?.70:.95):0,this.ctx.currentTime,.45);
+    this.rainGain.gain.setTargetAtTime(audible?(talking?.18:.95):0,this.ctx.currentTime,talking?.08:.65);
     const now=performance.now();
     if(audible&&['suspended','interrupted'].includes(this.ctx.state)&&!this.rainResuming&&now>=(this.rainResumeAfter||0)){
       this.rainResuming=true;this.rainResumeAfter=now+5000;
