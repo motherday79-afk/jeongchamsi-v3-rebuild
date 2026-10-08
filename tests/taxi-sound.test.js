@@ -21,7 +21,7 @@ test('courtesy follows first and final stories with distinct closing remarks',()
 });
 test('every dialogue and comfort has a prerecorded MP3; voices match the curated passenger roster',()=>{
  const women=new Set(['나경원','김선민','이소영','용혜인']);
- for(const p of TAXI_PASSENGERS){assert.equal(taxiVoice(p),women.has(p.name)?'ko-KR-SunHiNeural':'ko-KR-InJoonNeural');for(let i=0;i<p.beats.length;i++){const b=beatAudio(p,i);for(const url of [b.audioUrl,b.comfort?.audioUrl].filter(Boolean)){const buffer=fs.readFileSync(new URL('..'+url,import.meta.url));assert.ok(buffer.length>1000);assert.ok(buffer.subarray(0,3).toString()==='ID3'||buffer[0]===255);}}}
+ for(const p of TAXI_PASSENGERS){assert.equal(taxiVoice(p),women.has(p.name)?'F1':'M1');for(let i=0;i<p.beats.length;i++){const b=beatAudio(p,i);for(const url of [b.audioUrl,b.comfort?.audioUrl].filter(Boolean)){const buffer=fs.readFileSync(new URL('..'+url,import.meta.url));assert.ok(buffer.length>1000);assert.ok(buffer.subarray(0,3).toString()==='ID3'||buffer[0]===255);}}}
 });
 test('narration advances to comfort once, pauses and cancels at passenger/beat changes',async()=>{
  const nodes=new Map();const node=id=>{if(!nodes.has(id))nodes.set(id,{textContent:'',hidden:true,setAttribute(){}});return nodes.get(id);};

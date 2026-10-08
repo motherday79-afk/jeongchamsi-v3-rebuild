@@ -15,3 +15,10 @@ Generation helpers: verification/taxi466-audio.mjs and verification/taxi466-gene
 - Sixty story recordings use -2% speech rate with 140 ms sentence pauses and 280 ms transitions after questions or before topic changes. Sentence timestamps include these pauses so automatic scrolling stays synchronized.
 - Repetitive explanatory caveats were reduced in dialogue; source attribution and the reconstruction notice remain. Final remarks are staged game dialogue, not political quotations.
 - Listening and gameplay acceptance remain with the user.
+
+## Approved local voices (474)
+
+- All 60 stories, 8 greetings and 16 courtesy/closing recordings now use Supertonic 3 locally: M1 for male passengers, F1 for female passengers. These are the two sample voices selected by the user. No paid API or per-play synthesis is involved.
+- Generation uses the sample's 16 denoising steps and 1.0 speed. Sentences are rendered separately and joined with 180 ms pauses; sentence timings derive from the generated waveform lengths for scrolling.
+- The model and generation libraries are local tooling, not shipped to the browser. Audio files are served as 96 kbps MP3s. Existing approved dialogue wording is retained.
+- Model source: https://huggingface.co/supertone-oss-archive/supertonic-3 ; model license: BigScience Open RAIL-M. Runtime source: https://github.com/supertone-oss-archive/supertonic (MIT). The upstream project is archived; generated audio playback has no runtime dependency on its hosted services.
