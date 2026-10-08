@@ -1,7 +1,7 @@
 import {splitDialogue} from './dialogue-reader.js?v=0.0.31.470';
 import {bindTaxiFullscreen} from './fullscreen.js?v=0.0.31.470';
 import {formatDistance} from './distance.js?v=0.0.31.470';
-import {TaxiSound} from './sound.js?v=0.0.31.477';
+import {TaxiSound} from './sound.js?v=0.0.31.478';
 const API = '/api/v3/taxi';
 const TOKEN_KEY = 'jcs-real-taxi-session-v1';
 const PENDING_KEY = 'jcs-real-taxi-pending-v1';
@@ -203,7 +203,7 @@ document.addEventListener('click',(event) => {
 });
 $('#ride-reset').addEventListener('click',()=>{ if (!state || busy || pending) return; if (!window.confirm('내 현재 운행과 운행일지를 모두 초기화할까요? 승객 순서도 새로 섞이며, 다른 계정의 기록은 유지됩니다.')) return; sound.voice.pause(); void act('reset'); });
 $('#effects-toggle').addEventListener('click',()=>sound.toggle('effects'));
-$('#rain-toggle').addEventListener('click',()=>sound.toggle('rain'));
+
 $('#voice-toggle').addEventListener('click',()=>sound.toggle('voice'));
 $('#voice-replay').addEventListener('click',()=>sound.replay());
 $('#help-open').addEventListener('click',() => openDialog('help-dialog'));

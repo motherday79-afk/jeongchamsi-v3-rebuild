@@ -5,6 +5,14 @@ import {TaxiSound} from '../taxi/sound.js';
 import {TAXI_PASSENGERS} from '../lib/taxi-passengers.js';
 import {beatAudio,taxiVoice,greetingAudio,GREETING_LINES} from '../lib/taxi-audio.js';
 
+test('unlock retains vehicle effects context without creating rain even with legacy preferences',()=>{
+ globalThis.localStorage={getItem:()=>'{"rain":true}',setItem(){}};
+ globalThis.Audio=class{src='';addEventListener(){}async play(){}};
+ let contexts=0;
+ globalThis.window={AudioContext:class{state='running';constructor(){contexts++;}createBuffer(){throw new Error('Ambient audio must not be created');}}};
+ const s=new TaxiSound();s.unlock();s.unlock();assert.equal(contexts,1);assert.equal(s.rainGain,undefined);assert.equal(s.rainOn,undefined);
+});
+
 test('each new passenger must finish their own greeting before start is available',()=>{
  const s=Object.create(TaxiSound.prototype),ride={id:'next',phase:'intro',beatIndex:0};
  Object.assign(s,{key:'previous:intro:0',finished:true,voiceOn:true,failed:false,elapsed:0,beat:{text:'인사말'}});
@@ -34,7 +42,7 @@ test('every dialogue and comfort has a prerecorded MP3; voices match the curated
  for(const p of TAXI_PASSENGERS){assert.equal(taxiVoice(p),women.has(p.name)?'F1':'M1');for(let i=0;i<p.beats.length;i++){const b=beatAudio(p,i);for(const url of [b.audioUrl,b.comfort?.audioUrl].filter(Boolean)){const buffer=fs.readFileSync(new URL('..'+url,import.meta.url));assert.ok(buffer.length>1000);assert.ok(buffer.subarray(0,3).toString()==='ID3'||buffer[0]===255);}}}
 });
 test('narration advances to comfort once, pauses and cancels at passenger/beat changes',async()=>{
- const nodes=new Map();const node=id=>{if(!nodes.has(id))nodes.set(id,{textContent:'',hidden:true,setAttribute(){}});return nodes.get(id);};
+ const nodes=new Map();const node=id=>{if(!nodes.has(id))nodes.set(id,{textContent:'',hidden:true,dataset:{},setAttribute(){}});return nodes.get(id);};
  globalThis.document={hidden:false,querySelector:node,getElementById:node};
  globalThis.localStorage={getItem:()=>null,setItem(){}};
  globalThis.Audio=class {paused=true;src='';handlers={};addEventListener(k,fn){this.handlers[k]=fn;}load(){}pause(){this.paused=true;}async play(){this.paused=false;}};
@@ -46,18 +54,4 @@ test('narration advances to comfort once, pauses and cancels at passenger/beat c
  s.voice.handlers.ended();s.update(ride,true);assert.equal(s.finished,true);
  s.update({...ride,beatIndex:1,beat:{text:'다음',audioUrl:'/second.mp3'}},true);await Promise.resolve();assert.equal(s.showComfort,false);assert.equal(s.voice.src,'/second.mp3');
  s.update({status:'completed'},false);assert.equal(s.voice.paused,true);assert.equal(s.beat,null);
-});
-
-test('rain stays audible while choosing or stopped, recovers interruption, and respects mute and hidden page',async()=>{
- globalThis.document={hidden:false};
- const gains=[];let resumes=0;
- const s=Object.create(TaxiSound.prototype);
- Object.assign(s,{rainOn:true,unlocked:true,ctx:{state:'running',currentTime:1,resume:async()=>{resumes++;}},rainGain:{gain:{setTargetAtTime:v=>gains.push(v)}}});
- s.updateRain(false);assert.equal(gains.at(-1),.95);
- s.updateRain(true);assert.equal(gains.at(-1),.18);
- s.updateRain(false);assert.equal(gains.at(-1),.95);
- s.ctx.state='interrupted';s.updateRain(false);await Promise.resolve();assert.equal(resumes,1);
- s.rainOn=false;s.updateRain(false);assert.equal(gains.at(-1),0);
- s.rainOn=true;document.hidden=true;s.updateRain(false);assert.equal(gains.at(-1),0);assert.equal(resumes,1);
- document.hidden=false;
 });

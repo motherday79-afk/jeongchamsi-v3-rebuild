@@ -1,0 +1,15 @@
+#passenger-body .passenger-torso{transform-box:view-box;transform-origin:178px 135px;transition:transform .55s ease}
+#passenger-body .passenger-head{transform-box:view-box;transform-origin:178px 105px;transition:transform .5s ease}
+#passenger-body .passenger-arm{transform-box:view-box;transform-origin:185px 112px;transform:rotate(26deg);transition:transform .65s ease}
+#passenger-body:not([data-pose="still"]) .passenger-torso{animation:passenger-breathe 4.8s ease-in-out infinite}
+#passenger-body[data-pose="greet"] .passenger-head{animation:passenger-greet 2.3s ease-in-out both}
+#passenger-body[data-pose="nod"] .passenger-head{animation:passenger-nod 2.3s ease-in-out both}
+#passenger-body[data-pose="explain"] .passenger-arm{transform:rotate(-12deg)}
+#passenger-body[data-pose="explain"] .passenger-head{transform:rotate(4deg)}
+#passenger-body[data-pose="lean"] .passenger-torso{animation:passenger-lean 2.3s ease-in-out both}
+#passenger-body[data-pose="lean"] .passenger-arm{transform:rotate(10deg)}
+@keyframes passenger-breathe{0%,100%{transform:translateY(0) scaleY(1)}50%{transform:translateY(-.35px) scaleY(1.012)}}
+@keyframes passenger-greet{0%,100%{transform:rotate(0)}35%,60%{transform:translate(1px,1px) rotate(11deg)}}
+@keyframes passenger-nod{0%,100%{transform:rotate(0)}35%{transform:translateY(.6px) rotate(5deg)}70%{transform:rotate(-2deg)}}
+@keyframes passenger-lean{0%,100%{transform:rotate(0)}40%,70%{transform:rotate(4deg)}}
+@media(prefers-reduced-motion:reduce){#passenger-body .passenger-torso,#passenger-body .passenger-head,#passenger-body .passenger-arm{animation:none!important;transition:none!important;transform:none!important}}
