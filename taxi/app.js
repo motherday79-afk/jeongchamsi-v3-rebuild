@@ -1,7 +1,7 @@
 import {splitDialogue} from './dialogue-reader.js?v=0.0.31.470';
 import {bindTaxiFullscreen} from './fullscreen.js?v=0.0.31.470';
 import {formatDistance} from './distance.js?v=0.0.31.470';
-import {TaxiSound} from './sound.js?v=0.0.31.476';
+import {TaxiSound} from './sound.js?v=0.0.31.477';
 const API = '/api/v3/taxi';
 const TOKEN_KEY = 'jcs-real-taxi-session-v1';
 const PENDING_KEY = 'jcs-real-taxi-pending-v1';
@@ -64,6 +64,7 @@ async function refresh() {
 }
 async function act(action,{retry = false,keepalive = false} = {}) {
   if (busy || syncing || (!retry && pending) || (!retry && !state)) return;
+  if (!retry && action === 'begin' && !sound.introReady(state?.ride)) return;
   if (!retry) { pending = {action,requestId:crypto.randomUUID(),expectedVersion:state.version}; savePending(); }
   if (!pending) return;
   const operation = pending.action;
@@ -133,7 +134,7 @@ function revealMarkup(ride,journal = false) {
 }
 function activeMarkup(ride) {
   if (localPaused || ride.paused || document.hidden) return `<div class="paused-card"><div class="speech-balloon"><span class="speaker-label">잠시 정차 중</span><h2>이야기는 여기서<br>기다리고 있어요.</h2><p>화면을 떠난 동안은 주행 거리가 늘지 않아요.<br>준비되면 직접 운행을 이어가 주세요.</p></div><div class="choice-row"><button type="button" class="button main-button" data-action="resume">운행 이어가기</button><button type="button" class="button drop-button" data-action="dropoff">여기서 내려주기</button></div></div>`;
-  if(ride.phase==='intro') return `<div class="speech-balloon"><span class="speaker-label">처음 만난 손님 · 인사</span><p class="beat-text">${esc(ride.beat?.text)}</p><p class="intro-note">손님과의 인사는 게임 연출입니다. 준비되면 이야기를 들어주세요.</p></div><div class="choice-row"><button type="button" class="button main-button" data-action="begin">이야기 들어보기</button><button type="button" class="button drop-button" data-action="dropoff">내려주기</button></div><button type="button" class="pause-button" data-action="pause">잠시 정차</button>`;
+  if(ride.phase==='intro') return `<div class="speech-balloon"><span class="speaker-label">처음 만난 손님 · 인사</span><p class="beat-text">${esc(ride.beat?.text)}</p><p class="intro-note">손님과의 인사는 게임 연출입니다. 인사를 들은 뒤 운행을 시작할지 선택해 주세요.</p></div><div class="choice-row"><button type="button" class="button main-button" data-action="begin" disabled>인사를 듣는 중</button><button type="button" class="button drop-button" data-action="dropoff">내려주기</button></div><button type="button" class="pause-button" data-action="pause">잠시 정차</button>`;
   const last = num(ride.beatIndex)+1 >= num(ride.totalBeats);
   const liked = ride.likedBeatIndexes?.includes(ride.beatIndex);
   return `<div class="speech-balloon"><span class="speaker-label">이름 모를 승객 · 이야기 ${num(ride.beatIndex)+1}</span><div class="dialogue-scroll" id="dialogue-scroll" tabindex="0" role="region" aria-label="승객 대사" aria-describedby="dialogue-scroll-hint"><p class="beat-text">${splitDialogue(ride.beat?.text).map((sentence,index)=>`<span class="dialogue-sentence" data-sentence="${index}">${esc(sentence.text)}</span>`).join('')}</p>${ride.beat?.comfort ? '<p class="gentle-line" id="gentle-line" hidden></p>' : ''}</div><p class="scroll-hint" id="dialogue-scroll-hint">음성을 준비하고 있어요. 위아래로 읽을 수 있습니다.</p></div><div class="choice-row"><button type="button" class="button main-button" data-action="${last ? 'finish' : 'listen'}">${last ? '운행 마치기' : '계속 듣기'}</button><button type="button" class="button like-button" data-action="like" ${liked ? 'data-liked="true"' : ''}>${liked ? '공감했어요' : '공감하기'}</button><button type="button" class="button drop-button" data-action="dropoff">내려주기</button></div><button type="button" class="pause-button" data-action="pause">잠시 정차</button>`;
@@ -161,14 +162,15 @@ function render() {
 }
 function controls() {
   const blocked = busy || syncing || !!pending || pauseWanted || performance.now()<sound.exitUntil;
-  document.querySelectorAll('[data-action]').forEach((button) => { button.disabled = blocked || button.dataset.liked === 'true' || document.hidden; });
+  document.querySelectorAll('[data-action]').forEach((button) => { button.disabled = blocked || button.dataset.liked === 'true' || document.hidden || (button.dataset.action === 'begin' && !sound.introReady(state?.ride)); if (button.dataset.action === 'begin') button.textContent = sound.introReady(state?.ride) ? '운행 시작하기' : '인사를 듣는 중'; });
   $('#recovery').hidden = !pending || busy;
   $('#retry-button').disabled = busy || syncing;
   $('#ride-reset').disabled = blocked || !state || document.hidden;
 }
 function tick() {
   const ride = state?.ride;
-  const moving = ride?.status === 'active' && !ride.paused && !localPaused && !document.hidden && (!pending || ['heartbeat','like','listen'].includes(pending.action)) && performance.now() >= boardUntil;
+  const listening = ride?.status === 'active' && !ride.paused && !localPaused && !document.hidden && (!pending || ['heartbeat','like','listen'].includes(pending.action)) && performance.now() >= boardUntil;
+  const moving = listening && ride.phase !== 'intro';
   $('#scene').classList.toggle('is-driving',!!moving);
   $('#scene').classList.toggle('is-stopped',!moving);
   const leaving=performance.now()<sound.exitUntil;
@@ -181,8 +183,8 @@ function tick() {
   $('#ride-distance').textContent = meter.value;
   $('#distance-unit').textContent = meter.unit;
   $('#meter-state').textContent = moving ? '운행 중' : '정차';
-  sound.update(ride,!!moving && (!pending || ['heartbeat','like'].includes(pending.action)));
-  document.getElementById('voice-replay').disabled = !moving;
+  sound.update(ride,!!listening && (!pending || ['heartbeat','like'].includes(pending.action)));
+  document.getElementById('voice-replay').disabled = !listening;
   controls();
 }
 function renderJournal() {

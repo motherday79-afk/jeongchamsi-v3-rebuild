@@ -43,6 +43,10 @@ export class TaxiSound {
   load(url){this.voice.pause();this.voice.src=url;this.voice.load();this.failed=false;this.starting=false;}
   next(){if(!this.beat||!this.key)return;if(this.phase==='story'&&this.beat.comfort){this.phase='comfort';this.showComfort=true;this.load(this.beat.comfort.audioUrl);}else this.finished=true;}
   replay(){this.unlock();if(!this.beat)return;this.phase='story';this.finished=false;this.elapsed=0;this.showComfort=false;this.voiceOn=true;this.load(this.beat.audioUrl);this.save();}
+  introReady(ride){
+    if(ride?.phase!=='intro'||this.key!==ride.id+':intro:'+ride.beatIndex)return false;
+    return this.finished||((!this.voiceOn||this.failed)&&this.elapsed>=Math.max(5000,(this.beat?.text?.length||0)*115));
+  }
   updateRain(talking){
     if(!this.rainGain)return;
     // Ambience belongs to the visible taxi scene, including quiet decision time.

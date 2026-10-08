@@ -4,17 +4,27 @@ import fs from 'node:fs';
 import {TaxiSound} from '../taxi/sound.js';
 import {TAXI_PASSENGERS} from '../lib/taxi-passengers.js';
 import {beatAudio,taxiVoice,greetingAudio,GREETING_LINES} from '../lib/taxi-audio.js';
+
+test('each new passenger must finish their own greeting before start is available',()=>{
+ const s=Object.create(TaxiSound.prototype),ride={id:'next',phase:'intro',beatIndex:0};
+ Object.assign(s,{key:'previous:intro:0',finished:true,voiceOn:true,failed:false,elapsed:0,beat:{text:'인사말'}});
+ assert.equal(s.introReady(ride),false);
+ s.key='next:intro:0';s.finished=false;assert.equal(s.introReady(ride),false);
+ s.finished=true;assert.equal(s.introReady(ride),true);
+ s.finished=false;s.voiceOn=false;s.elapsed=4999;assert.equal(s.introReady(ride),false);
+ s.elapsed=5000;assert.equal(s.introReady(ride),true);
+});
 test('every intro voice is present for both genders',()=>{for(const p of [TAXI_PASSENGERS[0],TAXI_PASSENGERS[1]])for(let i=0;i<GREETING_LINES.length;i++)assert.ok(fs.statSync(new URL('..'+greetingAudio(p,i).audioUrl,import.meta.url)).size>1000);});
 
-test('courtesy follows first and final stories with distinct closing remarks',()=>{
+test('every story offers choice guidance and the final story offers finishing guidance',()=>{
  for(const p of TAXI_PASSENGERS){
   const first=beatAudio(p,0).comfort,last=beatAudio(p,p.beats.length-1).comfort;
   assert.equal(first.kind,'comfort');assert.equal(last.kind,'closing');assert.notEqual(first.text,last.text);
-  for(let i=1;i<p.beats.length-1;i++)assert.equal(beatAudio(p,i).comfort,undefined);
+  for(let i=0;i<p.beats.length-1;i++){assert.match(beatAudio(p,i).comfort.text,/계속 듣기/);assert.match(beatAudio(p,i).comfort.text,/내려주기/);}assert.match(last.text,/운행 마치기/);assert.doesNotMatch(last.text,/계속 듣기/);
   for(const line of [first,last]){
    const cues=JSON.parse(fs.readFileSync(new URL('..'+line.audioUrl.replace('.mp3','.json'),import.meta.url),'utf8'));
    const end=cues.at(-1).start+cues.at(-1).duration;
-   assert.ok(end>=10&&end<=18,`${p.id} ${line.kind}: ${end}`);
+   assert.ok(end>=10&&end<=30,`${p.id} ${line.kind}: ${end}`);
    assert.equal(cues.map(c=>c.text).join('').replace(/\s/g,''),line.text.replace(/\s/g,''));
   }
  }

@@ -10,7 +10,7 @@ test('distance excludes boarding and paused time, audio stays anonymous',async()
  f.tick(1000);s=await f.service.mutate(f.user,f.body('heartbeat',s.version));assert.equal(s.ride.distanceMeters,0);
  f.tick(10000);s=await f.service.mutate(f.user,f.body('pause',s.version));assert.equal(s.ride.distanceMeters,80);
  f.tick(60000);s=await f.service.mutate(f.user,f.body('resume',s.version));assert.equal(s.ride.distanceMeters,80);
- f.tick(1000);s=await f.service.mutate(f.user,f.body('listen',s.version));assert.equal(s.ride.distanceMeters,88);assert.equal(s.ride.beat.comfort,undefined);
+ f.tick(1000);s=await f.service.mutate(f.user,f.body('listen',s.version));assert.equal(s.ride.distanceMeters,88);assert.ok(s.ride.beat.comfort.text);
  s=await f.service.mutate(f.user,f.body('dropoff',s.version));assert.equal(s.history[0].distanceMeters,88);
 });
 function setup(){
@@ -21,6 +21,20 @@ function setup(){
   const body=(action,version)=>({action,expectedVersion:version,requestId:'request_'+String(++seq).padStart(12,'0')});
   return {service,user,db,keys,body,tick:n=>{at+=n;}};
 }
+
+test('successive passengers stay in greeting with zero distance until explicit begin',async()=>{
+ const f=setup();let s=await f.service.get(f.user);
+ for(let i=0;i<3;i++){
+  s=await f.service.mutate(f.user,f.body('start',s.version));
+  assert.equal(s.ride.phase,'intro');assert.equal(s.ride.heardCount,0);
+  f.tick(20000);s=await f.service.mutate(f.user,f.body('heartbeat',s.version));
+  assert.equal(s.ride.distanceMeters,0);assert.equal(s.ride.activeMs,0);assert.equal(s.ride.beat.type,'game_intro');
+  await assert.rejects(f.service.mutate(f.user,f.body('listen',s.version)),/INTRO_REQUIRED/);
+  s=await f.service.mutate(f.user,f.body('begin',s.version));
+  f.tick(1000);s=await f.service.mutate(f.user,f.body('heartbeat',s.version));assert.equal(s.ride.distanceMeters,8);
+  s=await f.service.mutate(f.user,f.body('dropoff',s.version));
+ }
+});
 test('intro withholds policy content until consent; leaving during greeting records zero heard',async()=>{
  const f=setup();let s=await f.service.mutate(f.user,f.body('start',0));
  assert.equal(s.ride.phase,'intro');assert.equal(s.ride.heardCount,0);assert.equal(s.ride.beat.type,'game_intro');assert.doesNotMatch(s.ride.beat.text,/익명 대화/);
@@ -47,11 +61,12 @@ test('same request concurrency advances once; altered or stale commands fail',as
 });
 test('server credits capped active intervals; pause and GET cannot accrue time',async()=>{
   const f=setup();let s=await f.service.mutate(f.user,f.body('start',0));
+  s=await f.service.mutate(f.user,f.body('begin',s.version));
   f.tick(15000);s=await f.service.mutate(f.user,f.body('heartbeat',s.version));assert.equal(s.ride.activeMs,15000);
   f.tick(1000000);s=await f.service.mutate(f.user,f.body('pause',s.version));assert.equal(s.ride.activeMs,35000);
   f.tick(1000000);assert.equal((await f.service.get(f.user)).ride.activeMs,35000);
   s=await f.service.mutate(f.user,f.body('resume',s.version));assert.equal(s.ride.activeMs,35000);
-  f.tick(5000);s=await f.service.mutate(f.user,f.body('begin',s.version));assert.equal(s.ride.activeMs,40000);
+  f.tick(5000);s=await f.service.mutate(f.user,f.body('listen',s.version));assert.equal(s.ride.activeMs,40000);
   await assert.rejects(f.service.mutate(f.user,{...f.body('heartbeat',s.version),elapsed:999999}),/INVALID_INPUT/);
 });
 test('likes never advance and are unique, final listen reveals sources and journal',async()=>{
@@ -64,6 +79,7 @@ test('likes never advance and are unique, final listen reveals sources and journ
 
 test('resume after an undelivered pause does not count the hidden interval',async()=>{
   const f=setup();let s=await f.service.mutate(f.user,f.body('start',0));
+  s=await f.service.mutate(f.user,f.body('begin',s.version));
   f.tick(15000);s=await f.service.mutate(f.user,f.body('heartbeat',s.version));
   f.tick(3600000);s=await f.service.mutate(f.user,f.body('resume',s.version));
   assert.equal(s.ride.activeMs,15000);
