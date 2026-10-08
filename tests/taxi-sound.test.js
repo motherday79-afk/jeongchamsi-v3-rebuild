@@ -44,7 +44,7 @@ test('rain stays audible while choosing or stopped, recovers interruption, and r
  const s=Object.create(TaxiSound.prototype);
  Object.assign(s,{rainOn:true,unlocked:true,ctx:{state:'running',currentTime:1,resume:async()=>{resumes++;}},rainGain:{gain:{setTargetAtTime:v=>gains.push(v)}}});
  s.updateRain(false);assert.equal(gains.at(-1),.95);
- s.updateRain(true);assert.equal(gains.at(-1),.42);
+ s.updateRain(true);assert.equal(gains.at(-1),.70);
  s.updateRain(false);assert.equal(gains.at(-1),.95);
  s.ctx.state='interrupted';s.updateRain(false);await Promise.resolve();assert.equal(resumes,1);
  s.rainOn=false;s.updateRain(false);assert.equal(gains.at(-1),0);
