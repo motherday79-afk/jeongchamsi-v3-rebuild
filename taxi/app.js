@@ -1,3 +1,4 @@
+import {updateTaxiJourney} from './journey.js?v=0.0.31.492';
 import {splitDialogue} from './dialogue-reader.js?v=0.0.31.470';
 import {bindTaxiFullscreen} from './fullscreen.js?v=0.0.31.470';
 import {formatDistance} from './distance.js?v=0.0.31.470';
@@ -169,6 +170,7 @@ function controls() {
 }
 function tick() {
   const ride = state?.ride;
+  updateTaxiJourney($('#scene'),ride);
   const listening = ride?.status === 'active' && !ride.paused && !localPaused && !document.hidden && (!pending || ['heartbeat','like','listen'].includes(pending.action)) && performance.now() >= boardUntil;
   const moving = listening && ride.phase !== 'intro';
   $('#scene').classList.toggle('is-driving',!!moving);
