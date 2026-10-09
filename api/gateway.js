@@ -204,7 +204,7 @@ export async function handlePoliticians(req,res,command,url,intelligence){
   }
   const type=cleanPoliticianType(url.searchParams.get('type')||req.query?.type)||'assembly';
   const offset=Math.max(0,Number(url.searchParams.get('offset')||req.query?.offset||0)||0),limit=Math.min(100,Math.max(1,Number(url.searchParams.get('limit')||req.query?.limit||30)||30));
-  const [all,published]=await Promise.all([readPoliticianType(command,type),intelligence.getPublicRankings()]),rankById=published?.byId||{},sorted=[...all].sort((left,right)=>{
+  const [all,published]=await Promise.all([type==='government'?allPoliticianProfiles(command).then(people=>people.filter(person=>person.governmentMember)):readPoliticianType(command,type),intelligence.getPublicRankings()]),rankById=published?.byId||{},sorted=[...all].sort((left,right)=>{
     const leftRank=Number(rankById[left.id]?.categoryRank),rightRank=Number(rankById[right.id]?.categoryRank),leftRanked=Number.isFinite(leftRank)&&leftRank>0,rightRanked=Number.isFinite(rightRank)&&rightRank>0;
     if(leftRanked!==rightRanked)return leftRanked?-1:1;
     if(leftRanked&&rightRanked&&leftRank!==rightRank)return leftRank-rightRank;
@@ -585,6 +585,13 @@ export default async function handler(req,res){
     }
     if(route==='taxi-page'){
       const page=taxiPage(await currentUser(req,command));res.statusCode=page.status;res.setHeader('Content-Type','text/html; charset=utf-8');res.setHeader('Cache-Control','private, no-store');res.setHeader('Vary','Cookie');return res.end(page.html);
+    }
+    if(route==='taxi/stats'){
+      if(req.method!=='GET')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
+      const personId=url.searchParams.get('personId')||'';
+      if(!/^(assembly|metropolitan|basic|nonincumbent|government)-\d{3}$/.test(personId))return json(res,400,{ok:false,error:'PERSON_INVALID'});
+      const user=await currentUser(req,command),token=req.headers?.['x-taxi-session'];
+      return json(res,200,await createTaxiService({command}).stats(personId,user?.status&&user.status!=='active'?null:user,token));
     }
     if(route==='taxi'){
       const result=await taxiRequest(req,{service:createTaxiService({command}),user:await currentUser(req,command),url});

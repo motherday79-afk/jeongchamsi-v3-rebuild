@@ -1,0 +1,795 @@
+{
+  "checkedAt": "2026-10-09",
+  "scope": "10 new taxi passengers, 5 source-grounded historical paraphrases each",
+  "notVerbatim": true,
+  "identityVerification": {
+    "endpoint": "https://www.jeongchamsi.com/api/v3/politicians?q={name}&all=1",
+    "verified": [
+      {
+        "personId": "assembly-001",
+        "name": "김민석"
+      },
+      {
+        "personId": "assembly-002",
+        "name": "정청래"
+      },
+      {
+        "personId": "assembly-005",
+        "name": "한동훈"
+      },
+      {
+        "personId": "assembly-003",
+        "name": "장동혁"
+      },
+      {
+        "personId": "nonincumbent-001",
+        "name": "홍준표"
+      },
+      {
+        "personId": "nonincumbent-005",
+        "name": "유승민"
+      },
+      {
+        "personId": "nonincumbent-008",
+        "name": "조국"
+      },
+      {
+        "personId": "metropolitan-009",
+        "name": "추미애"
+      },
+      {
+        "personId": "assembly-016",
+        "name": "김은혜"
+      }
+    ],
+    "newCanonicalPresident": {
+      "personId": "government-001",
+      "name": "이재명",
+      "note": "Parent government agent supplies new canonical record; absent from live roster before this release"
+    },
+    "excludedUnregisteredCandidates": [
+      "김동연",
+      "심상정"
+    ]
+  },
+  "editorialNotes": [
+    "All policy narratives describe dated proposals rather than asserting present implementation.",
+    "Kim Min-seok beats attribute government proposals announced at an event he chaired as prime minister; not solo-authored legislation.",
+    "Han Dong-hoon partyLabel follows live roster; 2025 contexts identify his then-party separately.",
+    "Hong Jun-pyo live party is empty; display uses 무소속.",
+    "Female additions are taxi-21 and taxi-22.",
+    "Spoken timing depends on voice/render settings; scripts are 243-268 Korean characters."
+  ],
+  "passengers": [
+    {
+      "id": "taxi-13",
+      "personId": "government-001",
+      "name": "이재명",
+      "partyLabel": "더불어민주당",
+      "beats": [
+        {
+          "id": "13-a",
+          "characters": 247,
+          "attribution": "공약 제안",
+          "context": "2025-04-14 대선 경선 후보 당시 AI 투자 공약",
+          "sources": [
+            {
+              "title": "파이낸셜뉴스 · 이재명 AI 산업 공약 발표",
+              "url": "https://www.fnnews.com/news/202504140934186060",
+              "date": "2025-04-14"
+            }
+          ]
+        },
+        {
+          "id": "13-b",
+          "characters": 247,
+          "attribution": "공약 제안",
+          "context": "2025-04-14 대선 경선 후보 당시 AI 연산기반 공약",
+          "sources": [
+            {
+              "title": "파이낸셜뉴스 · 이재명 AI 산업 공약 발표",
+              "url": "https://www.fnnews.com/news/202504140934186060",
+              "date": "2025-04-14"
+            }
+          ]
+        },
+        {
+          "id": "13-c",
+          "characters": 254,
+          "attribution": "공약 제안",
+          "context": "2025-04-14 대선 경선 후보 당시 AI 인재양성 공약",
+          "sources": [
+            {
+              "title": "파이낸셜뉴스 · 이재명 AI 산업 공약 발표",
+              "url": "https://www.fnnews.com/news/202504140934186060",
+              "date": "2025-04-14"
+            }
+          ]
+        },
+        {
+          "id": "13-d",
+          "characters": 255,
+          "attribution": "공약 제안",
+          "context": "2025-04-14 대선 경선 후보 당시 모두의 AI 공약",
+          "sources": [
+            {
+              "title": "한국경제 · 이재명 AI 인재·특구·무료활용 공약",
+              "url": "https://www.hankyung.com/article/202504149008i",
+              "date": "2025-04-14"
+            }
+          ]
+        },
+        {
+          "id": "13-e",
+          "characters": 253,
+          "attribution": "공약 제안",
+          "context": "2025-04-14 대선 경선 후보 당시 AI 특구 공약",
+          "sources": [
+            {
+              "title": "한국경제 · 이재명 AI 인재·특구·무료활용 공약",
+              "url": "https://www.hankyung.com/article/202504149008i",
+              "date": "2025-04-14"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "taxi-14",
+      "personId": "assembly-001",
+      "name": "김민석",
+      "partyLabel": "더불어민주당",
+      "beats": [
+        {
+          "id": "14-a",
+          "characters": 252,
+          "attribution": "정부 정책 발표",
+          "context": "2025-12-01 당시 국무총리 주재 현장대화 · 정부 개선방안: 택시자격증",
+          "sources": [
+            {
+              "title": "정책브리핑 공식 · 김민석 총리 중소기업 규제합리화 현장대화",
+              "url": "https://www.korea.kr/news/policyNewsView.do?newsId=148955666&pWiseKeyword=keywordNews",
+              "date": "2025-12-01"
+            }
+          ]
+        },
+        {
+          "id": "14-b",
+          "characters": 252,
+          "attribution": "정부 정책 발표",
+          "context": "2025-12-01 당시 국무총리 주재 현장대화 · 정부 개선방안: 상표 우선심사",
+          "sources": [
+            {
+              "title": "국무조정실 공식 · 김민석 총리 주재 중소기업 규제합리화 현장대화",
+              "url": "https://www.opm.go.kr/opm/news/press-release.do?article.offset=0&articleLimit=10&articleNo=160502&mode=view",
+              "date": "2025-12-01"
+            }
+          ]
+        },
+        {
+          "id": "14-c",
+          "characters": 253,
+          "attribution": "정부 정책 발표",
+          "context": "2025-12-01 당시 국무총리 주재 현장대화 · 정부 개선방안: 도시민박업 건축연한",
+          "sources": [
+            {
+              "title": "정책브리핑 공식 · 김민석 총리 중소기업 규제합리화 현장대화",
+              "url": "https://www.korea.kr/news/policyNewsView.do?newsId=148955666&pWiseKeyword=keywordNews",
+              "date": "2025-12-01"
+            }
+          ]
+        },
+        {
+          "id": "14-d",
+          "characters": 254,
+          "attribution": "정부 정책 발표",
+          "context": "2025-12-01 당시 국무총리 주재 현장대화 · 정부 개선방안: 농산가공품 판로",
+          "sources": [
+            {
+              "title": "국무조정실 공식 · 김민석 총리 주재 중소기업 규제합리화 현장대화",
+              "url": "https://www.opm.go.kr/opm/news/press-release.do?article.offset=0&articleLimit=10&articleNo=160502&mode=view",
+              "date": "2025-12-01"
+            }
+          ]
+        },
+        {
+          "id": "14-e",
+          "characters": 258,
+          "attribution": "정부 정책 발표",
+          "context": "2025-12-01 당시 국무총리 주재 현장대화 · 정부 개선방안: 화재공제",
+          "sources": [
+            {
+              "title": "국무조정실 공식 · 김민석 총리 주재 중소기업 규제합리화 현장대화",
+              "url": "https://www.opm.go.kr/opm/news/press-release.do?article.offset=0&articleLimit=10&articleNo=160502&mode=view",
+              "date": "2025-12-01"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "taxi-15",
+      "personId": "assembly-002",
+      "name": "정청래",
+      "partyLabel": "더불어민주당",
+      "beats": [
+        {
+          "id": "15-a",
+          "characters": 256,
+          "attribution": "공약 제안",
+          "context": "2025-06-15 당대표 출마선언 · 전당대회 1인 1표제",
+          "sources": [
+            {
+              "title": "세계일보 · 정청래 당대표 출마선언 전문",
+              "url": "https://m.segye.com/view/20250615507076",
+              "date": "2025-06-15"
+            }
+          ]
+        },
+        {
+          "id": "15-b",
+          "characters": 261,
+          "attribution": "공약 제안",
+          "context": "2025-06-15 당대표 출마선언 · 국회의원 1일 상담원 제도",
+          "sources": [
+            {
+              "title": "세계일보 · 정청래 당대표 출마선언 전문",
+              "url": "https://m.segye.com/view/20250615507076",
+              "date": "2025-06-15"
+            }
+          ]
+        },
+        {
+          "id": "15-c",
+          "characters": 246,
+          "attribution": "공약 제안",
+          "context": "2026-07-13 당대표 출마선언 · 조국혁신당 합당 의견 전당원투표 제안",
+          "sources": [
+            {
+              "title": "뉴스핌 · 정청래 당대표 출마선언 전문",
+              "url": "https://www.newspim.com/news/view/20260713000799",
+              "date": "2026-07-13"
+            }
+          ]
+        },
+        {
+          "id": "15-d",
+          "characters": 251,
+          "attribution": "공약 제안",
+          "context": "2026-07-13 당대표 출마선언 · 당원 대토론회와 교육 강화",
+          "sources": [
+            {
+              "title": "뉴스핌 · 정청래 당대표 출마선언 전문",
+              "url": "https://www.newspim.com/news/view/20260713000799",
+              "date": "2026-07-13"
+            }
+          ]
+        },
+        {
+          "id": "15-e",
+          "characters": 251,
+          "attribution": "공약 제안",
+          "context": "2026-07-13 당대표 출마선언 · 상향식 공천과 신인 경선 기회",
+          "sources": [
+            {
+              "title": "뉴스핌 · 정청래 당대표 출마선언 전문",
+              "url": "https://www.newspim.com/news/view/20260713000799",
+              "date": "2026-07-13"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "taxi-16",
+      "personId": "assembly-005",
+      "name": "한동훈",
+      "partyLabel": "무소속",
+      "beats": [
+        {
+          "id": "16-a",
+          "characters": 248,
+          "attribution": "공약 제안",
+          "context": "2025-04-30 당시 국민의힘 대선 경선 후보 · 캠프 발표 학자금 공약",
+          "sources": [
+            {
+              "title": "연합뉴스 · 한동훈 학자금 상환 부담 완화 공약",
+              "url": "https://www.yna.co.kr/amp/view/AKR20250430037600001",
+              "date": "2025-04-30"
+            }
+          ]
+        },
+        {
+          "id": "16-b",
+          "characters": 255,
+          "attribution": "공약 제안",
+          "context": "2025-04-30 당시 국민의힘 대선 경선 후보 · 상환 방학 제안",
+          "sources": [
+            {
+              "title": "연합뉴스 · 한동훈 학자금 상환 부담 완화 공약",
+              "url": "https://www.yna.co.kr/amp/view/AKR20250430037600001",
+              "date": "2025-04-30"
+            }
+          ]
+        },
+        {
+          "id": "16-c",
+          "characters": 250,
+          "attribution": "공약 제안",
+          "context": "2025-04-30 당시 국민의힘 대선 경선 후보 · 기업 학자금 대리상환 인센티브",
+          "sources": [
+            {
+              "title": "연합뉴스 · 한동훈 학자금 상환 부담 완화 공약",
+              "url": "https://www.yna.co.kr/amp/view/AKR20250430037600001",
+              "date": "2025-04-30"
+            }
+          ]
+        },
+        {
+          "id": "16-d",
+          "characters": 256,
+          "attribution": "공약 제안",
+          "context": "2025-04-15 성장 비전 발표, 04-22 보도 · 당시 국민의힘 대선 경선 후보",
+          "sources": [
+            {
+              "title": "경향신문 · 한동훈 성장 비전과 메가폴리스 공약",
+              "url": "https://www.khan.co.kr/article/202504221832001",
+              "date": "2025-04-22"
+            }
+          ]
+        },
+        {
+          "id": "16-e",
+          "characters": 256,
+          "attribution": "공약 제안",
+          "context": "2025-04-22 당시 국민의힘 대선 경선 후보 · 5대 메가폴리스 공약",
+          "sources": [
+            {
+              "title": "경향신문 · 한동훈 성장 비전과 메가폴리스 공약",
+              "url": "https://www.khan.co.kr/article/202504221832001",
+              "date": "2025-04-22"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "taxi-17",
+      "personId": "assembly-003",
+      "name": "장동혁",
+      "partyLabel": "국민의힘",
+      "beats": [
+        {
+          "id": "17-a",
+          "characters": 249,
+          "attribution": "발언·정책 제안",
+          "context": "2026-02-04 당시 당대표 교섭단체 대표연설 · SMR 정의와 안전규제 제안",
+          "sources": [
+            {
+              "title": "뉴스핌 · 장동혁 교섭단체 대표연설 전문 하편",
+              "url": "https://www.newspim.com/news/view/20260204000200",
+              "date": "2026-02-04"
+            }
+          ]
+        },
+        {
+          "id": "17-b",
+          "characters": 263,
+          "attribution": "발언·정책 제안",
+          "context": "2026-02-04 당시 당대표 교섭단체 대표연설 · 한국형 i-SMR 규제자유특구",
+          "sources": [
+            {
+              "title": "뉴스핌 · 장동혁 교섭단체 대표연설 전문 하편",
+              "url": "https://www.newspim.com/news/view/20260204000200",
+              "date": "2026-02-04"
+            }
+          ]
+        },
+        {
+          "id": "17-c",
+          "characters": 257,
+          "attribution": "발언·정책 제안",
+          "context": "2026-02-04 당시 당대표 교섭단체 대표연설 · 선거연령 16세 하향 제안",
+          "sources": [
+            {
+              "title": "뉴스핌 · 장동혁 교섭단체 대표연설 전문 하편",
+              "url": "https://www.newspim.com/news/view/20260204000200",
+              "date": "2026-02-04"
+            }
+          ]
+        },
+        {
+          "id": "17-d",
+          "characters": 255,
+          "attribution": "발언·정책 제안",
+          "context": "2026-02-04 당시 당대표 교섭단체 대표연설 · 청와대·국회 세종 완전 이전",
+          "sources": [
+            {
+              "title": "뉴스1 · 장동혁 청와대·국회 세종 이전 제안",
+              "url": "https://www.news1.kr/politics/assembly/6061400",
+              "date": "2026-02-04"
+            }
+          ]
+        },
+        {
+          "id": "17-e",
+          "characters": 255,
+          "attribution": "당론 법안 소개",
+          "context": "2026-02-04 당시 당대표 교섭단체 대표연설 · 당론 노란봉투법 시행 1년 유예안 소개",
+          "sources": [
+            {
+              "title": "뉴스핌 · 장동혁 교섭단체 대표연설 전문 중편",
+              "url": "https://www.newspim.com/news/view/20260204000188",
+              "date": "2026-02-04"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "taxi-18",
+      "personId": "nonincumbent-001",
+      "name": "홍준표",
+      "partyLabel": "무소속",
+      "beats": [
+        {
+          "id": "18-a",
+          "characters": 257,
+          "attribution": "공약 제안",
+          "context": "2025-04-20 보도 · 당시 국민의힘 대선 경선 후보 주택 공약",
+          "sources": [
+            {
+              "title": "연합뉴스 · 대선 경선 주자들의 규제·세제·산업 공약",
+              "url": "https://v.daum.net/v/5SbKkRnb5m",
+              "date": "2025-04-20"
+            }
+          ]
+        },
+        {
+          "id": "18-b",
+          "characters": 253,
+          "attribution": "공약 제안",
+          "context": "2025-04-20 보도 · 당시 국민의힘 대선 경선 후보 블록체인·가상자산 공약",
+          "sources": [
+            {
+              "title": "연합뉴스 · 대선 경선 주자들의 규제·세제·산업 공약",
+              "url": "https://v.daum.net/v/5SbKkRnb5m",
+              "date": "2025-04-20"
+            }
+          ]
+        },
+        {
+          "id": "18-c",
+          "characters": 264,
+          "attribution": "공약 제안",
+          "context": "2025-04-20 보도 · 당시 국민의힘 대선 경선 후보 첨단산업 투자 공약",
+          "sources": [
+            {
+              "title": "연합뉴스 · 대선 경선 주자들의 규제·세제·산업 공약",
+              "url": "https://v.daum.net/v/5SbKkRnb5m",
+              "date": "2025-04-20"
+            }
+          ]
+        },
+        {
+          "id": "18-d",
+          "characters": 255,
+          "attribution": "공약 제안",
+          "context": "2021-10-25 당시 국민의힘 대선 경선 후보 · 종부세·재산세 통합 공약",
+          "sources": [
+            {
+              "title": "매일경제 · 홍준표 경제 대개혁 공약",
+              "url": "https://www.mk.co.kr/news/politics/10071921",
+              "date": "2021-10-25"
+            }
+          ]
+        },
+        {
+          "id": "18-e",
+          "characters": 249,
+          "attribution": "공약 제안",
+          "context": "2021-10-25 당시 국민의힘 대선 경선 후보 · 코로나19 피해 경제지원 공약",
+          "sources": [
+            {
+              "title": "매일경제 · 홍준표 경제 대개혁 공약",
+              "url": "https://www.mk.co.kr/news/politics/10071921",
+              "date": "2021-10-25"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "taxi-19",
+      "personId": "nonincumbent-005",
+      "name": "유승민",
+      "partyLabel": "국민의힘",
+      "beats": [
+        {
+          "id": "19-a",
+          "characters": 266,
+          "attribution": "공약 제안",
+          "context": "2021-09-27 보도 · 당시 국민의힘 대선 경선 후보 공정소득 공약",
+          "sources": [
+            {
+              "title": "서울신문 · 유승민 대선 경선 주요 정책",
+              "url": "https://www.seoul.co.kr/news/politics/2021/09/28/20210928006003",
+              "date": "2021-09-27"
+            }
+          ]
+        },
+        {
+          "id": "19-b",
+          "characters": 264,
+          "attribution": "공약 제안",
+          "context": "2021-09-27 보도 · 당시 국민의힘 대선 경선 후보 육아휴직 3년 공약",
+          "sources": [
+            {
+              "title": "머니투데이 · 유승민 저출생 공약 발표",
+              "url": "https://www.mt.co.kr/politics/2021/08/05/2021080509562698933",
+              "date": "2021-08-05"
+            }
+          ]
+        },
+        {
+          "id": "19-c",
+          "characters": 255,
+          "attribution": "공약 제안",
+          "context": "2021-09-27 보도 · 당시 국민의힘 대선 경선 후보 초등돌봄 확대 공약",
+          "sources": [
+            {
+              "title": "서울신문 · 유승민 대선 경선 주요 정책",
+              "url": "https://www.seoul.co.kr/news/politics/2021/09/28/20210928006003",
+              "date": "2021-09-27"
+            }
+          ]
+        },
+        {
+          "id": "19-d",
+          "characters": 265,
+          "attribution": "공약 제안",
+          "context": "2021-09-27 보도 · 당시 국민의힘 대선 경선 후보 아동수당 연령 확대",
+          "sources": [
+            {
+              "title": "머니투데이 · 유승민 저출생 공약 발표",
+              "url": "https://www.mt.co.kr/politics/2021/08/05/2021080509562698933",
+              "date": "2021-08-05"
+            }
+          ]
+        },
+        {
+          "id": "19-e",
+          "characters": 262,
+          "attribution": "공약 제안",
+          "context": "2021-10-10 당시 국민의힘 대선 경선 후보 · 소상공인 손실보상 SNS 제안",
+          "sources": [
+            {
+              "title": "뉴스1·파이낸셜뉴스 · 유승민 소상공인 손실보상 제안",
+              "url": "https://www.fnnews.com/news/202110101413512852",
+              "date": "2021-10-10"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "taxi-20",
+      "personId": "nonincumbent-008",
+      "name": "조국",
+      "partyLabel": "조국혁신당",
+      "beats": [
+        {
+          "id": "20-a",
+          "characters": 254,
+          "attribution": "개헌 제안",
+          "context": "2024-05-17 당시 조국혁신당 대표 국회 기자회견 · 4년 중임 개헌 제안",
+          "sources": [
+            {
+              "title": "뉴시스 · 조국 개헌특위 설치 및 개헌 논의 제안",
+              "url": "https://www.newsis.com/view/NISX20240517_0002737819",
+              "date": "2024-05-17"
+            }
+          ]
+        },
+        {
+          "id": "20-b",
+          "characters": 257,
+          "attribution": "개헌 제안",
+          "context": "2024-05-17 당시 조국혁신당 대표 국회 기자회견 · 수도 법률 규정 제안",
+          "sources": [
+            {
+              "title": "뉴시스 · 조국 개헌특위 설치 및 개헌 논의 제안",
+              "url": "https://www.newsis.com/view/NISX20240517_0002737819",
+              "date": "2024-05-17"
+            }
+          ]
+        },
+        {
+          "id": "20-c",
+          "characters": 248,
+          "attribution": "개헌 제안",
+          "context": "2024-05-17 당시 조국혁신당 대표 국회 기자회견 · 민주항쟁 정신 전문 수록",
+          "sources": [
+            {
+              "title": "뉴시스 · 조국 개헌특위 설치 및 개헌 논의 제안",
+              "url": "https://www.newsis.com/view/NISX20240517_0002737819",
+              "date": "2024-05-17"
+            }
+          ]
+        },
+        {
+          "id": "20-d",
+          "characters": 253,
+          "attribution": "개헌 제안",
+          "context": "2024-05-17 당시 조국혁신당 대표 국회 기자회견 · 영장 신청주체 법률 규정",
+          "sources": [
+            {
+              "title": "미디어오늘 · 조국 개헌안 기자회견 및 백브리핑",
+              "url": "https://www.mediatoday.co.kr/news/articleView.html?idxno=318090",
+              "date": "2024-05-17"
+            }
+          ]
+        },
+        {
+          "id": "20-e",
+          "characters": 264,
+          "attribution": "개헌 제안",
+          "context": "2024-05-17 당시 조국혁신당 대표 국회 기자회견 · 동일가치노동 동일수준임금 명문화",
+          "sources": [
+            {
+              "title": "미디어오늘 · 조국 개헌안 기자회견 및 백브리핑",
+              "url": "https://www.mediatoday.co.kr/news/articleView.html?idxno=318090",
+              "date": "2024-05-17"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "taxi-21",
+      "personId": "metropolitan-009",
+      "name": "추미애",
+      "partyLabel": "더불어민주당",
+      "beats": [
+        {
+          "id": "21-a",
+          "characters": 263,
+          "attribution": "공약 제안",
+          "context": "2021-08-02 보도 · 당시 민주당 대선 경선 후보 지대개혁 공약",
+          "sources": [
+            {
+              "title": "전자신문 · 추미애 지대개혁 공약의 내용",
+              "url": "https://www.etnews.com/20210802000013",
+              "date": "2021-08-02"
+            }
+          ]
+        },
+        {
+          "id": "21-b",
+          "characters": 246,
+          "attribution": "공약 제안",
+          "context": "2021-08-04 당시 민주당 대선 경선 후보 · 기후정의 기본권 개헌 공약",
+          "sources": [
+            {
+              "title": "뉴스핌 · 추미애 기후정의·녹색 대전환 공약",
+              "url": "https://www.newspim.com/news/view/20210804000306",
+              "date": "2021-08-04"
+            }
+          ]
+        },
+        {
+          "id": "21-c",
+          "characters": 260,
+          "attribution": "공약 제안",
+          "context": "2021-08-04 당시 민주당 대선 경선 후보 · 녹색 대전환회의·환경부 개편 공약",
+          "sources": [
+            {
+              "title": "뉴스핌 · 추미애 기후정의·녹색 대전환 공약",
+              "url": "https://www.newspim.com/news/view/20210804000306",
+              "date": "2021-08-04"
+            }
+          ]
+        },
+        {
+          "id": "21-d",
+          "characters": 268,
+          "attribution": "공약 제안",
+          "context": "2021-08-20 당시 민주당 대선 경선 후보 · 디지털 문해력·정보교육 확대 공약",
+          "sources": [
+            {
+              "title": "브릿지경제 · 추미애 디지털 혁신 강국 공약",
+              "url": "https://www.viva100.com/20210820010005322",
+              "date": "2021-08-20"
+            }
+          ]
+        },
+        {
+          "id": "21-e",
+          "characters": 243,
+          "attribution": "공약 제안",
+          "context": "2021-09-10 당시 민주당 대선 경선 후보 · 연구대학·응용과학대학 구조개편",
+          "sources": [
+            {
+              "title": "서울신문 · 추미애 고등교육 구조개편 공약",
+              "url": "https://www.seoul.co.kr/news/politics/2021/09/10/20210910500090",
+              "date": "2021-09-10"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "taxi-22",
+      "personId": "assembly-016",
+      "name": "김은혜",
+      "partyLabel": "국민의힘",
+      "beats": [
+        {
+          "id": "22-a",
+          "characters": 247,
+          "attribution": "공약 제안",
+          "context": "2022-05-27 당시 국민의힘 경기도지사 후보 · 스포츠 마일리지 공약",
+          "sources": [
+            {
+              "title": "경기일보 · 김은혜 경기도 체육발전 공약",
+              "url": "https://www.kyeonggi.com/article/20220527580060",
+              "date": "2022-05-27"
+            }
+          ]
+        },
+        {
+          "id": "22-b",
+          "characters": 259,
+          "attribution": "공약 제안",
+          "context": "2022-05-27 당시 국민의힘 경기도지사 후보 · 생활체육 기반 확대",
+          "sources": [
+            {
+              "title": "경기일보 · 김은혜 경기도 체육발전 공약",
+              "url": "https://www.kyeonggi.com/article/20220527580060",
+              "date": "2022-05-27"
+            }
+          ]
+        },
+        {
+          "id": "22-c",
+          "characters": 249,
+          "attribution": "공약 제안",
+          "context": "2022-05-27 당시 국민의힘 경기도지사 후보 · 체육 지원재원·운영권 공약",
+          "sources": [
+            {
+              "title": "경기일보 · 김은혜 경기도 체육발전 공약",
+              "url": "https://www.kyeonggi.com/article/20220527580060",
+              "date": "2022-05-27"
+            }
+          ]
+        },
+        {
+          "id": "22-d",
+          "characters": 252,
+          "attribution": "공약 제안",
+          "context": "2022-05-23 당시 국민의힘 경기도지사 후보 · 경기북부 경제자유구역청 공약",
+          "sources": [
+            {
+              "title": "뉴시스·파이낸셜뉴스 · 김은혜 경기북부 발전 공약",
+              "url": "https://www.fnnews.com/news/202205231214233969",
+              "date": "2022-05-23"
+            }
+          ]
+        },
+        {
+          "id": "22-e",
+          "characters": 264,
+          "attribution": "공약 제안",
+          "context": "2022-05-23 당시 국민의힘 경기도지사 후보 · 경기북부 3권역 산업벨트 공약",
+          "sources": [
+            {
+              "title": "뉴시스·파이낸셜뉴스 · 김은혜 경기북부 발전 공약",
+              "url": "https://www.fnnews.com/news/202205231214233969",
+              "date": "2022-05-23"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

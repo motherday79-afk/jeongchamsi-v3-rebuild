@@ -11,7 +11,7 @@ import {renderPoliticalMapPage,mountPoliticalMaps} from './views/political-map.j
 import {renderMyDeviceMenu,bindHomeInstall} from './ui/home-install.js?v=0.0.31.398';
 import {renderWebBroadcast,broadcastRequest,bindWebBroadcast} from './ui/web-broadcast.js?v=0.0.31.384';
 import {renderPageShare,bindPageShare,placePageShare} from './ui/page-share.js?v=0.0.31.431';
-import {sharedComments} from './views/community-ui.js?v=0.0.31.484';
+import {sharedComments} from './views/community-ui.js?v=0.0.31.489';
 import {renderComicPage,renderComicAdmin} from './views/political-comic.js?v=0.0.31.431';
 import {comicRequest,bindComicEditor} from './ui/political-comic.js?v=0.0.31.431';
 import {bindComparisonBoard} from './ui/comparison-board.js?v=0.0.31.451';
@@ -33,10 +33,10 @@ import { createCampaignClient } from './core/campaign-client.js?v=0.0.31.158';
 import { loadCampaignPage } from './core/campaign-routing.js?v=0.0.31.160';
 import { bindCampaignInteractions } from './ui/campaign-interactions.js?v=0.0.31.488';
 import { refreshFontScale } from './ui/font-scale.js?v=0.0.31.56';
-import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.484';
+import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.489';
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.56';
 import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.487';
-import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.484';
+import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.489';
 import { focusCageCompose, setupHomeCompare, setupPoliticianAutocomplete, setupLayoutInteractions, setupPoliticianPhotoFallback, setupNowCarousel, setupCageCountdown, setupDesktopHomeViewport } from './ui/interactions.js?v=0.0.31.488';
 import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.354';
 import { createContentService, loadNavigationDashboard, loadPersonNavigation } from './core/content.js?v=0.0.31.488';
@@ -44,18 +44,18 @@ import { createPoliticianService } from './core/politicians.js?v=0.0.31.488';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith, isTransientAnalysisRoute } from './core/navigation.js?v=0.0.31.377';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.148';
-import * as views from './views/stage1.js?v=0.0.31.488';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.448';
+import * as views from './views/stage1.js?v=0.0.31.489';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.489';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.451';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident } from './views/participation-pages.js?v=0.0.31.462';
-import { renderPresidentPage } from './views/president.js?v=0.0.31.107';
-import { renderSearchPage, hasSearchSnapshot } from './views/search-page.js?v=0.0.31.484';
-import { loadSearchDiscovery } from './views/search-discovery.js?v=0.0.31.484';
+import { renderPresidentPage } from './views/president.js?v=0.0.31.489';
+import { renderSearchPage, hasSearchSnapshot } from './views/search-page.js?v=0.0.31.489';
+import { loadSearchDiscovery } from './views/search-discovery.js?v=0.0.31.489';
 import { loadRecentPoliticians, recordRecentPolitician } from './ui/recent-politicians.js?v=0.0.31.430';
 import {regionLocalityOptions,resolveRegionLocality} from './data/korean-regions.js?v=0.0.31.351';
 import {activityFormPayload,activityRequestId,settleActivityRequest,rememberActivityFeedback,rememberSubmissionFeedback,showActivityFeedback,hydrateActivityHints,bindActivityPoints,authoringResult} from './ui/activity-points.js?v=0.0.31.462';
 import {bindDailyReports} from './ui/daily-report.js?v=0.0.31.448';
-import {bindFortuneInteractions} from './ui/fortune-interactions.js?v=0.0.31.484';
+import {bindFortuneInteractions} from './ui/fortune-interactions.js?v=0.0.31.489';
 
 const formErrors={DISPLAY_AUTHOR_FORBIDDEN:'작성자명 지정은 최고관리자만 가능합니다.',DISPLAY_AUTHOR_OWNER_REQUIRED:'본인이 작성한 글의 작성자명만 변경할 수 있습니다.',DISPLAY_AUTHOR_INVALID:'작성자명은 줄바꿈 없이 40자 이내로 입력해 주세요.',SUPERADMIN_REQUIRED:'최고관리자만 이용할 수 있습니다.',GOODS_REQUEST_REQUIRED:'상품 종류, 희망 수량, 연락처와 제작 요청을 확인해 주세요.',ALREADY_VOTED:'이번 회차 투표를 이미 완료했습니다.',AGE_GROUP_MISMATCH:'20대 이상 회원은 본인 세대에서만 투표할 수 있습니다.',GENERATION_VOTE_CLOSED:'현재 진행 중인 모의투표가 아닙니다.',CANDIDATE_NOT_ALLOWED:'이번 회차에 등록된 후보를 선택해 주세요.',ADMIN_VOTE_DISABLED:'관리자는 데모 설정으로 현황을 관리해 주세요.',CAMP_REQUIRED:'진보진영 또는 보수진영을 선택해 주세요.',PIN_FORBIDDEN:'공지·케이지 고정은 관리자만 할 수 있습니다.',PIN_INVALID:'공지 또는 케이지 중 하나를 선택해 주세요.',POST_EDIT_FORBIDDEN:'본인이 작성한 게시글만 수정·삭제할 수 있습니다.',COMMENT_EDIT_FORBIDDEN:'본인이 작성한 댓글만 수정·삭제할 수 있습니다.',CONTENT_CHANGED_RETRY:'다른 참여 내용이 갱신됐습니다. 입력 내용은 유지되니 다시 저장해 주세요.',CONTENT_STORAGE_INVALID:'저장된 게시판 데이터를 읽지 못했습니다. 다시 시도해 주세요.',TITLE_REQUIRED:'제목을 입력해 주세요.',INVALID_COMMENT:'댓글 내용을 입력해 주세요.',COMMENT_PARENT_INVALID:'답글을 달 댓글이 변경되었거나 삭제되었습니다.',CAGE_NOT_FOUND:'케이지를 찾을 수 없습니다.',POST_NOT_FOUND:'게시글이 삭제되었거나 존재하지 않습니다.',COMMENT_NOT_FOUND:'댓글이 삭제되었거나 존재하지 않습니다.',CAMP_IMMUTABLE:'작성한 글의 진영은 변경할 수 없습니다.',INVALID_REFERRER:'추천인코드를 확인해 주세요. 사용 가능한 회원의 코드를 입력해야 합니다.',INVALID_REFERRER_CODE:'추천인코드는 숫자로 입력해 주세요.',INVALID_REGION:'시·도와 시·군·구를 올바르게 선택해 주세요.',REGISTRATION_BUSY:'가입 요청이 많습니다. 잠시 후 다시 시도해 주세요.',MEMBERS_CHANGED_RETRY:'회원 정보가 갱신됐습니다. 새로고침 후 다시 저장해 주세요.'};
 const app=document.getElementById('app');
@@ -276,7 +276,7 @@ async function render({preserveScroll=false,refreshHome=false,freshSession=false
   else if(p[0]==='search') body=await renderSearchPage({query:new URLSearchParams(r.split('?')[1]||'').get('q')||'',page:searchParams.get('page')||1,personId:searchParams.get('person')||'',publisher:searchParams.get('publisher')||'',period:searchParams.get('period')||'latest',politicians,content});
   else if(p[0]==='trending')body=renderTrendingPage(await politicians.trending());
   else if(p[0]==='now') body=await renderPoliticianDirectory(politicians,r);
-  else if(p[0]==='person') body=await renderPoliticianDetail(p[1]||'',politicians,session,dashboard,personData.detail);
+  else if(p[0]==='person') body=await renderPoliticianDetail(p[1]||'',politicians,session,dashboard,personData.detail,r);
   else if(p[0]==='compare') body=await renderPoliticianCompare(politicians,r,session);
   else if(p[0]==='request-politician'){const result=session.authenticated?await content.listPoliticianRequests().catch(()=>({items:[]})):{items:[]};body=views.renderPoliticianRequest({session,requests:result.items||[]});}
   else if(p[0]==='partners'){const result=session.user?.role==='admin'?await content.listPartnerApplications().catch(()=>({items:[]})):{items:[]};body=views.renderPartners({session,applications:result.items||[]});}

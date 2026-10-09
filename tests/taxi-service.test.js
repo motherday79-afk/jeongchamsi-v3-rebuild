@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createTaxiService,TAXI_CAS_LUA} from '../lib/taxi-service.js';
+import {TAXI_RECORD_LUA} from '../lib/taxi-statistics.js';
 import {taxiRequest} from '../lib/taxi-http.js';
 
 const passengers=['a','b','c'].map(id=>({id,personId:'person-'+id,name:'Name '+id,partyLabel:'Party '+id,photoUrl:'https://example.com/'+id+'.jpg',beats:[0,1,2,3,4].map(index=>({id:id+index,text:'익명 대화 '+index,type:'paraphrase',context:'출처 맥락',sources:[{title:'원문',url:'https://example.com/source/'+id+index,date:'2026-01-01'}]}))}));
@@ -15,7 +16,7 @@ test('distance excludes boarding and paused time, audio stays anonymous',async()
 });
 function setup(){
   const db=new Map(),keys=[];let at=100000,seq=0;
-  const command=async args=>{if(args[0]==='GET'){keys.push(args[1]);return db.get(args[1])??null;}assert.equal(args[0],'EVAL');assert.equal(args[1],TAXI_CAS_LUA);const [, , ,key,old,value]=args;if((db.get(key)??'')!==old)return 0;db.set(key,value);return 1;};
+  const command=async args=>{if(args[0]==='GET'){keys.push(args[1]);return db.get(args[1])??null;}assert.equal(args[0],'EVAL');assert.ok([TAXI_CAS_LUA,TAXI_RECORD_LUA].includes(args[1]));const count=Number(args[2]),key=args[3],old=args[3+count],value=args[4+count];if((db.get(key)??'')!==old)return 0;db.set(key,value);return 1;};
   const service=createTaxiService({command,now:()=>at,random:()=>0.5,passengers});
   const user={id:'private-account',role:'admin',membershipTier:'admin',status:'active'};
   const body=(action,version)=>({action,expectedVersion:version,requestId:'request_'+String(++seq).padStart(12,'0')});
@@ -106,11 +107,11 @@ test('HTTP blocks foreign or missing origins, malformed input and inactive accou
   for(const h of [{},{origin:'http://example.com'},{...headers,'sec-fetch-site':'cross-site'}])assert.equal((await taxiRequest({method:'POST',headers:h,body},{service:f.service,user:f.user,url})).status,403);
   assert.equal((await taxiRequest({method:'POST',headers,body:'{'},{service:f.service,user:f.user,url})).status,400);
   assert.equal((await taxiRequest({method:'POST',headers,body},{service:f.service,user:{...f.user,status:'suspended'},url})).status,403);
-  assert.equal((await taxiRequest({method:'GET'},{service:f.service,url})).status,401);
+  assert.equal((await taxiRequest({method:'GET'},{service:f.service,url})).status,200);
 });
-test('taxi API admits only active administrators and owners on reads and writes',async()=>{
+test('taxi API admits guests and active members while blocking inactive accounts',async()=>{
  const f=setup(),url=new URL('https://example.com/api/v3/taxi');
- for(const method of ['GET','POST'])for(const [user,status] of [[null,401],[{id:'member',role:'member',status:'active'},403],[{id:'p',role:'platinum',status:'active'},403],[{...f.user,status:'suspended'},403],[f.user,200],[{...f.user,id:'owner',membershipTier:'superadmin'},200]]){
+ for(const method of ['GET','POST'])for(const [user,status] of [[null,200],[{id:'member',role:'member',status:'active'},200],[{id:'p',role:'platinum',status:'active'},200],[{...f.user,status:'suspended'},403],[f.user,200],[{...f.user,id:'owner',membershipTier:'superadmin'},200]]){
   const result=await taxiRequest({method,headers:{origin:url.origin},body:f.body('reset',0)},{service:{get:async()=>({ok:true}),mutate:async()=>({ok:true})},user,url});assert.equal(result.status,status);
  }
 });

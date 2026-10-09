@@ -1,4 +1,4 @@
-import {canAccessTaxi} from '../core/taxi-access.js?v=0.0.31.467';
+import {canAccessTaxi} from '../core/taxi-access.js?v=0.0.31.489';
 import {fortuneSignArt} from '../ui/fortune-sign-art.js?v=0.0.31.484';
 import {fortuneDay,readFortunePreferences,signFortune} from '../core/fortune-signs.js?v=0.0.31.437';
 import {renderMockBillHome} from '../views/mock-bill.js?v=0.0.31.459';
