@@ -1,4 +1,5 @@
 import {HOME_BANNER_INTERVAL,HERO_BANNER_INTERVAL} from '../core/home-banner-playlist.js?v=0.0.31.380';
+import {refreshVisitCount} from './site-visits.js?v=0.0.31.486';
 
 // One controller per root, including DOM restored from navigation snapshots.
 const controllers=new WeakMap();
@@ -16,6 +17,7 @@ export function setupHomeBannerRotation(root=globalThis.document,options={}){
    if(!carousel.isConnected){cancel(timer);return;}
    if(root.hidden||carousel.contains(root.activeElement))return;
    show((index+1)%slides.length);
+   void refreshVisitCount(true);
   },Number(carousel.dataset?.interval)===HERO_BANNER_INTERVAL?HERO_BANNER_INTERVAL:HOME_BANNER_INTERVAL);
   return timer;
  }).filter(timer=>timer!==null);
