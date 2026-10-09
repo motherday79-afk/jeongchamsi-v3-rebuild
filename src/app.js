@@ -1,3 +1,5 @@
+import {dailyVisitCount,paintVisitCount,refreshVisitCount,startVisitCount} from './ui/site-visits.js?v=0.0.31.486';
+import {renderAdminVisits} from './views/admin-visits.js?v=0.0.31.486';
 import {bindPersonEditPermissions} from './ui/person-edit-permissions.js?v=0.0.31.440';
 import {bindPageEditor} from './ui/person-page-editor.js?v=0.0.31.440';
 import {renderVoteEditor,bindBillEditing} from './ui/mock-bill-editing.js?v=0.0.31.424';
@@ -13,7 +15,7 @@ import {sharedComments} from './views/community-ui.js?v=0.0.31.484';
 import {renderComicPage,renderComicAdmin} from './views/political-comic.js?v=0.0.31.431';
 import {comicRequest,bindComicEditor} from './ui/political-comic.js?v=0.0.31.431';
 import {bindComparisonBoard} from './ui/comparison-board.js?v=0.0.31.451';
-import {renderAdminWorkspace,toggleAdminMenu} from './views/admin-workspace.js?v=0.0.31.424';
+import {renderAdminWorkspace,toggleAdminMenu} from './views/admin-workspace.js?v=0.0.31.486';
 import {setupHomeBannerRotation} from './ui/home-banner-rotation.js?v=0.0.31.380';
 import {isSuperAdmin} from './core/membership.js?v=0.0.31.354';
 import {loadBadgeStatus} from './core/badge-loading.js?v=0.0.31.349';
@@ -33,7 +35,7 @@ import { bindCampaignInteractions } from './ui/campaign-interactions.js?v=0.0.31
 import { refreshFontScale } from './ui/font-scale.js?v=0.0.31.56';
 import { renderCagePosts, renderCageArena, renderCageHits, cagePageData } from './views/community-ui.js?v=0.0.31.484';
 import { HOME_FIXTURE } from './fixtures/home.js?v=0.0.31.56';
-import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.394';
+import { siteHeader, drawer, footer, renderInitialLoading } from './layout/site-shell.js?v=0.0.31.486';
 import { renderCheerCatalog, renderGoodsRequest, renderCheerShop, renderCheerProduct, renderTrendingPage, renderNowRankCard, renderHomeLayout, renderBadgeShowcase, renderMemberSummary } from './layout/home-layout.js?v=0.0.31.484';
 import { focusCageCompose, setupHomeCompare, setupPoliticianAutocomplete, setupLayoutInteractions, setupPoliticianPhotoFallback, setupNowCarousel, setupCageCountdown, setupDesktopHomeViewport } from './ui/interactions.js?v=0.0.31.453';
 import { createAuthService, photoUploadMessage } from './core/auth.js?v=0.0.31.354';
@@ -42,7 +44,7 @@ import { createPoliticianService } from './core/politicians.js?v=0.0.31.430';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith, isTransientAnalysisRoute } from './core/navigation.js?v=0.0.31.377';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.148';
-import * as views from './views/stage1.js?v=0.0.31.485';
+import * as views from './views/stage1.js?v=0.0.31.486';
 import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.448';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.451';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident } from './views/participation-pages.js?v=0.0.31.462';
@@ -149,7 +151,7 @@ async function shell(body,session,renderId){
 
   const [memberCount,footerInfo]=await loadShellInfo();
   if(renderId!==renderSequence)return false;
-  app.innerHTML=`<div class="site-shell">${siteHeader(memberCount,session)}<div class="page-wrap">${body}</div>${footer(footerInfo,memberCount)}${drawer(session)}</div>`;
+  app.innerHTML=`<div class="site-shell">${siteHeader(memberCount,session)}<div class="page-wrap">${body}</div>${footer(footerInfo,dailyVisitCount())}${drawer(session)}</div>`;
   setupLayoutInteractions(document,{politicianSearch:(query,limit)=>politicians.search(query,limit)});
   return true;
 }
@@ -252,6 +254,7 @@ async function render({preserveScroll=false,refreshHome=false,freshSession=false
   else if(p[0]==='mock-bill')body=renderMockBillPage(await loadBillSettings().catch(()=>({})),isSuperAdmin(session.user));
   else if(p[0]==='political-map')body=renderPoliticalMapPage();
   else if(p[0]==='political-comic'){const comics=await comicRequest();body=renderComicPage(comics,p[1]||'',isSuperAdmin(session.user));const episode=comics.items?.find(x=>x.id===p[1]);if(episode)body+='<div class="jc49 comic-comment-wrap">'+await sharedComments('political-comic',episode,content,session)+'</div>';}
+  else if(p[0]==='admin'&&p[1]==='visits') body=renderAdminWorkspace('visits',await renderAdminVisits(searchParams));
   else if(p[0]==='admin'&&p[1]==='mock-bill') {const settings=await loadBillSettings(true);body=renderAdminWorkspace('bills',renderBillSettings(settings)+renderVoteEditor(settings));}
   else if(p[0]==='admin'&&p[1]==='political-comic') body=renderAdminWorkspace('comics',renderComicAdmin(await comicRequest({},true),searchParams.get('id')||''));
   else if(p[0]==='admin'&&p[1]==='notifications') body=renderAdminWorkspace('notifications',renderWebBroadcast(await broadcastRequest()));
@@ -325,8 +328,10 @@ async function render({preserveScroll=false,refreshHome=false,freshSession=false
   if(p[0]==='admin'&&isSuperAdmin(session.user))queueMicrotask(resumeAdminIntelligence);
 }
 
-navigation=createNavigation({window,readSnapshot:()=>['groups','ai-panel','community','column','news','itsme'].includes(parts(route())[0])||route().startsWith('/admin/ai-panel')||isTransientAnalysisRoute(route())?'':app.innerHTML,restoreSnapshot:markup=>{app.innerHTML=markup;if(document.querySelector('.product-home-wrap')&&homeSnapshot)homeSnapshot.node=app.firstElementChild;},rebind:()=>{placePageShare(document);mountPoliticalMaps(document);content.beginVisit?.(route());++renderSequence;const cachedRoute=parts(route());if(['mypage','points','campaigns','person','compare'].includes(cachedRoute[0]))queueMicrotask(()=>void render({preserveScroll:true}));else if(cachedRoute[0]==='search'){const params=new URLSearchParams(route().split('?')[1]||'');void loadSearchDiscovery(document,campaigns,(params.get('q')||'').trim(),{groups,session:()=>auth.session()});}else if(!cachedRoute.length)void refreshCachedMemberSummary();setupLayoutInteractions(document,{politicianSearch:(query,limit)=>politicians.search(query,limit)});setupMemberBadgeManagers();void hydrateVisibleActivityHints();showActivityFeedback(document,{identity:activeSessionIdentity});if(document.querySelector('.jc55'))queueMicrotask(()=>void render({preserveScroll:true}));if(pipelineActive())queueMicrotask(resumeAdminIntelligence);},onRoute:(_route,options)=>void render(options)});
+navigation=createNavigation({window,readSnapshot:()=>['groups','ai-panel','community','column','news','itsme'].includes(parts(route())[0])||route().startsWith('/admin/ai-panel')||isTransientAnalysisRoute(route())?'':app.innerHTML,restoreSnapshot:markup=>{app.innerHTML=markup;if(document.querySelector('.product-home-wrap')&&homeSnapshot)homeSnapshot.node=app.firstElementChild;},rebind:()=>{void refreshVisitCount(true);paintVisitCount();placePageShare(document);mountPoliticalMaps(document);content.beginVisit?.(route());++renderSequence;const cachedRoute=parts(route());if(['mypage','points','campaigns','person','compare'].includes(cachedRoute[0]))queueMicrotask(()=>void render({preserveScroll:true}));else if(cachedRoute[0]==='search'){const params=new URLSearchParams(route().split('?')[1]||'');void loadSearchDiscovery(document,campaigns,(params.get('q')||'').trim(),{groups,session:()=>auth.session()});}else if(!cachedRoute.length)void refreshCachedMemberSummary();setupLayoutInteractions(document,{politicianSearch:(query,limit)=>politicians.search(query,limit)});setupMemberBadgeManagers();void hydrateVisibleActivityHints();showActivityFeedback(document,{identity:activeSessionIdentity});if(document.querySelector('.jc55'))queueMicrotask(()=>void render({preserveScroll:true}));if(pipelineActive())queueMicrotask(resumeAdminIntelligence);},onRoute:(_route,options)=>{void refreshVisitCount(true);void render(options);}});
 navigation.start();
+startVisitCount();
+document.addEventListener('submit',event=>{const form=event.target.closest('[data-visit-range]');if(!form)return;event.preventDefault();const params=new URLSearchParams(new FormData(form));const target='/admin/visits?'+params;if(route()===target)void render({preserveScroll:true});else navigation.navigate(target);});
 bindPageShare(document);
 bindMockBillNavigation(document);
 bindBillEditing(document,{onSaved:async kind=>{navigation.clearCache();if(kind==='proposal')await render({preserveScroll:true});}});

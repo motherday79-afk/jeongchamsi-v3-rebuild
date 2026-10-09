@@ -1,3 +1,4 @@
+import {createSiteVisits} from '../lib/site-visits.js';
 import {readDailyHistory} from '../lib/daily-report-store.js';
 import {makeDailyReport} from '../src/core/daily-report.js';
 import {canEditPersonPage} from '../src/core/person-edit-permissions.js';
@@ -547,6 +548,15 @@ export default async function handler(req,res){
     if(route==='territory'||route.startsWith('territory/')||route==='mine'||route.startsWith('mine/')||route==='polimable'||route.startsWith('polimable/')||route==='polimarble'||route.startsWith('polimarble/'))return json(res,410,{ok:false,error:'FEATURE_REMOVED'});
     if(route.startsWith('migration/'))return handleMigration(req,res,route);
     const command=rebuildRedisCommand();
+    if(route==='site/visits'){
+      if(!['GET','POST'].includes(req.method))return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
+      return json(res,200,await createSiteVisits({command}).today(req.method==='POST'));
+    }
+    if(route==='admin/site-visits'){
+      if(!isSuperAdmin(await currentUser(req,command)))return json(res,403,{ok:false,error:'ADMIN_REQUIRED'});
+      if(req.method!=='GET')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
+      try{return json(res,200,await createSiteVisits({command}).history({from:url.searchParams.get('from'),to:url.searchParams.get('to')}));}catch(error){if(error.message==='INVALID_DATE_RANGE')return json(res,400,{ok:false,error:error.message});throw error;}
+    }
     if(route==='push/message'){
       const user=await currentUser(req,command);if(req.method!=='GET')return json(res,405,{ok:false});
       try{return json(res,200,await groupPushService(command).message(url.searchParams.get('id'),user));}catch{return json(res,403,{ok:false,error:'PUSH_FORBIDDEN'});}

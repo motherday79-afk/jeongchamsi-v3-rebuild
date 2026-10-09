@@ -1,6 +1,6 @@
 import {renderPersonEditPermission} from '../ui/person-edit-permissions.js?v=0.0.31.440';
 import {renderArticleRecovery} from '../ui/article-curation.js?v=0.0.31.404';
-import {renderAdminWorkspace,renderAdminOverview} from './admin-workspace.js?v=0.0.31.384';
+import {renderAdminWorkspace,renderAdminOverview} from './admin-workspace.js?v=0.0.31.486';
 import {MEMBERSHIP_TIERS,membershipTier,membershipLabel,isSuperAdmin,canWriteEditorial} from '../core/membership.js?v=0.0.31.354';
 import {renderCollectionProfile,renderRefreshPolicy} from './person-refresh.js?v=0.0.31.362';
 import { renderRankingWeights } from './ranking-weights.js?v=0.0.31.174';
@@ -197,7 +197,7 @@ export async function renderAdminStable(session,auth,state={}){
 }
 
 export function renderMigration(){return page('JCS_0_0_8 · ONE-TIME MIGRATION','기존 데이터 이식',`<div class="legal-copy"><p>회원·게시판 이식과 정치인 기본 DB 이식을 서로 분리해 실행합니다.</p><p>정치인 DB에는 합의된 프로필·정치 기록·등록 사진만 저장하며 NOW 점수·순위·분석값은 포함하지 않습니다.</p></div><form class="stage-form" data-stage-form="migration">${field('secret','마이그레이션 키','password')}<button class="primary-btn">회원·게시판 이식 실행</button><span data-form-state></span></form><form class="stage-form politician-migration-form" data-stage-form="politician-migration">${field('secret','정치인 DB 이관 키','password')}<button class="primary-btn">정치인 DB 543개 슬롯 이식</button><span data-form-state></span></form>`);}
-import { APP_RELEASE } from '../core/release.js?v=0.0.31.485';
+import { APP_RELEASE } from '../core/release.js?v=0.0.31.486';
 import {renderNowRankSchedule} from './now-rank-schedule.js?v=341.3';
 
 export function renderAdminLoading(tab='operations'){
