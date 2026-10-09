@@ -26,3 +26,8 @@
 .product-home-wrap .side-fortune .fortune-card-front .fortune-card-score{margin:3px 0 1px;font-size:21px;line-height:25px}
 .product-home-wrap .side-fortune .fortune-card-front .fortune-card-caption{padding:0 4px 4px;font-size:10px;line-height:14px}
 @media(max-width:380px){.product-home-wrap .side-fortune .fortune-flip-card{height:160px}.product-home-wrap .side-fortune .fortune-front-art{height:94px}}
+
+/* Compact celestial seals: retain the existing 160px card height. */
+.product-home-wrap .side-fortune .fortune-card-back-art{object-fit:fill}
+.product-home-wrap .side-fortune .fortune-front-art{background:#f7fbfa}
+.product-home-wrap .side-fortune .fortune-front-art img{object-fit:contain}

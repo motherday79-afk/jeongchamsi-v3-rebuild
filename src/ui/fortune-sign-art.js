@@ -1,4 +1,4 @@
-// Lightweight line illustrations; each sign has its own recognizable motif.
+// Bright celestial seals, with distinct animal and zodiac emblems.
 const animals={
  '쥐띠':'<circle cx="32" cy="32" r="15"/><circle cx="88" cy="32" r="15"/><path d="M32 47Q32 30 60 32Q88 30 88 47L82 76Q60 99 38 76Z"/><path d="m28 66 17 4m-17 7 17-2m47-9-17 4m17 7-17-2"/>',
  '소띠':'<path d="M34 40Q15 38 20 17Q27 32 40 27m46 13q19-2 14-23Q93 32 80 27M35 38Q60 22 85 38L86 77Q60 99 34 77Z"/><ellipse cx="60" cy="77" rx="23" ry="13"/><path d="M48 76v3m24-3v3"/>',
@@ -31,5 +31,11 @@ export function fortuneSignArt(tab,selection){
  const animal=animals[selection],sign=signs[selection];
  if(tab==='animal'&&!animal||tab==='star'&&!sign)return '';
  const eyes=['뱀띠','용띠','말띠','닭띠'].includes(selection)?'':'<circle cx="47" cy="57" r="2.5" fill="currentColor" stroke="none"/><circle cx="73" cy="57" r="2.5" fill="currentColor" stroke="none"/>';
- return `<svg class="fortune-sign-art" viewBox="0 0 120 120" fill="none" aria-hidden="true" focusable="false"><circle cx="60" cy="60" r="53" fill="#faf9f7"/><g stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">${tab==='animal'?animal+eyes:'<path d="'+sign+'"/>'}</g><path d="m104 14 1.5 4.5L110 20l-4.5 1.5L104 26l-1.5-4.5L98 20l4.5-1.5Z" fill="#b29762"/></svg>`;
+ const index=Object.keys(tab==='animal'?animals:signs).indexOf(selection);
+ const palette=[['#d7eee7','#608d88'],['#fde6df','#b7817b'],['#e0edf8','#6a8ca6']][index%3];
+ const ticks=Array.from({length:12},(_,i)=>`<path d="M80 9v${i%3===0?7:3}" transform="rotate(${i*30} 80 80)"/>`).join('');
+ // Decorative star orbit, separate from the traditional zodiac glyph.
+ const points=[[25,55],[47,23],[103,18],[137,57],[128,112],[78,143],[25,111]];
+ const orbit=points.map(([x,y],i)=>`<circle cx="${x}" cy="${y}" r="${(i+index)%3===0?3:1.8}" fill="${i%2?'#dbada0':'#79b5c1'}"/>`).join('');
+ return `<svg class="fortune-sign-art" viewBox="0 0 160 160" fill="none" aria-hidden="true" focusable="false"><circle cx="80" cy="80" r="76" fill="#f3faf9"/><circle cx="86" cy="75" r="60" fill="#edf4fc"/><circle cx="80" cy="80" r="65" fill="none" stroke="#a4cbd0"/><circle cx="80" cy="80" r="58" stroke="#bad9d4" stroke-dasharray="2 5"/><g stroke="#9abfc6">${ticks}</g><path d="m80 15 56 98H24Zm0 130L24 47h112Z" stroke="#b6d4d5" stroke-width=".8" opacity=".55"/>${tab==='star'?'<path d="M25 55 47 23 103 18 137 57 128 112 78 143 25 111" stroke="#a7c8d8" stroke-width="1"/>':''}${orbit}<circle cx="80" cy="80" r="48" fill="#fffdf8"/><g transform="translate(35 35) scale(.75)" color="${palette[1]}" fill="${tab==='animal'?palette[0]:'none'}" stroke="${palette[1]}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">${tab==='animal'?animal+eyes:'<path d="'+sign+'" stroke-width="4"/>'}</g><path d="M140 31a11 11 0 1 1-13-16 9 9 0 0 0 13 16" fill="#a6bdd4"/><path d="m25 119 3 7 7 3-7 3-3 7-3-7-7-3 7-3Z" fill="#e5b095"/><circle cx="80" cy="15" r="3" fill="#e2bda0"/></svg>`;
 }
