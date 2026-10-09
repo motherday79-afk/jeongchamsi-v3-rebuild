@@ -1,4 +1,4 @@
-import {renderPersonDetailTabs,loadTaxiPersonStats,renderTaxiPersonStats} from './taxi-person.js?v=0.0.31.490';
+import {renderPersonDetailTabs,loadTaxiPersonStats,renderTaxiPersonStats} from './taxi-person.js?v=0.0.31.491';
 import {renderDailyReport} from './daily-report.js?v=0.0.31.448';
 import {beginInlineFields,inlineField,finishInlineFields,inlineAlias,inlineAttributes} from '../ui/inline-field-markup.js?v=0.0.31.429';
 import {renderPageEditor} from '../ui/person-page-editor.js?v=0.0.31.440';

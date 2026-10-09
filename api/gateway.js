@@ -1,3 +1,6 @@
+import {canEditTaxiPage} from '../src/core/taxi-edit-permissions.js';
+import {setTaxiEditPermission} from '../lib/taxi-edit-permissions.js';
+import {readTaxiEditor,saveTaxiNumbers} from '../lib/taxi-stat-edits.js';
 import {createSiteVisits} from '../lib/site-visits.js';
 import {readDailyHistory} from '../lib/daily-report-store.js';
 import {makeDailyReport} from '../src/core/daily-report.js';
@@ -417,7 +420,7 @@ export async function dispatchAdminIntelligence(route,method,service,input={},co
 }
 
 async function handleAdmin(req,res,route,command){
-  const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});if(route!=='admin/person-page'&&!canAccessAdminEndpoint(user,route))return json(res,403,{ok:false,error:'SUPERADMIN_REQUIRED'});
+  const user=await currentUser(req,command);if(!user)return json(res,401,{ok:false,error:'LOGIN_REQUIRED'});if(!['admin/person-page','admin/taxi-numbers'].includes(route)&&!canAccessAdminEndpoint(user,route))return json(res,403,{ok:false,error:'SUPERADMIN_REQUIRED'});
   const adminPoliticians=createAdminPoliticianService({command,profilesProvider:()=>allPoliticianProfiles(command)});
 
   if(route==='admin/participation'&&req.method==='GET'){
@@ -440,6 +443,13 @@ async function handleAdmin(req,res,route,command){
     if(result.status<300&&action)try{await adminPoliticians.log(user.id,action,input.personId||'',{method:req.method,...(action==='RANKING_WEIGHTS_UPDATE'?{news:input.news,search:input.search}:{} )});}catch(error){console.error('[admin-audit]',{action,code:String(error?.code||error?.message||'AUDIT_WRITE_FAILED')});}
     if(result.status<300&&route.startsWith('admin/intelligence/publish/'))await enqueueCompletionPush();
     return json(res,result.status,result.body);
+  }
+  if(route==='admin/taxi-edit-permissions'){
+    const url=new URL(req.url,'https://'+req.headers.host);
+    if(req.method!=='PATCH')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
+    if(req.headers.origin!==url.origin||req.headers['sec-fetch-site']==='cross-site')return json(res,403,{ok:false,error:'ORIGIN_FORBIDDEN'});
+    try{return json(res,200,await setTaxiEditPermission(command,bodyOf(req),user.id,id=>getPolitician(command,id)));}
+    catch(e){return json(res,e.message==='FORBIDDEN'?403:e.message==='MEMBERS_CHANGED_RETRY'?409:400,{ok:false,error:e.message});}
   }
   if(route==='admin/person-edit-permissions'){
     const url=new URL(req.url,'https://'+req.headers.host);
@@ -498,7 +508,20 @@ async function handleAdmin(req,res,route,command){
     try{const banner=await createHomeBannerService({command}).save({placement:body.placement||'sidebar',pc:body.pc?{contentType:pc.contentType,bytes:Buffer.from(pcEncoded,'base64')}:null,mobile:body.mobile?{contentType:mobile.contentType,bytes:Buffer.from(mobileEncoded,'base64')}:null,tablet:body.tablet?{contentType:tablet.contentType,bytes:Buffer.from(tabletEncoded,'base64')}:null,targetUrl:body.targetUrl,alt:body.alt},user.id);return json(res,200,{ok:true,banner});}
     catch(error){const code=String(error?.message||'BANNER_UPLOAD_FAILED'),storage=code==='BANNER_STORAGE_NOT_CONFIGURED'||/No blob credentials|BLOB_READ_WRITE_TOKEN|VERCEL_OIDC_TOKEN|BLOB_STORE_ID/i.test(code);return json(res,code==='BANNER_TOO_LARGE'?413:storage?503:400,{ok:false,error:storage?'BANNER_STORAGE_NOT_CONFIGURED':code});}
   }
+  if(route==='admin/taxi-numbers'){
+    const url=new URL(req.url||'/',`https://${req.headers.host||'localhost'}`),input=bodyOf(req),id=String(req.method==='GET'?url.searchParams.get('personId'):input.personId||'');
+    if(!['GET','PATCH'].includes(req.method))return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
+    if(!/^(assembly|metropolitan|basic|nonincumbent|government)-\d{3}$/.test(id))return json(res,400,{ok:false,error:'INVALID_PERSON'});
+    if(!canEditTaxiPage(user,id))return json(res,403,{ok:false,error:'TAXI_EDIT_FORBIDDEN'});
+    if(req.method==='PATCH'&&(req.headers.origin!==url.origin||req.headers['sec-fetch-site']==='cross-site'))return json(res,403,{ok:false,error:'ORIGIN_FORBIDDEN'});
+    const registered=(await createTaxiService({command}).stats(id)).registered;
+    if(!registered)return json(res,404,{ok:false,error:'TAXI_NOT_REGISTERED'});
+    if(req.method==='GET')return json(res,200,await readTaxiEditor(command,id));
+    try{return json(res,200,await saveTaxiNumbers(command,id,input,user));}
+    catch(error){return json(res,error.message==='EDIT_CONFLICT'?409:400,{ok:false,error:error.message});}
+  }
   if(route==='admin/person-page'){
+
     const url=new URL(req.url||'/',`https://${req.headers.host||'localhost'}`);
     if(req.method!=='GET'&&(req.headers.origin!==url.origin||req.headers['sec-fetch-site']==='cross-site'))return json(res,403,{ok:false,error:'ORIGIN_FORBIDDEN'});
     if(!['GET','PATCH'].includes(req.method))return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
@@ -594,7 +617,7 @@ export default async function handler(req,res){
       const personId=url.searchParams.get('personId')||'';
       if(!/^(assembly|metropolitan|basic|nonincumbent|government)-\d{3}$/.test(personId))return json(res,400,{ok:false,error:'PERSON_INVALID'});
       const user=await currentUser(req,command),token=req.headers?.['x-taxi-session'];
-      return json(res,200,await createTaxiService({command}).stats(personId,user?.status&&user.status!=='active'?null:user,token));
+      const data=await createTaxiService({command}).stats(personId,user?.status&&user.status!=='active'?null:user,token);return json(res,200,{...data,canEdit:data.registered===true&&canEditTaxiPage(user,personId)});
     }
     if(route==='taxi'){
       const result=await taxiRequest(req,{service:createTaxiService({command}),user:await currentUser(req,command),url});

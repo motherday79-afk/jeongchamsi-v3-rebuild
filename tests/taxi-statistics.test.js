@@ -20,9 +20,9 @@ test('unregistered passengers do not read storage or fabricate zero records',asy
 
 test('public statistics omit personal totals, private lookup uses hashed key',async()=>{
  const commands=[],person={personId:'government-001',beats:[{context:'첫 이야기'}]};
- const command=async args=>{commands.push(args);return args.slice(2).map(()=>null);};
+ const command=async args=>{commands.push(args);return args[0]==='GET'?null:args.slice(2).map(()=>null);};
  const publicStats=await readTaxiStats(command,person);
- assert.equal(publicStats.my,null);assert.equal(commands.length,1);assert.equal(publicStats.totals.rides,0);
+ assert.equal(publicStats.my,null);assert.equal(commands.length,2);assert.equal(publicStats.totals.rides,0);
  const mine=await readTaxiStats(command,person,{key:'private-identity'});
  assert.deepEqual(mine.my,{rides:0,distanceMeters:0});assert.equal(JSON.stringify(commands).includes('private-identity'),false);
 });
