@@ -25,8 +25,9 @@ function metrics(stats){
   return `<dl class="taxi-person-metrics"><div><dt>총 운행</dt><dd>${count(rides)}<small>회</small></dd></div><div><dt>평균 동승 거리</dt><dd>${rides?distance(number(stats?.distanceMeters)/rides):'—'}</dd></div><div><dt>완주율</dt><dd>${rate(stats?.completed,rides)}</dd></div><div><dt>공감한 운행</dt><dd>${count(stats?.likedRides)}<small>회</small></dd></div></dl>`;
 }
 
-export function renderTaxiPersonStats(data,item={}){
-  const hero=`<header class="taxi-person-hero"><div><span>JCS REAL TAXI</span><h2>이야기를 듣고,<br>함께 달린 거리</h2><p>${esc(item.name)} 승객과 함께한 운행 기록</p></div><img src="/assets/taxi/home-taxi-479.svg" alt="" width="280" height="150"></header>`;
+export function renderTaxiPersonStats(data,item={},options={}){
+  const photo=item.photo?.url||item.photo?.localPath||'',meta=[item.party,item.district||item.jurisdiction||item.region].filter(Boolean).join(' · ');
+  const hero=`<header class="taxi-person-hero"><div class="taxi-person-identity"><span class="taxi-person-kicker">JCS REAL TAXI · 동승 기록</span><div class="taxi-person-profile"><div class="taxi-person-avatar">${photo?`<img src="${esc(photo)}" alt="${esc(item.name)}" style="object-position:${esc(item.photo?.focus||'50% 28%')}" width="88" height="104">`:`<span>${esc(String(item.name||'?').slice(0,1))}</span>`}</div><div class="taxi-person-profile-copy"><h1>${esc(item.name)}</h1><p class="taxi-person-office">${esc(item.office||item.roleLabel||'정치인')}</p><p class="taxi-person-meta">${esc(meta)}</p></div></div><div class="taxi-person-actions">${options.actions||''}</div></div><div class="taxi-person-scene"><img src="/assets/taxi/home-taxi-479.svg" alt="" width="280" height="150"><p>이야기를 듣고, 함께 달린 거리</p></div></header>`;
   if(!data)return `<section class="taxi-person-panel">${hero}<div class="taxi-person-empty"><h3>운행 기록을 불러오지 못했습니다.</h3><p>잠시 후 리얼택시 탭을 다시 열어주세요.</p></div></section>`;
   if(data.registered!==true)return `<section class="taxi-person-panel">${hero}<div class="taxi-person-empty"><p>택시정보가 없습니다. 업데이트를 기다려주세요.</p></div></section>`;
   const totals=data.totals||{},first=data.first||{},beats=Array.isArray(data.beats)?data.beats.slice(0,5):[];

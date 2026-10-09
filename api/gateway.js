@@ -19,6 +19,7 @@ import {createWebPushService} from '../lib/web-push-service.js';
 import {webPushRequest} from '../lib/web-push-http.js';
 import {webBroadcastService} from '../lib/web-broadcast-runtime.js';
 import {pushService,enqueueCompletionPush} from '../lib/push-runtime.js';
+import {signupPushService} from '../lib/signup-push-runtime.js';
 import {firebaseConfigured} from '../lib/push-fcm.js';
 import {withRankingMutation} from '../lib/now-rank-schedule.js';
 import {createTaxiService} from '../lib/taxi-service.js';
@@ -240,7 +241,9 @@ export async function dispatchBadgeRequest(route,method,user,body,service,target
 
 async function handleUser(req,res,route,command,url){
   if(route==='user/register'&&req.method==='POST'){
-    const result=await registerUser(command,bodyOf(req));if(!result.ok)return json(res,result.error==='DUPLICATE_ID'?409:400,result);setSession(res,result.user);return json(res,201,result);
+    const result=await registerUser(command,bodyOf(req));if(!result.ok)return json(res,result.error==='DUPLICATE_ID'?409:400,result);
+    try{await signupPushService(command).publish(result.user);}catch{console.error('SIGNUP_PUSH_ENQUEUE_FAILED');}
+    setSession(res,result.user);return json(res,201,result);
   }
   if(route==='user/login'&&req.method==='POST'){
     const body=bodyOf(req);const user=await authenticateUser(command,body.id,body.password);if(!user)return json(res,401,{ok:false,error:'INVALID_LOGIN'});setSession(res,user);return json(res,200,{ok:true,user});
