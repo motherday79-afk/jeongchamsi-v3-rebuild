@@ -1,7 +1,7 @@
 const clean=v=>String(v??'').trim();
 const clone=v=>JSON.parse(JSON.stringify(v));
 const id=()=>`${Date.now().toString(36)}-${Math.random().toString(36).slice(2,9)}`;
-async function rawContentRequest(path,options={}){const res=await fetch(`/api/v3/${path}`,{credentials:'same-origin',headers:{'Content-Type':'application/json',...(options.headers||{})},...options});const data=await res.json().catch(()=>({ok:false,error:'INVALID_RESPONSE'}));return {status:res.status,...data};}
+async function rawContentRequest(path,options={}){const res=await fetch(`/api/v3/${path}`,{credentials:'same-origin',headers:{'Content-Type':'application/json',...(options.headers||{})},...options});const data=await res.json().catch(()=>({ok:false,error:'INVALID_RESPONSE'}));if(res.ok&&data.ok&&path==='content?domain=polls'&&(!options.method||options.method==='GET'))globalThis.window?.dispatchEvent(new Event('jcs:visit-refresh'));return {status:res.status,...data};}
 const publicContentCache=new Map();
 const publicContentPaths=new Set(['content?domain=columns','content?domain=community','content?domain=itsme','content?domain=news','content?domain=polls','content?domain=generation','home/banner']);
 function request(path,options={}){

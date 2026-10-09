@@ -555,7 +555,7 @@ export default async function handler(req,res){
     if(route==='admin/site-visits'){
       if(!isSuperAdmin(await currentUser(req,command)))return json(res,403,{ok:false,error:'ADMIN_REQUIRED'});
       if(req.method!=='GET')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
-      try{return json(res,200,await createSiteVisits({command}).history({from:url.searchParams.get('from'),to:url.searchParams.get('to')}));}catch(error){if(error.message==='INVALID_DATE_RANGE')return json(res,400,{ok:false,error:error.message});throw error;}
+      try{return json(res,200,await createSiteVisits({command}).history({from:url.searchParams.get('from'),to:url.searchParams.get('to'),day:url.searchParams.get('day')}));}catch(error){if(error.message==='INVALID_DATE_RANGE')return json(res,400,{ok:false,error:error.message});throw error;}
     }
     if(route==='push/message'){
       const user=await currentUser(req,command);if(req.method!=='GET')return json(res,405,{ok:false});

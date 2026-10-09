@@ -1,5 +1,5 @@
 import {HOME_BANNER_INTERVAL,HERO_BANNER_INTERVAL} from '../core/home-banner-playlist.js?v=0.0.31.380';
-import {refreshVisitCount} from './site-visits.js?v=0.0.31.486';
+import {refreshVisitCount} from './site-visits.js?v=0.0.31.488';
 
 // One controller per root, including DOM restored from navigation snapshots.
 const controllers=new WeakMap();

@@ -2,6 +2,7 @@ async function request(path){
   const response=await fetch(`/api/v3/politicians${path}`,{credentials:'same-origin',headers:{Accept:'application/json'}});
   const body=await response.json().catch(()=>({}));
   if(!response.ok)return {ok:false,status:response.status,error:body.error||'POLITICIAN_REQUEST_FAILED'};
+  if(path==='?ranking=overall'&&body.ok)globalThis.window?.dispatchEvent(new Event('jcs:visit-refresh'));
   return body;
 }
 

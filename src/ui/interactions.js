@@ -1,5 +1,5 @@
 import {compareParty,compareFlag} from './compare-party.js?v=0.0.31.423';
-import {setupHomeBannerRotation} from './home-banner-rotation.js?v=0.0.31.487';
+import {setupHomeBannerRotation} from './home-banner-rotation.js?v=0.0.31.488';
 import { renderPrescriptionReport } from '../views/prescription-visuals.js?v=0.0.31.56';
 import { refreshFontScale, setupFontScaleControl } from './font-scale.js?v=0.0.31.56';
 import { createHomeCompareMotion } from './compare-motion.js?v=0.0.31.164';
