@@ -28,7 +28,7 @@ test('every story offers choice guidance and the final story offers finishing gu
  for(const p of TAXI_PASSENGERS){
   const first=beatAudio(p,0).comfort,last=beatAudio(p,p.beats.length-1).comfort;
   assert.equal(first.kind,'comfort');assert.equal(last.kind,'closing');assert.notEqual(first.text,last.text);
-  for(let i=0;i<p.beats.length-1;i++){assert.match(beatAudio(p,i).comfort.text,/계속 듣기/);assert.match(beatAudio(p,i).comfort.text,/내려주기/);}assert.match(last.text,/운행 마치기/);assert.doesNotMatch(last.text,/계속 듣기/);
+  for(let i=0;i<p.beats.length-1;i++){assert.match(beatAudio(p,i).comfort.text,/더 태워|더 가|더 함께|더 운행/);assert.match(beatAudio(p,i).comfort.text,/내려|내릴/);}assert.match(last.text,/운행을 마치/);assert.doesNotMatch(last.text,/계속 듣기/);
   for(const line of [first,last]){
    const cues=JSON.parse(fs.readFileSync(new URL('..'+line.audioUrl.replace('.mp3','.json'),import.meta.url),'utf8'));
    const end=cues.at(-1).start+cues.at(-1).duration;

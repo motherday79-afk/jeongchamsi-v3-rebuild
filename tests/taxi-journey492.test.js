@@ -14,7 +14,7 @@ test('heartbeat on same story does not restart scenery or duplicate layers',()=>
  updateTaxiJourney(scene,{phase:'intro',beatIndex:0});assert.equal(scene.dataset.journey,'dawn');assert.equal(inserts,2);
 });
 test('all choices explain empathy and close respectfully; greetings suit the dawn departure',()=>{
- for(const line of [...CHOICE_LINES,FINAL_CHOICE_LINE]){assert.match(line,/공감하기/);assert.match(line,/내려주기/);assert.ok(line.endsWith('저는 기사님의 선택을 존중하니까요.'));}
- assert.match(FINAL_CHOICE_LINE,/운행 마치기/);assert.doesNotMatch(FINAL_CHOICE_LINE,/계속 듣기/);
+ for(const line of [...CHOICE_LINES,FINAL_CHOICE_LINE]){assert.match(line,/공감으로/);assert.match(line,/내려|내릴/);assert.doesNotMatch(line,/버튼|눌러|누르/);assert.ok(line.endsWith('저는 기사님의 선택을 존중하니까요.'));}
+ assert.match(FINAL_CHOICE_LINE,/운행을 마치/);assert.doesNotMatch(FINAL_CHOICE_LINE,/계속 듣기/);
  for(const line of GREETING_LINES)assert.doesNotMatch(line,/비 오는|빗소리|늦게까지|밤이라/);
 });
