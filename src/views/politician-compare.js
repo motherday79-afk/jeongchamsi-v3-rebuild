@@ -1,3 +1,4 @@
+import {personMetaMarkup} from '../ui/person-party.js?v=0.0.31.494';
 import {canViewAdminAnalysis} from '../core/membership.js?v=0.0.31.354';
 import {renderComparisonBoard} from './comparison-board.js?v=0.0.31.451';
 import { renderAnalysisAccess } from './person-refresh.js?v=0.0.31.362';
@@ -18,7 +19,7 @@ function profilePhoto(item,className){
 
 function searchResult(item,ids){
   const nextIds=[...ids,item.id];
-  return `<button type="button" class="politician-compare-search-result" data-compare-add="${esc(item.id)}" data-layout-route="${esc(queryRoute(nextIds))}">${profilePhoto(item,'politician-compare-search-avatar')}<span><b>${esc(item.name)}</b><small>${esc([item.party,item.jurisdiction,item.office||item.roleLabel].filter(Boolean).join(' · '))}</small></span><em>선택</em></button>`;
+  return `<button type="button" class="politician-compare-search-result" data-compare-add="${esc(item.id)}" data-layout-route="${esc(queryRoute(nextIds))}">${profilePhoto(item,'politician-compare-search-avatar')}<span><b>${esc(item.name)}</b><small>${personMetaMarkup(item,[item.jurisdiction,item.office||item.roleLabel].filter(Boolean).join(' · '))}</small></span><em>선택</em></button>`;
 }
 
 function selectedSlot(item,index,ids){
@@ -27,7 +28,7 @@ function selectedSlot(item,index,ids){
     return `<article class="politician-compare-slot is-empty" data-compare-slot><span class="politician-compare-slot-index">${String(slot).padStart(2,'0')}</span><b>비교 대상 ${slot}</b></article>`;
   }
   const nextIds=ids.filter(id=>id!==item.id);
-  return `<article class="politician-compare-slot" data-compare-slot data-compare-selected="${esc(item.id)}"><span class="politician-compare-slot-index">${String(index+1).padStart(2,'0')}</span>${profilePhoto(item,'politician-compare-avatar')}<h2>${esc(item.name)}</h2><p>${esc([item.party,item.jurisdiction].filter(Boolean).join(' · '))}</p><dl><div><dt>직책</dt><dd>${esc(item.office||item.roleLabel||'—')}</dd></div><div><dt>선수</dt><dd>${esc(item.terms||'—')}</dd></div><div><dt>위원회</dt><dd>${esc(item.committee||'—')}</dd></div></dl><button type="button" class="politician-compare-remove" data-compare-remove="${esc(item.id)}" data-layout-route="${esc(queryRoute(nextIds))}">비교에서 빼기</button></article>`;
+  return `<article class="politician-compare-slot" data-compare-slot data-compare-selected="${esc(item.id)}"><span class="politician-compare-slot-index">${String(index+1).padStart(2,'0')}</span>${profilePhoto(item,'politician-compare-avatar')}<h2>${esc(item.name)}</h2><p>${personMetaMarkup(item,item.jurisdiction)}</p><dl><div><dt>직책</dt><dd>${esc(item.office||item.roleLabel||'—')}</dd></div><div><dt>선수</dt><dd>${esc(item.terms||'—')}</dd></div><div><dt>위원회</dt><dd>${esc(item.committee||'—')}</dd></div></dl><button type="button" class="politician-compare-remove" data-compare-remove="${esc(item.id)}" data-layout-route="${esc(queryRoute(nextIds))}">비교에서 빼기</button></article>`;
 }
 
 function failedSlot(id,index,ids,run=false){
