@@ -26,6 +26,7 @@ import {signupPushService} from '../lib/signup-push-runtime.js';
 import {firebaseConfigured} from '../lib/push-fcm.js';
 import {withRankingMutation} from '../lib/now-rank-schedule.js';
 import {createTaxiService} from '../lib/taxi-service.js';
+import {createTaxiPartyService} from '../lib/taxi-party-service.js';
 import {taxiRequest} from '../lib/taxi-http.js';
 import {taxiPage} from '../lib/taxi-page.js';
 import {createAiPanelService} from '../lib/ai-panel-service.js';
@@ -618,6 +619,14 @@ export default async function handler(req,res){
       if(!/^(assembly|metropolitan|basic|nonincumbent|government)-\d{3}$/.test(personId))return json(res,400,{ok:false,error:'PERSON_INVALID'});
       const user=await currentUser(req,command),token=req.headers?.['x-taxi-session'];
       const data=await createTaxiService({command}).stats(personId,user?.status&&user.status!=='active'?null:user,token);return json(res,200,{...data,canEdit:data.registered===true&&canEditTaxiPage(user,personId)});
+    }
+    if(route==='taxi/party-stats'){
+      if(req.method!=='GET')return json(res,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
+      return json(res,200,await createTaxiPartyService({command}).stats());
+    }
+    if(route==='taxi/party'){
+      const result=await taxiRequest(req,{service:createTaxiPartyService({command}),user:await currentUser(req,command),url});
+      return json(res,result.status,result.body);
     }
     if(route==='taxi'){
       const result=await taxiRequest(req,{service:createTaxiService({command}),user:await currentUser(req,command),url});

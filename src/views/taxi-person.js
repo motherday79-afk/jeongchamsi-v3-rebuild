@@ -12,6 +12,11 @@ export function renderPersonDetailTabs(id,active='details'){
   return `<nav class="person-detail-tabs" aria-label="정치인 상세 메뉴"><a href="${base}" data-layout-route="${base}"${active==='details'?' aria-current="page"':''}>정치인 정보</a><a href="${base}?tab=taxi" data-layout-route="${base}?tab=taxi"${active==='taxi'?' aria-current="page"':''}>블라인드 리서치</a></nav>`;
 }
 
+export function renderTaxiResearchTabs(id,active='person'){
+  const base=`/person/${encodeURIComponent(id)}?tab=taxi`;
+  return `<nav class="taxi-research-tabs" aria-label="리얼택시 데이터 종류"><a href="${base}" data-layout-route="${base}"${active==='person'?' aria-current="page"':''}><span>01</span> 리얼택시 블라인드 정치인 데이터</a><a href="${base}&amp;research=party" data-layout-route="${base}&amp;research=party"${active==='party'?' aria-current="page"':''}><span>02</span> 리얼택시 블라인드 정당 데이터</a></nav>`;
+}
+
 export async function loadTaxiPersonStats(id){
   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),12000);
   try{

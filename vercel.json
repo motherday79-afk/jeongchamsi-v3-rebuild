@@ -225,6 +225,16 @@
       "permanent": false
     },
     {
+      "source": "/lib/taxi-party-content.js",
+      "destination": "/mine",
+      "permanent": false
+    },
+    {
+      "source": "/lib/taxi-party-service.js",
+      "destination": "/mine",
+      "permanent": false
+    },
+    {
       "source": "/taxi",
       "destination": "/mine",
       "permanent": false

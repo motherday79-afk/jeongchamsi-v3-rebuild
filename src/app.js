@@ -46,8 +46,8 @@ import { createPoliticianService } from './core/politicians.js?v=0.0.31.488';
 import { sharePost, createNavigation, adminRouteState, adminRouteWith, isTransientAnalysisRoute } from './core/navigation.js?v=0.0.31.377';
 import { createIntelligenceAutoResumeGuard, runIntelligenceAction } from './core/intelligence-runner.js?v=0.0.31.56';
 import { buildRoleNarratives } from './ui/intelligence-narratives.js?v=0.0.31.148';
-import * as views from './views/stage1.js?v=0.0.31.496';
-import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.496';
+import * as views from './views/stage1.js?v=0.0.31.497';
+import { renderPoliticianDirectory, renderPoliticianDetail } from './views/politicians.js?v=0.0.31.497';
 import { renderPoliticianCompare } from './views/politician-compare.js?v=0.0.31.494';
 import { renderPointShop, renderParticipationAdminSettings, generationVoteConfirmation, renderPollBoard, renderGenerationPresident } from './views/participation-pages.js?v=0.0.31.462';
 import { renderPresidentPage } from './views/president.js?v=0.0.31.494';
@@ -191,7 +191,7 @@ function setupMemberBadgeManagers(){
 
 async function render({preserveScroll=false,refreshHome=false,freshSession=false}={}){
   const renderId=++renderSequence,r=route(),p=parts(r);content.beginVisit?.(r);
-  if(p[0]==='mine'){location.replace('/mine');return;}
+  if(p[0]==='mine'){location.replace(new URLSearchParams(r.split('?')[1]||'').get('mode')==='party'?'/mine?mode=party':'/mine');return;}
   if(p[0]==='polimable'||p[0]==='polimarble'){location.replace('/');return;}
   if(freshSession)await auth.session({fresh:true});
   if(!p.length&&!refreshHome&&homeSnapshot){
@@ -324,7 +324,7 @@ async function render({preserveScroll=false,refreshHome=false,freshSession=false
   showActivityFeedback(document,{identity:activeSessionIdentity});
   if(p[0]==='person'){void loadMemberRefresh(document,auth);invalidateHome();recordRecentPolitician(document);tunePoliticianNarratives();if(session.user?.role==='admin')void updatePoliticianPhotoStorageStatus();}
   watchAnalysisAccess(document,{onExpired:()=>{navigation?.clearCache();void render({preserveScroll:true,freshSession:true});}});
-  if(!preserveScroll){window.scrollTo(0,0);focusCageCompose(document);if(p[0]==='support'||p[0]==='points'&&new URLSearchParams(r.split('?')[1]||'').get('view')==='support'){const target=document.getElementById('jcs-support');target?.scrollIntoView({block:'start'});target?.querySelector('h2')?.focus({preventScroll:true});}}
+  if(!preserveScroll){window.scrollTo(0,0);focusCageCompose(document);if(p[0]==='person'&&new URLSearchParams(r.split('?')[1]||'').get('research')==='party')document.querySelector('.taxi-research-tabs')?.scrollIntoView({block:'start'});if(p[0]==='support'||p[0]==='points'&&new URLSearchParams(r.split('?')[1]||'').get('view')==='support'){const target=document.getElementById('jcs-support');target?.scrollIntoView({block:'start'});target?.querySelector('h2')?.focus({preventScroll:true});}}
   app.setAttribute('data-jcs-ready','true');
   navigation?.cacheCurrent();
   if(p[0]==='admin'&&isSuperAdmin(session.user))queueMicrotask(resumeAdminIntelligence);
