@@ -1,5 +1,5 @@
 import {personPartyMarkup,personMetaMarkup} from '../ui/person-party.js?v=0.0.31.494';
-import {renderPersonDetailTabs,loadTaxiPersonStats,renderTaxiPersonStats} from './taxi-person.js?v=0.0.31.494';
+import {renderPersonDetailTabs,loadTaxiPersonStats,renderTaxiPersonStats} from './taxi-person.js?v=0.0.31.495';
 import {renderDailyReport} from './daily-report.js?v=0.0.31.448';
 import {beginInlineFields,inlineField,finishInlineFields,inlineAlias,inlineAttributes} from '../ui/inline-field-markup.js?v=0.0.31.429';
 import {renderPageEditor} from '../ui/person-page-editor.js?v=0.0.31.440';
